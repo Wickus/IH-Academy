@@ -26,7 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 interface MobileCoachProps {
-  user: User;
+  user: any;
 }
 
 export default function MobileCoach({ user }: MobileCoachProps) {
@@ -54,8 +54,7 @@ export default function MobileCoach({ user }: MobileCoachProps) {
         classId: selectedClassId!,
         bookingId,
         status,
-        markedBy: user.id,
-        markedAt: new Date().toISOString()
+        markedBy: user.id
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/attendance', selectedClassId] });
