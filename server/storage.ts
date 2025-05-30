@@ -150,7 +150,12 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const newUser: User = { ...user, id: this.currentIds.users++ };
+    const newUser: User = { 
+      ...user, 
+      id: this.currentIds.users++,
+      role: user.role || "admin",
+      academyId: user.academyId || null
+    };
     this.users.set(newUser.id, newUser);
     return newUser;
   }
@@ -165,7 +170,15 @@ export class MemStorage implements IStorage {
   }
 
   async createAcademy(academy: InsertAcademy): Promise<Academy> {
-    const newAcademy: Academy = { ...academy, id: this.currentIds.academies++ };
+    const newAcademy: Academy = { 
+      ...academy, 
+      id: this.currentIds.academies++,
+      address: academy.address || null,
+      email: academy.email || null,
+      description: academy.description || null,
+      phone: academy.phone || null,
+      logo: academy.logo || null
+    };
     this.academies.set(newAcademy.id, newAcademy);
     return newAcademy;
   }
@@ -200,7 +213,13 @@ export class MemStorage implements IStorage {
   }
 
   async createCoach(coach: InsertCoach): Promise<Coach> {
-    const newCoach: Coach = { ...coach, id: this.currentIds.coaches++ };
+    const newCoach: Coach = { 
+      ...coach, 
+      id: this.currentIds.coaches++,
+      specializations: coach.specializations || null,
+      bio: coach.bio || null,
+      hourlyRate: coach.hourlyRate || null
+    };
     this.coaches.set(newCoach.id, newCoach);
     return newCoach;
   }
@@ -240,7 +259,15 @@ export class MemStorage implements IStorage {
   }
 
   async createClass(classData: InsertClass): Promise<Class> {
-    const newClass: Class = { ...classData, id: this.currentIds.classes++ };
+    const newClass: Class = { 
+      ...classData, 
+      id: this.currentIds.classes++,
+      description: classData.description || null,
+      isRecurring: classData.isRecurring || false,
+      recurrencePattern: classData.recurrencePattern || null,
+      location: classData.location || null,
+      requirements: classData.requirements || null
+    };
     this.classes.set(newClass.id, newClass);
     return newClass;
   }
@@ -278,7 +305,16 @@ export class MemStorage implements IStorage {
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    const newBooking: Booking = { ...booking, id: this.currentIds.bookings++ };
+    const newBooking: Booking = { 
+      ...booking, 
+      id: this.currentIds.bookings++,
+      participantPhone: booking.participantPhone || null,
+      participantAge: booking.participantAge || null,
+      paymentStatus: booking.paymentStatus || "pending",
+      paymentMethod: booking.paymentMethod || null,
+      payfastPaymentId: booking.payfastPaymentId || null,
+      notes: booking.notes || null
+    };
     this.bookings.set(newBooking.id, newBooking);
     return newBooking;
   }
@@ -298,7 +334,13 @@ export class MemStorage implements IStorage {
   }
 
   async markAttendance(attendance: InsertAttendance): Promise<Attendance> {
-    const newAttendance: Attendance = { ...attendance, id: this.currentIds.attendance++ };
+    const newAttendance: Attendance = { 
+      ...attendance, 
+      id: this.currentIds.attendance++,
+      status: attendance.status || "pending",
+      markedAt: attendance.markedAt || null,
+      markedBy: attendance.markedBy || null
+    };
     this.attendance.set(newAttendance.id, newAttendance);
     return newAttendance;
   }
