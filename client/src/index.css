@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Override body background */
+body {
+  background: linear-gradient(135deg, #24D3BF 0%, #22C4B0 100%) !important;
+  min-height: 100vh;
+}
+
 :root {
   --background: 255 255 255; /* #FFFFFF - Pure white background */
   --foreground: 30 41 59; /* #1E293B - Dark slate for main text */
