@@ -203,7 +203,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
       </Card>
 
       {/* Booking Form */}
-      <Card>
+      <Card className="bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] text-white border-[#24D3BF]">
         <CardHeader>
           <CardTitle>Participant Information</CardTitle>
         </CardHeader>
