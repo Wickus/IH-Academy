@@ -16,28 +16,36 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       value: stats.totalBookings.toString(),
       change: "+12% from last month",
       icon: CalendarCheck,
-      color: "primary",
+      color: "from-blue-600 to-blue-500",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
     },
     {
       title: "Active Classes",
       value: stats.activeClasses.toString(),
       subtitle: `${stats.upcomingClasses} starting today`,
       icon: Users,
-      color: "secondary",
+      color: "from-green-600 to-green-500",
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
     },
     {
       title: "Revenue",
       value: formatCurrency(stats.totalRevenue),
       change: "+8% from last month",
       icon: Coins,
-      color: "accent",
+      color: "from-yellow-600 to-yellow-500",
+      iconBg: "bg-yellow-100",
+      iconColor: "text-yellow-600",
     },
     {
       title: "Coaches",
       value: stats.totalCoaches.toString(),
       subtitle: `${stats.activeCoaches} active today`,
       icon: Presentation,
-      color: "green-sport",
+      color: "from-indigo-600 to-indigo-500",
+      iconBg: "bg-indigo-100",
+      iconColor: "text-indigo-600",
     },
   ];
 
@@ -47,34 +55,27 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         const Icon = stat.icon;
         
         return (
-          <Card key={index} className="bg-white shadow-sm border border-gray-200">
+          <Card key={index} className="bg-white/70 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">{stat.title}</p>
+                  <p className="text-3xl font-bold text-slate-800 mt-2 mb-1">{stat.value}</p>
                   {stat.change && (
-                    <p className="text-sm text-green-600 mt-1">
-                      <TrendingUp className="inline h-3 w-3 mr-1" />
-                      {stat.change}
-                    </p>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
+                      <p className="text-sm font-medium text-green-600">
+                        <TrendingUp className="inline h-3 w-3 mr-1" />
+                        {stat.change}
+                      </p>
+                    </div>
                   )}
                   {stat.subtitle && (
-                    <p className="text-sm text-gray-600 mt-1">{stat.subtitle}</p>
+                    <p className="text-sm text-slate-500 mt-1 font-medium">{stat.subtitle}</p>
                   )}
                 </div>
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                  stat.color === 'primary' ? 'bg-blue-100' :
-                  stat.color === 'secondary' ? 'bg-blue-100' :
-                  stat.color === 'accent' ? 'bg-green-100' :
-                  'bg-green-100'
-                }`}>
-                  <Icon className={`text-xl ${
-                    stat.color === 'primary' ? 'text-blue-600' :
-                    stat.color === 'secondary' ? 'text-blue-600' :
-                    stat.color === 'accent' ? 'text-green-600' :
-                    'text-green-600'
-                  }`} />
+                <div className={`w-14 h-14 ${stat.iconBg} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className={`${stat.iconColor} text-2xl`} />
                 </div>
               </div>
             </CardContent>

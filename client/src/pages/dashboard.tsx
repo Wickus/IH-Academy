@@ -28,12 +28,21 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-6 lg:p-10 space-y-8">
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
+        <p className="text-slate-600">Welcome back! Here's what's happening at your academy.</p>
+      </div>
+      
       <StatsCards stats={stats} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <WeeklyCalendar />
-        <RecentBookings />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <WeeklyCalendar />
+        </div>
+        <div>
+          <RecentBookings />
+        </div>
       </div>
 
       <CoachAttendance />

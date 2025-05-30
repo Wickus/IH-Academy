@@ -3,26 +3,28 @@
 @tailwind utilities;
 
 :root {
-  --background: 255 255 255; /* #FFFFFF */
-  --foreground: 17 17 17; /* #111111 */
-  --muted: 245 245 245; /* #F5F5F5 */
-  --muted-foreground: 64 64 64; /* #404040 */
+  --background: 248 250 252; /* #F8FAFC */
+  --foreground: 15 23 42; /* #0F172A */
+  --muted: 241 245 249; /* #F1F5F9 */
+  --muted-foreground: 100 116 139; /* #64748B */
   --popover: 255 255 255; /* #FFFFFF */
-  --popover-foreground: 17 17 17; /* #111111 */
+  --popover-foreground: 15 23 42; /* #0F172A */
   --card: 255 255 255; /* #FFFFFF */
-  --card-foreground: 17 17 17; /* #111111 */
-  --border: 224 224 224; /* #E0E0E0 */
+  --card-foreground: 15 23 42; /* #0F172A */
+  --border: 226 232 240; /* #E2E8F0 */
   --input: 255 255 255; /* #FFFFFF */
   --primary: 32 54 107; /* #20366B */
   --primary-foreground: 255 255 255; /* #FFFFFF */
   --secondary: 39 141 212; /* #278DD4 */
   --secondary-foreground: 255 255 255; /* #FFFFFF */
   --accent: 36 211 103; /* #24D367 */
-  --accent-foreground: 17 17 17; /* #111111 */
-  --destructive: 244 67 54; /* #F44336 */
+  --accent-foreground: 255 255 255; /* #FFFFFF */
+  --warning: 211 191 36; /* #D3BF24 */
+  --warning-foreground: 255 255 255; /* #FFFFFF */
+  --destructive: 239 68 68; /* #EF4444 */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
   --ring: 32 54 107; /* #20366B */
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   
   /* Sport colors */
   --blue-sport: 39 141 212; /* #278DD4 */
@@ -63,39 +65,51 @@
   }
 
   html, body {
-    @apply bg-white text-gray-900 font-inter antialiased;
-    background-color: white !important;
-    color: #111111 !important;
+    @apply bg-background text-foreground font-inter antialiased;
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+    min-height: 100vh;
   }
 
   #root {
-    @apply bg-white text-gray-900;
-    background-color: white !important;
-    color: #111111 !important;
+    @apply bg-transparent text-foreground;
   }
 
-  /* Force readable text colors globally */
-  .text-muted-foreground {
-    color: #6B7280 !important;
+  /* Enhanced visual elements */
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   
-  .text-foreground {
-    color: #111827 !important;
+  .gradient-primary {
+    background: linear-gradient(135deg, #20366B 0%, #278DD4 100%);
   }
   
-  /* Fix stats cards specifically */
-  [class*="stats"] p, [class*="card"] p, .grid p {
-    color: #374151 !important;
+  .gradient-secondary {
+    background: linear-gradient(135deg, #278DD4 0%, #24D367 100%);
   }
   
-  /* Override any light text */
-  h1, h2, h3, h4, h5, h6, p, span, div {
-    color: #374151 !important;
+  .gradient-accent {
+    background: linear-gradient(135deg, #24D367 0%, #D3BF24 100%);
   }
   
-  /* Ensure card content is readable */
-  .bg-white p, .bg-white span, .bg-white div {
-    color: #374151 !important;
+  /* Custom shadows */
+  .shadow-primary {
+    box-shadow: 0 10px 30px rgba(32, 54, 107, 0.2);
+  }
+  
+  .shadow-secondary {
+    box-shadow: 0 10px 30px rgba(39, 141, 212, 0.2);
+  }
+  
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
   }
 
   /* Custom utilities for sport colors */

@@ -25,20 +25,20 @@ export default function Sidebar() {
   const [location] = useLocation();
 
   return (
-    <nav className="hidden lg:flex lg:flex-col lg:w-64 bg-white shadow-lg border-r border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <Dumbbell className="text-white text-lg" />
+    <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
+      <div className="p-8 border-b border-white/10 bg-gradient-to-br from-primary to-primary/90">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center ring-2 ring-white/30">
+            <Dumbbell className="text-white text-xl" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">ItsBooked</h1>
-            <p className="text-sm text-muted-foreground">Academy Management</p>
+            <h1 className="text-2xl font-bold text-white">ItsBooked</h1>
+            <p className="text-sm text-white/80">Academy Management</p>
           </div>
         </div>
       </div>
       
-      <div className="flex-1 px-4 py-6 space-y-2">
+      <div className="flex-1 px-6 py-8 space-y-3">
         {navigation.map((item) => {
           const isActive = location === item.href;
           const Icon = item.icon;
@@ -48,14 +48,17 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors",
+                "flex items-center space-x-4 px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
                 isActive
-                  ? "bg-primary text-white"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg transform scale-105"
+                  : "text-slate-600 hover:bg-white/60 hover:text-primary hover:shadow-md"
               )}
             >
-              <Icon className="w-5 h-5" />
-              <span>{item.name}</span>
+              <Icon className={cn(
+                "w-5 h-5 transition-transform duration-200",
+                isActive ? "text-white" : "text-slate-500 group-hover:text-primary group-hover:scale-110"
+              )} />
+              <span className="font-medium">{item.name}</span>
             </Link>
           );
         })}
