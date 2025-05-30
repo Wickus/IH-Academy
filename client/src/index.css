@@ -69,6 +69,40 @@
   background-color: rgb(248 250 252) !important; /* #F8FAFC */
 }
 
+/* Fix warning/amber backgrounds */
+.bg-warning\/10 {
+  background-color: rgb(254 243 199) !important; /* #FEF3C7 - Light amber */
+}
+
+.bg-warning\/20 {
+  background-color: rgb(253 230 138) !important; /* #FDE68A - Lighter amber */
+}
+
+.border-warning\/20 {
+  border-color: rgb(253 230 138) !important; /* #FDE68A */
+}
+
+.text-warning {
+  color: rgb(146 64 14) !important; /* #92400E - Dark amber for contrast */
+}
+
+/* Fix orange sport backgrounds */
+.bg-orange-sport\/5,
+.bg-orange-sport\/10 {
+  background-color: rgb(255 251 235) !important; /* #FFFBEB - Very light amber */
+}
+
+.border-orange-sport {
+  border-color: rgb(217 119 6) !important; /* #D97706 - Medium amber */
+}
+
+/* Remove any remaining harsh yellow */
+.bg-yellow-100,
+.bg-yellow-200,
+.bg-amber-100 {
+  background-color: rgb(254 249 195) !important; /* #FEF9C3 - Soft cream */
+}
+
 .dark {
   --background: 18 18 18; /* #121212 */
   --foreground: 245 245 245; /* #F5F5F5 */
