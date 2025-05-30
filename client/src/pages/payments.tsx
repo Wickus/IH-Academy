@@ -94,8 +94,8 @@ export default function Payments() {
                   {bookings.filter(b => b.paymentStatus === 'pending').length} transactions
                 </p>
               </div>
-              <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
-                <CreditCard className="text-warning text-xl" />
+              <div className="w-12 h-12 bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] rounded-lg flex items-center justify-center">
+                <CreditCard className="text-white text-xl" />
               </div>
             </div>
           </CardContent>
