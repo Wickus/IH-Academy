@@ -74,17 +74,28 @@
     color: #111111 !important;
   }
 
-  /* Force readable text colors */
+  /* Force readable text colors globally */
   .text-muted-foreground {
-    color: #404040 !important;
+    color: #6B7280 !important;
   }
   
   .text-foreground {
-    color: #111111 !important;
+    color: #111827 !important;
   }
   
+  /* Fix stats cards specifically */
+  [class*="stats"] p, [class*="card"] p, .grid p {
+    color: #374151 !important;
+  }
+  
+  /* Override any light text */
   h1, h2, h3, h4, h5, h6, p, span, div {
-    color: inherit;
+    color: #374151 !important;
+  }
+  
+  /* Ensure card content is readable */
+  .bg-white p, .bg-white span, .bg-white div {
+    color: #374151 !important;
   }
 
   /* Custom utilities for sport colors */
