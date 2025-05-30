@@ -38,9 +38,9 @@ export default function RecentBookings() {
   }
 
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-[#24D367] to-[#1FB856] text-white">
       <CardHeader>
-        <CardTitle>Recent Bookings</CardTitle>
+        <CardTitle className="text-white">Recent Bookings</CardTitle>
       </CardHeader>
       
       <CardContent className="space-y-4">
@@ -54,23 +54,23 @@ export default function RecentBookings() {
                 .toUpperCase();
 
               return (
-                <div key={booking.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                <div key={booking.id} className="flex items-center space-x-4 p-4 bg-white/20 backdrop-blur-sm rounded-lg">
                   <Avatar className="h-12 w-12">
-                    <AvatarFallback>{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-white/30 text-white">{initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground truncate">{booking.participantName}</p>
-                    <p className="text-sm text-muted-foreground truncate">{booking.class?.name}</p>
-                    <p className="text-xs text-muted-foreground">{getTimeAgo(booking.bookingDate)}</p>
+                    <p className="font-medium text-white truncate">{booking.participantName}</p>
+                    <p className="text-sm text-white/80 truncate">{booking.class?.name}</p>
+                    <p className="text-xs text-white/70">{getTimeAgo(booking.bookingDate)}</p>
                   </div>
                   <div className="text-right">
                     <Badge 
-                      variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
-                      className={`bg-${getPaymentStatusColor(booking.paymentStatus)}/10 text-${getPaymentStatusColor(booking.paymentStatus)} border-${getPaymentStatusColor(booking.paymentStatus)}/20 mb-1`}
+                      variant="outline"
+                      className="bg-white/30 text-white border-white/40 mb-1"
                     >
                       {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                     </Badge>
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-sm font-medium text-white/90">
                       {formatCurrency(Number(booking.amount))}
                     </p>
                   </div>
@@ -78,12 +78,12 @@ export default function RecentBookings() {
               );
             })}
             
-            <Button variant="ghost" className="w-full mt-4 text-primary hover:text-primary/90">
+            <Button variant="ghost" className="w-full mt-4 text-white hover:text-white/80 hover:bg-white/10">
               View All Bookings
             </Button>
           </>
         ) : (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-center py-8 text-white/70">
             <p>No recent bookings</p>
           </div>
         )}
