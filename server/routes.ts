@@ -1,22 +1,8 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
+import type { Express, Request, Response } from "express";
+import { Server } from "http";
 import { storage } from "./storage";
-import { insertBookingSchema, insertClassSchema, insertAttendanceSchema } from "@shared/schema";
-import { z } from "zod";
-import nodemailer from "nodemailer";
 
-// Email configuration
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-// iCal utility functions
+// Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
   const startDate = new Date(classData.startTime);
   const endDate = new Date(classData.endTime);
@@ -27,15 +13,15 @@ function generateICalEvent(classData: any, booking: any): string {
 
   return `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//ItsBooked//EN
+PRODID:-//ItsBooked//Sports Booking System//EN
 BEGIN:VEVENT
-UID:${booking.id}@itsbooked.co.za
+UID:booking-${booking.id}@itsbooked.com
 DTSTAMP:${formatDate(new Date())}
 DTSTART:${formatDate(startDate)}
 DTEND:${formatDate(endDate)}
 SUMMARY:${classData.name}
-DESCRIPTION:Sports class booking for ${booking.participantName}\\n\\nLocation: ${classData.location || 'TBA'}\\nRequirements: ${classData.requirements || 'None'}
-LOCATION:${classData.location || 'TBA'}
+DESCRIPTION:Sports class booking\\nParticipant: ${booking.participantName}\\nLocation: ${classData.location || 'TBD'}
+LOCATION:${classData.location || ''}
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR`;
@@ -43,100 +29,265 @@ END:VCALENDAR`;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Dashboard stats
-  app.get("/api/stats", async (req, res) => {
+  // Authentication routes
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
     try {
-      const stats = await storage.getStats();
+      const userData = req.body;
+      const user = await storage.createUser(userData);
+      res.json(user);
+    } catch (error) {
+      console.error("Error registering user:", error);
+      res.status(500).json({ message: "Failed to register user" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req: Request, res: Response) => {
+    try {
+      const { username, password } = req.body;
+      const user = await storage.getUserByUsername(username);
+      
+      if (!user || user.password !== password) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      res.json(user);
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ message: "Failed to login" });
+    }
+  });
+
+  app.get("/api/auth/me", async (req: Request, res: Response) => {
+    try {
+      // For now, return a mock user - in production this would use session/JWT
+      const user = await storage.getUser(1);
+      res.json(user);
+    } catch (error) {
+      res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+
+  // Organization routes
+  app.get("/api/organizations", async (req: Request, res: Response) => {
+    try {
+      const organizations = await storage.getAllOrganizations();
+      res.json(organizations);
+    } catch (error) {
+      console.error("Error fetching organizations:", error);
+      res.status(500).json({ message: "Failed to fetch organizations" });
+    }
+  });
+
+  app.get("/api/organizations/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const organization = await storage.getOrganization(id);
+      
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      
+      res.json(organization);
+    } catch (error) {
+      console.error("Error fetching organization:", error);
+      res.status(500).json({ message: "Failed to fetch organization" });
+    }
+  });
+
+  app.post("/api/organizations", async (req: Request, res: Response) => {
+    try {
+      const orgData = req.body;
+      const organization = await storage.createOrganization(orgData);
+      res.json(organization);
+    } catch (error) {
+      console.error("Error creating organization:", error);
+      res.status(500).json({ message: "Failed to create organization" });
+    }
+  });
+
+  app.post("/api/organizations/:id/follow", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.id);
+      const userId = 1; // In production, get from session/JWT
+      
+      const userOrg = await storage.addUserToOrganization({
+        userId,
+        organizationId,
+        role: "member"
+      });
+      
+      res.json(userOrg);
+    } catch (error) {
+      console.error("Error following organization:", error);
+      res.status(500).json({ message: "Failed to follow organization" });
+    }
+  });
+
+  app.delete("/api/organizations/:id/follow", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.id);
+      const userId = 1; // In production, get from session/JWT
+      
+      await storage.removeUserFromOrganization(userId, organizationId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error unfollowing organization:", error);
+      res.status(500).json({ message: "Failed to unfollow organization" });
+    }
+  });
+
+  // Statistics routes
+  app.get("/api/stats/global", async (req: Request, res: Response) => {
+    try {
+      const stats = await storage.getGlobalStats();
       res.json(stats);
     } catch (error) {
+      console.error("Error fetching global stats:", error);
+      res.status(500).json({ message: "Failed to fetch global stats" });
+    }
+  });
+
+  app.get("/api/stats/organization/:id", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.id);
+      const stats = await storage.getOrganizationStats(organizationId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching organization stats:", error);
+      res.status(500).json({ message: "Failed to fetch organization stats" });
+    }
+  });
+
+  // Legacy stats endpoint
+  app.get("/api/stats", async (req: Request, res: Response) => {
+    try {
+      const stats = await storage.getOrganizationStats(1); // Default to first organization
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
       res.status(500).json({ message: "Failed to fetch stats" });
     }
   });
 
-  // Sports
-  app.get("/api/sports", async (req, res) => {
+  // Sports routes
+  app.get("/api/sports", async (req: Request, res: Response) => {
     try {
       const sports = await storage.getAllSports();
       res.json(sports);
     } catch (error) {
+      console.error("Error fetching sports:", error);
       res.status(500).json({ message: "Failed to fetch sports" });
     }
   });
 
-  // Classes
-  app.get("/api/classes", async (req, res) => {
+  app.post("/api/sports", async (req: Request, res: Response) => {
     try {
-      const { academyId, coachId, date } = req.query;
+      const sportData = req.body;
+      const sport = await storage.createSport(sportData);
+      res.json(sport);
+    } catch (error) {
+      console.error("Error creating sport:", error);
+      res.status(500).json({ message: "Failed to create sport" });
+    }
+  });
+
+  // Classes routes
+  app.get("/api/classes", async (req: Request, res: Response) => {
+    try {
+      const { organizationId, coachId, date, public: isPublic } = req.query;
       let classes;
 
-      if (academyId) {
-        classes = await storage.getClassesByAcademy(parseInt(academyId as string));
+      if (isPublic === 'true') {
+        classes = await storage.getPublicClasses();
+      } else if (organizationId) {
+        classes = await storage.getClassesByOrganization(parseInt(organizationId as string));
       } else if (coachId) {
         classes = await storage.getClassesByCoach(parseInt(coachId as string));
       } else if (date) {
         classes = await storage.getClassesByDate(new Date(date as string));
       } else {
-        classes = await storage.getClassesByAcademy(1); // Default to first academy
+        classes = await storage.getPublicClasses(); // Default to public classes
       }
 
-      // Enrich with sport and coach data
-      const enrichedClasses = await Promise.all(classes.map(async (cls) => {
-        const [sport, coach] = await Promise.all([
-          storage.getAllSports().then(sports => sports.find(s => s.id === cls.sportId)),
-          storage.getCoach(cls.coachId)
-        ]);
+      // Calculate booking count and available spots
+      const classesWithBookingInfo = await Promise.all(
+        classes.map(async (cls: any) => {
+          const bookings = await storage.getBookingsByClass(cls.id);
+          const bookingCount = bookings.length;
+          const availableSpots = cls.capacity - bookingCount;
 
-        const bookings = await storage.getBookingsByClass(cls.id);
-        const confirmedBookings = bookings.filter(b => b.paymentStatus === 'confirmed');
+          // Get sport and organization info
+          const [sport, organization] = await Promise.all([
+            storage.getAllSports().then(sports => sports.find(s => s.id === cls.sportId)),
+            storage.getOrganization(cls.organizationId)
+          ]);
 
-        return {
-          ...cls,
-          sport,
-          coach,
-          bookingCount: confirmedBookings.length,
-          availableSpots: cls.capacity - confirmedBookings.length,
-        };
-      }));
+          return {
+            ...cls,
+            sport,
+            organization,
+            bookingCount,
+            availableSpots: Math.max(0, availableSpots)
+          };
+        })
+      );
 
-      res.json(enrichedClasses);
+      res.json(classesWithBookingInfo);
     } catch (error) {
+      console.error("Error fetching classes:", error);
       res.status(500).json({ message: "Failed to fetch classes" });
     }
   });
 
-  app.post("/api/classes", async (req, res) => {
-    try {
-      const classData = insertClassSchema.parse(req.body);
-      const newClass = await storage.createClass(classData);
-      res.status(201).json(newClass);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid class data", errors: error.errors });
-      } else {
-        res.status(500).json({ message: "Failed to create class" });
-      }
-    }
-  });
-
-  app.get("/api/classes/:id", async (req, res) => {
+  app.get("/api/classes/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const classData = await storage.getClass(id);
-      
+
       if (!classData) {
         return res.status(404).json({ message: "Class not found" });
       }
 
-      res.json(classData);
+      // Get additional info
+      const bookings = await storage.getBookingsByClass(id);
+      const bookingCount = bookings.length;
+      const availableSpots = classData.capacity - bookingCount;
+
+      const [sport, organization] = await Promise.all([
+        storage.getAllSports().then(sports => sports.find(s => s.id === classData.sportId)),
+        storage.getOrganization(classData.organizationId)
+      ]);
+
+      const classWithInfo = {
+        ...classData,
+        sport,
+        organization,
+        bookingCount,
+        availableSpots: Math.max(0, availableSpots)
+      };
+
+      res.json(classWithInfo);
     } catch (error) {
+      console.error("Error fetching class:", error);
       res.status(500).json({ message: "Failed to fetch class" });
     }
   });
 
-  // Bookings
-  app.get("/api/bookings", async (req, res) => {
+  app.post("/api/classes", async (req: Request, res: Response) => {
     try {
-      const { email, classId, recent } = req.query;
+      const classData = req.body;
+      const newClass = await storage.createClass(classData);
+      res.json(newClass);
+    } catch (error) {
+      console.error("Error creating class:", error);
+      res.status(500).json({ message: "Failed to create class" });
+    }
+  });
+
+  // Bookings routes
+  app.get("/api/bookings", async (req: Request, res: Response) => {
+    try {
+      const { email, classId, recent, organizationId } = req.query;
       let bookings;
 
       if (email) {
@@ -144,235 +295,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (classId) {
         bookings = await storage.getBookingsByClass(parseInt(classId as string));
       } else if (recent) {
-        bookings = await storage.getRecentBookings(parseInt(recent as string) || 10);
+        const orgId = organizationId ? parseInt(organizationId as string) : undefined;
+        bookings = await storage.getRecentBookings(parseInt(recent as string), orgId);
       } else {
-        bookings = await storage.getRecentBookings();
+        bookings = await storage.getRecentBookings(50);
       }
 
-      // Enrich with class data
-      const enrichedBookings = await Promise.all(bookings.map(async (booking) => {
-        const classData = await storage.getClass(booking.classId);
-        const sport = classData ? await storage.getAllSports().then(sports => 
-          sports.find(s => s.id === classData.sportId)
-        ) : null;
+      // Add class and sport info to bookings
+      const bookingsWithInfo = await Promise.all(
+        bookings.map(async (booking: any) => {
+          const classData = await storage.getClass(booking.classId);
+          if (!classData) return booking;
 
-        return {
-          ...booking,
-          class: classData,
-          sport,
-        };
-      }));
+          const sport = await storage.getAllSports().then(sports => 
+            sports.find(s => s.id === classData.sportId)
+          );
 
-      res.json(enrichedBookings);
+          return {
+            ...booking,
+            class: classData,
+            sport
+          };
+        })
+      );
+
+      res.json(bookingsWithInfo);
     } catch (error) {
+      console.error("Error fetching bookings:", error);
       res.status(500).json({ message: "Failed to fetch bookings" });
     }
   });
 
-  app.post("/api/bookings", async (req, res) => {
+  app.post("/api/bookings", async (req: Request, res: Response) => {
     try {
-      const bookingData = insertBookingSchema.parse({
+      const bookingData = {
         ...req.body,
-        bookingDate: new Date(),
-      });
+        bookingDate: new Date()
+      };
 
-      // Check class capacity
-      const classData = await storage.getClass(bookingData.classId);
-      if (!classData) {
-        return res.status(404).json({ message: "Class not found" });
-      }
+      const booking = await storage.createBooking(bookingData);
 
-      const existingBookings = await storage.getBookingsByClass(bookingData.classId);
-      const confirmedBookings = existingBookings.filter(b => b.paymentStatus === 'confirmed');
-
-      if (confirmedBookings.length >= classData.capacity) {
-        return res.status(400).json({ message: "Class is full" });
-      }
-
-      const newBooking = await storage.createBooking(bookingData);
-
-      // Send confirmation email with iCal attachment
-      if (process.env.SMTP_USER) {
-        const iCalContent = generateICalEvent(classData, newBooking);
-        
-        try {
-          await transporter.sendMail({
-            from: process.env.SMTP_USER,
-            to: newBooking.participantEmail,
-            subject: `Booking Confirmation - ${classData.name}`,
-            html: `
-              <h2>Booking Confirmation</h2>
-              <p>Dear ${newBooking.participantName},</p>
-              <p>Your booking has been confirmed for:</p>
-              <ul>
-                <li><strong>Class:</strong> ${classData.name}</li>
-                <li><strong>Date:</strong> ${new Date(classData.startTime).toLocaleDateString()}</li>
-                <li><strong>Time:</strong> ${new Date(classData.startTime).toLocaleTimeString()} - ${new Date(classData.endTime).toLocaleTimeString()}</li>
-                <li><strong>Location:</strong> ${classData.location || 'TBA'}</li>
-                <li><strong>Amount:</strong> R${newBooking.amount}</li>
-              </ul>
-              <p>Please find the calendar event attached.</p>
-              <p>Thank you for choosing Elite Sports Academy!</p>
-            `,
-            attachments: [
-              {
-                filename: 'class-booking.ics',
-                content: iCalContent,
-                contentType: 'text/calendar',
-              },
-            ],
-          });
-        } catch (emailError) {
-          console.error('Failed to send email:', emailError);
-        }
-      }
-
-      res.status(201).json(newBooking);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid booking data", errors: error.errors });
-      } else {
-        res.status(500).json({ message: "Failed to create booking" });
-      }
-    }
-  });
-
-  // Download iCal for booking
-  app.get("/api/bookings/:id/ical", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const booking = await storage.getBooking(id);
-      
-      if (!booking) {
-        return res.status(404).json({ message: "Booking not found" });
-      }
-
+      // Generate iCal file
       const classData = await storage.getClass(booking.classId);
-      if (!classData) {
-        return res.status(404).json({ message: "Class not found" });
-      }
-
-      const iCalContent = generateICalEvent(classData, booking);
-      
-      res.setHeader('Content-Type', 'text/calendar');
-      res.setHeader('Content-Disposition', `attachment; filename="class-booking-${booking.id}.ics"`);
-      res.send(iCalContent);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to generate iCal file" });
-    }
-  });
-
-  // Attendance
-  app.get("/api/attendance/:classId", async (req, res) => {
-    try {
-      const classId = parseInt(req.params.classId);
-      const attendance = await storage.getAttendanceByClass(classId);
-      const bookings = await storage.getBookingsByClass(classId);
-
-      // Merge attendance with booking data
-      const attendanceWithBookings = bookings.map(booking => {
-        const attendanceRecord = attendance.find(att => att.bookingId === booking.id);
-        return {
-          booking,
-          attendance: attendanceRecord || { status: 'pending' },
-        };
-      });
-
-      res.json(attendanceWithBookings);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch attendance" });
-    }
-  });
-
-  app.post("/api/attendance", async (req, res) => {
-    try {
-      const attendanceData = insertAttendanceSchema.parse({
-        ...req.body,
-        markedAt: new Date(),
-      });
-
-      const newAttendance = await storage.markAttendance(attendanceData);
-      res.status(201).json(newAttendance);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid attendance data", errors: error.errors });
-      } else {
-        res.status(500).json({ message: "Failed to mark attendance" });
-      }
-    }
-  });
-
-  app.put("/api/attendance/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const attendanceData = req.body;
-      
-      const updatedAttendance = await storage.updateAttendance(id, {
-        ...attendanceData,
-        markedAt: new Date(),
-      });
-
-      if (!updatedAttendance) {
-        return res.status(404).json({ message: "Attendance record not found" });
-      }
-
-      res.json(updatedAttendance);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update attendance" });
-    }
-  });
-
-  // Payfast webhook (simplified for demo)
-  app.post("/api/payfast/webhook", async (req, res) => {
-    try {
-      const { payment_status, m_payment_id, item_name, amount_gross } = req.body;
-      
-      // In a real implementation, you would verify the Payfast signature
-      // and validate the payment data
-      
-      if (payment_status === 'COMPLETE') {
-        // Find booking by Payfast payment ID and update status
-        const bookings = await storage.getRecentBookings(1000); // Get all recent bookings
-        const booking = bookings.find(b => b.payfastPaymentId === m_payment_id);
+      if (classData) {
+        const icalContent = generateICalEvent(classData, booking);
         
-        if (booking) {
-          await storage.updateBooking(booking.id, { paymentStatus: 'confirmed' });
-        }
+        // In a real implementation, you would send this via email
+        console.log("iCal content generated for booking:", booking.id);
       }
 
-      res.status(200).send('OK');
+      res.json(booking);
     } catch (error) {
-      res.status(500).json({ message: "Failed to process webhook" });
+      console.error("Error creating booking:", error);
+      res.status(500).json({ message: "Failed to create booking" });
     }
   });
 
-  // Coaches
-  app.get("/api/coaches", async (req, res) => {
+  // Coaches routes
+  app.get("/api/coaches", async (req: Request, res: Response) => {
     try {
-      const { academyId } = req.query;
+      const { organizationId } = req.query;
       let coaches;
 
-      if (academyId) {
-        coaches = await storage.getCoachesByAcademy(parseInt(academyId as string));
+      if (organizationId) {
+        coaches = await storage.getCoachesByOrganization(parseInt(organizationId as string));
       } else {
-        coaches = await storage.getCoachesByAcademy(1); // Default academy
+        // Return all coaches from all organizations (for global admin)
+        coaches = await storage.getCoachesByOrganization(1); // Default to first org
       }
 
-      // Enrich with user data
-      const enrichedCoaches = await Promise.all(coaches.map(async (coach) => {
-        const user = await storage.getUser(coach.userId);
-        return {
-          ...coach,
-          user,
-        };
-      }));
-
-      res.json(enrichedCoaches);
+      res.json(coaches);
     } catch (error) {
+      console.error("Error fetching coaches:", error);
       res.status(500).json({ message: "Failed to fetch coaches" });
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  app.post("/api/coaches", async (req: Request, res: Response) => {
+    try {
+      const coachData = req.body;
+      const coach = await storage.createCoach(coachData);
+      res.json(coach);
+    } catch (error) {
+      console.error("Error creating coach:", error);
+      res.status(500).json({ message: "Failed to create coach" });
+    }
+  });
+
+  // Attendance routes
+  app.get("/api/attendance/:classId", async (req: Request, res: Response) => {
+    try {
+      const classId = parseInt(req.params.classId);
+      const attendance = await storage.getAttendanceByClass(classId);
+      
+      // Get booking info for each attendance record
+      const attendanceWithBookings = await Promise.all(
+        attendance.map(async (record: any) => {
+          const booking = await storage.getBooking(record.bookingId);
+          return {
+            booking,
+            attendance: {
+              id: record.id,
+              status: record.status,
+              markedAt: record.markedAt,
+              markedBy: record.markedBy
+            }
+          };
+        })
+      );
+
+      res.json(attendanceWithBookings);
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      res.status(500).json({ message: "Failed to fetch attendance" });
+    }
+  });
+
+  app.post("/api/attendance", async (req: Request, res: Response) => {
+    try {
+      const attendanceData = req.body;
+      const attendance = await storage.markAttendance(attendanceData);
+      res.json(attendance);
+    } catch (error) {
+      console.error("Error marking attendance:", error);
+      res.status(500).json({ message: "Failed to mark attendance" });
+    }
+  });
+
+  return new Promise((resolve) => {
+    const server = app.listen(5001, () => {
+      console.log("Multi-tenant API server running on port 5001");
+      resolve(server);
+    });
+  });
 }
