@@ -1,7 +1,8 @@
 import {
-  users, academies, sports, coaches, classes, bookings, attendance, payments,
+  users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
   type User, type InsertUser,
-  type Academy, type InsertAcademy,
+  type Organization, type InsertOrganization,
+  type UserOrganization, type InsertUserOrganization,
   type Sport, type InsertSport,
   type Coach, type InsertCoach,
   type Class, type InsertClass,
@@ -10,7 +11,7 @@ import {
   type Payment, type InsertPayment
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte } from "drizzle-orm";
+import { eq, desc, and, gte, lte, count, sum } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -18,12 +19,20 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
 
-  // Academies
-  getAcademy(id: number): Promise<Academy | undefined>;
-  getAllAcademies(): Promise<Academy[]>;
-  createAcademy(academy: InsertAcademy): Promise<Academy>;
-  updateAcademy(id: number, academy: Partial<InsertAcademy>): Promise<Academy | undefined>;
+  // Organizations
+  getOrganization(id: number): Promise<Organization | undefined>;
+  getAllOrganizations(): Promise<Organization[]>;
+  getOrganizationsByUser(userId: number): Promise<Organization[]>;
+  createOrganization(organization: InsertOrganization): Promise<Organization>;
+  updateOrganization(id: number, organization: Partial<InsertOrganization>): Promise<Organization | undefined>;
+
+  // User-Organization relationships
+  getUserOrganizations(userId: number): Promise<UserOrganization[]>;
+  addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization>;
+  removeUserFromOrganization(userId: number, organizationId: number): Promise<boolean>;
+  updateUserOrganizationRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined>;
 
   // Sports
   getAllSports(): Promise<Sport[]>;
@@ -31,15 +40,16 @@ export interface IStorage {
 
   // Coaches
   getCoach(id: number): Promise<Coach | undefined>;
-  getCoachesByAcademy(academyId: number): Promise<Coach[]>;
+  getCoachesByOrganization(organizationId: number): Promise<Coach[]>;
   createCoach(coach: InsertCoach): Promise<Coach>;
   updateCoach(id: number, coach: Partial<InsertCoach>): Promise<Coach | undefined>;
 
   // Classes
   getClass(id: number): Promise<Class | undefined>;
-  getClassesByAcademy(academyId: number): Promise<Class[]>;
+  getClassesByOrganization(organizationId: number): Promise<Class[]>;
   getClassesByCoach(coachId: number): Promise<Class[]>;
   getClassesByDate(date: Date): Promise<Class[]>;
+  getPublicClasses(): Promise<Class[]>;
   createClass(classData: InsertClass): Promise<Class>;
   updateClass(id: number, classData: Partial<InsertClass>): Promise<Class | undefined>;
   deleteClass(id: number): Promise<boolean>;
@@ -48,7 +58,7 @@ export interface IStorage {
   getBooking(id: number): Promise<Booking | undefined>;
   getBookingsByClass(classId: number): Promise<Booking[]>;
   getBookingsByEmail(email: string): Promise<Booking[]>;
-  getRecentBookings(limit?: number): Promise<Booking[]>;
+  getRecentBookings(limit?: number, organizationId?: number): Promise<Booking[]>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   updateBooking(id: number, booking: Partial<InsertBooking>): Promise<Booking | undefined>;
 
@@ -64,13 +74,20 @@ export interface IStorage {
   updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined>;
 
   // Statistics
-  getStats(academyId?: number): Promise<{
+  getGlobalStats(): Promise<{
+    totalOrganizations: number;
+    totalUsers: number;
+    totalBookings: number;
+    totalRevenue: number;
+  }>;
+  getOrganizationStats(organizationId: number): Promise<{
     totalBookings: number;
     activeClasses: number;
     totalRevenue: number;
     totalCoaches: number;
     activeCoaches: number;
     upcomingClasses: number;
+    totalMembers: number;
   }>;
 }
 
@@ -78,40 +95,95 @@ export class DatabaseStorage implements IStorage {
   private async seedData() {
     try {
       // Check if data already exists
-      const existingAcademies = await db.select().from(academies);
-      if (existingAcademies.length > 0) return;
+      const existingOrganizations = await db.select().from(organizations).limit(1);
+      if (existingOrganizations.length > 0) {
+        return; // Data already seeded
+      }
 
-      // Create default academy
-      const [academy] = await db.insert(academies).values({
-        name: "Elite Sports Academy",
-        description: "Premier sports training facility",
-        address: "123 Sports Boulevard, Cape Town",
-        phone: "+27 21 123 4567",
-        email: "info@elitesports.co.za",
-        logo: null,
+      // Create global admin user
+      const [globalAdmin] = await db.insert(users).values({
+        username: "globaladmin",
+        password: "admin123",
+        email: "admin@itsbooked.com",
+        firstName: "Global",
+        lastName: "Admin",
+        role: "global_admin"
       }).returning();
 
-      // Create default sports
+      // Create sample organization
+      const [sampleOrg] = await db.insert(organizations).values({
+        name: "Elite Sports Academy",
+        description: "Premier sports training facility",
+        email: "info@elitesports.com",
+        phone: "+27 11 123 4567",
+        address: "123 Sports Ave, Johannesburg",
+        primaryColor: "#20366B",
+        secondaryColor: "#278DD4",
+        accentColor: "#24D367"
+      }).returning();
+
+      // Create organization admin
+      const [orgAdmin] = await db.insert(users).values({
+        username: "eliteadmin",
+        password: "admin123",
+        email: "admin@elitesports.com",
+        firstName: "Elite",
+        lastName: "Admin",
+        role: "organization_admin",
+        organizationId: sampleOrg.id
+      }).returning();
+
+      // Add admin to organization
+      await db.insert(userOrganizations).values({
+        userId: orgAdmin.id,
+        organizationId: sampleOrg.id,
+        role: "admin"
+      });
+
+      // Create sports
       const sportsData = [
-        { name: "Basketball", color: "#278DD4", icon: "fas fa-basketball-ball" },
-        { name: "Soccer", color: "#24D367", icon: "fas fa-futbol" },
-        { name: "Tennis", color: "#D3BF24", icon: "fas fa-table-tennis" },
-        { name: "Swimming", color: "#278DD4", icon: "fas fa-swimmer" },
+        { name: "Basketball", color: "#278DD4", icon: "basketball" },
+        { name: "Football", color: "#24D367", icon: "futbol" },
+        { name: "Tennis", color: "#D3BF24", icon: "tennis-ball" }
       ];
 
-      await db.insert(sports).values(sportsData);
+      const createdSports = await db.insert(sports).values(sportsData).returning();
 
-      // Create default admin user
-      await db.insert(users).values({
-        username: "admin",
-        password: "admin123",
-        email: "admin@elitesports.co.za",
-        name: "Sarah Johnson",
-        role: "admin",
-        academyId: academy.id,
-      });
+      // Create a coach
+      const [coach] = await db.insert(coaches).values({
+        userId: orgAdmin.id,
+        organizationId: sampleOrg.id,
+        specializations: ["Basketball", "Youth Training"],
+        bio: "Experienced basketball coach with 10+ years",
+        hourlyRate: "150.00"
+      }).returning();
+
+      // Create sample classes
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(10, 0, 0, 0);
+
+      const classData = [
+        {
+          organizationId: sampleOrg.id,
+          sportId: createdSports[0].id,
+          coachId: coach.id,
+          name: "Basketball Fundamentals",
+          description: "Learn the basics of basketball",
+          startTime: tomorrow,
+          endTime: new Date(tomorrow.getTime() + 60 * 60 * 1000),
+          capacity: 15,
+          price: "50.00",
+          location: "Main Court"
+        }
+      ];
+
+      await db.insert(classes).values(classData);
+
+      console.log("Multi-tenant database seeded successfully");
     } catch (error) {
-      console.error('Failed to seed data:', error);
+      console.error("Error seeding multi-tenant database:", error);
     }
   }
 
@@ -119,7 +191,7 @@ export class DatabaseStorage implements IStorage {
     this.seedData();
   }
 
-  // Users
+  // User methods
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
@@ -136,88 +208,110 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db
-      .insert(users)
-      .values(user)
-      .returning();
+    const [newUser] = await db.insert(users).values(user).returning();
     return newUser;
   }
 
-  // Academies
-  async getAcademy(id: number): Promise<Academy | undefined> {
-    const [academy] = await db.select().from(academies).where(eq(academies.id, id));
-    return academy || undefined;
+  async updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined> {
+    const [updatedUser] = await db.update(users).set(user).where(eq(users.id, id)).returning();
+    return updatedUser || undefined;
   }
 
-  async getAllAcademies(): Promise<Academy[]> {
-    return await db.select().from(academies);
+  // Organization methods
+  async getOrganization(id: number): Promise<Organization | undefined> {
+    const [org] = await db.select().from(organizations).where(eq(organizations.id, id));
+    return org || undefined;
   }
 
-  async createAcademy(academy: InsertAcademy): Promise<Academy> {
-    const [newAcademy] = await db
-      .insert(academies)
-      .values(academy)
-      .returning();
-    return newAcademy;
+  async getAllOrganizations(): Promise<Organization[]> {
+    return await db.select().from(organizations).where(eq(organizations.isActive, true));
   }
 
-  async updateAcademy(id: number, academy: Partial<InsertAcademy>): Promise<Academy | undefined> {
+  async getOrganizationsByUser(userId: number): Promise<Organization[]> {
+    const userOrgs = await db
+      .select({ organization: organizations })
+      .from(userOrganizations)
+      .innerJoin(organizations, eq(userOrganizations.organizationId, organizations.id))
+      .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.isActive, true)));
+    
+    return userOrgs.map(row => row.organization);
+  }
+
+  async createOrganization(organization: InsertOrganization): Promise<Organization> {
+    const [newOrg] = await db.insert(organizations).values(organization).returning();
+    return newOrg;
+  }
+
+  async updateOrganization(id: number, organization: Partial<InsertOrganization>): Promise<Organization | undefined> {
+    const [updatedOrg] = await db.update(organizations).set(organization).where(eq(organizations.id, id)).returning();
+    return updatedOrg || undefined;
+  }
+
+  // User-Organization relationship methods
+  async getUserOrganizations(userId: number): Promise<UserOrganization[]> {
+    return await db.select().from(userOrganizations).where(eq(userOrganizations.userId, userId));
+  }
+
+  async addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization> {
+    const [newUserOrg] = await db.insert(userOrganizations).values(userOrg).returning();
+    return newUserOrg;
+  }
+
+  async removeUserFromOrganization(userId: number, organizationId: number): Promise<boolean> {
+    const result = await db
+      .update(userOrganizations)
+      .set({ isActive: false })
+      .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.organizationId, organizationId)));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updateUserOrganizationRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined> {
     const [updated] = await db
-      .update(academies)
-      .set(academy)
-      .where(eq(academies.id, id))
+      .update(userOrganizations)
+      .set({ role: role as any })
+      .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.organizationId, organizationId)))
       .returning();
     return updated || undefined;
   }
 
-  // Sports
+  // Sports methods
   async getAllSports(): Promise<Sport[]> {
     return await db.select().from(sports);
   }
 
   async createSport(sport: InsertSport): Promise<Sport> {
-    const [newSport] = await db
-      .insert(sports)
-      .values(sport)
-      .returning();
+    const [newSport] = await db.insert(sports).values(sport).returning();
     return newSport;
   }
 
-  // Coaches
+  // Coach methods
   async getCoach(id: number): Promise<Coach | undefined> {
     const [coach] = await db.select().from(coaches).where(eq(coaches.id, id));
     return coach || undefined;
   }
 
-  async getCoachesByAcademy(academyId: number): Promise<Coach[]> {
-    return await db.select().from(coaches).where(eq(coaches.academyId, academyId));
+  async getCoachesByOrganization(organizationId: number): Promise<Coach[]> {
+    return await db.select().from(coaches).where(eq(coaches.organizationId, organizationId));
   }
 
   async createCoach(coach: InsertCoach): Promise<Coach> {
-    const [newCoach] = await db
-      .insert(coaches)
-      .values(coach)
-      .returning();
+    const [newCoach] = await db.insert(coaches).values(coach).returning();
     return newCoach;
   }
 
   async updateCoach(id: number, coach: Partial<InsertCoach>): Promise<Coach | undefined> {
-    const [updated] = await db
-      .update(coaches)
-      .set(coach)
-      .where(eq(coaches.id, id))
-      .returning();
-    return updated || undefined;
+    const [updatedCoach] = await db.update(coaches).set(coach).where(eq(coaches.id, id)).returning();
+    return updatedCoach || undefined;
   }
 
-  // Classes
+  // Class methods
   async getClass(id: number): Promise<Class | undefined> {
     const [classItem] = await db.select().from(classes).where(eq(classes.id, id));
     return classItem || undefined;
   }
 
-  async getClassesByAcademy(academyId: number): Promise<Class[]> {
-    return await db.select().from(classes).where(eq(classes.academyId, academyId));
+  async getClassesByOrganization(organizationId: number): Promise<Class[]> {
+    return await db.select().from(classes).where(eq(classes.organizationId, organizationId));
   }
 
   async getClassesByCoach(coachId: number): Promise<Class[]> {
@@ -230,36 +324,35 @@ export class DatabaseStorage implements IStorage {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    return await db.select().from(classes)
-      .where(and(
+    return await db.select().from(classes).where(
+      and(
         gte(classes.startTime, startOfDay),
         lte(classes.startTime, endOfDay)
-      ));
+      )
+    );
+  }
+
+  async getPublicClasses(): Promise<Class[]> {
+    const now = new Date();
+    return await db.select().from(classes).where(gte(classes.startTime, now)).orderBy(classes.startTime);
   }
 
   async createClass(classData: InsertClass): Promise<Class> {
-    const [newClass] = await db
-      .insert(classes)
-      .values(classData)
-      .returning();
+    const [newClass] = await db.insert(classes).values(classData).returning();
     return newClass;
   }
 
   async updateClass(id: number, classData: Partial<InsertClass>): Promise<Class | undefined> {
-    const [updated] = await db
-      .update(classes)
-      .set(classData)
-      .where(eq(classes.id, id))
-      .returning();
-    return updated || undefined;
+    const [updatedClass] = await db.update(classes).set(classData).where(eq(classes.id, id)).returning();
+    return updatedClass || undefined;
   }
 
   async deleteClass(id: number): Promise<boolean> {
     const result = await db.delete(classes).where(eq(classes.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
-  // Bookings
+  // Booking methods
   async getBooking(id: number): Promise<Booking | undefined> {
     const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
     return booking || undefined;
@@ -273,52 +366,47 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(bookings).where(eq(bookings.participantEmail, email));
   }
 
-  async getRecentBookings(limit = 10): Promise<Booking[]> {
-    return await db.select().from(bookings)
-      .orderBy(desc(bookings.bookingDate))
-      .limit(limit);
+  async getRecentBookings(limit = 10, organizationId?: number): Promise<Booking[]> {
+    if (organizationId) {
+      return await db
+        .select({ booking: bookings })
+        .from(bookings)
+        .innerJoin(classes, eq(bookings.classId, classes.id))
+        .where(eq(classes.organizationId, organizationId))
+        .orderBy(desc(bookings.bookingDate))
+        .limit(limit)
+        .then(rows => rows.map(row => row.booking));
+    }
+    
+    return await db.select().from(bookings).orderBy(desc(bookings.bookingDate)).limit(limit);
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    const [newBooking] = await db
-      .insert(bookings)
-      .values(booking)
-      .returning();
+    const [newBooking] = await db.insert(bookings).values(booking).returning();
     return newBooking;
   }
 
   async updateBooking(id: number, booking: Partial<InsertBooking>): Promise<Booking | undefined> {
-    const [updated] = await db
-      .update(bookings)
-      .set(booking)
-      .where(eq(bookings.id, id))
-      .returning();
-    return updated || undefined;
+    const [updatedBooking] = await db.update(bookings).set(booking).where(eq(bookings.id, id)).returning();
+    return updatedBooking || undefined;
   }
 
-  // Attendance
+  // Attendance methods
   async getAttendanceByClass(classId: number): Promise<Attendance[]> {
     return await db.select().from(attendance).where(eq(attendance.classId, classId));
   }
 
   async markAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
-    const [newAttendance] = await db
-      .insert(attendance)
-      .values(attendanceData)
-      .returning();
+    const [newAttendance] = await db.insert(attendance).values(attendanceData).returning();
     return newAttendance;
   }
 
   async updateAttendance(id: number, attendanceData: Partial<InsertAttendance>): Promise<Attendance | undefined> {
-    const [updated] = await db
-      .update(attendance)
-      .set(attendanceData)
-      .where(eq(attendance.id, id))
-      .returning();
-    return updated || undefined;
+    const [updatedAttendance] = await db.update(attendance).set(attendanceData).where(eq(attendance.id, id)).returning();
+    return updatedAttendance || undefined;
   }
 
-  // Payments
+  // Payment methods
   async getPayment(id: number): Promise<Payment | undefined> {
     const [payment] = await db.select().from(payments).where(eq(payments.id, id));
     return payment || undefined;
@@ -330,69 +418,76 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createPayment(payment: InsertPayment): Promise<Payment> {
-    const [newPayment] = await db
-      .insert(payments)
-      .values(payment)
-      .returning();
+    const [newPayment] = await db.insert(payments).values(payment).returning();
     return newPayment;
   }
 
   async updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined> {
-    const [updated] = await db
-      .update(payments)
-      .set(payment)
-      .where(eq(payments.id, id))
-      .returning();
-    return updated || undefined;
+    const [updatedPayment] = await db.update(payments).set(payment).where(eq(payments.id, id)).returning();
+    return updatedPayment || undefined;
   }
 
-  // Statistics
-  async getStats(academyId?: number): Promise<{
+  // Statistics methods
+  async getGlobalStats(): Promise<{
+    totalOrganizations: number;
+    totalUsers: number;
+    totalBookings: number;
+    totalRevenue: number;
+  }> {
+    const [orgCount] = await db.select({ count: count() }).from(organizations);
+    const [userCount] = await db.select({ count: count() }).from(users);
+    const [bookingCount] = await db.select({ count: count() }).from(bookings);
+    const [revenueSum] = await db.select({ total: sum(payments.amount) }).from(payments);
+
+    return {
+      totalOrganizations: orgCount.count,
+      totalUsers: userCount.count,
+      totalBookings: bookingCount.count,
+      totalRevenue: parseFloat(revenueSum.total || "0")
+    };
+  }
+
+  async getOrganizationStats(organizationId: number): Promise<{
     totalBookings: number;
     activeClasses: number;
     totalRevenue: number;
     totalCoaches: number;
     activeCoaches: number;
     upcomingClasses: number;
+    totalMembers: number;
   }> {
     const now = new Date();
-    
-    // Get basic counts
-    const allBookings = await db.select().from(bookings);
-    const allClasses = await db.select().from(classes);
-    const allCoaches = await db.select().from(coaches);
-    
-    // Filter by academy if specified
-    const filteredBookings = academyId ? 
-      allBookings.filter(booking => {
-        const classForBooking = allClasses.find(cls => cls.id === booking.classId);
-        return classForBooking?.academyId === academyId;
-      }) : allBookings;
-    
-    const filteredClasses = academyId ? 
-      allClasses.filter(cls => cls.academyId === academyId) : allClasses;
-    
-    const filteredCoaches = academyId ? 
-      allCoaches.filter(coach => coach.academyId === academyId) : allCoaches;
 
-    // Calculate stats
-    const totalBookings = filteredBookings.length;
-    const activeClasses = filteredClasses.filter(cls => cls.endTime > now).length;
-    const upcomingClasses = filteredClasses.filter(cls => cls.startTime > now).length;
-    const totalRevenue = filteredBookings
-      .filter(booking => booking.paymentStatus === 'confirmed')
-      .reduce((sum, booking) => sum + parseFloat(booking.amount), 0);
-    
-    const totalCoaches = filteredCoaches.length;
-    const activeCoaches = filteredCoaches.length; // All coaches are considered active for now
+    // Get organization's classes
+    const orgClasses = await db.select().from(classes).where(eq(classes.organizationId, organizationId));
+    const classIds = orgClasses.map(c => c.id);
+
+    // Get bookings for organization's classes
+    const orgBookings = classIds.length > 0 
+      ? await db.select().from(bookings).where(and(...classIds.map(id => eq(bookings.classId, id))))
+      : [];
+
+    // Get payments for organization's bookings
+    const bookingIds = orgBookings.map(b => b.id);
+    const orgPayments = bookingIds.length > 0
+      ? await db.select().from(payments).where(and(...bookingIds.map(id => eq(payments.bookingId, id))))
+      : [];
+
+    // Get coaches
+    const [coachCount] = await db.select({ count: count() }).from(coaches).where(eq(coaches.organizationId, organizationId));
+
+    // Get members
+    const [memberCount] = await db.select({ count: count() }).from(userOrganizations)
+      .where(and(eq(userOrganizations.organizationId, organizationId), eq(userOrganizations.isActive, true)));
 
     return {
-      totalBookings,
-      activeClasses,
-      totalRevenue,
-      totalCoaches,
-      activeCoaches,
-      upcomingClasses,
+      totalBookings: orgBookings.length,
+      activeClasses: orgClasses.filter(c => c.startTime > now).length,
+      totalRevenue: orgPayments.reduce((sum, p) => sum + parseFloat(p.amount), 0),
+      totalCoaches: coachCount.count,
+      activeCoaches: coachCount.count, // Assuming all coaches are active
+      upcomingClasses: orgClasses.filter(c => c.startTime > now).length,
+      totalMembers: memberCount.count
     };
   }
 }
