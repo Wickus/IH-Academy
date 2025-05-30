@@ -32,7 +32,7 @@ export default function Sidebar() {
             <Dumbbell className="text-white text-lg" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">SportBook Pro</h1>
+            <h1 className="text-xl font-bold text-foreground">ItsBooked</h1>
             <p className="text-sm text-muted-foreground">Academy Management</p>
           </div>
         </div>

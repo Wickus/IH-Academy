@@ -27,9 +27,9 @@ function generateICalEvent(classData: any, booking: any): string {
 
   return `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//SportBook Pro//EN
+PRODID:-//ItsBooked//EN
 BEGIN:VEVENT
-UID:${booking.id}@sportbookpro.co.za
+UID:${booking.id}@itsbooked.co.za
 DTSTAMP:${formatDate(new Date())}
 DTSTART:${formatDate(startDate)}
 DTEND:${formatDate(endDate)}
