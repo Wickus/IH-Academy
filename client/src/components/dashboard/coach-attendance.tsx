@@ -179,7 +179,7 @@ export default function CoachAttendance() {
           {/* Current Class Attendance */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-foreground">
+              <h4 className="font-semibold text-slate-800">
                 {currentClass?.name || 'No active class'}
               </h4>
               {currentClass && (
@@ -194,7 +194,7 @@ export default function CoachAttendance() {
             
             {currentClass && (
               <>
-                <div className="text-sm text-muted-foreground space-y-1">
+                <div className="text-sm text-slate-600 space-y-1">
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4" />
                     {formatTime(currentClass.startTime)} - {formatTime(currentClass.endTime)}
@@ -299,7 +299,7 @@ export default function CoachAttendance() {
 
           {/* Quick Actions */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Quick Actions</h4>
+            <h4 className="font-semibold text-slate-800">Quick Actions</h4>
             
             <div className="grid grid-cols-2 gap-4">
               <Button
