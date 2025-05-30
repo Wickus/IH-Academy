@@ -364,7 +364,15 @@ export class MemStorage implements IStorage {
   }
 
   async createPayment(payment: InsertPayment): Promise<Payment> {
-    const newPayment: Payment = { ...payment, id: this.currentIds.payments++ };
+    const newPayment: Payment = { 
+      ...payment, 
+      id: this.currentIds.payments++,
+      status: payment.status || "pending",
+      payfastPaymentId: payment.payfastPaymentId || null,
+      currency: payment.currency || "ZAR",
+      payfastData: payment.payfastData || null,
+      processedAt: payment.processedAt || null
+    };
     this.payments.set(newPayment.id, newPayment);
     return newPayment;
   }
