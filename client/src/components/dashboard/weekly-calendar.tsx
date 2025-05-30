@@ -52,7 +52,7 @@ export default function WeeklyCalendar() {
             <Button variant="ghost" size="sm" onClick={() => navigateWeek('prev')}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium text-muted-foreground min-w-[180px] text-center">
+            <span className="text-sm font-medium text-slate-700 min-w-[180px] text-center">
               {formatWeekRange(weekDays)}
             </span>
             <Button variant="ghost" size="sm" onClick={() => navigateWeek('next')}>
@@ -71,10 +71,10 @@ export default function WeeklyCalendar() {
             
             return (
               <div key={index} className={`text-center ${isToday ? 'bg-primary/10 rounded-lg p-2' : ''}`}>
-                <p className={`text-sm font-medium mb-2 ${isToday ? 'text-primary' : 'text-muted-foreground'}`}>
+                <p className={`text-sm font-medium mb-2 ${isToday ? 'text-primary' : 'text-slate-600'}`}>
                   {dayNames[index]}
                 </p>
-                <p className={`text-lg font-bold ${isToday ? 'text-primary' : 'text-foreground'}`}>
+                <p className={`text-lg font-bold ${isToday ? 'text-primary' : 'text-slate-800'}`}>
                   {day.getDate()}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export default function WeeklyCalendar() {
         
         {/* Today's Classes */}
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-muted-foreground">
+          <h4 className="text-sm font-semibold text-slate-700">
             {currentDate.toDateString() === today.toDateString() ? "Today's Classes" : "Classes for " + currentDate.toLocaleDateString()}
           </h4>
           
@@ -99,16 +99,16 @@ export default function WeeklyCalendar() {
                 >
                   <div className={`w-3 h-3 bg-${sportColor} rounded-full`}></div>
                   <div className="flex-1">
-                    <p className="font-medium text-foreground">{classItem.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-slate-800">{classItem.name}</p>
+                    <p className="text-sm text-slate-600">
                       {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-sm font-medium text-slate-700">
                       {classItem.bookingCount}/{classItem.capacity}
                     </p>
-                    <p className="text-xs text-muted-foreground">participants</p>
+                    <p className="text-xs text-slate-600">participants</p>
                   </div>
                 </div>
               );
