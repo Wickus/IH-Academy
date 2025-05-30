@@ -102,8 +102,8 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="font-semibold text-lg">Hi, {user.firstName}!</h1>
-              <p className="text-sm text-gray-500">Ready to train?</p>
+              <h1 className="font-semibold text-lg">ItsHappening.Africa</h1>
+              <p className="text-sm text-gray-500">Hi {user.firstName}, ready to train?</p>
             </div>
           </div>
           <Button variant="ghost" size="icon">
