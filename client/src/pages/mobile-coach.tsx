@@ -24,6 +24,7 @@ import {
   Activity
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import PushNotificationSetup from "@/components/push-notification-setup";
 
 interface MobileCoachProps {
   user: any;
@@ -217,6 +218,11 @@ export default function MobileCoach({ user }: MobileCoachProps) {
                 </Card>
               ))}
             </div>
+          </div>
+
+          {/* Push Notification Setup */}
+          <div className="mb-6">
+            <PushNotificationSetup />
           </div>
 
           {/* Quick Actions */}

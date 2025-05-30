@@ -246,4 +246,20 @@ export const api = {
     const response = await apiRequest('GET', `/api/coaches?${searchParams.toString()}`);
     return response.json();
   },
+
+  // Push notification routes
+  subscribeToPush: async (subscription: any): Promise<any> => {
+    const response = await apiRequest('POST', '/api/notifications/subscribe', subscription);
+    return response.json();
+  },
+
+  unsubscribeFromPush: async (subscription: any): Promise<any> => {
+    const response = await apiRequest('POST', '/api/notifications/unsubscribe', subscription);
+    return response.json();
+  },
+
+  sendTestNotification: async (): Promise<any> => {
+    const response = await apiRequest('POST', '/api/notifications/test');
+    return response.json();
+  },
 };
