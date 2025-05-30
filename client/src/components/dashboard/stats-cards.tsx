@@ -34,9 +34,9 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       value: formatCurrency(stats.totalRevenue),
       change: "+8% from last month",
       icon: Coins,
-      color: "from-yellow-600 to-yellow-500",
-      iconBg: "bg-amber-50",
-      iconColor: "text-amber-800",
+      color: "from-[#24D3BF] to-[#22C4B0]",
+      iconBg: "bg-gradient-to-br from-[#24D3BF] to-[#22C4B0]",
+      iconColor: "text-white",
     },
     {
       title: "Coaches",

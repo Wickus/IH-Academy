@@ -334,7 +334,7 @@ export default function CoachAttendance() {
               
               <Button
                 variant="outline"
-                className="p-4 h-auto flex-col bg-warning/10 text-warning border-warning/20 hover:bg-warning/20"
+                className="p-4 h-auto flex-col bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] text-white border-[#24D3BF] hover:from-[#22C4B0] hover:to-[#1FA396]"
               >
                 <PieChart className="h-5 w-5 mb-2" />
                 <span className="text-sm font-medium">Generate Report</span>
