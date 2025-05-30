@@ -38,7 +38,7 @@ export default function RecentBookings() {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-[#24D367] to-[#1FB856] text-white">
+    <Card className="bg-gradient-to-br from-[#24D367] to-[#1FB856] text-white border-[#24D367]">
       <CardHeader>
         <CardTitle className="text-white">Recent Bookings</CardTitle>
       </CardHeader>
