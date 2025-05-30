@@ -118,7 +118,7 @@ export default function Auth() {
           <p className="text-white/90">Sports booking platform for everyone</p>
         </div>
 
-        <Card className="backdrop-blur-sm bg-white/95">
+        <Card className="rounded-lg border shadow-sm backdrop-blur-sm bg-white/95 text-[#20366B]">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login" className="gap-1">
