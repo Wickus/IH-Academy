@@ -7,19 +7,48 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   email: text("email").notNull().unique(),
-  name: text("name").notNull(),
-  role: text("role").notNull().default("admin"), // admin, coach, participant
-  academyId: integer("academy_id"),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  phone: text("phone"),
+  role: text("role", { enum: ["global_admin", "organization_admin", "coach", "member"] }).notNull().default("member"),
+  organizationId: integer("organization_id"), // which organization they belong to
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const academies = pgTable("academies", {
+// Organizations (renamed from academies for better multi-tenant support)
+export const organizations = pgTable("organizations", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
   address: text("address"),
   phone: text("phone"),
-  email: text("email"),
+  email: text("email").notNull().unique(),
+  website: text("website"),
   logo: text("logo"),
+  // Custom theming
+  primaryColor: text("primary_color").default("#20366B"),
+  secondaryColor: text("secondary_color").default("#278DD4"),
+  accentColor: text("accent_color").default("#24D367"),
+  // Subscription/plan info
+  planType: text("plan_type", { enum: ["free", "basic", "premium"] }).default("free"),
+  maxClasses: integer("max_classes").default(10),
+  maxMembers: integer("max_members").default(100),
+  // Status
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// User-Organization relationships (for following organizations)
+export const userOrganizations = pgTable("user_organizations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
+  role: text("role", { enum: ["member", "coach", "admin"] }).default("member"),
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  isActive: boolean("is_active").notNull().default(true),
 });
 
 export const sports = pgTable("sports", {
@@ -32,7 +61,7 @@ export const sports = pgTable("sports", {
 export const coaches = pgTable("coaches", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  academyId: integer("academy_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
   specializations: text("specializations").array(),
   bio: text("bio"),
   hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
@@ -40,7 +69,7 @@ export const coaches = pgTable("coaches", {
 
 export const classes = pgTable("classes", {
   id: serial("id").primaryKey(),
-  academyId: integer("academy_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
   sportId: integer("sport_id").notNull(),
   coachId: integer("coach_id").notNull(),
   name: text("name").notNull(),
@@ -93,10 +122,19 @@ export const payments = pgTable("payments", {
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
-export const insertAcademySchema = createInsertSchema(academies).omit({
+export const insertOrganizationSchema = createInsertSchema(organizations).omit({
   id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserOrganizationSchema = createInsertSchema(userOrganizations).omit({
+  id: true,
+  joinedAt: true,
 });
 
 export const insertSportSchema = createInsertSchema(sports).omit({
@@ -127,8 +165,11 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
-export type Academy = typeof academies.$inferSelect;
-export type InsertAcademy = z.infer<typeof insertAcademySchema>;
+export type Organization = typeof organizations.$inferSelect;
+export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;
+
+export type UserOrganization = typeof userOrganizations.$inferSelect;
+export type InsertUserOrganization = z.infer<typeof insertUserOrganizationSchema>;
 
 export type Sport = typeof sports.$inferSelect;
 export type InsertSport = z.infer<typeof insertSportSchema>;
@@ -147,3 +188,7 @@ export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;
 
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+
+// Legacy types for backward compatibility (will be removed)
+export type Academy = Organization;
+export type InsertAcademy = InsertOrganization;
