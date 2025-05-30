@@ -353,19 +353,19 @@ export default function CoachAttendance() {
               <div className="text-sm text-slate-600 space-y-2">
                 <div className="flex justify-between">
                   <span>Total Collected:</span>
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-slate-800">
                     {formatCurrency(totalCollected)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Pending Payments:</span>
-                  <span className="font-medium text-warning">
+                  <span className="font-medium text-orange-600">
                     {formatCurrency(pendingPayments)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Processing Fee:</span>
-                  <span className="font-medium text-muted-foreground">
+                  <span className="font-medium text-slate-600">
                     {formatCurrency(processingFee)}
                   </span>
                 </div>
