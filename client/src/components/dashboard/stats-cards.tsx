@@ -17,8 +17,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       change: "+12% from last month",
       icon: CalendarCheck,
       color: "from-blue-600 to-blue-500",
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-700",
     },
     {
       title: "Active Classes",
@@ -26,8 +26,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       subtitle: `${stats.upcomingClasses} starting today`,
       icon: Users,
       color: "from-green-600 to-green-500",
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-700",
     },
     {
       title: "Revenue",
@@ -35,8 +35,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       change: "+8% from last month",
       icon: Coins,
       color: "from-yellow-600 to-yellow-500",
-      iconBg: "bg-yellow-100",
-      iconColor: "text-yellow-600",
+      iconBg: "bg-amber-50",
+      iconColor: "text-amber-800",
     },
     {
       title: "Coaches",
@@ -44,8 +44,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       subtitle: `${stats.activeCoaches} active today`,
       icon: Presentation,
       color: "from-indigo-600 to-indigo-500",
-      iconBg: "bg-indigo-100",
-      iconColor: "text-indigo-600",
+      iconBg: "bg-slate-50",
+      iconColor: "text-slate-700",
     },
   ];
 
@@ -64,7 +64,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
                   {stat.change && (
                     <div className="flex items-center space-x-1">
                       <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
-                      <p className="text-sm font-medium text-green-600">
+                      <p className="text-sm font-medium text-emerald-700">
                         <TrendingUp className="inline h-3 w-3 mr-1" />
                         {stat.change}
                       </p>
