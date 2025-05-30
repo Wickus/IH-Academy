@@ -62,8 +62,14 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground font-inter antialiased;
+  html, body {
+    @apply bg-white text-gray-900 font-inter antialiased;
+    background-color: white !important;
+  }
+
+  #root {
+    @apply bg-white;
+    background-color: white !important;
   }
 
   /* Custom utilities for sport colors */
