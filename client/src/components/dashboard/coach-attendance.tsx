@@ -342,15 +342,15 @@ export default function CoachAttendance() {
             </div>
 
             {/* Payment Integration Panel */}
-            <div className="p-4 bg-gray-50 rounded-lg">
+            <div className="p-4 bg-slate-50 rounded-lg">
               <div className="flex items-center justify-between mb-3">
-                <h5 className="font-medium text-foreground">Payfast Integration</h5>
-                <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                <h5 className="font-medium text-slate-800">Payfast Integration</h5>
+                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200">
                   <Shield className="mr-1 h-3 w-3" />
                   Secure
                 </Badge>
               </div>
-              <div className="text-sm text-muted-foreground space-y-2">
+              <div className="text-sm text-slate-600 space-y-2">
                 <div className="flex justify-between">
                   <span>Total Collected:</span>
                   <span className="font-medium text-foreground">
