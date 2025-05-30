@@ -111,63 +111,76 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{
+      background: 'linear-gradient(135deg, #20366B 0%, #278DD4 50%, #F8FAFC 100%)'
+    }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="brand-logo text-5xl text-white mb-2">ItsHappening.Africa</h1>
-          <p className="text-white/90 font-medium">Sports booking platform for everyone</p>
+          <h1 className="text-4xl font-bold text-white mb-2" style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: '900',
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+          }}>ItsHappening.Africa</h1>
+          <p className="text-white font-medium" style={{
+            textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+          }}>Sports booking platform for everyone</p>
         </div>
 
-        <Card className="brand-card fade-in">
+        <Card className="bg-white border-0 shadow-2xl" style={{
+          backdropFilter: 'blur(20px)',
+          borderRadius: '12px'
+        }}>
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="login" className="gap-1">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-100 p-1 rounded-lg">
+              <TabsTrigger value="login" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
                 <LogIn className="h-4 w-4" />
                 Login
               </TabsTrigger>
-              <TabsTrigger value="register" className="gap-1">
+              <TabsTrigger value="register" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
                 <UserPlus className="h-4 w-4" />
                 Register
               </TabsTrigger>
-              <TabsTrigger value="organization" className="gap-1">
+              <TabsTrigger value="organization" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
                 <Building2 className="h-4 w-4" />
                 Organization
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
-              <Card className="border-0 shadow-none">
+              <Card className="border-0 shadow-none bg-transparent">
                 <CardHeader>
-                  <CardTitle>Welcome Back</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
+                  <CardDescription className="text-gray-600">
                     Sign in to your account to continue
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="username" className="text-gray-700 font-medium">Username</Label>
                       <Input
                         id="username"
                         type="text"
                         value={loginData.username}
                         onChange={(e) => setLoginData({...loginData, username: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
                       <Input
                         id="password"
                         type="password"
                         value={loginData.password}
                         onChange={(e) => setLoginData({...loginData, password: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     <Button 
                       type="submit" 
-                      className="w-full"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending ? "Signing in..." : "Sign In"}
@@ -178,32 +191,34 @@ export default function Auth() {
             </TabsContent>
 
             <TabsContent value="register">
-              <Card className="border-0 shadow-none">
+              <Card className="border-0 shadow-none bg-transparent">
                 <CardHeader>
-                  <CardTitle>Create Account</CardTitle>
-                  <CardDescription>
-                    Join ItsBooked as a member or organization admin
+                  <CardTitle className="text-2xl font-bold text-gray-900">Create Account</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Join ItsHappening.Africa as a member or organization admin
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleRegister} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name</Label>
+                        <Label htmlFor="firstName" className="text-gray-700 font-medium">First Name</Label>
                         <Input
                           id="firstName"
                           value={registerData.firstName}
                           onChange={(e) => setRegisterData({...registerData, firstName: e.target.value})}
                           required
+                          className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name</Label>
+                        <Label htmlFor="lastName" className="text-gray-700 font-medium">Last Name</Label>
                         <Input
                           id="lastName"
                           value={registerData.lastName}
                           onChange={(e) => setRegisterData({...registerData, lastName: e.target.value})}
                           required
+                          className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </div>
                     </div>
