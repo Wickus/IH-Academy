@@ -85,68 +85,67 @@ export default function Classes() {
         {classes.map((classItem) => {
           const sportColor = getSportColor(classItem.sport?.name || '');
           const isUpcoming = new Date(classItem.startTime) > new Date();
-          
+
           return (
-            <Card key={classItem.id} className="overflow-hidden">
-              <CardHeader className={`bg-${sportColor}/5 border-l-4 border-${sportColor}`}>
+            <Card key={classItem.id} className="brand-card hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{classItem.name}</CardTitle>
                   <Badge 
-                    variant={isUpcoming ? "default" : "secondary"}
-                    className={isUpcoming ? `bg-${sportColor} text-white` : ''}
+                    variant="secondary" 
+                    className={`${sportColor} text-white`}
                   >
                     {classItem.sport?.name}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(classItem.startTime)}
-                </p>
+                <p className="text-sm text-muted-foreground">{classItem.description}</p>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-3">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="mr-2 h-4 w-4" />
-                    {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span>{formatTime(classItem.startTime)}</span>
                   </div>
-                  
-                  {classItem.location && (
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="mr-2 h-4 w-4" />
-                      {classItem.location}
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm">
-                      <Users className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">{classItem.bookingCount}/{classItem.capacity}</span>
-                      <span className="text-muted-foreground ml-1">participants</span>
-                    </div>
-                    <div className="text-lg font-bold text-primary">
-                      {formatCurrency(Number(classItem.price))}
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>{classItem.availableSpots || 0}/{classItem.capacity}</span>
                   </div>
+                  <div className="flex items-center gap-2 col-span-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span>{classItem.location || 'Location TBA'}</span>
+                  </div>
+                </div>
 
-                  {classItem.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {classItem.description}
+                {/* Real-time availability component */}
+                <RealTimeAvailability
+                  classId={classItem.id}
+                  className={classItem.name}
+                  initialAvailableSpots={classItem.availableSpots || 0}
+                  totalSpots={classItem.capacity}
+                  userId={1}
+                />
+
+                <div className="flex items-center justify-between pt-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(classItem.startTime)}
                     </p>
-                  )}
-
-                  <div className="flex gap-2 pt-4">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      View Details
+                    {classItem.price && (
+                      <p className="font-semibold text-primary">
+                        {formatCurrency(classItem.price)}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      Edit
                     </Button>
                     <Button 
                       size="sm"
-                      className={`flex-1 bg-${sportColor} hover:bg-${sportColor}/90 text-white`}
-                      disabled={classItem.availableSpots === 0}
+                      disabled={!isUpcoming}
+                      className={isUpcoming ? 'bg-primary hover:bg-primary/90' : ''}
                     >
-                      {classItem.availableSpots === 0 ? 'Full' : 'Book Now'}
+                      {isUpcoming ? 'View Details' : 'Completed'}
                     </Button>
                   </div>
                 </div>
