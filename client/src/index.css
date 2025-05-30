@@ -88,6 +88,31 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
+/* Remove yellow highlights and ensure brand colors */
+[data-radix-select-content] [data-highlighted] {
+  background-color: hsl(var(--primary) / 0.1) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+[data-radix-select-item]:focus,
+[data-radix-select-item][data-highlighted] {
+  background-color: hsl(var(--primary) / 0.1) !important;
+  color: hsl(var(--primary)) !important;
+  outline: none !important;
+}
+
+/* Remove any yellow focus rings and highlights */
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: 2px !important;
+}
+
+/* Fix select dropdown highlights */
+.select-item[data-highlighted] {
+  background-color: #EBF4FF !important;
+  color: #20366B !important;
+}
+
 /* ItsHappening.Africa Logo Styling */
 .brand-logo {
   font-family: 'Inter', sans-serif;
