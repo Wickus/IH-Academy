@@ -9,6 +9,8 @@ import {
   type Attendance, type InsertAttendance,
   type Payment, type InsertPayment
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -72,124 +74,100 @@ export interface IStorage {
   }>;
 }
 
-export class MemStorage implements IStorage {
-  private users = new Map<number, User>();
-  private academies = new Map<number, Academy>();
-  private sports = new Map<number, Sport>();
-  private coaches = new Map<number, Coach>();
-  private classes = new Map<number, Class>();
-  private bookings = new Map<number, Booking>();
-  private attendance = new Map<number, Attendance>();
-  private payments = new Map<number, Payment>();
+export class DatabaseStorage implements IStorage {
+  private async seedData() {
+    try {
+      // Check if data already exists
+      const existingAcademies = await db.select().from(academies);
+      if (existingAcademies.length > 0) return;
 
-  private currentIds = {
-    users: 1,
-    academies: 1,
-    sports: 1,
-    coaches: 1,
-    classes: 1,
-    bookings: 1,
-    attendance: 1,
-    payments: 1,
-  };
+      // Create default academy
+      const [academy] = await db.insert(academies).values({
+        name: "Elite Sports Academy",
+        description: "Premier sports training facility",
+        address: "123 Sports Boulevard, Cape Town",
+        phone: "+27 21 123 4567",
+        email: "info@elitesports.co.za",
+        logo: null,
+      }).returning();
+
+      // Create default sports
+      const sportsData = [
+        { name: "Basketball", color: "#278DD4", icon: "fas fa-basketball-ball" },
+        { name: "Soccer", color: "#24D367", icon: "fas fa-futbol" },
+        { name: "Tennis", color: "#D3BF24", icon: "fas fa-table-tennis" },
+        { name: "Swimming", color: "#278DD4", icon: "fas fa-swimmer" },
+      ];
+
+      await db.insert(sports).values(sportsData);
+
+      // Create default admin user
+      await db.insert(users).values({
+        username: "admin",
+        password: "admin123",
+        email: "admin@elitesports.co.za",
+        name: "Sarah Johnson",
+        role: "admin",
+        academyId: academy.id,
+      });
+    } catch (error) {
+      console.error('Failed to seed data:', error);
+    }
+  }
 
   constructor() {
     this.seedData();
   }
 
-  private seedData() {
-    // Create default academy
-    const academy: Academy = {
-      id: this.currentIds.academies++,
-      name: "Elite Sports Academy",
-      description: "Premier sports training facility",
-      address: "123 Sports Boulevard, Cape Town",
-      phone: "+27 21 123 4567",
-      email: "info@elitesports.co.za",
-      logo: null,
-    };
-    this.academies.set(academy.id, academy);
-
-    // Create default sports
-    const sportsData: Omit<Sport, 'id'>[] = [
-      { name: "Basketball", color: "#1976D2", icon: "fas fa-basketball-ball" },
-      { name: "Soccer", color: "#388E3C", icon: "fas fa-futbol" },
-      { name: "Tennis", color: "#FF5722", icon: "fas fa-table-tennis" },
-      { name: "Swimming", color: "#2196F3", icon: "fas fa-swimmer" },
-    ];
-
-    sportsData.forEach(sport => {
-      const newSport: Sport = { ...sport, id: this.currentIds.sports++ };
-      this.sports.set(newSport.id, newSport);
-    });
-
-    // Create default admin user
-    const adminUser: User = {
-      id: this.currentIds.users++,
-      username: "admin",
-      password: "admin123",
-      email: "admin@elitesports.co.za",
-      name: "Sarah Johnson",
-      role: "admin",
-      academyId: academy.id,
-    };
-    this.users.set(adminUser.id, adminUser);
-  }
-
   // Users
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const newUser: User = { 
-      ...user, 
-      id: this.currentIds.users++,
-      role: user.role || "admin",
-      academyId: user.academyId || null
-    };
-    this.users.set(newUser.id, newUser);
+    const [newUser] = await db
+      .insert(users)
+      .values(user)
+      .returning();
     return newUser;
   }
 
   // Academies
   async getAcademy(id: number): Promise<Academy | undefined> {
-    return this.academies.get(id);
+    const [academy] = await db.select().from(academies).where(eq(academies.id, id));
+    return academy || undefined;
   }
 
   async getAllAcademies(): Promise<Academy[]> {
-    return Array.from(this.academies.values());
+    return await db.select().from(academies);
   }
 
   async createAcademy(academy: InsertAcademy): Promise<Academy> {
-    const newAcademy: Academy = { 
-      ...academy, 
-      id: this.currentIds.academies++,
-      address: academy.address || null,
-      email: academy.email || null,
-      description: academy.description || null,
-      phone: academy.phone || null,
-      logo: academy.logo || null
-    };
-    this.academies.set(newAcademy.id, newAcademy);
+    const [newAcademy] = await db
+      .insert(academies)
+      .values(academy)
+      .returning();
     return newAcademy;
   }
 
   async updateAcademy(id: number, academy: Partial<InsertAcademy>): Promise<Academy | undefined> {
-    const existing = this.academies.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...academy };
-    this.academies.set(id, updated);
-    return updated;
+    const [updated] = await db
+      .update(academies)
+      .set(academy)
+      .where(eq(academies.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   // Sports
