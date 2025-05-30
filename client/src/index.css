@@ -48,50 +48,59 @@ body {
   color: rgb(51 65 85) !important; /* #334155 - Dark gray */
 }
 
-/* Form styling for teal cards */
-.bg-gradient-to-br.from-\[#24D3BF\] input,
-.bg-gradient-to-br.from-\[#24D3BF\] textarea,
-.bg-gradient-to-br.from-\[#24D3BF\] select {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+/* Form styling for teal cards - Override all input backgrounds */
+.bg-gradient-to-br input,
+.bg-gradient-to-br textarea,
+.bg-gradient-to-br select,
+input,
+textarea {
+  background-color: white !important;
+  background: white !important;
   color: rgb(30, 41, 59) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border: 1px solid rgba(203, 213, 225, 1) !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] input:focus,
-.bg-gradient-to-br.from-\[#24D3BF\] textarea:focus,
-.bg-gradient-to-br.from-\[#24D3BF\] select:focus {
-  background-color: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(255, 255, 255, 0.8) !important;
-  ring-color: rgba(255, 255, 255, 0.5) !important;
+.bg-gradient-to-br input:focus,
+.bg-gradient-to-br textarea:focus,
+.bg-gradient-to-br select:focus,
+input:focus,
+textarea:focus {
+  background-color: white !important;
+  background: white !important;
+  border-color: rgba(59, 130, 246, 0.8) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] input::placeholder,
-.bg-gradient-to-br.from-\[#24D3BF\] textarea::placeholder {
+.bg-gradient-to-br input::placeholder,
+.bg-gradient-to-br textarea::placeholder,
+input::placeholder,
+textarea::placeholder {
   color: rgb(100, 116, 139) !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] label {
+.bg-gradient-to-br label {
   color: white !important;
   font-weight: 500 !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] button[type="submit"] {
+.bg-gradient-to-br button[type="submit"] {
   background-color: rgba(255, 255, 255, 0.2) !important;
   color: white !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] button[type="submit"]:hover {
+.bg-gradient-to-br button[type="submit"]:hover {
   background-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] button[type="button"] {
+.bg-gradient-to-br button[type="button"] {
   background-color: rgba(255, 255, 255, 0.1) !important;
   color: white !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
-.bg-gradient-to-br.from-\[#24D3BF\] button[type="button"]:hover {
+.bg-gradient-to-br button[type="button"]:hover {
   background-color: rgba(255, 255, 255, 0.2) !important;
 }
 
