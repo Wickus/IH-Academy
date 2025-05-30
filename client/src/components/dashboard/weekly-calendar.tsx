@@ -114,7 +114,7 @@ export default function WeeklyCalendar() {
               );
             })
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-slate-600">
               <p>No classes scheduled for this day</p>
             </div>
           )}
