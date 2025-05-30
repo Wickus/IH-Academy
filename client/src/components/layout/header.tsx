@@ -11,7 +11,7 @@ export default function Header() {
           </Button>
           <div>
             <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
-            <p className="text-sm text-muted-foreground">Manage your academy bookings and classes</p>
+            <p className="text-sm text-gray-600">Manage your academy bookings and classes</p>
           </div>
         </div>
         
