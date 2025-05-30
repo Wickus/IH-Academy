@@ -9,6 +9,7 @@ import Classes from "@/pages/classes";
 import Bookings from "@/pages/bookings";
 import Coaches from "@/pages/coaches";
 import Payments from "@/pages/payments";
+import PublicBooking from "@/pages/public-booking";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/bookings" component={Bookings} />
       <Route path="/coaches" component={Coaches} />
       <Route path="/payments" component={Payments} />
+      <Route path="/book" component={PublicBooking} />
       <Route component={NotFound} />
     </Switch>
   );
