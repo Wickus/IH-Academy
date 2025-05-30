@@ -28,12 +28,12 @@ export interface PayfastPayment {
 }
 
 const PAYFAST_CONFIG: PayfastConfig = {
-  merchant_id: process.env.VITE_PAYFAST_MERCHANT_ID || '10000100',
-  merchant_key: process.env.VITE_PAYFAST_MERCHANT_KEY || '46f0cd694581a',
+  merchant_id: import.meta.env.VITE_PAYFAST_MERCHANT_ID || '10000100',
+  merchant_key: import.meta.env.VITE_PAYFAST_MERCHANT_KEY || '46f0cd694581a',
   return_url: `${window.location.origin}/payment/success`,
   cancel_url: `${window.location.origin}/payment/cancel`,
   notify_url: `${window.location.origin}/api/payfast/webhook`,
-  sandbox: process.env.NODE_ENV !== 'production',
+  sandbox: import.meta.env.MODE !== 'production',
 };
 
 export function generatePayfastForm(payment: Omit<PayfastPayment, 'merchant_id' | 'merchant_key' | 'return_url' | 'cancel_url' | 'notify_url'>): string {
