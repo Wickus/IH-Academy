@@ -4,6 +4,7 @@ import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { api, type User } from "@/lib/api";
+import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Classes from "@/pages/classes";
@@ -14,6 +15,8 @@ import PublicBooking from "@/pages/public-booking";
 import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
 import PublicDiscovery from "@/pages/public-discovery";
 import OrganizationDashboard from "@/pages/organization-dashboard";
+import MobileCoach from "@/pages/mobile-coach";
+import MobileParticipant from "@/pages/mobile-participant";
 import Auth from "@/pages/auth";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
@@ -35,6 +38,17 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 function RoleBasedRouter({ user }: { user?: User }) {
+  const { isMobile } = useMobileDetection();
+
+  // Mobile app routing for coaches and participants
+  if (isMobile) {
+    if (user?.role === 'coach' || user?.role === 'organization_admin') {
+      return <MobileCoach user={user} />;
+    } else if (user?.role === 'member') {
+      return <MobileParticipant user={user} />;
+    }
+  }
+
   // Global Admin Interface
   if (user?.role === 'global_admin') {
     return (

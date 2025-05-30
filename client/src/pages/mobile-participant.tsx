@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { api, type Class, type Organization, type Booking, type User } from "@/lib/api";
+import { api, type Class, type Organization, type Booking } from "@/lib/api";
 import { formatTime, formatDate, formatCurrency, getSportColor } from "@/lib/utils";
 import { 
   Search, 
@@ -29,7 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 
 interface MobileParticipantProps {
-  user: User;
+  user: any;
 }
 
 export default function MobileParticipant({ user }: MobileParticipantProps) {
