@@ -97,7 +97,7 @@ export default function PublicBooking() {
                     >
                       {sport?.name}
                     </Badge>
-                    <div className="flex items-center space-x-1 text-yellow-500">
+                    <div className="flex items-center space-x-1 text-[#24D3BF]">
                       <Star className="w-4 h-4 fill-current" />
                       <span className="text-sm font-medium text-slate-600">4.8</span>
                     </div>
