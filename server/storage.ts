@@ -10,7 +10,7 @@ import {
   type Payment, type InsertPayment
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -172,56 +172,56 @@ export class DatabaseStorage implements IStorage {
 
   // Sports
   async getAllSports(): Promise<Sport[]> {
-    return Array.from(this.sports.values());
+    return await db.select().from(sports);
   }
 
   async createSport(sport: InsertSport): Promise<Sport> {
-    const newSport: Sport = { ...sport, id: this.currentIds.sports++ };
-    this.sports.set(newSport.id, newSport);
+    const [newSport] = await db
+      .insert(sports)
+      .values(sport)
+      .returning();
     return newSport;
   }
 
   // Coaches
   async getCoach(id: number): Promise<Coach | undefined> {
-    return this.coaches.get(id);
+    const [coach] = await db.select().from(coaches).where(eq(coaches.id, id));
+    return coach || undefined;
   }
 
   async getCoachesByAcademy(academyId: number): Promise<Coach[]> {
-    return Array.from(this.coaches.values()).filter(coach => coach.academyId === academyId);
+    return await db.select().from(coaches).where(eq(coaches.academyId, academyId));
   }
 
   async createCoach(coach: InsertCoach): Promise<Coach> {
-    const newCoach: Coach = { 
-      ...coach, 
-      id: this.currentIds.coaches++,
-      specializations: coach.specializations || null,
-      bio: coach.bio || null,
-      hourlyRate: coach.hourlyRate || null
-    };
-    this.coaches.set(newCoach.id, newCoach);
+    const [newCoach] = await db
+      .insert(coaches)
+      .values(coach)
+      .returning();
     return newCoach;
   }
 
   async updateCoach(id: number, coach: Partial<InsertCoach>): Promise<Coach | undefined> {
-    const existing = this.coaches.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...coach };
-    this.coaches.set(id, updated);
-    return updated;
+    const [updated] = await db
+      .update(coaches)
+      .set(coach)
+      .where(eq(coaches.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   // Classes
   async getClass(id: number): Promise<Class | undefined> {
-    return this.classes.get(id);
+    const [classItem] = await db.select().from(classes).where(eq(classes.id, id));
+    return classItem || undefined;
   }
 
   async getClassesByAcademy(academyId: number): Promise<Class[]> {
-    return Array.from(this.classes.values()).filter(cls => cls.academyId === academyId);
+    return await db.select().from(classes).where(eq(classes.academyId, academyId));
   }
 
   async getClassesByCoach(coachId: number): Promise<Class[]> {
-    return Array.from(this.classes.values()).filter(cls => cls.coachId === coachId);
+    return await db.select().from(classes).where(eq(classes.coachId, coachId));
   }
 
   async getClassesByDate(date: Date): Promise<Class[]> {
@@ -230,138 +230,120 @@ export class DatabaseStorage implements IStorage {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    return Array.from(this.classes.values()).filter(cls => {
-      const classDate = new Date(cls.startTime);
-      return classDate >= startOfDay && classDate <= endOfDay;
-    });
+    return await db.select().from(classes)
+      .where(and(
+        gte(classes.startTime, startOfDay),
+        lte(classes.startTime, endOfDay)
+      ));
   }
 
   async createClass(classData: InsertClass): Promise<Class> {
-    const newClass: Class = { 
-      ...classData, 
-      id: this.currentIds.classes++,
-      description: classData.description || null,
-      isRecurring: classData.isRecurring || false,
-      recurrencePattern: classData.recurrencePattern || null,
-      location: classData.location || null,
-      requirements: classData.requirements || null
-    };
-    this.classes.set(newClass.id, newClass);
+    const [newClass] = await db
+      .insert(classes)
+      .values(classData)
+      .returning();
     return newClass;
   }
 
   async updateClass(id: number, classData: Partial<InsertClass>): Promise<Class | undefined> {
-    const existing = this.classes.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...classData };
-    this.classes.set(id, updated);
-    return updated;
+    const [updated] = await db
+      .update(classes)
+      .set(classData)
+      .where(eq(classes.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   async deleteClass(id: number): Promise<boolean> {
-    return this.classes.delete(id);
+    const result = await db.delete(classes).where(eq(classes.id, id));
+    return result.rowCount > 0;
   }
 
   // Bookings
   async getBooking(id: number): Promise<Booking | undefined> {
-    return this.bookings.get(id);
+    const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
+    return booking || undefined;
   }
 
   async getBookingsByClass(classId: number): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(booking => booking.classId === classId);
+    return await db.select().from(bookings).where(eq(bookings.classId, classId));
   }
 
   async getBookingsByEmail(email: string): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(booking => booking.participantEmail === email);
+    return await db.select().from(bookings).where(eq(bookings.participantEmail, email));
   }
 
   async getRecentBookings(limit = 10): Promise<Booking[]> {
-    return Array.from(this.bookings.values())
-      .sort((a, b) => new Date(b.bookingDate).getTime() - new Date(a.bookingDate).getTime())
-      .slice(0, limit);
+    return await db.select().from(bookings)
+      .orderBy(desc(bookings.bookingDate))
+      .limit(limit);
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    const newBooking: Booking = { 
-      ...booking, 
-      id: this.currentIds.bookings++,
-      participantPhone: booking.participantPhone || null,
-      participantAge: booking.participantAge || null,
-      paymentStatus: booking.paymentStatus || "pending",
-      paymentMethod: booking.paymentMethod || null,
-      payfastPaymentId: booking.payfastPaymentId || null,
-      notes: booking.notes || null
-    };
-    this.bookings.set(newBooking.id, newBooking);
+    const [newBooking] = await db
+      .insert(bookings)
+      .values(booking)
+      .returning();
     return newBooking;
   }
 
   async updateBooking(id: number, booking: Partial<InsertBooking>): Promise<Booking | undefined> {
-    const existing = this.bookings.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...booking };
-    this.bookings.set(id, updated);
-    return updated;
+    const [updated] = await db
+      .update(bookings)
+      .set(booking)
+      .where(eq(bookings.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   // Attendance
   async getAttendanceByClass(classId: number): Promise<Attendance[]> {
-    return Array.from(this.attendance.values()).filter(att => att.classId === classId);
+    return await db.select().from(attendance).where(eq(attendance.classId, classId));
   }
 
-  async markAttendance(attendance: InsertAttendance): Promise<Attendance> {
-    const newAttendance: Attendance = { 
-      ...attendance, 
-      id: this.currentIds.attendance++,
-      status: attendance.status || "pending",
-      markedAt: attendance.markedAt || null,
-      markedBy: attendance.markedBy || null
-    };
-    this.attendance.set(newAttendance.id, newAttendance);
+  async markAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
+    const [newAttendance] = await db
+      .insert(attendance)
+      .values(attendanceData)
+      .returning();
     return newAttendance;
   }
 
-  async updateAttendance(id: number, attendance: Partial<InsertAttendance>): Promise<Attendance | undefined> {
-    const existing = this.attendance.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...attendance };
-    this.attendance.set(id, updated);
-    return updated;
+  async updateAttendance(id: number, attendanceData: Partial<InsertAttendance>): Promise<Attendance | undefined> {
+    const [updated] = await db
+      .update(attendance)
+      .set(attendanceData)
+      .where(eq(attendance.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   // Payments
   async getPayment(id: number): Promise<Payment | undefined> {
-    return this.payments.get(id);
+    const [payment] = await db.select().from(payments).where(eq(payments.id, id));
+    return payment || undefined;
   }
 
   async getPaymentByBooking(bookingId: number): Promise<Payment | undefined> {
-    return Array.from(this.payments.values()).find(payment => payment.bookingId === bookingId);
+    const [payment] = await db.select().from(payments).where(eq(payments.bookingId, bookingId));
+    return payment || undefined;
   }
 
   async createPayment(payment: InsertPayment): Promise<Payment> {
-    const newPayment: Payment = { 
-      ...payment, 
-      id: this.currentIds.payments++,
-      status: payment.status || "pending",
-      payfastPaymentId: payment.payfastPaymentId || null,
-      currency: payment.currency || "ZAR",
-      payfastData: payment.payfastData || null,
-      processedAt: payment.processedAt || null
-    };
-    this.payments.set(newPayment.id, newPayment);
+    const [newPayment] = await db
+      .insert(payments)
+      .values(payment)
+      .returning();
     return newPayment;
   }
 
   async updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined> {
-    const existing = this.payments.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...payment };
-    this.payments.set(id, updated);
-    return updated;
+    const [updated] = await db
+      .update(payments)
+      .set(payment)
+      .where(eq(payments.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   // Statistics
@@ -373,41 +355,46 @@ export class DatabaseStorage implements IStorage {
     activeCoaches: number;
     upcomingClasses: number;
   }> {
-    const allBookings = Array.from(this.bookings.values());
-    const allClasses = Array.from(this.classes.values()).filter(cls => 
-      !academyId || cls.academyId === academyId
-    );
-    const allCoaches = Array.from(this.coaches.values()).filter(coach => 
-      !academyId || coach.academyId === academyId
-    );
-
     const now = new Date();
-    const upcomingClasses = allClasses.filter(cls => new Date(cls.startTime) > now);
-    const todayStart = new Date(now);
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(now);
-    todayEnd.setHours(23, 59, 59, 999);
     
-    const todayClasses = allClasses.filter(cls => {
-      const classDate = new Date(cls.startTime);
-      return classDate >= todayStart && classDate <= todayEnd;
-    });
+    // Get basic counts
+    const allBookings = await db.select().from(bookings);
+    const allClasses = await db.select().from(classes);
+    const allCoaches = await db.select().from(coaches);
     
-    const activeCoaches = new Set(todayClasses.map(cls => cls.coachId)).size;
+    // Filter by academy if specified
+    const filteredBookings = academyId ? 
+      allBookings.filter(booking => {
+        const classForBooking = allClasses.find(cls => cls.id === booking.classId);
+        return classForBooking?.academyId === academyId;
+      }) : allBookings;
+    
+    const filteredClasses = academyId ? 
+      allClasses.filter(cls => cls.academyId === academyId) : allClasses;
+    
+    const filteredCoaches = academyId ? 
+      allCoaches.filter(coach => coach.academyId === academyId) : allCoaches;
 
-    const totalRevenue = allBookings
+    // Calculate stats
+    const totalBookings = filteredBookings.length;
+    const activeClasses = filteredClasses.filter(cls => cls.endTime > now).length;
+    const upcomingClasses = filteredClasses.filter(cls => cls.startTime > now).length;
+    const totalRevenue = filteredBookings
       .filter(booking => booking.paymentStatus === 'confirmed')
-      .reduce((sum, booking) => sum + parseFloat(booking.amount.toString()), 0);
+      .reduce((sum, booking) => sum + parseFloat(booking.amount), 0);
+    
+    const totalCoaches = filteredCoaches.length;
+    const activeCoaches = filteredCoaches.length; // All coaches are considered active for now
 
     return {
-      totalBookings: allBookings.length,
-      activeClasses: allClasses.length,
+      totalBookings,
+      activeClasses,
       totalRevenue,
-      totalCoaches: allCoaches.length,
+      totalCoaches,
       activeCoaches,
-      upcomingClasses: upcomingClasses.length,
+      upcomingClasses,
     };
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
