@@ -224,60 +224,64 @@ export default function Auth() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                       <Input
                         id="email"
                         type="email"
                         value={registerData.email}
                         onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="username" className="text-gray-700 font-medium">Username</Label>
                       <Input
                         id="username"
                         value={registerData.username}
                         onChange={(e) => setRegisterData({...registerData, username: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
                       <Input
                         id="password"
                         type="password"
                         value={registerData.password}
                         onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone (Optional)</Label>
+                      <Label htmlFor="phone" className="text-gray-700 font-medium">Phone (Optional)</Label>
                       <Input
                         id="phone"
                         value={registerData.phone}
                         onChange={(e) => setRegisterData({...registerData, phone: e.target.value})}
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="role">Account Type</Label>
+                      <Label htmlFor="role" className="text-gray-700 font-medium">Account Type</Label>
                       <Select value={registerData.role} onValueChange={(value) => setRegisterData({...registerData, role: value as any})}>
-                        <SelectTrigger>
-                          <SelectValue />
+                        <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectValue className="text-gray-900" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="member">
+                        <SelectContent className="bg-white border-gray-300">
+                          <SelectItem value="member" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4" />
                               Member - Follow organizations and book classes
                             </div>
                           </SelectItem>
-                          <SelectItem value="organization_admin">
+                          <SelectItem value="organization_admin" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">
                             <div className="flex items-center gap-2">
                               <Dumbbell className="h-4 w-4" />
                               Organization Admin - Manage your sports business
@@ -289,7 +293,7 @@ export default function Auth() {
                     
                     <Button 
                       type="submit" 
-                      className="w-full"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending ? "Creating account..." : "Create Account"}
@@ -300,94 +304,100 @@ export default function Auth() {
             </TabsContent>
 
             <TabsContent value="organization">
-              <Card className="border-0 shadow-none">
+              <Card className="border-0 shadow-none bg-transparent">
                 <CardHeader>
-                  <CardTitle>Create Organization</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-2xl font-bold text-gray-900">Create Organization</CardTitle>
+                  <CardDescription className="text-gray-600">
                     Set up your sports academy, club, or gym
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleCreateOrganization} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="orgName">Organization Name</Label>
+                      <Label htmlFor="orgName" className="text-gray-700 font-medium">Organization Name</Label>
                       <Input
                         id="orgName"
                         value={orgData.name}
                         onChange={(e) => setOrgData({...orgData, name: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="orgEmail">Contact Email</Label>
+                      <Label htmlFor="orgEmail" className="text-gray-700 font-medium">Contact Email</Label>
                       <Input
                         id="orgEmail"
                         type="email"
                         value={orgData.email}
                         onChange={(e) => setOrgData({...orgData, email: e.target.value})}
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="description">Description</Label>
+                      <Label htmlFor="description" className="text-gray-700 font-medium">Description</Label>
                       <Input
                         id="description"
                         value={orgData.description}
                         onChange={(e) => setOrgData({...orgData, description: e.target.value})}
                         placeholder="Brief description of your organization"
                         required
+                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="primaryColor">Primary Color</Label>
+                        <Label htmlFor="primaryColor" className="text-gray-700 font-medium">Primary Color</Label>
                         <Input
                           id="primaryColor"
                           type="color"
                           value={orgData.primaryColor}
                           onChange={(e) => setOrgData({...orgData, primaryColor: e.target.value})}
+                          className="bg-white border-gray-300 h-10 w-full cursor-pointer"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="secondaryColor">Secondary Color</Label>
+                        <Label htmlFor="secondaryColor" className="text-gray-700 font-medium">Secondary Color</Label>
                         <Input
                           id="secondaryColor"
                           type="color"
                           value={orgData.secondaryColor}
                           onChange={(e) => setOrgData({...orgData, secondaryColor: e.target.value})}
+                          className="bg-white border-gray-300 h-10 w-full cursor-pointer"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="accentColor">Accent Color</Label>
+                        <Label htmlFor="accentColor" className="text-gray-700 font-medium">Accent Color</Label>
                         <Input
                           id="accentColor"
                           type="color"
                           value={orgData.accentColor}
                           onChange={(e) => setOrgData({...orgData, accentColor: e.target.value})}
+                          className="bg-white border-gray-300 h-10 w-full cursor-pointer"
                         />
                       </div>
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="planType">Plan Type</Label>
+                      <Label htmlFor="planType" className="text-gray-700 font-medium">Plan Type</Label>
                       <Select value={orgData.planType} onValueChange={(value) => setOrgData({...orgData, planType: value as any})}>
-                        <SelectTrigger>
-                          <SelectValue />
+                        <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectValue className="text-gray-900" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="free">Free - Up to 10 classes, 100 members</SelectItem>
-                          <SelectItem value="basic">Basic - Up to 50 classes, 500 members</SelectItem>
-                          <SelectItem value="premium">Premium - Unlimited classes and members</SelectItem>
+                        <SelectContent className="bg-white border-gray-300">
+                          <SelectItem value="free" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">Free - Up to 10 classes, 100 members</SelectItem>
+                          <SelectItem value="basic" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">Basic - Up to 50 classes, 500 members</SelectItem>
+                          <SelectItem value="premium" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">Premium - Unlimited classes and members</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     <Button 
                       type="submit" 
-                      className="w-full"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                       disabled={createOrgMutation.isPending}
                     >
                       {createOrgMutation.isPending ? "Creating organization..." : "Create Organization"}
