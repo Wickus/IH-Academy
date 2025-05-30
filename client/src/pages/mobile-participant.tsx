@@ -28,6 +28,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import PushNotificationSetup from "@/components/push-notification-setup";
+import BrandHeader from "@/components/brand-header";
 
 interface MobileParticipantProps {
   user: any;
@@ -93,24 +94,12 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-primary text-white text-sm">
-                {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="font-semibold text-lg">ItsHappening.Africa</h1>
-              <p className="text-sm text-gray-500">Hi {user.firstName}, ready to train?</p>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon">
-            <Heart className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
+      <BrandHeader 
+        subtitle={`Hi ${user.firstName}, ready to train?`}
+        showNotifications={false}
+        showMenu={false}
+        showProfile={true}
+      />
 
       {/* Bottom Navigation */}
       <Tabs defaultValue="discover" className="w-full">
