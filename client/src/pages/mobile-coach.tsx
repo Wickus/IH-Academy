@@ -87,8 +87,8 @@ export default function MobileCoach({ user }: MobileCoachProps) {
               <UserCheck className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-lg">Coach Portal</h1>
-              <p className="text-sm text-gray-500">Welcome, {user.firstName}</p>
+              <h1 className="font-semibold text-lg">ItsHappening.Africa</h1>
+              <p className="text-sm text-gray-500">Coach Portal - Welcome, {user.firstName}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
