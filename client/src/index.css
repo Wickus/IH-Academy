@@ -1,315 +1,201 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Override body background */
-body {
-  background: linear-gradient(135deg, #24D3BF 0%, #22C4B0 100%) !important;
-  min-height: 100vh;
-}
-
+/* ItsHappening.Africa Brand Variables */
 :root {
-  /* ItsHappening.Africa Brand Colors */
-  --background: 255 255 255; /* #FFFFFF - Pure white background */
-  --foreground: 32 54 107; /* #20366B - Primary Blue */
-  --muted: 248 250 252; /* #F8FAFC - Light gray background */
-  --muted-foreground: 4 36 76; /* #04244C - Dark Blue */
-  --popover: 255 255 255; /* #FFFFFF */
-  --popover-foreground: 32 54 107; /* #20366B */
-  --card: 255 255 255; /* #FFFFFF */
+  /* Brand Colors */
+  --background: 0 0% 100%; /* #FFFFFF */
+  --foreground: 32 54 107; /* #20366B - Primary Brand Blue */
+  --card: 0 0% 100%; /* #FFFFFF */
   --card-foreground: 32 54 107; /* #20366B */
-  --border: 226 232 240; /* #E2E8F0 */
-  --input: 255 255 255; /* #FFFFFF */
-  --primary: 32 54 107; /* #20366B - Primary Blue */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 32 54 107; /* #20366B */
+  --primary: 32 54 107; /* #20366B - Primary Brand Blue */
   --primary-foreground: 255 255 255; /* #FFFFFF */
-  --secondary: 39 141 212; /* #278DD4 - Secondary Blue */
-  --secondary-foreground: 255 255 255; /* #FFFFFF */
-  --accent: 36 211 191; /* #24D3BF - Teal */
-  --accent-foreground: 255 255 255; /* #FFFFFF */
-  --warning: 36 211 191; /* #24D3BF - Teal */
-  --warning-foreground: 255 255 255; /* #FFFFFF */
+  --secondary: 248 250 252; /* #F8FAFC - Light Gray */
+  --secondary-foreground: 32 54 107; /* #20366B */
+  --accent: 248 250 252; /* #F8FAFC */
+  --accent-foreground: 32 54 107; /* #20366B */
+  --muted: 248 250 252; /* #F8FAFC */
+  --muted-foreground: 100 116 139; /* #64748B */
   --destructive: 239 68 68; /* #EF4444 */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
+  --border: 226 232 240; /* #E2E8F0 */
+  --input: 226 232 240; /* #E2E8F0 */
   --ring: 32 54 107; /* #20366B */
-  --radius: 0.75rem;
-  
-  /* ItsHappening.Africa Brand Palette */
-  --brand-primary: 32 54 107; /* #20366B - Primary Blue */
-  --brand-dark-blue: 4 36 76; /* #04244C - Dark Blue */
-  --brand-medium-blue: 25 99 145; /* #196391 - Medium Blue */
-  --brand-light-blue: 39 141 212; /* #278DD4 - Light Blue */
-  --brand-yellow: 36 211 191; /* #24D3BF - Teal (replacing yellow) */
-  --brand-green: 36 211 103; /* #24D367 - Green */
-  --brand-teal: 36 211 191; /* #24D3BF - Teal */
-  
-  /* Sport colors using brand palette */
-  --blue-sport: 39 141 212; /* #278DD4 */
-  --green-sport: 36 211 103; /* #24D367 */
-  --teal-sport: 36 211 191; /* #24D3BF */
-  
-  /* Status colors */
-  --success: 36 211 103; /* #24D367 - Brand Green */
-  --warning: 36 211 191; /* #24D3BF - Teal (replacing yellow) */
-  --error: 239 68 68; /* #EF4444 - Red 500 */
-}
+  --radius: 0.5rem;
 
-/* Force visible text classes */
-.text-muted-foreground {
-  color: rgb(51 65 85) !important; /* #334155 - Dark gray */
-}
-
-/* Form styling for teal cards - Override all input backgrounds */
-.bg-gradient-to-br input,
-.bg-gradient-to-br textarea,
-.bg-gradient-to-br select,
-input,
-textarea {
-  background-color: white !important;
-  background: white !important;
-  color: rgb(30, 41, 59) !important;
-  border: 1px solid rgba(203, 213, 225, 1) !important;
-}
-
-.bg-gradient-to-br input:focus,
-.bg-gradient-to-br textarea:focus,
-.bg-gradient-to-br select:focus,
-input:focus,
-textarea:focus {
-  background-color: white !important;
-  background: white !important;
-  border-color: rgba(59, 130, 246, 0.8) !important;
-  outline: none !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
-}
-
-.bg-gradient-to-br input::placeholder,
-.bg-gradient-to-br textarea::placeholder,
-input::placeholder,
-textarea::placeholder {
-  color: rgb(100, 116, 139) !important;
-}
-
-.bg-gradient-to-br label {
-  color: white !important;
-  font-weight: 500 !important;
-}
-
-.bg-gradient-to-br button[type="submit"] {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-}
-
-.bg-gradient-to-br button[type="submit"]:hover {
-  background-color: rgba(255, 255, 255, 0.3) !important;
-}
-
-.bg-gradient-to-br button[type="button"] {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.bg-gradient-to-br button[type="button"]:hover {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-.text-foreground {
-  color: rgb(30 41 59) !important; /* #1E293B - Dark slate */
-}
-
-/* High contrast button styles */
-.bg-secondary {
-  background-color: rgb(39 141 212) !important; /* #278DD4 */
-  color: white !important;
-}
-
-.text-secondary {
-  color: rgb(30 106 161) !important; /* #1E6AA1 - Dark blue for visibility */
-}
-
-.bg-warning {
-  background-color: rgb(245 158 11) !important; /* #F59E0B - Amber */
-}
-
-.text-warning {
-  color: rgb(180 83 9) !important; /* #B45309 - Dark amber */
-}
-
-/* Replace jarring backgrounds */
-.bg-gray-50 {
-  background-color: rgb(248 250 252) !important; /* #F8FAFC */
-}
-
-/* Replace all yellow/amber with teal gradient */
-.bg-warning\/10,
-.bg-warning\/20,
-.bg-orange-sport\/5,
-.bg-orange-sport\/10,
-.bg-yellow-100,
-.bg-yellow-200,
-.bg-amber-100 {
-  background: linear-gradient(135deg, #24D3BF 0%, #22C4B0 100%) !important;
-  color: white !important;
-}
-
-.border-warning\/20,
-.border-orange-sport {
-  border-color: #24D3BF !important;
-}
-
-.text-warning {
-  color: #1A9B8A !important; /* Dark teal for contrast */
-}
-
-/* Light teal backgrounds for subtle areas */
-.bg-warning\/5 {
-  background: linear-gradient(135deg, rgba(36, 211, 191, 0.1) 0%, rgba(34, 196, 176, 0.1) 100%) !important;
+  /* ItsHappening.Africa Brand Colors */
+  --brand-primary: 32 54 107; /* #20366B */
+  --brand-secondary: 39 141 212; /* #278DD4 */
+  --brand-accent: 148 163 184; /* #94A3B8 */
+  --brand-background: 248 250 252; /* #F8FAFC */
 }
 
 .dark {
-  --background: 18 18 18; /* #121212 */
-  --foreground: 245 245 245; /* #F5F5F5 */
-  --muted: 33 33 33; /* #212121 */
-  --muted-foreground: 158 158 158; /* #9E9E9E */
-  --popover: 33 33 33; /* #212121 */
-  --popover-foreground: 245 245 245; /* #F5F5F5 */
-  --card: 33 33 33; /* #212121 */
-  --card-foreground: 245 245 245; /* #F5F5F5 */
-  --border: 66 66 66; /* #424242 */
-  --input: 66 66 66; /* #424242 */
-  --primary: 25 118 210; /* #1976D2 */
-  --primary-foreground: 255 255 255; /* #FFFFFF */
-  --secondary: 56 142 60; /* #388E3C */
+  --background: 32 54 107; /* #20366B */
+  --foreground: 255 255 255; /* #FFFFFF */
+  --card: 39 141 212; /* #278DD4 */
+  --card-foreground: 255 255 255; /* #FFFFFF */
+  --popover: 32 54 107; /* #20366B */
+  --popover-foreground: 255 255 255; /* #FFFFFF */
+  --primary: 255 255 255; /* #FFFFFF */
+  --primary-foreground: 32 54 107; /* #20366B */
+  --secondary: 39 141 212; /* #278DD4 */
   --secondary-foreground: 255 255 255; /* #FFFFFF */
-  --accent: 255 87 34; /* #FF5722 */
+  --muted: 39 141 212; /* #278DD4 */
+  --muted-foreground: 203 213 225; /* #CBD5E1 */
+  --accent: 39 141 212; /* #278DD4 */
   --accent-foreground: 255 255 255; /* #FFFFFF */
-  --destructive: 244 67 54; /* #F44336 */
+  --destructive: 239 68 68; /* #EF4444 */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
-  --ring: 25 118 210; /* #1976D2 */
+  --border: 39 141 212; /* #278DD4 */
+  --input: 39 141 212; /* #278DD4 */
+  --ring: 255 255 255; /* #FFFFFF */
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+/* Global Styling */
+* {
+  border-color: hsl(var(--border));
+}
 
-  html, body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
-    min-height: 100vh;
-  }
+body {
+  background: linear-gradient(135deg, #20366B 0%, #278DD4 50%, #F8FAFC 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    font-weight: 700;
-  }
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: hsl(var(--primary));
+  letter-spacing: -0.025em;
+}
 
-  #root {
-    @apply bg-transparent text-foreground;
-  }
+/* Brand Gradient Text */
+.brand-gradient-text {
+  background: linear-gradient(135deg, #20366B 0%, #278DD4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
 
-  /* Enhanced visual elements */
-  .glass-effect {
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+/* ItsHappening.Africa Logo Styling */
+.brand-logo {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #20366B 0%, #278DD4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.05em;
+}
+
+/* Card Styling */
+.brand-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(32, 54, 107, 0.12);
+}
+
+/* Button Styling */
+.btn-primary {
+  background: linear-gradient(135deg, #20366B 0%, #278DD4 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #1a2d5a 0%, #2374b8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(32, 54, 107, 0.3);
+}
+
+/* Navigation */
+.nav-brand {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(32, 54, 107, 0.1);
+}
+
+/* Form Styling */
+.form-input {
+  border: 1px solid hsl(var(--border));
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px rgba(32, 54, 107, 0.1);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  body {
+    background: linear-gradient(180deg, #20366B 0%, #278DD4 50%, #F8FAFC 100%);
   }
   
-  /* ItsHappening.Africa Brand Gradients */
-  .gradient-primary {
-    background: linear-gradient(135deg, #20366B 0%, #278DD4 100%);
-  }
-  
-  .gradient-secondary {
-    background: linear-gradient(135deg, #278DD4 0%, #24D3BF 100%);
-  }
-  
-  .gradient-accent {
-    background: linear-gradient(135deg, #24D367 0%, #24D3BF 100%);
-  }
-
-  .gradient-brand-full {
-    background: linear-gradient(135deg, #20366B 0%, #278DD4 50%, #24D3BF 100%);
-  }
-
-  .gradient-brand-warm {
-    background: linear-gradient(135deg, #D3BF24 0%, #24D367 100%);
-  }
-  
-  /* Custom shadows */
-  .shadow-primary {
-    box-shadow: 0 10px 30px rgba(32, 54, 107, 0.2);
-  }
-  
-  .shadow-secondary {
-    box-shadow: 0 10px 30px rgba(39, 141, 212, 0.2);
-  }
-  
-  /* Animations */
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  /* Custom utilities for sport colors */
-  .bg-blue-sport {
-    background-color: hsl(var(--blue-sport));
-  }
-  .bg-green-sport {
-    background-color: hsl(var(--green-sport));
-  }
-  .bg-orange-sport {
-    background-color: hsl(var(--orange-sport));
-  }
-  .text-blue-sport {
-    color: hsl(var(--blue-sport));
-  }
-  .text-green-sport {
-    color: hsl(var(--green-sport));
-  }
-  .text-orange-sport {
-    color: hsl(var(--orange-sport));
-  }
-  .border-blue-sport {
-    border-color: hsl(var(--blue-sport));
-  }
-  .border-green-sport {
-    border-color: hsl(var(--green-sport));
-  }
-  .border-orange-sport {
-    border-color: hsl(var(--orange-sport));
-  }
-
-  /* Status colors */
-  .bg-success {
-    background-color: hsl(var(--success));
-  }
-  .bg-warning {
-    background-color: hsl(var(--warning));
-  }
-  .bg-error {
-    background-color: hsl(var(--error));
-  }
-  .text-success {
-    color: hsl(var(--success));
-  }
-  .text-warning {
-    color: hsl(var(--warning));
-  }
-  .text-error {
-    color: hsl(var(--error));
+  .brand-logo {
+    font-size: 1.25rem;
   }
 }
 
-/* Font family */
-.font-inter {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status Badges */
+.status-active {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+}
+
+.status-pending {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: white;
+}
+
+.status-inactive {
+  background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+  color: white;
 }

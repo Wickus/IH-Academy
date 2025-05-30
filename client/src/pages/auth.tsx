@@ -114,11 +114,11 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">ItsBooked</h1>
-          <p className="text-white/90">Sports booking platform for everyone</p>
+          <h1 className="brand-logo text-5xl text-white mb-2">ItsHappening.Africa</h1>
+          <p className="text-white/90 font-medium">Sports booking platform for everyone</p>
         </div>
 
-        <Card className="rounded-lg border shadow-sm backdrop-blur-sm bg-white/95 text-[#20366B]">
+        <Card className="brand-card fade-in">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login" className="gap-1">
