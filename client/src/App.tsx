@@ -11,6 +11,7 @@ import Classes from "@/pages/classes";
 import Bookings from "@/pages/bookings";
 import Coaches from "@/pages/coaches";
 import Payments from "@/pages/payments";
+import Achievements from "@/pages/achievements";
 import PublicBooking from "@/pages/public-booking";
 import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
 import PublicDiscovery from "@/pages/public-discovery";
@@ -63,14 +64,17 @@ function RoleBasedRouter({ user }: { user?: User }) {
   // Organization Admin/Coach Interface  
   if (user?.role === 'organization_admin' || user?.role === 'coach') {
     return (
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/classes" component={Classes} />
-        <Route path="/bookings" component={Bookings} />
-        <Route path="/coaches" component={Coaches} />
-        <Route path="/payments" component={Payments} />
-        <Route component={NotFound} />
-      </Switch>
+      <AppLayout>
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/classes" component={Classes} />
+          <Route path="/bookings" component={Bookings} />
+          <Route path="/coaches" component={Coaches} />
+          <Route path="/payments" component={Payments} />
+          <Route path="/achievements" component={Achievements} />
+          <Route component={NotFound} />
+        </Switch>
+      </AppLayout>
     );
   }
 
@@ -81,6 +85,7 @@ function RoleBasedRouter({ user }: { user?: User }) {
       <Route path="/discover" component={PublicDiscovery} />
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
+      <Route path="/achievements" component={Achievements} />
       <Route component={NotFound} />
     </Switch>
   );
