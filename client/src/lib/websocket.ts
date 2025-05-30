@@ -1,5 +1,5 @@
 interface WebSocketMessage {
-  type: 'availability_update' | 'booking_notification' | 'class_reminder' | 'attendance_update';
+  type: 'availability_update' | 'booking_notification' | 'class_reminder' | 'attendance_update' | 'authenticate' | 'subscribe_class' | 'unsubscribe_class' | 'subscribe_organization';
   data: any;
   timestamp: number;
 }

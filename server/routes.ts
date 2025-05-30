@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 
 // Helper function to generate iCal events
@@ -27,7 +28,106 @@ END:VEVENT
 END:VCALENDAR`;
 }
 
+// WebSocket connection management
+interface WebSocketConnection {
+  ws: WebSocket;
+  userId?: number;
+  subscribedClasses: Set<number>;
+  subscribedOrganizations: Set<number>;
+}
+
+const connections = new Map<WebSocket, WebSocketConnection>();
+
+function broadcastAvailabilityUpdate(classId: number, availableSpots: number, totalSpots: number) {
+  const message = JSON.stringify({
+    type: 'availability_update',
+    data: { classId, availableSpots, totalSpots },
+    timestamp: Date.now()
+  });
+
+  connections.forEach((conn) => {
+    if (conn.ws.readyState === WebSocket.OPEN && conn.subscribedClasses.has(classId)) {
+      conn.ws.send(message);
+    }
+  });
+}
+
+function broadcastBookingNotification(classId: number, className: string, participantName: string, action: 'booked' | 'cancelled') {
+  const message = JSON.stringify({
+    type: 'booking_notification',
+    data: { classId, className, participantName, action },
+    timestamp: Date.now()
+  });
+
+  connections.forEach((conn) => {
+    if (conn.ws.readyState === WebSocket.OPEN && conn.subscribedClasses.has(classId)) {
+      conn.ws.send(message);
+    }
+  });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  const httpServer = new Server(app);
+
+  // WebSocket server setup
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+
+  wss.on('connection', (ws) => {
+    console.log('New WebSocket connection established');
+    
+    const connection: WebSocketConnection = {
+      ws,
+      subscribedClasses: new Set(),
+      subscribedOrganizations: new Set()
+    };
+    
+    connections.set(ws, connection);
+
+    ws.on('message', (data) => {
+      try {
+        const message = JSON.parse(data.toString());
+        const conn = connections.get(ws);
+        if (!conn) return;
+
+        switch (message.type) {
+          case 'authenticate':
+            conn.userId = message.data.userId;
+            console.log(`User ${message.data.userId} authenticated via WebSocket`);
+            break;
+
+          case 'subscribe_class':
+            conn.subscribedClasses.add(message.data.classId);
+            console.log(`User subscribed to class ${message.data.classId} updates`);
+            break;
+
+          case 'unsubscribe_class':
+            conn.subscribedClasses.delete(message.data.classId);
+            console.log(`User unsubscribed from class ${message.data.classId} updates`);
+            break;
+
+          case 'subscribe_organization':
+            conn.subscribedOrganizations.add(message.data.organizationId);
+            console.log(`User subscribed to organization ${message.data.organizationId} updates`);
+            break;
+
+          default:
+            console.warn('Unknown WebSocket message type:', message.type);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      console.log('WebSocket connection closed');
+      connections.delete(ws);
+    });
+
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      connections.delete(ws);
+    });
+  });
   
   // Authentication routes
   app.post("/api/auth/register", async (req: Request, res: Response) => {
@@ -333,16 +433,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bookingDate: new Date()
       };
 
+      // Check class capacity before booking
+      const classData = await storage.getClass(bookingData.classId);
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      const existingBookings = await storage.getBookingsByClass(bookingData.classId);
+      const availableSpots = classData.capacity - existingBookings.length;
+
+      if (availableSpots <= 0) {
+        return res.status(400).json({ message: "Class is full" });
+      }
+
       const booking = await storage.createBooking(bookingData);
 
       // Generate iCal file
-      const classData = await storage.getClass(booking.classId);
       if (classData) {
         const icalContent = generateICalEvent(classData, booking);
-        
-        // In a real implementation, you would send this via email
         console.log("iCal content generated for booking:", booking.id);
       }
+
+      // Broadcast real-time availability update
+      const newAvailableSpots = availableSpots - 1;
+      broadcastAvailabilityUpdate(bookingData.classId, newAvailableSpots, classData.capacity);
+      
+      // Broadcast booking notification
+      broadcastBookingNotification(
+        bookingData.classId, 
+        classData.name, 
+        booking.participantName, 
+        'booked'
+      );
+
+      console.log(`Real-time update: Class ${classData.name} now has ${newAvailableSpots} spots available`);
 
       res.json(booking);
     } catch (error) {
