@@ -1,5 +1,6 @@
 import {
   users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
+  achievements, userAchievements, userStats,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
@@ -8,7 +9,10 @@ import {
   type Class, type InsertClass,
   type Booking, type InsertBooking,
   type Attendance, type InsertAttendance,
-  type Payment, type InsertPayment
+  type Payment, type InsertPayment,
+  type Achievement, type InsertAchievement,
+  type UserAchievement, type InsertUserAchievement,
+  type UserStats, type InsertUserStats
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, count, sum } from "drizzle-orm";
@@ -20,6 +24,15 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+
+  // Achievements
+  getAllAchievements(): Promise<Achievement[]>;
+  getUserAchievements(userId: number): Promise<UserAchievement[]>;
+  createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement>;
+  getUserStats(userId: number): Promise<UserStats | undefined>;
+  createUserStats(userStats: InsertUserStats): Promise<UserStats>;
+  updateUserStats(userId: number, stats: Partial<InsertUserStats>): Promise<UserStats | undefined>;
+  checkAndUnlockAchievements(userId: number): Promise<Achievement[]>;
 
   // Organizations
   getOrganization(id: number): Promise<Organization | undefined>;
@@ -489,6 +502,94 @@ export class DatabaseStorage implements IStorage {
       upcomingClasses: orgClasses.filter(c => c.startTime > now).length,
       totalMembers: memberCount.count
     };
+  }
+
+  // Achievement methods
+  async getAllAchievements(): Promise<Achievement[]> {
+    return await db.select().from(achievements).where(eq(achievements.isActive, true));
+  }
+
+  async getUserAchievements(userId: number): Promise<UserAchievement[]> {
+    return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId));
+  }
+
+  async createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    const [newUserAchievement] = await db.insert(userAchievements).values(userAchievement).returning();
+    return newUserAchievement;
+  }
+
+  async getUserStats(userId: number): Promise<UserStats | undefined> {
+    const [stats] = await db.select().from(userStats).where(eq(userStats.userId, userId));
+    return stats || undefined;
+  }
+
+  async createUserStats(userStatsData: InsertUserStats): Promise<UserStats> {
+    const [newUserStats] = await db.insert(userStats).values(userStatsData).returning();
+    return newUserStats;
+  }
+
+  async updateUserStats(userId: number, stats: Partial<InsertUserStats>): Promise<UserStats | undefined> {
+    const [updatedStats] = await db.update(userStats).set(stats).where(eq(userStats.userId, userId)).returning();
+    return updatedStats || undefined;
+  }
+
+  async checkAndUnlockAchievements(userId: number): Promise<Achievement[]> {
+    const newlyUnlocked: Achievement[] = [];
+    
+    // Get user stats
+    let stats = await this.getUserStats(userId);
+    if (!stats) {
+      stats = await this.createUserStats({ userId });
+    }
+
+    // Get all achievements and user's current achievements
+    const allAchievements = await this.getAllAchievements();
+    const currentUserAchievements = await this.getUserAchievements(userId);
+    const unlockedIds = new Set(currentUserAchievements.map(ua => ua.achievementId));
+
+    // Check each achievement
+    for (const achievement of allAchievements) {
+      if (unlockedIds.has(achievement.id)) continue;
+
+      let shouldUnlock = false;
+      
+      switch (achievement.category) {
+        case 'booking':
+          if (achievement.name === 'First Steps' && stats.totalBookings >= 1) shouldUnlock = true;
+          if (achievement.name === 'Regular Attendee' && stats.totalBookings >= 5) shouldUnlock = true;
+          if (achievement.name === 'Fitness Enthusiast' && stats.totalBookings >= 25) shouldUnlock = true;
+          break;
+        case 'attendance':
+          if (achievement.name === 'Perfect Attendance' && stats.completedClasses >= 10) shouldUnlock = true;
+          if (achievement.name === 'Champion' && stats.completedClasses >= 100) shouldUnlock = true;
+          break;
+        case 'social':
+          if (achievement.name === 'Social Butterfly' && stats.organizationsFollowed >= 5) shouldUnlock = true;
+          break;
+        case 'milestone':
+          if (achievement.name === 'Week Warrior' && stats.currentStreak >= 7) shouldUnlock = true;
+          if (achievement.name === 'Consistency King' && stats.currentStreak >= 30) shouldUnlock = true;
+          break;
+      }
+
+      if (shouldUnlock) {
+        await this.createUserAchievement({
+          userId,
+          achievementId: achievement.id,
+          progress: achievement.threshold,
+          isCompleted: true
+        });
+        
+        // Add points to user stats
+        await this.updateUserStats(userId, {
+          totalPoints: stats.totalPoints + achievement.points
+        });
+        
+        newlyUnlocked.push(achievement);
+      }
+    }
+
+    return newlyUnlocked;
   }
 }
 
