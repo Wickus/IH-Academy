@@ -288,15 +288,15 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
               />
 
               {/* Payment Information */}
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] p-4 rounded-lg">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Shield className="h-5 w-5 text-success" />
-                  <h4 className="font-medium">Secure Payment with Payfast</h4>
+                  <Shield className="h-5 w-5 text-white" />
+                  <h4 className="font-medium text-white">Secure Payment with Payfast</h4>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm text-white/90 mb-3">
                   Your payment will be processed securely through Payfast. You will receive a booking confirmation and calendar invite via email.
                 </p>
-                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                <div className="flex items-center space-x-4 text-xs text-white/80">
                   <span>• SSL Encrypted</span>
                   <span>• PCI Compliant</span>
                   <span>• Instant Confirmation</span>
