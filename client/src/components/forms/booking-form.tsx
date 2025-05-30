@@ -144,13 +144,13 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
   return (
     <div className="space-y-6">
       {/* Class Information Summary */}
-      <Card>
+      <Card className="bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] text-white border-[#24D3BF]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">{classData.name}</CardTitle>
             <Badge 
               variant="outline"
-              className={`bg-${sportColor}/10 text-${sportColor} border-${sportColor}/20`}
+              className="bg-white/20 text-white border-white/30"
             >
               {classData.sport?.name}
             </Badge>
@@ -159,43 +159,43 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-white/80" />
               <span>{formatDateTime(classData.startTime)}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Clock className="h-4 w-4 text-white/80" />
               <span>Duration: {Math.round((new Date(classData.endTime).getTime() - new Date(classData.startTime).getTime()) / (1000 * 60))} minutes</span>
             </div>
             {classData.location && (
               <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <MapPin className="h-4 w-4 text-white/80" />
                 <span>{classData.location}</span>
               </div>
             )}
             <div className="flex items-center space-x-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-white/80" />
               <span>{classData.availableSpots} spots available</span>
             </div>
           </div>
           
           {classData.description && (
             <div>
-              <p className="text-sm text-muted-foreground">{classData.description}</p>
+              <p className="text-sm text-white/90">{classData.description}</p>
             </div>
           )}
 
           {classData.requirements && (
             <div>
               <h4 className="font-medium text-sm mb-1">Requirements:</h4>
-              <p className="text-sm text-muted-foreground">{classData.requirements}</p>
+              <p className="text-sm text-white/90">{classData.requirements}</p>
             </div>
           )}
 
-          <Separator />
+          <Separator className="bg-white/20" />
           
           <div className="flex items-center justify-between">
             <span className="font-medium">Total Amount:</span>
-            <span className="text-2xl font-bold text-primary">
+            <span className="text-2xl font-bold text-white">
               {formatCurrency(Number(classData.price))}
             </span>
           </div>
