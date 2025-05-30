@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import PushNotificationSetup from "@/components/push-notification-setup";
 
 interface MobileParticipantProps {
   user: any;
@@ -442,6 +443,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                   <div className="text-sm text-gray-500">Upcoming</div>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Push Notification Setup */}
+            <div className="mb-6">
+              <PushNotificationSetup />
             </div>
 
             {/* Profile Actions */}

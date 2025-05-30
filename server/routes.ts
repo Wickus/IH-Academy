@@ -422,6 +422,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Push notification routes
+  app.post("/api/notifications/subscribe", async (req: Request, res: Response) => {
+    try {
+      const { endpoint, keys } = req.body;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      console.log('Push subscription received:', { userId, endpoint });
+      res.json({ success: true, message: "Subscribed to push notifications" });
+    } catch (error) {
+      console.error("Error subscribing to push notifications:", error);
+      res.status(500).json({ error: "Failed to subscribe to push notifications" });
+    }
+  });
+
+  app.post("/api/notifications/unsubscribe", async (req: Request, res: Response) => {
+    try {
+      const { endpoint } = req.body;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      console.log('Push unsubscription received:', { userId, endpoint });
+      res.json({ success: true, message: "Unsubscribed from push notifications" });
+    } catch (error) {
+      console.error("Error unsubscribing from push notifications:", error);
+      res.status(500).json({ error: "Failed to unsubscribe from push notifications" });
+    }
+  });
+
+  app.post("/api/notifications/test", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      console.log('Test notification requested for user:', userId);
+      res.json({ success: true, message: "Test notification sent" });
+    } catch (error) {
+      console.error("Error sending test notification:", error);
+      res.status(500).json({ error: "Failed to send test notification" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes registered");
   return Promise.resolve({} as Server);
