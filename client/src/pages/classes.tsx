@@ -8,13 +8,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Users, Clock, MapPin } from "lucide-react";
 import { formatTime, formatDate, formatCurrency, getSportColor } from "@/lib/utils";
 import ClassForm from "@/components/forms/class-form";
+import RealTimeAvailability from "@/components/real-time-availability";
+import RealTimeNotifications from "@/components/real-time-notifications";
 
 export default function Classes() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const { data: classes = [], isLoading } = useQuery({
     queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses({ academyId: 1 }),
+    queryFn: () => api.getClasses({ organizationId: 1 }),
   });
 
   const { data: sports = [] } = useQuery({
@@ -57,13 +59,15 @@ export default function Classes() {
           <h1 className="text-2xl font-bold">Classes & Clinics</h1>
           <p className="text-muted-foreground">Manage your sports classes and training sessions</p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="mr-2 h-4 w-4" />
-              New Class
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <RealTimeNotifications userId={1} organizationId={1} />
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="mr-2 h-4 w-4" />
+                New Class
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Class</DialogTitle>
