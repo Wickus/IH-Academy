@@ -597,7 +597,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add booking cancellation endpoint for real-time updates
+  app.delete("/api/bookings/:id", async (req: Request, res: Response) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const booking = await storage.getBooking(bookingId);
+      
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      const classData = await storage.getClass(booking.classId);
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      // Update booking status or delete (depending on implementation)
+      const updatedBooking = await storage.updateBooking(bookingId, { paymentStatus: 'cancelled' });
+      
+      // Calculate new availability
+      const existingBookings = await storage.getBookingsByClass(booking.classId);
+      const activeBookings = existingBookings.filter(b => b.paymentStatus !== 'cancelled');
+      const newAvailableSpots = classData.capacity - activeBookings.length;
+
+      // Broadcast real-time availability update
+      broadcastAvailabilityUpdate(booking.classId, newAvailableSpots, classData.capacity);
+      
+      // Broadcast booking notification
+      broadcastBookingNotification(
+        booking.classId, 
+        classData.name, 
+        booking.participantName, 
+        'cancelled'
+      );
+
+      console.log(`Real-time update: Class ${classData.name} now has ${newAvailableSpots} spots available`);
+
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      res.status(500).json({ message: "Failed to cancel booking" });
+    }
+  });
+
   // Routes registered successfully
-  console.log("Multi-tenant API routes registered");
-  return Promise.resolve({} as Server);
+  console.log("Multi-tenant API routes with real-time WebSocket support registered");
+  return httpServer;
 }
