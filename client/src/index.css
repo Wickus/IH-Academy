@@ -3,23 +3,23 @@
 @tailwind utilities;
 
 :root {
-  --background: 248 250 252; /* #F8FAFC */
-  --foreground: 15 23 42; /* #0F172A */
-  --muted: 241 245 249; /* #F1F5F9 */
-  --muted-foreground: 71 85 105; /* #475569 - Darker for better contrast */
+  --background: 255 255 255; /* #FFFFFF - Pure white background */
+  --foreground: 30 41 59; /* #1E293B - Dark slate for main text */
+  --muted: 248 250 252; /* #F8FAFC - Light gray background */
+  --muted-foreground: 51 65 85; /* #334155 - Dark gray for readable secondary text */
   --popover: 255 255 255; /* #FFFFFF */
-  --popover-foreground: 15 23 42; /* #0F172A */
+  --popover-foreground: 30 41 59; /* #1E293B */
   --card: 255 255 255; /* #FFFFFF */
-  --card-foreground: 15 23 42; /* #0F172A */
+  --card-foreground: 30 41 59; /* #1E293B */
   --border: 226 232 240; /* #E2E8F0 */
   --input: 255 255 255; /* #FFFFFF */
   --primary: 32 54 107; /* #20366B */
   --primary-foreground: 255 255 255; /* #FFFFFF */
-  --secondary: 30 106 161; /* #1E6AA1 - Darker blue for better contrast */
+  --secondary: 39 141 212; /* #278DD4 - Original blue */
   --secondary-foreground: 255 255 255; /* #FFFFFF */
   --accent: 36 211 103; /* #24D367 */
-  --accent-foreground: 255 255 255; /* #FFFFFF */
-  --warning: 234 179 8; /* #EAB308 - More muted amber */
+  --accent-foreground: 30 41 59; /* #1E293B - Dark text on green */
+  --warning: 245 158 11; /* #F59E0B - Orange amber */
   --warning-foreground: 255 255 255; /* #FFFFFF */
   --destructive: 239 68 68; /* #EF4444 */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
@@ -29,12 +29,44 @@
   /* Sport colors */
   --blue-sport: 39 141 212; /* #278DD4 */
   --green-sport: 36 211 103; /* #24D367 */
-  --orange-sport: 234 179 8; /* #EAB308 - More muted amber */
+  --orange-sport: 245 158 11; /* #F59E0B - Orange amber */
   
   /* Status colors */
-  --success: 36 211 103; /* #24D367 */
-  --warning: 211 191 36; /* #D3BF24 */
-  --error: 244 67 54; /* #F44336 */
+  --success: 34 197 94; /* #22C55E - Green 500 */
+  --warning: 245 158 11; /* #F59E0B - Amber 500 */
+  --error: 239 68 68; /* #EF4444 - Red 500 */
+}
+
+/* Force visible text classes */
+.text-muted-foreground {
+  color: rgb(51 65 85) !important; /* #334155 - Dark gray */
+}
+
+.text-foreground {
+  color: rgb(30 41 59) !important; /* #1E293B - Dark slate */
+}
+
+/* High contrast button styles */
+.bg-secondary {
+  background-color: rgb(39 141 212) !important; /* #278DD4 */
+  color: white !important;
+}
+
+.text-secondary {
+  color: rgb(30 106 161) !important; /* #1E6AA1 - Dark blue for visibility */
+}
+
+.bg-warning {
+  background-color: rgb(245 158 11) !important; /* #F59E0B - Amber */
+}
+
+.text-warning {
+  color: rgb(180 83 9) !important; /* #B45309 - Dark amber */
+}
+
+/* Replace jarring backgrounds */
+.bg-gray-50 {
+  background-color: rgb(248 250 252) !important; /* #F8FAFC */
 }
 
 .dark {
