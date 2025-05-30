@@ -422,10 +422,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  return new Promise((resolve) => {
-    const server = app.listen(5001, () => {
-      console.log("Multi-tenant API server running on port 5001");
-      resolve(server);
-    });
-  });
+  // Routes registered successfully
+  console.log("Multi-tenant API routes registered");
+  return Promise.resolve({} as Server);
 }
