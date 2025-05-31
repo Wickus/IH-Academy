@@ -241,7 +241,10 @@ export class DatabaseStorage implements IStorage {
     return org || undefined;
   }
 
-  async getAllOrganizations(): Promise<Organization[]> {
+  async getAllOrganizations(includeInactive: boolean = false): Promise<Organization[]> {
+    if (includeInactive) {
+      return await db.select().from(organizations);
+    }
     return await db.select().from(organizations).where(eq(organizations.isActive, true));
   }
 
@@ -463,8 +466,8 @@ export class DatabaseStorage implements IStorage {
     totalBookings: number;
     totalRevenue: number;
   }> {
-    const [orgCount] = await db.select({ count: count() }).from(organizations);
-    const [userCount] = await db.select({ count: count() }).from(users);
+    const [orgCount] = await db.select({ count: count() }).from(organizations).where(eq(organizations.isActive, true));
+    const [userCount] = await db.select({ count: count() }).from(users).where(eq(users.isActive, true));
     const [bookingCount] = await db.select({ count: count() }).from(bookings);
     const [revenueSum] = await db.select({ total: sum(payments.amount) }).from(payments);
 
