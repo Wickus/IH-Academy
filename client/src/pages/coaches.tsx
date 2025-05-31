@@ -1,12 +1,17 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Phone, Star, Users, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Mail, Phone, Star, Users, Calendar, Plus } from "lucide-react";
+import CoachForm from "@/components/forms/coach-form";
 
 export default function Coaches() {
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  
   const { data: coaches = [], isLoading } = useQuery({
     queryKey: ["/api/coaches"],
     queryFn: () => api.getCoaches(1),
@@ -48,15 +53,30 @@ export default function Coaches() {
   }
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Coaches</h1>
-          <p className="text-muted-foreground">Manage your coaching staff</p>
+          <h1 className="text-3xl font-bold text-[#20366B]">Coaches</h1>
+          <p className="text-slate-600">Manage your coaching staff with ItsHappening.Africa</p>
         </div>
-        <Button>
-          Add New Coach
-        </Button>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white shadow-lg border-0">
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Coach
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-[#20366B]">Add New Coach</DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[75vh] overflow-y-auto pr-2">
+              <CoachForm 
+                onSuccess={() => setShowCreateDialog(false)}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -136,7 +156,11 @@ export default function Coaches() {
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No coaches yet</h3>
           <p className="text-gray-500 mb-4">Add coaches to start managing your team.</p>
-          <Button>
+          <Button 
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-[#24D367] hover:bg-[#1fb557] text-white shadow-lg border-0"
+          >
+            <Plus className="mr-2 h-4 w-4" />
             Add First Coach
           </Button>
         </div>
