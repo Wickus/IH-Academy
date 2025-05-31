@@ -78,8 +78,8 @@ export default function Coaches() {
             <CardContent>
               <div className="space-y-4">
                 {coach.user?.email && (
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Mail className="mr-2 h-4 w-4" />
+                  <div className="flex items-center text-sm text-slate-600">
+                    <Mail className="mr-2 h-4 w-4 text-[#278DD4]" />
                     {coach.user.email}
                   </div>
                 )}
