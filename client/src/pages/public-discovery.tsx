@@ -49,21 +49,36 @@ export default function PublicDiscovery() {
 
   return (
     <div className="space-y-6">
+      {/* Brand Header */}
+      <div className="bg-white border-b border-gray-200 -mx-6 -mt-6 px-6 py-4 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold">IH</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">ItsHappening.Africa</h1>
+              <p className="text-sm text-slate-600">Sports booking platform for everyone</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Discover Sports Organizations</h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900">Discover Sports Organizations</h1>
+        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
           Find and follow your favorite sports academies, clubs, and training facilities
         </p>
         
         {/* Search */}
         <div className="max-w-md mx-auto relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 h-4 w-4" />
           <Input
             placeholder="Search organizations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 text-slate-900 bg-white border-slate-300 focus:border-primary focus:ring-primary"
           />
         </div>
       </div>

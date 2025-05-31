@@ -90,15 +90,69 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Remove yellow highlights and ensure brand colors */
 [data-radix-select-content] [data-highlighted] {
-  background-color: hsl(var(--primary) / 0.1) !important;
-  color: hsl(var(--primary)) !important;
+  background-color: #EBF4FF !important;
+  color: #20366B !important;
 }
 
 [data-radix-select-item]:focus,
 [data-radix-select-item][data-highlighted] {
-  background-color: hsl(var(--primary) / 0.1) !important;
-  color: hsl(var(--primary)) !important;
+  background-color: #EBF4FF !important;
+  color: #20366B !important;
   outline: none !important;
+}
+
+/* Fix navigation menu highlights */
+[data-highlighted] {
+  background-color: #EBF4FF !important;
+  color: #20366B !important;
+}
+
+/* Remove yellow from all focus states */
+.focus\\:ring-yellow-500:focus {
+  --tw-ring-color: #20366B !important;
+}
+
+.border-yellow-400 {
+  border-color: #E2E8F0 !important;
+}
+
+/* Fix input field visibility and borders */
+.bg-white input {
+  color: #1E293B !important;
+  background-color: #FFFFFF !important;
+}
+
+.border-yellow-500 {
+  border-color: #20366B !important;
+}
+
+/* Ensure all text inputs are visible */
+input[type="text"], input[type="email"], input[type="search"] {
+  color: #1E293B !important;
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus {
+  border-color: #20366B !important;
+  box-shadow: 0 0 0 3px rgba(32, 54, 107, 0.1) !important;
+}
+
+/* Fix all input field styling to ensure visibility */
+.input, input {
+  color: #1E293B !important;
+  background-color: #FFFFFF !important;
+}
+
+/* Remove yellow borders from all elements */
+.border-yellow-300, .border-yellow-400, .border-yellow-500 {
+  border-color: #E2E8F0 !important;
+}
+
+/* Fix card styling to ensure text visibility */
+.bg-white {
+  background-color: #FFFFFF !important;
+  color: #1E293B !important;
 }
 
 /* Remove any yellow focus rings and highlights */
