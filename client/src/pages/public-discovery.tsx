@@ -75,8 +75,8 @@ export default function PublicDiscovery() {
     },
     onSuccess: (_, org) => {
       toast({
-        title: org.isFollowing ? "Organization unfollowed" : "Organization followed!",
-        description: org.isFollowing ? "You are no longer following this organization." : "You can now view their classes and book sessions.",
+        title: org.isFollowing ? "Organisation unfollowed" : "Organisation followed!",
+        description: org.isFollowing ? "You are no longer following this organisation." : "You can now view their classes and book sessions.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
     },
@@ -152,7 +152,7 @@ export default function PublicDiscovery() {
       <div className="relative py-12 px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-6">
           <h2 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">
-            Discover Sports Organizations
+            Discover Sports Organisations
           </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
             Find and follow your favorite sports academies, clubs, and training facilities
@@ -162,11 +162,25 @@ export default function PublicDiscovery() {
           <div className="max-w-lg mx-auto relative mt-8">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 h-5 w-5" />
             <Input
-              placeholder="Search organizations..."
+              placeholder="Search organisations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12 py-3 text-slate-900 bg-white/95 backdrop-blur border-0 rounded-xl shadow-lg focus:ring-2 focus:ring-white/50 focus:bg-white transition-all"
             />
+          </div>
+          
+          {/* Test Notification Button */}
+          <div className="mt-4">
+            <Button
+              onClick={() => {
+                localStorage.removeItem('hasSeenNotificationSetup');
+                setShowNotificationSetup(true);
+              }}
+              variant="outline"
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white backdrop-blur"
+            >
+              Test Notification Styling
+            </Button>
           </div>
         </div>
       </div>
@@ -182,7 +196,7 @@ export default function PublicDiscovery() {
                 Upcoming Classes
               </CardTitle>
               <CardDescription className="text-white/90">
-                Book sessions happening soon across all organizations
+                Book sessions happening soon across all organisations
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
