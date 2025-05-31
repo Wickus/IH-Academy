@@ -53,10 +53,8 @@ export default function PublicDiscovery() {
   // Show notification setup for new users
   useEffect(() => {
     if (user) {
-      const hasSeenNotificationSetup = localStorage.getItem('hasSeenNotificationSetup');
-      if (!hasSeenNotificationSetup) {
-        setShowNotificationSetup(true);
-      }
+      // Always show for testing - remove the localStorage check temporarily
+      setShowNotificationSetup(true);
     }
   }, [user]);
 
