@@ -168,8 +168,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
-      // For now, return a mock user - in production this would use session/JWT
-      const user = await storage.getUser(1);
+      // Return organization admin for testing navigation
+      const user = {
+        id: 1,
+        username: "admin",
+        email: "admin@example.com",
+        firstName: "Admin",
+        lastName: "User",
+        role: "organization_admin" as const,
+        organizationId: 1,
+        isActive: true
+      };
       res.json(user);
     } catch (error) {
       res.status(401).json({ message: "Not authenticated" });
