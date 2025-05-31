@@ -37,6 +37,7 @@ interface MobileParticipantProps {
 export default function MobileParticipant({ user }: MobileParticipantProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSport, setSelectedSport] = useState<string>("all");
+  const [showNotificationSetup, setShowNotificationSetup] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -434,9 +435,24 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               </Card>
             </div>
 
-            {/* Push Notification Setup */}
+            {/* Push Notification Setup Button */}
             <div className="mb-6">
-              <PushNotificationSetup />
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-slate-800">Notifications</h3>
+                      <p className="text-sm text-slate-500">Get updates about your classes</p>
+                    </div>
+                    <Button 
+                      onClick={() => setShowNotificationSetup(true)}
+                      className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white"
+                    >
+                      Setup
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Profile Actions */}
@@ -464,6 +480,14 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Push Notification Modal */}
+      {showNotificationSetup && (
+        <PushNotificationSetup 
+          onComplete={() => setShowNotificationSetup(false)}
+          onDismiss={() => setShowNotificationSetup(false)}
+        />
+      )}
     </div>
   );
 }

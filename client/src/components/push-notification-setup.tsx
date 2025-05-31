@@ -20,8 +20,11 @@ export default function PushNotificationSetup({ onComplete, onDismiss }: PushNot
   const { toast } = useToast();
 
   useEffect(() => {
-    checkNotificationSupport();
-  }, []);
+    // Only check support when the modal is actually shown
+    if (onDismiss) {
+      checkNotificationSupport();
+    }
+  }, [onDismiss]);
 
   const checkNotificationSupport = async () => {
     setIsLoading(true);
