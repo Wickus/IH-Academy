@@ -182,28 +182,28 @@ export default function RealTimeNotifications({
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
       case 'availability':
-        return <Users className="h-4 w-4" />;
+        return <Users className="h-4 w-4 text-[#278DD4]" />;
       case 'booking':
-        return <Calendar className="h-4 w-4" />;
+        return <Calendar className="h-4 w-4 text-[#278DD4]" />;
       case 'reminder':
-        return <Clock className="h-4 w-4" />;
+        return <Clock className="h-4 w-4 text-[#278DD4]" />;
       case 'attendance':
-        return <AlertCircle className="h-4 w-4" />;
+        return <AlertCircle className="h-4 w-4 text-[#278DD4]" />;
       default:
-        return <Bell className="h-4 w-4" />;
+        return <Bell className="h-4 w-4 text-[#278DD4]" />;
     }
   };
 
   const getPriorityColor = (priority: Notification['priority']) => {
     switch (priority) {
       case 'high':
-        return 'border-l-red-500 bg-red-50 dark:bg-red-900/20';
+        return 'border-l-red-500 bg-red-50';
       case 'medium':
-        return 'border-l-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
+        return 'border-l-[#278DD4] bg-blue-50';
       case 'low':
-        return 'border-l-blue-500 bg-blue-50 dark:bg-blue-900/20';
+        return 'border-l-[#24D367] bg-green-50';
       default:
-        return 'border-l-gray-500 bg-gray-50 dark:bg-gray-900/20';
+        return 'border-l-slate-500 bg-slate-50';
     }
   };
 
@@ -227,13 +227,12 @@ export default function RealTimeNotifications({
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative"
+        className="relative hover:bg-slate-100"
       >
-        <Bell className="h-5 w-5" />
+        <Bell className="h-5 w-5 text-slate-600" />
         {unreadCount > 0 && (
           <Badge 
-            variant="destructive" 
-            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0"
+            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0 bg-[#24D367] text-white border-0"
           >
             {unreadCount > 99 ? '99+' : unreadCount}
           </Badge>
@@ -245,17 +244,18 @@ export default function RealTimeNotifications({
 
       {/* Notifications Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 bg-white border border-slate-200 rounded-lg shadow-xl z-50 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold">Notifications</h3>
+          <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+            <h3 className="font-semibold text-[#20366B]">Notifications</h3>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#24D367]' : 'bg-red-500'}`} />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={markAllAsRead}
                 disabled={unreadCount === 0}
+                className="text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
               >
                 Mark all read
               </Button>
@@ -263,8 +263,9 @@ export default function RealTimeNotifications({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsOpen(false)}
+                className="hover:bg-slate-200"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-slate-600" />
               </Button>
             </div>
           </div>
@@ -272,18 +273,22 @@ export default function RealTimeNotifications({
           {/* Notifications List */}
           <div className="max-h-64 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-muted-foreground">
-                <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>No notifications yet</p>
-                <p className="text-xs">Live updates will appear here</p>
+              <div className="p-4 text-center text-slate-500">
+                <Bell className="h-8 w-8 mx-auto mb-2 opacity-50 text-[#278DD4]" />
+                <p className="text-[#20366B]">No notifications yet</p>
+                <p className="text-xs text-slate-600">Live updates will appear here</p>
               </div>
             ) : (
               <div className="space-y-1 p-2">
                 {notifications.map((notification) => (
                   <Card
                     key={notification.id}
-                    className={`cursor-pointer transition-all border-l-4 ${getPriorityColor(notification.priority)} ${
-                      !notification.isRead ? 'bg-blue-50 dark:bg-blue-900/10' : ''
+                    className={`cursor-pointer transition-all border-l-4 hover:shadow-md ${
+                      notification.priority === 'high' ? 'border-l-red-500 bg-red-50' :
+                      notification.priority === 'medium' ? 'border-l-[#278DD4] bg-blue-50' :
+                      'border-l-[#24D367] bg-green-50'
+                    } ${
+                      !notification.isRead ? 'bg-gradient-to-r from-blue-50 to-slate-50' : 'bg-white'
                     }`}
                     onClick={() => markAsRead(notification.id)}
                   >
@@ -294,11 +299,11 @@ export default function RealTimeNotifications({
                             {getNotificationIcon(notification.type)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm">{notification.title}</p>
-                            <p className="text-xs text-muted-foreground break-words">
+                            <p className="font-medium text-sm text-[#20366B]">{notification.title}</p>
+                            <p className="text-xs text-slate-600 break-words">
                               {notification.message}
                             </p>
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-xs text-slate-400 mt-1">
                               {formatTimestamp(notification.timestamp)}
                             </p>
                           </div>
@@ -310,9 +315,9 @@ export default function RealTimeNotifications({
                             e.stopPropagation();
                             removeNotification(notification.id);
                           }}
-                          className="h-6 w-6 opacity-50 hover:opacity-100"
+                          className="h-6 w-6 opacity-50 hover:opacity-100 hover:bg-slate-100"
                         >
-                          <X className="h-3 w-3" />
+                          <X className="h-3 w-3 text-slate-500" />
                         </Button>
                       </div>
                     </CardContent>
