@@ -49,21 +49,6 @@ export default function PublicDiscovery() {
 
   return (
     <div className="space-y-6">
-      {/* Brand Header */}
-      <div className="bg-white border-b border-gray-200 -mx-6 -mt-6 px-6 py-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold">IH</span>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">ItsHappening.Africa</h1>
-              <p className="text-sm text-slate-600">Sports booking platform for everyone</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
       {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">Discover Sports Organizations</h1>
@@ -84,13 +69,13 @@ export default function PublicDiscovery() {
       </div>
 
       {/* Featured Classes */}
-      <Card>
+      <Card className="border-slate-200 bg-white">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-slate-900">
+            <Calendar className="h-5 w-5 text-primary" />
             Upcoming Classes
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-slate-600">
             Book sessions happening soon across all organizations
           </CardDescription>
         </CardHeader>

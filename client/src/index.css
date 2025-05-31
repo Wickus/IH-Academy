@@ -144,9 +144,33 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus 
   background-color: #FFFFFF !important;
 }
 
-/* Remove yellow borders from all elements */
-.border-yellow-300, .border-yellow-400, .border-yellow-500 {
+/* Remove ALL yellow elements from the app */
+.border-yellow-300, .border-yellow-400, .border-yellow-500, .border-yellow-200 {
   border-color: #E2E8F0 !important;
+}
+
+.bg-yellow-50, .bg-yellow-100, .bg-yellow-200 {
+  background-color: #EBF4FF !important;
+}
+
+.text-yellow-600, .text-yellow-700, .text-yellow-800 {
+  color: #20366B !important;
+}
+
+/* Fix sidebar navigation highlighting */
+.bg-yellow-100 {
+  background-color: #EBF4FF !important;
+}
+
+/* Override any yellow focus states */
+*:focus {
+  outline: 2px solid #20366B !important;
+}
+
+/* Remove yellow from Radix UI components */
+[data-state="active"] {
+  background-color: #EBF4FF !important;
+  color: #20366B !important;
 }
 
 /* Fix card styling to ensure text visibility */
