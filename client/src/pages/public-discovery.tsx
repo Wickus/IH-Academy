@@ -176,14 +176,14 @@ export default function PublicDiscovery() {
                     variant="outline" 
                     className="border-2"
                     style={{ 
-                      borderColor: org.secondaryColor,
-                      color: org.secondaryColor 
+                      borderColor: org.secondaryColor || '#278DD4',
+                      color: org.secondaryColor || '#278DD4'
                     }}
                   >
-                    {org.planType}
+                    {org.planType || 'Free'}
                   </Badge>
                   <Badge variant="secondary">
-                    Up to {org.maxClasses} classes
+                    Up to {org.maxClasses || 10} classes
                   </Badge>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export default function PublicDiscovery() {
                 <Link href={`/organizations/${org.id}/classes`} className="flex-1">
                   <Button 
                     className="w-full"
-                    style={{ backgroundColor: org.primaryColor }}
+                    style={{ backgroundColor: org.primaryColor || '#20366B' }}
                   >
                     View Classes
                   </Button>
