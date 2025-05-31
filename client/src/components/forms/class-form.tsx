@@ -405,16 +405,24 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={onSuccess}>
+        <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onSuccess}
+            className="border-slate-300 text-slate-600 hover:bg-slate-50"
+          >
             Cancel
           </Button>
           <Button 
             type="submit" 
-            disabled={isSubmitting || createClassMutation.isPending}
-            className="bg-primary hover:bg-primary/90 text-white"
+            disabled={isSubmitting || createClassMutation.isPending || updateClassMutation.isPending}
+            className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
           >
-            {isSubmitting || createClassMutation.isPending ? "Creating..." : "Create Class"}
+            {isSubmitting || createClassMutation.isPending || updateClassMutation.isPending 
+              ? (initialData?.id ? "Updating..." : "Creating...") 
+              : (initialData?.id ? "Update Class" : "Create Class")
+            }
           </Button>
         </div>
       </form>
