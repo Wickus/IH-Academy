@@ -24,7 +24,7 @@ interface RegisterFormData {
   firstName: string;
   lastName: string;
   phone?: string;
-  role: 'organization_admin' | 'member';
+  role: 'global_admin' | 'organization_admin' | 'coach' | 'member';
 }
 
 interface OrganizationFormData {
@@ -85,7 +85,11 @@ export default function Auth() {
   });
 
   const createOrgMutation = useMutation({
-    mutationFn: (orgData: OrganizationFormData) => api.createOrganization(orgData),
+    mutationFn: (orgData: OrganizationFormData) => api.createOrganization({
+      ...orgData,
+      maxClasses: 50,
+      maxMembers: 500
+    }),
     onSuccess: (organization: Organization) => {
       toast({ title: "Organization created!", description: `${organization.name} is ready to go!` });
       setLocation("/");
