@@ -136,7 +136,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/register", async (req: Request, res: Response) => {
     try {
       const userData = req.body;
+      // Ensure name field is populated from firstName and lastName
+      if (!userData.name && (userData.firstName || userData.lastName)) {
+        userData.name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+      }
       const user = await storage.createUser(userData);
+      currentUser = user;
       res.json(user);
     } catch (error) {
       console.error("Error registering user:", error);
