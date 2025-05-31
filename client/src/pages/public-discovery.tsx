@@ -45,8 +45,8 @@ export default function PublicDiscovery() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.clear();
-      // Force a page reload to trigger the authentication check
-      window.location.reload();
+      // Redirect to auth page
+      window.location.href = '/auth';
     }
   });
 
