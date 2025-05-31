@@ -550,7 +550,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/coaches", async (req: Request, res: Response) => {
     try {
+      console.log('Coach creation request body:', req.body);
       const { user: userData, ...coachData } = req.body;
+      console.log('User data:', userData);
+      console.log('Coach data:', coachData);
       
       // First create the user
       const user = await storage.createUser({

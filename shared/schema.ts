@@ -7,8 +7,9 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   email: text("email").notNull().unique(),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
+  name: text("name").notNull(), // Full name field
+  firstName: text("first_name"),
+  lastName: text("last_name"),
   phone: text("phone"),
   role: text("role", { enum: ["global_admin", "organization_admin", "coach", "member"] }).notNull().default("member"),
   organizationId: integer("organization_id"), // which organization they belong to
