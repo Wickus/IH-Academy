@@ -20,7 +20,7 @@
   --accent: 248 250 252; /* #F8FAFC */
   --accent-foreground: 32 54 107; /* #20366B */
   --muted: 248 250 252; /* #F8FAFC */
-  --muted-foreground: 100 116 139; /* #64748B */
+  --muted-foreground: 75 85 99; /* #4B5563 - Darker gray for better readability */
   --destructive: 239 68 68; /* #EF4444 */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
   --border: 226 232 240; /* #E2E8F0 */
