@@ -139,25 +139,32 @@ export default function RealTimeAvailability({
   const { status, variant, color } = getAvailabilityStatus();
 
   return (
-    <Card className="brand-card">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Live Availability
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <Badge variant={variant}>{status}</Badge>
-          </div>
+    <div className="bg-gradient-to-r from-slate-50 to-blue-50 border border-[#278DD4]/20 rounded-lg p-3">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-[#278DD4]" />
+          <span className="text-sm font-medium text-[#20366B]">Live Availability</span>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Availability Display */}
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#24D367]' : 'bg-red-500'} animate-pulse`} />
+          <Badge 
+            variant={variant} 
+            className={`${
+              status === 'Available' ? 'bg-[#24D367] text-white' :
+              status === 'Filling Up' ? 'bg-yellow-500 text-white' :
+              'bg-red-500 text-white'
+            } border-0 text-xs`}
+          >
+            {status}
+          </Badge>
+        </div>
+      </div>
+      
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Available Spots</p>
-            <p className={`text-2xl font-bold ${color}`}>
+            <p className="text-xs text-slate-600">Available Spots</p>
+            <p className="text-lg font-bold text-[#20366B]">
               {availableSpots} / {totalSpots}
             </p>
           </div>
@@ -166,45 +173,34 @@ export default function RealTimeAvailability({
             variant="outline"
             size="sm"
             onClick={toggleSubscription}
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white text-xs"
           >
-            {isSubscribed ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-            {isSubscribed ? "Disable" : "Enable"} Alerts
+            {isSubscribed ? <BellOff className="h-3 w-3" /> : <Bell className="h-3 w-3" />}
+            {isSubscribed ? "Disable" : "Enable"}
           </Button>
         </div>
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between text-xs text-slate-500">
             <span>Empty</span>
             <span>Full</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 rounded-full h-2">
             <div 
-              className={`h-2 rounded-full transition-all duration-500 ${
-                availableSpots === 0 ? 'bg-red-500' :
-                availableSpots / totalSpots <= 0.2 ? 'bg-orange-500' :
-                availableSpots / totalSpots <= 0.5 ? 'bg-yellow-500' :
-                'bg-green-500'
-              }`}
+              className="h-2 rounded-full transition-all duration-500 bg-gradient-to-r from-[#24D367] to-[#278DD4]"
               style={{ width: `${((totalSpots - availableSpots) / totalSpots) * 100}%` }}
             />
           </div>
         </div>
 
-        {/* Connection Status */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          {isConnected ? "Real-time updates active" : "Reconnecting..."}
-        </div>
-
         {/* Recent Activity */}
         {recentBookings.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium">Recent Activity</p>
+            <p className="text-sm font-medium text-[#20366B]">Recent Activity</p>
             <div className="space-y-1">
               {recentBookings.map((booking, index) => (
-                <p key={index} className="text-xs text-muted-foreground bg-muted p-2 rounded slide-up">
+                <p key={index} className="text-xs text-slate-600 bg-slate-100 p-2 rounded">
                   {booking}
                 </p>
               ))}
@@ -212,15 +208,12 @@ export default function RealTimeAvailability({
           </div>
         )}
 
-        {/* Waitlist Info (when full) */}
-        {availableSpots === 0 && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-            <p className="text-sm text-red-700 dark:text-red-300">
-              This class is currently full. Enable alerts to be notified when a spot becomes available.
-            </p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        {/* Connection Status */}
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <Clock className="h-3 w-3" />
+          {isConnected ? "Real-time updates active" : "Reconnecting..."}
+        </div>
+      </div>
+    </div>
   );
 }
