@@ -26,6 +26,8 @@ type CoachFormData = z.infer<typeof coachFormSchema>;
 interface CoachFormProps {
   onSuccess: () => void;
   initialData?: any;
+  isEdit?: boolean;
+  editId?: number;
 }
 
 export default function CoachForm({ onSuccess, initialData }: CoachFormProps) {

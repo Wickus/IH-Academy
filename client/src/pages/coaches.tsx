@@ -6,11 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Mail, Phone, Star, Users, Calendar, Plus } from "lucide-react";
+import { Mail, Phone, Star, Users, Calendar, Plus, Edit } from "lucide-react";
 import CoachForm from "@/components/forms/coach-form";
 
 export default function Coaches() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingCoach, setEditingCoach] = useState<any>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   
   const { data: coaches = [], isLoading } = useQuery({
     queryKey: ["/api/coaches"],
@@ -74,6 +76,37 @@ export default function Coaches() {
               <CoachForm 
                 onSuccess={() => setShowCreateDialog(false)}
               />
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Coach Dialog */}
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-[#20366B] text-xl font-bold">Edit Coach</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              {editingCoach && (
+                <CoachForm
+                  initialData={{
+                    name: editingCoach.user?.name || '',
+                    email: editingCoach.user?.email || '',
+                    phone: editingCoach.phone || '',
+                    bio: editingCoach.bio || '',
+                    specializations: editingCoach.specializations || [],
+                    hourlyRate: editingCoach.hourlyRate || 0,
+                    profilePicture: editingCoach.profilePicture || '',
+                    organizationId: editingCoach.organizationId
+                  }}
+                  isEdit={true}
+                  editId={editingCoach.id}
+                  onSuccess={() => {
+                    setShowEditDialog(false);
+                    setEditingCoach(null);
+                  }}
+                />
+              )}
             </div>
           </DialogContent>
         </Dialog>
@@ -153,6 +186,16 @@ export default function Coaches() {
                   <Button size="sm" className="flex-1 bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
                     <Users className="mr-2 h-4 w-4" />
                     Classes
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => {
+                      setEditingCoach(coach);
+                      setShowEditDialog(true);
+                    }}
+                    className="bg-[#20366B] hover:bg-[#1a2c57] text-white border-0"
+                  >
+                    <Edit className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
