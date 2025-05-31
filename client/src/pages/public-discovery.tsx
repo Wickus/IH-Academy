@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
 
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showNotificationSetup, setShowNotificationSetup] = useState(false);
   const { toast } = useToast();
 
   const { data: user } = useQuery({
@@ -49,6 +50,16 @@ export default function PublicDiscovery() {
       });
     }
   });
+
+  // Show notification setup for new users
+  useEffect(() => {
+    if (user) {
+      const hasSeenNotificationSetup = localStorage.getItem('hasSeenNotificationSetup');
+      if (!hasSeenNotificationSetup) {
+        setShowNotificationSetup(true);
+      }
+    }
+  }, [user]);
 
   const filteredOrganizations = organizations?.filter(org => 
     org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -230,14 +241,18 @@ export default function PublicDiscovery() {
                         {org.name.charAt(0)}
                       </div>
                       <Button
-                        variant="outline"
+                        variant={org.isFollowing ? "default" : "outline"}
                         size="sm"
                         onClick={() => followMutation.mutate(org.id)}
                         disabled={followMutation.isPending}
-                        className="gap-2 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white transition-all"
+                        className={`gap-2 transition-all ${
+                          org.isFollowing 
+                            ? "bg-[#24D367] text-white hover:bg-[#24D367]/90 border-[#24D367]" 
+                            : "border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
+                        }`}
                       >
-                        <Heart className="h-4 w-4" />
-                        {followMutation.isPending ? "Following..." : "Follow"}
+                        <Heart className={`h-4 w-4 ${org.isFollowing ? "fill-current" : ""}`} />
+                        {followMutation.isPending ? "Updating..." : org.isFollowing ? "Following" : "Follow"}
                       </Button>
                     </div>
                     <div className="mt-4">
@@ -302,6 +317,20 @@ export default function PublicDiscovery() {
           </div>
         </div>
       </div>
+
+      {/* Push Notification Modal */}
+      {showNotificationSetup && (
+        <PushNotificationSetup 
+          onComplete={() => {
+            localStorage.setItem('hasSeenNotificationSetup', 'true');
+            setShowNotificationSetup(false);
+          }}
+          onDismiss={() => {
+            localStorage.setItem('hasSeenNotificationSetup', 'true');
+            setShowNotificationSetup(false);
+          }}
+        />
+      )}
     </div>
   );
 }

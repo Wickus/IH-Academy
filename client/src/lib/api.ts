@@ -48,6 +48,7 @@ export interface Organization {
   maxClasses: number;
   maxMembers: number;
   isActive: boolean;
+  isFollowing?: boolean;
 }
 
 export interface Sport {
