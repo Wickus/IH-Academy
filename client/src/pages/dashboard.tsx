@@ -28,10 +28,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 lg:p-10 space-y-8">
+    <div className="p-6 lg:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
-        <p className="text-slate-600">Welcome back! Here's what's happening at your academy.</p>
+        <h1 className="text-3xl font-bold text-[#20366B]">Dashboard</h1>
+        <p className="text-slate-600">Welcome back! Here's what's happening with ItsHappening.Africa.</p>
       </div>
       
       <StatsCards stats={stats} />
