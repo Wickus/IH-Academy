@@ -22,9 +22,9 @@ export default function Header() {
               3
             </span>
           </Button>
-          <Button className="bg-primary hover:bg-primary/90 text-white shadow-md border border-primary">
-            <Plus className="mr-2 h-4 w-4 text-white" />
-            <span className="hidden sm:inline text-white">New Class</span>
+          <Button className="bg-primary hover:bg-primary/90 shadow-md border border-primary text-[#20366B]">
+            <Plus className="mr-2 h-4 w-4 text-[#20366B]" />
+            <span className="hidden sm:inline text-[#20366B]">New Class</span>
           </Button>
         </div>
       </div>
