@@ -140,6 +140,11 @@ export const api = {
     return response.json();
   },
 
+  getUserOrganizations: async (): Promise<Organization[]> => {
+    const response = await apiRequest('GET', '/api/organizations/my');
+    return response.json();
+  },
+
   updateOrganization: async (id: number, orgData: Partial<Organization>): Promise<Organization> => {
     const response = await apiRequest('PUT', `/api/organizations/${id}`, orgData);
     return response.json();
