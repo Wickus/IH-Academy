@@ -126,12 +126,12 @@ export default function Classes() {
                 />
 
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <div>
-                    <p className="text-sm text-slate-500">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-slate-500 truncate mb-1">
                       {formatDate(classItem.startTime)}
                     </p>
                     {classItem.price && (
-                      <p className="font-semibold text-[#24D367] text-lg">
+                      <p className="font-semibold text-[#24D367] text-base">
                         {formatCurrency(classItem.price)}
                       </p>
                     )}
