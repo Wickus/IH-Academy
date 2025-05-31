@@ -119,6 +119,10 @@ export const api = {
     return response.json();
   },
 
+  logout: async (): Promise<void> => {
+    await apiRequest('POST', '/api/auth/logout');
+  },
+
   // Organizations
   getOrganizations: async (): Promise<Organization[]> => {
     const response = await apiRequest('GET', '/api/organizations');
