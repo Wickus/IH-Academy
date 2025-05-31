@@ -81,35 +81,45 @@ export default function Coaches() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {coaches.map((coach) => (
-          <Card key={coach.id}>
-            <CardHeader>
+          <Card key={coach.id} className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white p-6">
               <div className="flex items-center space-x-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback>
-                    {coach.user?.name?.split(' ').map((n: string) => n[0]).join('') || 'C'}
-                  </AvatarFallback>
+                <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
+                  {coach.profilePicture ? (
+                    <img src={coach.profilePicture} alt={coach.user?.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <AvatarFallback className="bg-[#24D367] text-white text-lg font-bold">
+                      {coach.user?.name?.split(' ').map((n: string) => n[0]).join('') || 'C'}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
-                <div>
-                  <CardTitle className="text-lg">{coach.user?.name || 'Unknown Coach'}</CardTitle>
-                  <p className="text-sm text-muted-foreground">Coach</p>
+                <div className="flex-1">
+                  <CardTitle className="text-xl text-white font-bold">{coach.user?.name || 'Unknown Coach'}</CardTitle>
+                  <p className="text-blue-100 text-sm">Professional Coach</p>
+                  {coach.user?.phone && (
+                    <div className="flex items-center text-blue-100 text-sm mt-1">
+                      <Phone className="mr-1 h-3 w-3" />
+                      {coach.user.phone}
+                    </div>
+                  )}
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-4">
                 {coach.user?.email && (
-                  <div className="flex items-center text-sm text-slate-600">
+                  <div className="flex items-center text-sm text-slate-700">
                     <Mail className="mr-2 h-4 w-4 text-[#278DD4]" />
-                    {coach.user.email}
+                    <span className="text-slate-600">{coach.user.email}</span>
                   </div>
                 )}
 
                 {coach.specializations && coach.specializations.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium mb-2">Specializations</p>
+                    <p className="text-sm font-semibold mb-2 text-[#20366B]">Specializations</p>
                     <div className="flex flex-wrap gap-1">
                       {coach.specializations.map((spec: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <Badge key={index} className="bg-[#24D3BF] text-[#20366B] hover:bg-[#1fb5a3] text-xs font-medium">
                           {spec}
                         </Badge>
                       ))}
@@ -119,26 +129,28 @@ export default function Coaches() {
 
                 {coach.bio && (
                   <div>
-                    <p className="text-sm font-medium mb-1">Bio</p>
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-sm font-semibold mb-2 text-[#20366B]">About</p>
+                    <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
                       {coach.bio}
                     </p>
                   </div>
                 )}
 
                 {coach.hourlyRate && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Hourly Rate</span>
-                    <span className="font-medium">R{Number(coach.hourlyRate).toFixed(0)}</span>
+                  <div className="bg-gradient-to-r from-[#24D367]/10 to-[#24D3BF]/10 p-3 rounded-lg border border-[#24D367]/20">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-600 font-medium">Hourly Rate</span>
+                      <span className="font-bold text-[#20366B] text-lg">R{Number(coach.hourlyRate).toFixed(0)}</span>
+                    </div>
                   </div>
                 )}
 
                 <div className="flex gap-2 pt-4">
-                  <Button size="sm" variant="outline" className="flex-1">
+                  <Button size="sm" className="flex-1 bg-[#278DD4] hover:bg-[#1f7bc4] text-white border-0">
                     <Calendar className="mr-2 h-4 w-4" />
                     Schedule
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
+                  <Button size="sm" className="flex-1 bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
                     <Users className="mr-2 h-4 w-4" />
                     Classes
                   </Button>

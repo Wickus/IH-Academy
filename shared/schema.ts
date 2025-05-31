@@ -67,6 +67,7 @@ export const coaches = pgTable("coaches", {
   specializations: text("specializations").array(),
   bio: text("bio"),
   hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
+  profilePicture: text("profile_picture"),
 });
 
 export const classes = pgTable("classes", {
