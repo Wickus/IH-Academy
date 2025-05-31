@@ -45,10 +45,8 @@ export default function PublicDiscovery() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.clear();
-      toast({
-        title: "Logged out successfully",
-        description: "You have been logged out of your account.",
-      });
+      // Force a page reload to trigger the authentication check
+      window.location.reload();
     }
   });
 
