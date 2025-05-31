@@ -142,9 +142,9 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Basic Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <FormField
             control={form.control}
             name="name"
@@ -202,7 +202,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                 <Textarea 
                   placeholder="Describe the class objectives, skill level, and what participants can expect..."
                   {...field} 
-                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[80px]"
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px]"
                 />
               </FormControl>
               <FormMessage />
@@ -211,7 +211,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
         />
 
         {/* Coach and Scheduling */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <FormField
             control={form.control}
             name="coachId"
@@ -275,7 +275,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
         </div>
 
         {/* Capacity and Pricing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <FormField
             control={form.control}
             name="capacity"
@@ -342,11 +342,12 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
           name="requirements"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Requirements & Equipment</FormLabel>
+              <FormLabel className="text-[#20366B] font-medium">Requirements & Equipment</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="List any equipment, skill level, or preparation requirements..."
                   {...field} 
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px]"
                 />
               </FormControl>
               <FormMessage />
@@ -355,7 +356,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
         />
 
         {/* Recurring Options */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <FormField
             control={form.control}
             name="isRecurring"
@@ -368,8 +369,8 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Recurring Class</FormLabel>
-                  <p className="text-sm text-muted-foreground">
+                  <FormLabel className="text-[#20366B] font-medium">Recurring Class</FormLabel>
+                  <p className="text-sm text-slate-600">
                     This class will repeat according to the schedule pattern
                   </p>
                 </div>
@@ -383,10 +384,10 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
               name="recurrencePattern"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Recurrence Pattern</FormLabel>
+                  <FormLabel className="text-[#20366B] font-medium">Recurrence Pattern</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
                         <SelectValue placeholder="Select recurrence pattern" />
                       </SelectTrigger>
                     </FormControl>
