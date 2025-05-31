@@ -292,4 +292,10 @@ export const api = {
     const response = await apiRequest('POST', '/api/notifications/test');
     return response.json();
   },
+
+  // Users (Global admin only)
+  getUsers: async (): Promise<User[]> => {
+    const response = await apiRequest('GET', '/api/users');
+    return response.json();
+  },
 };

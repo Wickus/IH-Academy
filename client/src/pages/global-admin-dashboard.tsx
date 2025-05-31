@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { api, type GlobalDashboardStats, type Organization } from "@/lib/api";
+import { api, type GlobalDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar } from "lucide-react";
 
 export default function GlobalAdminDashboard() {
+  const [showUsers, setShowUsers] = useState(false);
+
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/stats/global'],
     queryFn: () => api.getGlobalStats(),
@@ -15,6 +18,12 @@ export default function GlobalAdminDashboard() {
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: () => api.getOrganizations(),
+  });
+
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ['/api/users'],
+    queryFn: () => api.getUsers(),
+    enabled: showUsers, // Only fetch when users section is expanded
   });
 
   if (statsLoading || orgsLoading) {
@@ -60,15 +69,21 @@ export default function GlobalAdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-l-4 border-l-[#24D367] shadow-lg">
+          <Card 
+            className="bg-white border-l-4 border-l-[#24D367] shadow-lg cursor-pointer hover:shadow-xl transition-shadow" 
+            onClick={() => setShowUsers(!showUsers)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-[#20366B]">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-[#24D367]" />
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#24D367]" />
+                {showUsers ? <ChevronUp className="h-4 w-4 text-[#24D367]" /> : <ChevronDown className="h-4 w-4 text-[#24D367]" />}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-[#20366B]">{stats?.totalUsers || 0}</div>
               <p className="text-xs text-slate-600">
-                Registered platform users
+                Click to view all users
               </p>
             </CardContent>
           </Card>
@@ -99,6 +114,73 @@ export default function GlobalAdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Users Management - Only show when expanded */}
+        {showUsers && (
+          <Card className="bg-white shadow-lg border-0">
+            <CardHeader className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] text-white rounded-t-lg">
+              <CardTitle className="text-white">Platform Users</CardTitle>
+              <CardDescription className="text-green-100">
+                All registered users across the platform
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              {usersLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#24D367]"></div>
+                  <span className="ml-2 text-slate-600">Loading users...</span>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {users?.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] flex items-center justify-center text-white font-bold">
+                          {user.firstName?.charAt(0) || user.username.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-[#20366B]">
+                            {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                          </h3>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Mail className="h-3 w-3" />
+                            {user.email}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge 
+                              variant={user.role === 'global_admin' ? 'default' : user.role === 'organization_admin' ? 'secondary' : 'outline'}
+                              className={user.role === 'global_admin' ? 'bg-[#20366B] text-white' : user.role === 'organization_admin' ? 'bg-[#278DD4] text-white' : ''}
+                            >
+                              {user.role.replace('_', ' ')}
+                            </Badge>
+                            <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
+                              {user.isActive ? 'Active' : 'Inactive'}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
+                          <UserCheck className="h-3 w-3" />
+                          View
+                        </Button>
+                        <Button variant="outline" size="sm" className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                          <Settings className="h-3 w-3" />
+                          Manage
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {users && users.length === 0 && (
+                    <div className="text-center py-8 text-slate-500">
+                      No users found on the platform.
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Organizations Management */}
         <Card className="bg-white shadow-lg border-0">
