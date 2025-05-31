@@ -20,22 +20,25 @@ export default function PushNotificationSetup({ onComplete, onDismiss }: PushNot
   const { toast } = useToast();
 
   useEffect(() => {
-    checkNotificationSupport();
+    // Only check notification support when the component is mounted
+    const initializeNotifications = async () => {
+      setIsLoading(true);
+      
+      const supported = await pushNotificationService.initialize();
+      setIsSupported(supported);
+      
+      if (supported) {
+        setIsSubscribed(pushNotificationService.isSubscribed());
+        setPermission(Notification.permission);
+      }
+      
+      setIsLoading(false);
+    };
+
+    initializeNotifications();
   }, []);
 
-  const checkNotificationSupport = async () => {
-    setIsLoading(true);
-    
-    const supported = await pushNotificationService.initialize();
-    setIsSupported(supported);
-    
-    if (supported) {
-      setIsSubscribed(pushNotificationService.isSubscribed());
-      setPermission(Notification.permission);
-    }
-    
-    setIsLoading(false);
-  };
+
 
   const handleEnableNotifications = async () => {
     setIsLoading(true);
@@ -137,9 +140,30 @@ export default function PushNotificationSetup({ onComplete, onDismiss }: PushNot
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#278DD4] mx-auto mb-3"></div>
-          <p className="text-slate-600">Checking notification support...</p>
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className="relative">
+            {/* Header with gradient */}
+            <div className="bg-gradient-to-r from-[#20366B] to-[#278DD4] rounded-t-2xl p-6 text-center text-white">
+              {onDismiss && (
+                <div className="absolute top-4 right-4">
+                  <Button variant="ghost" size="sm" onClick={onDismiss} className="text-white/80 hover:text-white hover:bg-white/10">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              <Smartphone className="h-12 w-12 mx-auto mb-3 text-white" />
+              <h3 className="text-xl font-bold">Setting Up Notifications</h3>
+              <p className="text-white/90 text-sm mt-2">
+                Please wait while we check your device compatibility
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#278DD4] mx-auto mb-3"></div>
+              <p className="text-slate-600">Checking notification support...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
