@@ -175,9 +175,9 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                       <SelectValue placeholder="Select a sport" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-300">
                     {sports.map((sport) => (
-                      <SelectItem key={sport.id} value={sport.id.toString()}>
+                      <SelectItem key={sport.id} value={sport.id.toString()} className="text-slate-900 hover:bg-slate-100">
                         <div className="flex items-center space-x-2">
                           <i className={`${sport.icon} text-sm`} style={{ color: sport.color }}></i>
                           <span>{sport.name}</span>
@@ -202,7 +202,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                 <Textarea 
                   placeholder="Describe the class objectives, skill level, and what participants can expect..."
                   {...field} 
-                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px]"
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px] text-slate-900 placeholder:text-slate-500"
                 />
               </FormControl>
               <FormMessage />
@@ -224,9 +224,9 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                       <SelectValue placeholder="Select a coach" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-slate-300">
                     {coaches.map((coach) => (
-                      <SelectItem key={coach.id} value={coach.id.toString()}>
+                      <SelectItem key={coach.id} value={coach.id.toString()} className="text-slate-900 hover:bg-slate-100">
                         {coach.user?.name || `Coach ${coach.id}`}
                       </SelectItem>
                     ))}
@@ -347,7 +347,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                 <Textarea 
                   placeholder="List any equipment, skill level, or preparation requirements..."
                   {...field} 
-                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px]"
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px] text-slate-900 placeholder:text-slate-500"
                 />
               </FormControl>
               <FormMessage />
@@ -366,6 +366,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    className="border-slate-300 data-[state=checked]:bg-[#278DD4] data-[state=checked]:border-[#278DD4]"
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -391,11 +392,11 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                         <SelectValue placeholder="Select recurrence pattern" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectContent className="bg-white border-slate-300">
+                      <SelectItem value="daily" className="text-slate-900 hover:bg-slate-100">Daily</SelectItem>
+                      <SelectItem value="weekly" className="text-slate-900 hover:bg-slate-100">Weekly</SelectItem>
+                      <SelectItem value="biweekly" className="text-slate-900 hover:bg-slate-100">Bi-weekly</SelectItem>
+                      <SelectItem value="monthly" className="text-slate-900 hover:bg-slate-100">Monthly</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
