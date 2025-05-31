@@ -1,20 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useRoute } from "wouter";
 import { api, type Class } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Users, Star, Calendar } from "lucide-react";
+import { Clock, MapPin, Users, ArrowLeft, Calendar } from "lucide-react";
 import { formatCurrency, formatTime, formatDate } from "@/lib/utils";
 import BookingForm from "@/components/forms/booking-form";
+import { Link } from "wouter";
 
-export default function PublicBooking() {
+export default function OrganizationClasses() {
+  const [, params] = useRoute("/organizations/:id/classes");
+  const organizationId = parseInt(params?.id || "0");
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
 
+  const { data: organization, isLoading: orgLoading } = useQuery({
+    queryKey: ["/api/organizations", organizationId],
+    queryFn: () => api.getOrganization(organizationId),
+  });
+
   const { data: classes, isLoading: classesLoading } = useQuery({
-    queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses({}),
+    queryKey: ["/api/classes", { organizationId }],
+    queryFn: () => api.getClasses({ organizationId }),
   });
 
   const { data: sports } = useQuery({
@@ -22,12 +31,12 @@ export default function PublicBooking() {
     queryFn: () => api.getSports(),
   });
 
-  if (classesLoading) {
+  if (orgLoading || classesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto"></div>
-          <p className="mt-4 text-white">Loading sports organizations...</p>
+          <p className="mt-4 text-white">Loading classes...</p>
         </div>
       </div>
     );
@@ -38,61 +47,69 @@ export default function PublicBooking() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367]">
       {/* Header Section */}
-      <div className="relative py-16 px-6 text-center">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="w-16 h-16 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <Star className="text-white text-2xl" />
+      <div className="relative py-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Link href="/discover">
+            <Button variant="ghost" className="text-white hover:bg-white/10 mb-6">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Organizations
+            </Button>
+          </Link>
+          
+          <div className="flex items-center gap-6 mb-6">
+            <div 
+              className="w-20 h-20 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg"
+              style={{ backgroundColor: organization?.primaryColor || '#20366B' }}
+            >
+              {organization?.name.charAt(0)}
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+                {organization?.name}
+              </h1>
+              <p className="text-xl text-white/90 mt-2">
+                {organization?.description || "Sports training and coaching"}
+              </p>
+            </div>
           </div>
-          <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">
-            ItsHappening.Africa
-          </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-            Join our expert-led sports programs and take your fitness journey to the next level.
-            Book your spot in just a few clicks!
-          </p>
         </div>
       </div>
 
       {/* Content Section */}
       <div className="bg-slate-50 min-h-screen rounded-t-3xl relative -mt-8 pt-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">
-              Discover Amazing Sports Classes
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Browse all available classes and find the perfect fit for your fitness goals.
-            </p>
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">Available Classes</h2>
+            <p className="text-slate-600">Book your spot in our expert-led training sessions</p>
           </div>
 
           {/* Classes Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {classes?.map((classItem) => {
               const sport = getSportById(classItem.sportId);
               const availableSpots = classItem.capacity - (classItem.bookingCount || 0);
               
               return (
-                <Card key={classItem.id} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105 group overflow-hidden">
+                <Card key={classItem.id} className="hover:shadow-xl transition-all border-0 shadow-lg rounded-2xl overflow-hidden bg-white">
                   <div className="h-2 bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367]"></div>
                   
                   <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-3">
                       <Badge 
-                        className="text-white font-medium"
+                        className="text-white font-medium px-3 py-1"
                         style={{ backgroundColor: sport?.color || '#278DD4' }}
                       >
                         {sport?.name}
                       </Badge>
-                      <div className="flex items-center space-x-1 text-[#24D3BF]">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span className="text-sm font-medium text-slate-600">4.8</span>
-                      </div>
+                      <span className="text-sm text-slate-500">
+                        {availableSpots} spots left
+                      </span>
                     </div>
-                    <CardTitle className="text-xl font-bold text-slate-800 group-hover:text-[#20366B] transition-colors">
+                    <CardTitle className="text-xl font-bold text-slate-900">
                       {classItem.name}
                     </CardTitle>
                     {classItem.description && (
-                      <p className="text-slate-600 text-sm line-clamp-2">
+                      <p className="text-slate-600 text-sm mt-2">
                         {classItem.description}
                       </p>
                     )}
@@ -100,14 +117,14 @@ export default function PublicBooking() {
 
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-3 text-slate-600">
+                      <div className="flex items-center gap-3 text-slate-600">
                         <Calendar className="w-4 h-4 text-[#20366B]" />
                         <span className="text-sm font-medium">
                           {formatDate(classItem.startTime)}
                         </span>
                       </div>
                       
-                      <div className="flex items-center space-x-3 text-slate-600">
+                      <div className="flex items-center gap-3 text-slate-600">
                         <Clock className="w-4 h-4 text-[#20366B]" />
                         <span className="text-sm font-medium">
                           {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
@@ -115,23 +132,23 @@ export default function PublicBooking() {
                       </div>
 
                       {classItem.location && (
-                        <div className="flex items-center space-x-3 text-slate-600">
+                        <div className="flex items-center gap-3 text-slate-600">
                           <MapPin className="w-4 h-4 text-[#20366B]" />
                           <span className="text-sm font-medium">{classItem.location}</span>
                         </div>
                       )}
 
-                      <div className="flex items-center space-x-3 text-slate-600">
+                      <div className="flex items-center gap-3 text-slate-600">
                         <Users className="w-4 h-4 text-[#20366B]" />
                         <span className="text-sm font-medium">
-                          {availableSpots} spots available
+                          {classItem.capacity} max capacity
                         </span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                       <div>
-                        <span className="text-2xl font-bold text-slate-800">
+                        <span className="text-2xl font-bold text-[#20366B]">
                           {formatCurrency(parseFloat(classItem.price.toString()))}
                         </span>
                         <span className="text-slate-500 text-sm ml-1">per class</span>
@@ -143,7 +160,7 @@ export default function PublicBooking() {
                           setShowBookingForm(true);
                         }}
                         disabled={availableSpots === 0}
-                        className="bg-gradient-to-r from-[#20366B] to-[#278DD4] hover:from-[#20366B]/90 hover:to-[#278DD4]/90 text-white font-medium px-6 py-2 rounded-lg transition-all duration-200 transform hover:scale-105"
+                        className="bg-[#24D367] hover:bg-[#24D367]/90 text-white font-medium px-6 py-2 rounded-xl transition-all shadow-md hover:shadow-lg"
                       >
                         {availableSpots === 0 ? 'Sold Out' : 'Book Now'}
                       </Button>
@@ -156,11 +173,11 @@ export default function PublicBooking() {
 
           {classes?.length === 0 && (
             <div className="text-center py-16">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Calendar className="w-8 h-8 text-slate-400" />
               </div>
               <h3 className="text-xl font-semibold text-slate-600 mb-2">No Classes Available</h3>
-              <p className="text-slate-500">Check back soon for new class schedules!</p>
+              <p className="text-slate-500">This organization hasn't scheduled any classes yet. Check back soon!</p>
             </div>
           )}
         </div>

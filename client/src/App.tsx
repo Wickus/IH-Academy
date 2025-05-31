@@ -18,6 +18,7 @@ import PublicBooking from "@/pages/public-booking";
 import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
 import PublicDiscovery from "@/pages/public-discovery";
 import OrganizationDashboard from "@/pages/organization-dashboard";
+import OrganizationClasses from "@/pages/organization-classes";
 import MobileCoach from "@/pages/mobile-coach";
 import MobileParticipant from "@/pages/mobile-participant";
 import Auth from "@/pages/auth";
@@ -89,6 +90,7 @@ function RoleBasedRouter({ user }: { user?: User }) {
       <Route path="/discover" component={PublicDiscovery} />
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
+      <Route path="/organizations/:id/classes" component={OrganizationClasses} />
       <Route path="/achievements" component={Achievements} />
       <Route component={NotFound} />
     </Switch>
