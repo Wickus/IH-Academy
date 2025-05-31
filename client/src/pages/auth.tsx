@@ -148,7 +148,7 @@ export default function Auth() {
               </TabsTrigger>
               <TabsTrigger value="organization" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
                 <Building2 className="h-4 w-4" />
-                Organization
+                Organisation
               </TabsTrigger>
             </TabsList>
 
