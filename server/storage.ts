@@ -303,8 +303,19 @@ export class DatabaseStorage implements IStorage {
     return coach || undefined;
   }
 
-  async getCoachesByOrganization(organizationId: number): Promise<Coach[]> {
-    return await db.select().from(coaches).where(eq(coaches.organizationId, organizationId));
+  async getCoachesByOrganization(organizationId: number): Promise<any[]> {
+    const coachList = await db.select().from(coaches).where(eq(coaches.organizationId, organizationId));
+    
+    // Enrich with user data
+    const enrichedCoaches = await Promise.all(coachList.map(async (coach) => {
+      const user = await this.getUser(coach.userId);
+      return {
+        ...coach,
+        user,
+      };
+    }));
+
+    return enrichedCoaches;
   }
 
   async createCoach(coach: InsertCoach): Promise<Coach> {
