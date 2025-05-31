@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import PushNotificationSetup from "@/components/push-notification-setup";
+import NotificationModal from "@/components/notification-modal";
 
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,8 +53,10 @@ export default function PublicDiscovery() {
   // Show notification setup for new users
   useEffect(() => {
     if (user) {
-      // Always show for testing - remove the localStorage check temporarily
-      setShowNotificationSetup(true);
+      const hasSeenNotificationSetup = localStorage.getItem('hasSeenNotificationSetup');
+      if (!hasSeenNotificationSetup) {
+        setShowNotificationSetup(true);
+      }
     }
   }, [user]);
 
@@ -170,14 +172,11 @@ export default function PublicDiscovery() {
           {/* Test Notification Button */}
           <div className="mt-4">
             <Button
-              onClick={() => {
-                localStorage.removeItem('hasSeenNotificationSetup');
-                setShowNotificationSetup(true);
-              }}
+              onClick={() => setShowNotificationSetup(true)}
               variant="outline"
               className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white backdrop-blur"
             >
-              Test Notification Styling
+              Setup Notifications
             </Button>
           </div>
         </div>
@@ -335,19 +334,14 @@ export default function PublicDiscovery() {
         </div>
       </div>
 
-      {/* Push Notification Modal */}
-      {showNotificationSetup && (
-        <PushNotificationSetup 
-          onComplete={() => {
-            localStorage.setItem('hasSeenNotificationSetup', 'true');
-            setShowNotificationSetup(false);
-          }}
-          onDismiss={() => {
-            localStorage.setItem('hasSeenNotificationSetup', 'true');
-            setShowNotificationSetup(false);
-          }}
-        />
-      )}
+      {/* Notification Modal */}
+      <NotificationModal 
+        isOpen={showNotificationSetup}
+        onClose={() => {
+          localStorage.setItem('hasSeenNotificationSetup', 'true');
+          setShowNotificationSetup(false);
+        }}
+      />
     </div>
   );
 }
