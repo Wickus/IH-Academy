@@ -150,9 +150,13 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Class Name *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Class Name *</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Youth Basketball Training" {...field} />
+                  <Input 
+                    placeholder="e.g., Youth Basketball Training" 
+                    {...field} 
+                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -164,10 +168,10 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="sportId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sport *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Sport *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
                       <SelectValue placeholder="Select a sport" />
                     </SelectTrigger>
                   </FormControl>
@@ -193,11 +197,12 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel className="text-[#20366B] font-medium">Description</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Describe the class objectives, skill level, and what participants can expect..."
                   {...field} 
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[80px]"
                 />
               </FormControl>
               <FormMessage />
@@ -212,10 +217,10 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="coachId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Coach *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Coach *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
                       <SelectValue placeholder="Select a coach" />
                     </SelectTrigger>
                   </FormControl>
@@ -237,11 +242,12 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="startTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date & Time *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Start Date & Time *</FormLabel>
                 <FormControl>
                   <Input 
                     type="datetime-local" 
                     {...field} 
+                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                   />
                 </FormControl>
                 <FormMessage />
@@ -254,11 +260,12 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="endTime"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>End Date & Time *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">End Date & Time *</FormLabel>
                 <FormControl>
                   <Input 
                     type="datetime-local" 
                     {...field} 
+                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                   />
                 </FormControl>
                 <FormMessage />
@@ -274,13 +281,14 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="capacity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Capacity *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Capacity *</FormLabel>
                 <FormControl>
                   <Input 
                     type="number" 
                     placeholder="Maximum participants"
                     min="1"
                     {...field} 
+                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                   />
                 </FormControl>
                 <FormMessage />
@@ -293,7 +301,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price (ZAR) *</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Price (ZAR) *</FormLabel>
                 <FormControl>
                   <Input 
                     type="number" 
@@ -301,6 +309,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                     min="0"
                     step="0.01"
                     {...field} 
+                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                   />
                 </FormControl>
                 <FormMessage />
@@ -313,9 +322,13 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Location</FormLabel>
+                <FormLabel className="text-[#20366B] font-medium">Location</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Court 1, Swimming Pool" {...field} />
+                  <Input 
+                    placeholder="e.g., Court 1, Swimming Pool" 
+                    {...field} 
+                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
