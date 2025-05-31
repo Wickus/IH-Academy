@@ -550,9 +550,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/coaches", async (req: Request, res: Response) => {
     try {
-      const coachData = req.body;
-      const coach = await storage.createCoach(coachData);
-      res.json(coach);
+      const { user: userData, ...coachData } = req.body;
+      
+      // First create the user
+      const user = await storage.createUser({
+        username: userData.email.split('@')[0], // Use email prefix as username
+        email: userData.email,
+        firstName: userData.name.split(' ')[0] || '',
+        lastName: userData.name.split(' ').slice(1).join(' ') || '',
+        phone: coachData.phone || null,
+        role: 'coach',
+        organizationId: coachData.organizationId,
+        isActive: true,
+        password: 'temp123' // Temporary password - coach will need to reset
+      });
+
+      // Then create the coach with the user ID
+      const coach = await storage.createCoach({
+        ...coachData,
+        userId: user.id
+      });
+
+      // Return enriched coach data
+      res.json({
+        ...coach,
+        user
+      });
     } catch (error) {
       console.error("Error creating coach:", error);
       res.status(500).json({ message: "Failed to create coach" });
