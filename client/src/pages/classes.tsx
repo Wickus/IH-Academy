@@ -13,6 +13,7 @@ import RealTimeNotifications from "@/components/real-time-notifications";
 
 export default function Classes() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingClass, setEditingClass] = useState<any>(null);
 
   const { data: classes = [], isLoading } = useQuery({
     queryKey: ["/api/classes"],
@@ -78,6 +79,20 @@ export default function Classes() {
               />
             </DialogContent>
           </Dialog>
+
+          {/* Edit Class Dialog */}
+          <Dialog open={!!editingClass} onOpenChange={() => setEditingClass(null)}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-[#20366B]">Edit Class</DialogTitle>
+              </DialogHeader>
+              <ClassForm 
+                sports={sports}
+                initialData={editingClass} 
+                onSuccess={() => setEditingClass(null)} 
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -137,7 +152,12 @@ export default function Classes() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                      onClick={() => setEditingClass(classItem)}
+                    >
                       Edit
                     </Button>
                     <Button 
