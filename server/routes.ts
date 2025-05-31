@@ -223,6 +223,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/organizations/:id", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.id);
+      const updatedOrganization = await storage.updateOrganization(organizationId, req.body);
+      
+      if (!updatedOrganization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      
+      res.json(updatedOrganization);
+    } catch (error) {
+      console.error("Error updating organization:", error);
+      res.status(500).json({ message: "Failed to update organization" });
+    }
+  });
+
   app.post("/api/organizations/:id/follow", async (req: Request, res: Response) => {
     try {
       const organizationId = parseInt(req.params.id);

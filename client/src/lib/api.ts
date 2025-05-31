@@ -139,6 +139,11 @@ export const api = {
     return response.json();
   },
 
+  updateOrganization: async (id: number, orgData: Partial<Organization>): Promise<Organization> => {
+    const response = await apiRequest('PUT', `/api/organizations/${id}`, orgData);
+    return response.json();
+  },
+
   followOrganization: async (organizationId: number): Promise<void> => {
     await apiRequest('POST', `/api/organizations/${organizationId}/follow`);
   },
