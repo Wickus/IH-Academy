@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+
 const navigation = [
   { name: "Dashboard", href: "/", icon: Calendar },
   { name: "Classes & Clinics", href: "/classes", icon: Users },
@@ -30,7 +31,7 @@ export default function Sidebar() {
         <div className="flex items-center space-x-4">
           <div className="w-12 h-12 flex items-center justify-center">
             <img 
-              src="@assets/image_1748685361802.png" 
+              src="/attached_assets/image_1748685361802.png" 
               alt="ItsHappening.Africa Logo" 
               className="w-full h-full object-contain"
             />
