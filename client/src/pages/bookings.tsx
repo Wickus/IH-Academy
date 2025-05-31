@@ -54,11 +54,11 @@ export default function Bookings() {
   }
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Bookings</h1>
-          <p className="text-muted-foreground">Manage participant bookings and registrations</p>
+          <h1 className="text-3xl font-bold text-[#20366B]">Bookings</h1>
+          <p className="text-slate-600">Manage participant bookings and registrations with ItsHappening.Africa</p>
         </div>
       </div>
 
@@ -98,14 +98,14 @@ export default function Bookings() {
                   <TableRow key={booking.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{booking.participantName}</div>
-                        <div className="text-sm text-muted-foreground flex items-center">
-                          <Mail className="mr-1 h-3 w-3" />
+                        <div className="font-medium text-[#20366B]">{booking.participantName}</div>
+                        <div className="text-sm text-slate-600 flex items-center">
+                          <Mail className="mr-1 h-3 w-3 text-[#278DD4]" />
                           {booking.participantEmail}
                         </div>
                         {booking.participantPhone && (
-                          <div className="text-sm text-muted-foreground flex items-center">
-                            <Phone className="mr-1 h-3 w-3" />
+                          <div className="text-sm text-slate-600 flex items-center">
+                            <Phone className="mr-1 h-3 w-3 text-[#278DD4]" />
                             {booking.participantPhone}
                           </div>
                         )}

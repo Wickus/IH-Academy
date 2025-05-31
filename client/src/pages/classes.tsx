@@ -103,16 +103,16 @@ export default function Classes() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>{formatTime(classItem.startTime)}</span>
+                    <Clock className="h-4 w-4 text-[#278DD4]" />
+                    <span className="text-slate-600">{formatTime(classItem.startTime)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span>{classItem.availableSpots || 0}/{classItem.capacity}</span>
+                    <Users className="h-4 w-4 text-[#278DD4]" />
+                    <span className="text-[#20366B] font-medium">{classItem.availableSpots || 0}/{classItem.capacity}</span>
                   </div>
                   <div className="flex items-center gap-2 col-span-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>{classItem.location || 'Location TBA'}</span>
+                    <MapPin className="h-4 w-4 text-[#278DD4]" />
+                    <span className="text-slate-600">{classItem.location || 'Location TBA'}</span>
                   </div>
                 </div>
 
@@ -131,7 +131,7 @@ export default function Classes() {
                       {formatDate(classItem.startTime)}
                     </p>
                     {classItem.price && (
-                      <p className="font-semibold text-primary">
+                      <p className="font-semibold text-[#24D367] text-lg">
                         {formatCurrency(classItem.price)}
                       </p>
                     )}
