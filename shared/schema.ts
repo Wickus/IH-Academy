@@ -62,7 +62,8 @@ export const sports = pgTable("sports", {
 export const coaches = pgTable("coaches", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  organizationId: integer("organization_id").notNull(),
+  academyId: integer("academy_id").notNull(),
+  organizationId: integer("organization_id"),
   specializations: text("specializations").array(),
   bio: text("bio"),
   hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
