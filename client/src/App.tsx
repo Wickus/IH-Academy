@@ -11,6 +11,8 @@ import Classes from "@/pages/classes";
 import Bookings from "@/pages/bookings";
 import Coaches from "@/pages/coaches";
 import Payments from "@/pages/payments";
+import Reports from "@/pages/reports";
+import Settings from "@/pages/settings";
 import Achievements from "@/pages/achievements";
 import PublicBooking from "@/pages/public-booking";
 import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
@@ -71,6 +73,8 @@ function RoleBasedRouter({ user }: { user?: User }) {
           <Route path="/bookings" component={Bookings} />
           <Route path="/coaches" component={Coaches} />
           <Route path="/payments" component={Payments} />
+          <Route path="/reports" component={Reports} />
+          <Route path="/settings" component={Settings} />
           <Route path="/achievements" component={Achievements} />
           <Route component={NotFound} />
         </Switch>
