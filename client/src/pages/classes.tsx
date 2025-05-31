@@ -26,11 +26,11 @@ export default function Classes() {
 
   if (isLoading) {
     return (
-      <div className="p-4 lg:p-8">
+      <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Classes & Clinics</h1>
-            <p className="text-muted-foreground">Manage your sports classes and training sessions</p>
+            <h1 className="text-3xl font-bold text-[#20366B]">Classes & Clinics</h1>
+            <p className="text-slate-600">Manage your sports classes and training sessions with ItsHappening.Africa</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -53,24 +53,24 @@ export default function Classes() {
   }
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Classes & Clinics</h1>
-          <p className="text-muted-foreground">Manage your sports classes and training sessions</p>
+          <h1 className="text-3xl font-bold text-[#20366B]">Classes & Clinics</h1>
+          <p className="text-slate-600">Manage your sports classes and training sessions with ItsHappening.Africa</p>
         </div>
         <div className="flex items-center gap-2">
           <RealTimeNotifications userId={1} organizationId={1} />
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white shadow-lg border-0">
                 <Plus className="mr-2 h-4 w-4" />
                 New Class
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Create New Class</DialogTitle>
+                <DialogTitle className="text-[#20366B]">Create New Class</DialogTitle>
               </DialogHeader>
               <ClassForm 
                 sports={sports}
@@ -87,13 +87,13 @@ export default function Classes() {
           const isUpcoming = new Date(classItem.startTime) > new Date();
 
           return (
-            <Card key={classItem.id} className="brand-card hover:shadow-lg transition-shadow">
+            <Card key={classItem.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{classItem.name}</CardTitle>
+                  <CardTitle className="text-lg text-[#20366B]">{classItem.name}</CardTitle>
                   <Badge 
                     variant="secondary" 
-                    className={`${sportColor} text-white`}
+                    className={`${sportColor} text-white border-0`}
                   >
                     {classItem.sport?.name}
                   </Badge>
