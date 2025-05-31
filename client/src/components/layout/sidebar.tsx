@@ -29,8 +29,8 @@ export default function Sidebar() {
     <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
       <div className="p-8 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">IH</span>
+          <div className="py-4">
+            <h1 className="text-2xl font-bold text-primary">ItsBooked</h1>
           </div>
         </div>
       </div>
