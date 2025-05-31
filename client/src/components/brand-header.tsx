@@ -30,7 +30,7 @@ export default function BrandHeader({
             <span className="text-white font-bold text-sm">IH</span>
           </div>
           <div>
-            <h1 className="font-bold text-lg" style={{ fontFamily: 'Lato, sans-serif' }}>
+            <h1 className="font-bold text-xl text-slate-900" style={{ fontFamily: 'Inter, sans-serif', fontWeight: '900' }}>
               {title}
             </h1>
             {subtitle && (
