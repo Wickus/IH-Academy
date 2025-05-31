@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { api, type GlobalDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette } from "lucide-react";
 
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
@@ -149,7 +150,12 @@ export default function GlobalAdminDashboard() {
                           <div className="flex items-center gap-2 mt-1">
                             <Badge 
                               variant={user.role === 'global_admin' ? 'default' : user.role === 'organization_admin' ? 'secondary' : 'outline'}
-                              className={user.role === 'global_admin' ? 'bg-[#20366B] text-white' : user.role === 'organization_admin' ? 'bg-[#278DD4] text-white' : ''}
+                              className={
+                                user.role === 'global_admin' ? 'bg-[#20366B] text-white' : 
+                                user.role === 'organization_admin' ? 'bg-[#278DD4] text-white' : 
+                                user.role === 'coach' ? 'bg-[#24D3BF] text-white' :
+                                'bg-[#24D367] text-white'
+                              }
                             >
                               {user.role.replace('_', ' ')}
                             </Badge>
@@ -160,14 +166,107 @@ export default function GlobalAdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
-                          <UserCheck className="h-3 w-3" />
-                          View
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
-                          <Settings className="h-3 w-3" />
-                          Manage
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
+                              <UserCheck className="h-3 w-3" />
+                              View
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-md">
+                            <DialogHeader>
+                              <DialogTitle className="text-[#20366B]">User Details</DialogTitle>
+                              <DialogDescription>
+                                Complete information for {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] flex items-center justify-center text-white font-bold text-lg">
+                                  {user.firstName?.charAt(0) || user.username.charAt(0)}
+                                </div>
+                                <div>
+                                  <h3 className="font-semibold text-[#20366B]">
+                                    {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                                  </h3>
+                                  <p className="text-sm text-slate-600">@{user.username}</p>
+                                </div>
+                              </div>
+                              <div className="space-y-3">
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Mail className="h-4 w-4 text-[#278DD4]" />
+                                  <span className="text-slate-600">{user.email}</span>
+                                </div>
+                                {user.phone && (
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <Phone className="h-4 w-4 text-[#278DD4]" />
+                                    <span className="text-slate-600">{user.phone}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-2 text-sm">
+                                  <UserCheck className="h-4 w-4 text-[#278DD4]" />
+                                  <Badge className={
+                                    user.role === 'global_admin' ? 'bg-[#20366B] text-white' : 
+                                    user.role === 'organization_admin' ? 'bg-[#278DD4] text-white' : 
+                                    user.role === 'coach' ? 'bg-[#24D3BF] text-white' :
+                                    'bg-[#24D367] text-white'
+                                  }>
+                                    {user.role.replace('_', ' ')}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Calendar className="h-4 w-4 text-[#278DD4]" />
+                                  <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
+                                    {user.isActive ? 'Active Account' : 'Inactive Account'}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                              <Settings className="h-3 w-3" />
+                              Manage
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-md">
+                            <DialogHeader>
+                              <DialogTitle className="text-[#20366B]">Manage User</DialogTitle>
+                              <DialogDescription>
+                                Administrative actions for {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <div className="grid gap-2">
+                                <Button className="bg-[#278DD4] hover:bg-[#20366B] text-white">
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  Send Email
+                                </Button>
+                                <Button variant="outline" className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                                  <Settings className="h-4 w-4 mr-2" />
+                                  Edit Profile
+                                </Button>
+                                <Button variant="outline" className={`border-2 ${
+                                  user.isActive 
+                                    ? 'border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white' 
+                                    : 'border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white'
+                                }`}>
+                                  <UserCheck className="h-4 w-4 mr-2" />
+                                  {user.isActive ? 'Deactivate User' : 'Activate User'}
+                                </Button>
+                                {user.role !== 'global_admin' && (
+                                  <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+                                    <Settings className="h-4 w-4 mr-2" />
+                                    Delete User
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
                   ))}
@@ -215,14 +314,125 @@ export default function GlobalAdminDashboard() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
-                      <Eye className="h-4 w-4" />
-                      View
-                    </Button>
-                    <Button variant="outline" size="sm" className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
-                      <Settings className="h-4 w-4" />
-                      Manage
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
+                          <Eye className="h-4 w-4" />
+                          View
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-lg">
+                        <DialogHeader>
+                          <DialogTitle className="text-[#20366B]">Organisation Details</DialogTitle>
+                          <DialogDescription>
+                            Complete information for {org.name}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <div 
+                              className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg"
+                              style={{ backgroundColor: org.primaryColor }}
+                            >
+                              {org.name.charAt(0)}
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-[#20366B]">{org.name}</h3>
+                              {org.description && (
+                                <p className="text-sm text-slate-600">{org.description}</p>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="grid gap-3">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Mail className="h-4 w-4 text-[#278DD4]" />
+                              <span className="text-slate-600">{org.email}</span>
+                            </div>
+                            {org.phone && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Phone className="h-4 w-4 text-[#278DD4]" />
+                                <span className="text-slate-600">{org.phone}</span>
+                              </div>
+                            )}
+                            {org.address && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <MapPin className="h-4 w-4 text-[#278DD4]" />
+                                <span className="text-slate-600">{org.address}</span>
+                              </div>
+                            )}
+                            {org.website && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Globe className="h-4 w-4 text-[#278DD4]" />
+                                <span className="text-slate-600">{org.website}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-sm">
+                              <Palette className="h-4 w-4 text-[#278DD4]" />
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 rounded" style={{ backgroundColor: org.primaryColor }}></div>
+                                <div className="w-4 h-4 rounded" style={{ backgroundColor: org.secondaryColor }}></div>
+                                <div className="w-4 h-4 rounded" style={{ backgroundColor: org.accentColor }}></div>
+                                <span className="text-slate-600">Brand Colors</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge variant={org.planType === 'premium' ? 'default' : 'secondary'} className="bg-[#24D367] text-white">
+                                {org.planType} plan
+                              </Badge>
+                              <Badge variant={org.isActive ? 'default' : 'destructive'} className={org.isActive ? 'bg-[#24D3BF] text-white' : ''}>
+                                {org.isActive ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                          <Settings className="h-4 w-4" />
+                          Manage
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="text-[#20366B]">Manage Organisation</DialogTitle>
+                          <DialogDescription>
+                            Administrative actions for {org.name}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="grid gap-2">
+                            <Button className="bg-[#278DD4] hover:bg-[#20366B] text-white">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              View Dashboard
+                            </Button>
+                            <Button variant="outline" className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                              <Settings className="h-4 w-4 mr-2" />
+                              Edit Settings
+                            </Button>
+                            <Button variant="outline" className="border-[#24D3BF] text-[#24D3BF] hover:bg-[#24D3BF] hover:text-white">
+                              <Mail className="h-4 w-4 mr-2" />
+                              Contact Admin
+                            </Button>
+                            <Button variant="outline" className={`border-2 ${
+                              org.isActive 
+                                ? 'border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white' 
+                                : 'border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white'
+                            }`}>
+                              <Building2 className="h-4 w-4 mr-2" />
+                              {org.isActive ? 'Suspend Organisation' : 'Activate Organisation'}
+                            </Button>
+                            <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+                              <Settings className="h-4 w-4 mr-2" />
+                              Delete Organisation
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               ))}
