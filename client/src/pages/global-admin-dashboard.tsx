@@ -1,15 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { api, type GlobalDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
 import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette } from "lucide-react";
 
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/stats/global'],
@@ -24,7 +27,87 @@ export default function GlobalAdminDashboard() {
   const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ['/api/users'],
     queryFn: () => api.getUsers(),
-    enabled: showUsers, // Only fetch when users section is expanded
+    enabled: showUsers,
+  });
+
+  // User management mutations
+  const updateUserStatusMutation = useMutation({
+    mutationFn: ({ userId, isActive }: { userId: number; isActive: boolean }) => 
+      api.updateUserStatus(userId, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+      toast({
+        title: "Success",
+        description: "User status updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update user status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: number) => api.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete user",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Organization management mutations
+  const updateOrgStatusMutation = useMutation({
+    mutationFn: ({ orgId, isActive }: { orgId: number; isActive: boolean }) => 
+      api.updateOrganizationStatus(orgId, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+      toast({
+        title: "Success",
+        description: "Organisation status updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update organisation status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteOrgMutation = useMutation({
+    mutationFn: (orgId: number) => api.deleteOrganization(orgId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+      toast({
+        title: "Success",
+        description: "Organisation deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete organisation",
+        variant: "destructive",
+      });
+    },
   });
 
   if (statsLoading || orgsLoading) {
@@ -241,26 +324,53 @@ export default function GlobalAdminDashboard() {
                             </DialogHeader>
                             <div className="space-y-4">
                               <div className="grid gap-2">
-                                <Button className="bg-[#278DD4] hover:bg-[#20366B] text-white">
+                                <Button 
+                                  className="bg-[#278DD4] hover:bg-[#20366B] text-white"
+                                  onClick={() => window.open(`mailto:${user.email}`, '_blank')}
+                                >
                                   <Mail className="h-4 w-4 mr-2" />
                                   Send Email
                                 </Button>
-                                <Button variant="outline" className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                                <Button 
+                                  variant="outline" 
+                                  className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
+                                  onClick={() => toast({
+                                    title: "Feature Coming Soon",
+                                    description: "User profile editing will be available in a future update",
+                                  })}
+                                >
                                   <Settings className="h-4 w-4 mr-2" />
                                   Edit Profile
                                 </Button>
-                                <Button variant="outline" className={`border-2 ${
-                                  user.isActive 
-                                    ? 'border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white' 
-                                    : 'border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white'
-                                }`}>
+                                <Button 
+                                  variant="outline" 
+                                  className={`border-2 ${
+                                    user.isActive 
+                                      ? 'border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white' 
+                                      : 'border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white'
+                                  }`}
+                                  onClick={() => updateUserStatusMutation.mutate({ userId: user.id, isActive: !user.isActive })}
+                                  disabled={updateUserStatusMutation.isPending}
+                                >
                                   <UserCheck className="h-4 w-4 mr-2" />
-                                  {user.isActive ? 'Deactivate User' : 'Activate User'}
+                                  {updateUserStatusMutation.isPending 
+                                    ? 'Updating...' 
+                                    : user.isActive ? 'Deactivate User' : 'Activate User'
+                                  }
                                 </Button>
                                 {user.role !== 'global_admin' && (
-                                  <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+                                  <Button 
+                                    variant="destructive" 
+                                    className="bg-red-600 hover:bg-red-700"
+                                    onClick={() => {
+                                      if (window.confirm(`Are you sure you want to delete ${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}? This action cannot be undone.`)) {
+                                        deleteUserMutation.mutate(user.id);
+                                      }
+                                    }}
+                                    disabled={deleteUserMutation.isPending}
+                                  >
                                     <Settings className="h-4 w-4 mr-2" />
-                                    Delete User
+                                    {deleteUserMutation.isPending ? 'Deleting...' : 'Delete User'}
                                   </Button>
                                 )}
                               </div>
@@ -405,29 +515,63 @@ export default function GlobalAdminDashboard() {
                         </DialogHeader>
                         <div className="space-y-4">
                           <div className="grid gap-2">
-                            <Button className="bg-[#278DD4] hover:bg-[#20366B] text-white">
+                            <Button 
+                              className="bg-[#278DD4] hover:bg-[#20366B] text-white"
+                              onClick={() => toast({
+                                title: "Feature Coming Soon",
+                                description: "Direct dashboard access will be available in a future update",
+                              })}
+                            >
                               <Building2 className="h-4 w-4 mr-2" />
                               View Dashboard
                             </Button>
-                            <Button variant="outline" className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                            <Button 
+                              variant="outline" 
+                              className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
+                              onClick={() => toast({
+                                title: "Feature Coming Soon",
+                                description: "Organisation settings editing will be available in a future update",
+                              })}
+                            >
                               <Settings className="h-4 w-4 mr-2" />
                               Edit Settings
                             </Button>
-                            <Button variant="outline" className="border-[#24D3BF] text-[#24D3BF] hover:bg-[#24D3BF] hover:text-white">
+                            <Button 
+                              variant="outline" 
+                              className="border-[#24D3BF] text-[#24D3BF] hover:bg-[#24D3BF] hover:text-white"
+                              onClick={() => window.open(`mailto:${org.email}`, '_blank')}
+                            >
                               <Mail className="h-4 w-4 mr-2" />
                               Contact Admin
                             </Button>
-                            <Button variant="outline" className={`border-2 ${
-                              org.isActive 
-                                ? 'border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white' 
-                                : 'border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white'
-                            }`}>
+                            <Button 
+                              variant="outline" 
+                              className={`border-2 ${
+                                org.isActive 
+                                  ? 'border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white' 
+                                  : 'border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white'
+                              }`}
+                              onClick={() => updateOrgStatusMutation.mutate({ orgId: org.id, isActive: !org.isActive })}
+                              disabled={updateOrgStatusMutation.isPending}
+                            >
                               <Building2 className="h-4 w-4 mr-2" />
-                              {org.isActive ? 'Suspend Organisation' : 'Activate Organisation'}
+                              {updateOrgStatusMutation.isPending 
+                                ? 'Updating...' 
+                                : org.isActive ? 'Suspend Organisation' : 'Activate Organisation'
+                              }
                             </Button>
-                            <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+                            <Button 
+                              variant="destructive" 
+                              className="bg-red-600 hover:bg-red-700"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete ${org.name}? This action cannot be undone and will affect all associated users and data.`)) {
+                                  deleteOrgMutation.mutate(org.id);
+                                }
+                              }}
+                              disabled={deleteOrgMutation.isPending}
+                            >
                               <Settings className="h-4 w-4 mr-2" />
-                              Delete Organisation
+                              {deleteOrgMutation.isPending ? 'Deleting...' : 'Delete Organisation'}
                             </Button>
                           </div>
                         </div>

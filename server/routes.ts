@@ -212,6 +212,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/users/:id/status", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+      
+      const userId = parseInt(req.params.id);
+      const { isActive } = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, { isActive });
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      res.status(500).json({ message: "Failed to update user status" });
+    }
+  });
+
+  app.delete("/api/users/:id", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+      
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (user.role === 'global_admin') {
+        return res.status(400).json({ message: "Cannot delete global admin user" });
+      }
+      
+      // Soft delete by setting isActive to false
+      const updatedUser = await storage.updateUser(userId, { isActive: false });
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  app.put("/api/organizations/:id/status", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+      
+      const orgId = parseInt(req.params.id);
+      const { isActive } = req.body;
+      
+      const updatedOrg = await storage.updateOrganization(orgId, { isActive });
+      if (!updatedOrg) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      
+      res.json(updatedOrg);
+    } catch (error) {
+      console.error("Error updating organization status:", error);
+      res.status(500).json({ message: "Failed to update organization status" });
+    }
+  });
+
+  app.delete("/api/organizations/:id", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+      
+      const orgId = parseInt(req.params.id);
+      
+      // Soft delete by setting isActive to false
+      const updatedOrg = await storage.updateOrganization(orgId, { isActive: false });
+      if (!updatedOrg) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      
+      res.json({ message: "Organization deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting organization:", error);
+      res.status(500).json({ message: "Failed to delete organization" });
+    }
+  });
+
   // Organization routes
   app.get("/api/organizations", async (req: Request, res: Response) => {
     try {

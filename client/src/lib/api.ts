@@ -298,4 +298,22 @@ export const api = {
     const response = await apiRequest('GET', '/api/users');
     return response.json();
   },
+
+  updateUserStatus: async (userId: number, isActive: boolean): Promise<User> => {
+    const response = await apiRequest('PUT', `/api/users/${userId}/status`, { isActive });
+    return response.json();
+  },
+
+  deleteUser: async (userId: number): Promise<void> => {
+    await apiRequest('DELETE', `/api/users/${userId}`);
+  },
+
+  updateOrganizationStatus: async (orgId: number, isActive: boolean): Promise<Organization> => {
+    const response = await apiRequest('PUT', `/api/organizations/${orgId}/status`, { isActive });
+    return response.json();
+  },
+
+  deleteOrganization: async (orgId: number): Promise<void> => {
+    await apiRequest('DELETE', `/api/organizations/${orgId}`);
+  },
 };
