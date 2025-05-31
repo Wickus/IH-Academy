@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +8,12 @@ import { api, type Organization, type Class } from "@/lib/api";
 import { formatCurrency, formatTime } from "@/lib/utils";
 import { MapPin, Clock, Users, Search, Heart, Calendar } from "lucide-react";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
 
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ['/api/organizations'],
@@ -18,8 +21,8 @@ export default function PublicDiscovery() {
   });
 
   const { data: upcomingClasses, isLoading: classesLoading } = useQuery({
-    queryKey: ['/api/classes', { public: true }],
-    queryFn: () => api.getClasses({ public: true }),
+    queryKey: ['/api/classes'],
+    queryFn: () => api.getClasses(),
   });
 
   const filteredOrganizations = organizations?.filter(org => 
@@ -27,14 +30,23 @@ export default function PublicDiscovery() {
     org.description?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const handleFollowOrganization = async (organizationId: number) => {
-    try {
-      await api.followOrganization(organizationId);
-      // Refresh data or show success message
-    } catch (error) {
-      console.error('Failed to follow organization:', error);
+  const followMutation = useMutation({
+    mutationFn: (organizationId: number) => api.followOrganization(organizationId),
+    onSuccess: () => {
+      toast({
+        title: "Organization followed!",
+        description: "You can now view their classes and book sessions.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+    },
+    onError: () => {
+      toast({
+        title: "Failed to follow organization",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
     }
-  };
+  });
 
   if (orgsLoading || classesLoading) {
     return (
@@ -127,18 +139,19 @@ export default function PublicDiscovery() {
               <div className="flex items-start justify-between">
                 <div 
                   className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl"
-                  style={{ backgroundColor: org.primaryColor }}
+                  style={{ backgroundColor: org.primaryColor || '#20366B' }}
                 >
                   {org.name.charAt(0)}
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleFollowOrganization(org.id)}
+                  onClick={() => followMutation.mutate(org.id)}
+                  disabled={followMutation.isPending}
                   className="gap-1"
                 >
                   <Heart className="h-4 w-4" />
-                  Follow
+                  {followMutation.isPending ? "Following..." : "Follow"}
                 </Button>
               </div>
               <div>
