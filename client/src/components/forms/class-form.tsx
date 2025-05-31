@@ -34,9 +34,10 @@ type ClassFormData = z.infer<typeof classFormSchema>;
 interface ClassFormProps {
   sports: Sport[];
   onSuccess: () => void;
+  initialData?: any;
 }
 
-export default function ClassForm({ sports, onSuccess }: ClassFormProps) {
+export default function ClassForm({ sports, onSuccess, initialData }: ClassFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -48,18 +49,18 @@ export default function ClassForm({ sports, onSuccess }: ClassFormProps) {
   const form = useForm<ClassFormData>({
     resolver: zodResolver(classFormSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      sportId: "",
-      coachId: "",
-      startTime: "",
-      endTime: "",
-      capacity: "",
-      price: "",
-      location: "",
-      requirements: "",
-      isRecurring: false,
-      recurrencePattern: "",
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      sportId: initialData?.sportId?.toString() || "",
+      coachId: initialData?.coachId?.toString() || "",
+      startTime: initialData?.startTime ? new Date(initialData.startTime).toISOString().slice(0, 16) : "",
+      endTime: initialData?.endTime ? new Date(initialData.endTime).toISOString().slice(0, 16) : "",
+      capacity: initialData?.capacity?.toString() || "",
+      price: initialData?.price?.toString() || "",
+      location: initialData?.location || "",
+      requirements: initialData?.requirements || "",
+      isRecurring: initialData?.isRecurring || false,
+      recurrencePattern: initialData?.recurrencePattern || "",
     },
   });
 
@@ -77,6 +78,25 @@ export default function ClassForm({ sports, onSuccess }: ClassFormProps) {
       toast({
         title: "Error",
         description: "Failed to create class. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateClassMutation = useMutation({
+    mutationFn: ({ id, ...data }: any) => api.updateClass(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
+      toast({
+        title: "Class updated",
+        description: "Your class has been updated successfully.",
+      });
+      onSuccess();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update class. Please try again.",
         variant: "destructive",
       });
     },
