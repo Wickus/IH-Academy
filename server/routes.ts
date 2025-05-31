@@ -609,6 +609,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/coaches/:id", async (req: Request, res: Response) => {
+    try {
+      const coachId = parseInt(req.params.id);
+      const { user: userData, ...coachData } = req.body;
+      console.log('Coach update request:', { coachId, userData, coachData });
+      
+      // Get existing coach
+      const existingCoach = await storage.getCoach(coachId);
+      if (!existingCoach) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      // Update user data if provided
+      if (userData && existingCoach.userId) {
+        await storage.updateUser(existingCoach.userId, {
+          name: userData.name,
+          email: userData.email,
+        });
+      }
+
+      // Update coach data
+      const coachUpdateData = {
+        bio: coachData.bio,
+        specializations: coachData.specializations,
+        hourlyRate: coachData.hourlyRate,
+        phone: coachData.phone,
+        profilePicture: coachData.profilePicture
+      };
+      
+      const updatedCoach = await storage.updateCoach(coachId, coachUpdateData);
+      
+      if (!updatedCoach) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      // Get updated user data and return enriched coach
+      const user = await storage.getUser(updatedCoach.userId);
+      res.json({
+        ...updatedCoach,
+        user
+      });
+    } catch (error) {
+      console.error("Error updating coach:", error);
+      res.status(500).json({ message: "Failed to update coach" });
+    }
+  });
+
   // Attendance routes
   app.get("/api/attendance/:classId", async (req: Request, res: Response) => {
     try {
