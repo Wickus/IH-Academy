@@ -6,14 +6,27 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { api, type Organization, type Class } from "@/lib/api";
 import { formatCurrency, formatTime } from "@/lib/utils";
-import { MapPin, Clock, Users, Search, Heart, Calendar } from "lucide-react";
+import { MapPin, Clock, Users, Search, Heart, Calendar, User, LogOut, Settings } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: () => api.getCurrentUser(),
+    retry: false
+  });
 
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ['/api/organizations'],
@@ -23,6 +36,18 @@ export default function PublicDiscovery() {
   const { data: upcomingClasses, isLoading: classesLoading } = useQuery({
     queryKey: ['/api/classes'],
     queryFn: () => api.getClasses(),
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: () => api.logout(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.clear();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+    }
   });
 
   const filteredOrganizations = organizations?.filter(org => 
@@ -61,12 +86,58 @@ export default function PublicDiscovery() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367]">
+      {/* Navigation Header */}
+      <div className="relative px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold text-lg">IH</span>
+            </div>
+            <h1 className="text-xl font-bold text-white">ItsHappening.Africa</h1>
+          </div>
+          
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 p-2 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                      <User className="h-4 w-4" />
+                    </div>
+                    <span className="font-medium">{user.firstName || user.username}</span>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-white border-0 shadow-lg rounded-xl">
+                <DropdownMenuItem className="flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50">
+                  <User className="h-4 w-4 text-slate-600" />
+                  <span>Edit Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50">
+                  <Settings className="h-4 w-4 text-slate-600" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="flex items-center gap-3 p-3 cursor-pointer hover:bg-red-50 text-red-600"
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>{logoutMutation.isPending ? 'Logging out...' : 'Logout'}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </div>
+
       {/* Header Section */}
-      <div className="relative py-16 px-6 text-center">
+      <div className="relative py-12 px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-6">
-          <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">
+          <h2 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">
             Discover Sports Organizations
-          </h1>
+          </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
             Find and follow your favorite sports academies, clubs, and training facilities
           </p>
