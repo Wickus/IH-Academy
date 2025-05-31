@@ -393,7 +393,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/classes", async (req: Request, res: Response) => {
     try {
-      const classData = req.body;
+      const classData = { ...req.body };
+      
+      // Convert date strings to Date objects
+      if (classData.startTime) {
+        classData.startTime = new Date(classData.startTime);
+      }
+      if (classData.endTime) {
+        classData.endTime = new Date(classData.endTime);
+      }
+      
       const newClass = await storage.createClass(classData);
       res.json(newClass);
     } catch (error) {
@@ -405,7 +414,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/classes/:id", async (req: Request, res: Response) => {
     try {
       const classId = parseInt(req.params.id);
-      const classData = req.body;
+      const classData = { ...req.body };
+      
+      // Convert date strings to Date objects
+      if (classData.startTime) {
+        classData.startTime = new Date(classData.startTime);
+      }
+      if (classData.endTime) {
+        classData.endTime = new Date(classData.endTime);
+      }
+      
       const updatedClass = await storage.updateClass(classId, classData);
       
       if (!updatedClass) {

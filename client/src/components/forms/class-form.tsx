@@ -171,8 +171,8 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                 <FormLabel className="text-[#20366B] font-medium">Sport *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
-                      <SelectValue placeholder="Select a sport" />
+                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
+                      <SelectValue placeholder="Select a sport" className="text-slate-900" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white border-slate-300">
@@ -220,8 +220,8 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                 <FormLabel className="text-[#20366B] font-medium">Coach *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
-                      <SelectValue placeholder="Select a coach" />
+                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
+                      <SelectValue placeholder="Select a coach" className="text-slate-900" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white border-slate-300">
@@ -388,8 +388,8 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
                   <FormLabel className="text-[#20366B] font-medium">Recurrence Pattern</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
-                        <SelectValue placeholder="Select recurrence pattern" />
+                      <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
+                        <SelectValue placeholder="Select recurrence pattern" className="text-slate-900" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-white border-slate-300">
