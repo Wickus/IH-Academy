@@ -32,8 +32,8 @@ export default function Sidebar() {
             <Dumbbell className="text-white text-xl" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">ItsHappening.Africa</h1>
-            <p className="text-sm text-white/80">Sports Platform</p>
+            <h1 className="text-xl font-bold text-white drop-shadow-sm">ItsHappening.Africa</h1>
+            <p className="text-sm text-white/90 drop-shadow-sm">Sports Platform</p>
           </div>
         </div>
       </div>

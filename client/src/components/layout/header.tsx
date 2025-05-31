@@ -6,12 +6,12 @@ export default function Header() {
     <header className="bg-white shadow-sm border-b border-gray-200 px-4 lg:px-8 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" className="lg:hidden p-2">
-            <Menu className="h-5 w-5 text-gray-600" />
+          <Button variant="ghost" size="sm" className="lg:hidden p-2 hover:bg-gray-100">
+            <Menu className="h-5 w-5 text-slate-700" />
           </Button>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Dashboard</h2>
-            <p className="text-sm text-gray-600">Manage your academy bookings and classes</p>
+            <h2 className="text-2xl font-bold text-slate-900">Dashboard</h2>
+            <p className="text-sm text-slate-600">Manage your academy bookings and classes</p>
           </div>
         </div>
         
