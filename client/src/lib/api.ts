@@ -192,6 +192,11 @@ export const api = {
     return response.json();
   },
 
+  updateClass: async (id: number, classData: Partial<Omit<Class, 'id' | 'sport' | 'coach' | 'bookingCount' | 'availableSpots'>>): Promise<Class> => {
+    const response = await apiRequest('PUT', `/api/classes/${id}`, classData);
+    return response.json();
+  },
+
   // Bookings
   getBookings: async (params?: { email?: string; classId?: number; recent?: number }): Promise<Booking[]> => {
     const searchParams = new URLSearchParams();

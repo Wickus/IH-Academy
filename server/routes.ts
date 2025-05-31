@@ -402,6 +402,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/classes/:id", async (req: Request, res: Response) => {
+    try {
+      const classId = parseInt(req.params.id);
+      const classData = req.body;
+      const updatedClass = await storage.updateClass(classId, classData);
+      
+      if (!updatedClass) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+      
+      res.json(updatedClass);
+    } catch (error) {
+      console.error("Error updating class:", error);
+      res.status(500).json({ message: "Failed to update class" });
+    }
+  });
+
   // Bookings routes
   app.get("/api/bookings", async (req: Request, res: Response) => {
     try {
