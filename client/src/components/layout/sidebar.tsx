@@ -29,12 +29,8 @@ export default function Sidebar() {
     <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
       <div className="p-8 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-center">
-          <div className="w-16 h-16 flex items-center justify-center">
-            <img 
-              src="/attached_assets/image_1748685361802.png" 
-              alt="ItsHappening.Africa Logo" 
-              className="w-full h-full object-contain"
-            />
+          <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+            <span className="text-white font-bold text-2xl">IH</span>
           </div>
         </div>
       </div>
@@ -51,7 +47,7 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center space-x-4 px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
                 isActive
-                  ? "bg-primary text-white shadow-lg"
+                  ? "bg-[#24D367] text-white shadow-lg"
                   : "text-slate-600 hover:bg-slate-100 hover:text-primary hover:shadow-md"
               )}
             >
