@@ -111,7 +111,7 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
       const endDateTime = new Date(`${data.endTime}:00`).toISOString();
 
       const classData = {
-        academyId: 1, // Default academy
+        organizationId: 1, // Default organization
         name: data.name,
         description: data.description || null,
         sportId: parseInt(data.sportId),
@@ -126,7 +126,13 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
         recurrencePattern: data.isRecurring ? data.recurrencePattern || null : null,
       };
 
-      await createClassMutation.mutateAsync(classData);
+      if (initialData?.id) {
+        // Update existing class
+        await updateClassMutation.mutateAsync({ id: initialData.id, ...classData });
+      } else {
+        // Create new class
+        await createClassMutation.mutateAsync(classData);
+      }
     } catch (error) {
       console.error('Failed to create class:', error);
     } finally {
