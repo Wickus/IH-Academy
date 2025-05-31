@@ -153,6 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
+      currentUser = user;
       res.json(user);
     } catch (error) {
       console.error("Error logging in:", error);
@@ -162,6 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/logout", async (req: Request, res: Response) => {
     try {
+      currentUser = null;
       res.json({ message: "Logged out successfully" });
     } catch (error) {
       console.error("Error logging out:", error);
@@ -171,18 +173,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
-      // Return organization admin for testing navigation
-      const user = {
-        id: 1,
-        username: "admin",
-        email: "admin@example.com",
-        firstName: "Admin",
-        lastName: "User",
-        role: "organization_admin" as const,
-        organizationId: 1,
-        isActive: true
-      };
-      res.json(user);
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      res.json(currentUser);
     } catch (error) {
       res.status(401).json({ message: "Not authenticated" });
     }
