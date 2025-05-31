@@ -69,28 +69,32 @@ export default function Classes() {
                 New Class
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-[#20366B]">Create New Class</DialogTitle>
               </DialogHeader>
-              <ClassForm 
-                sports={sports}
-                onSuccess={() => setShowCreateDialog(false)}
-              />
+              <div className="max-h-[75vh] overflow-y-auto pr-2">
+                <ClassForm 
+                  sports={sports}
+                  onSuccess={() => setShowCreateDialog(false)}
+                />
+              </div>
             </DialogContent>
           </Dialog>
 
           {/* Edit Class Dialog */}
           <Dialog open={!!editingClass} onOpenChange={() => setEditingClass(null)}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-[#20366B]">Edit Class</DialogTitle>
               </DialogHeader>
-              <ClassForm 
-                sports={sports}
-                initialData={editingClass} 
-                onSuccess={() => setEditingClass(null)} 
-              />
+              <div className="max-h-[75vh] overflow-y-auto pr-2">
+                <ClassForm 
+                  sports={sports}
+                  initialData={editingClass} 
+                  onSuccess={() => setEditingClass(null)} 
+                />
+              </div>
             </DialogContent>
           </Dialog>
         </div>
