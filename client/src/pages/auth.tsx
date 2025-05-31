@@ -92,8 +92,10 @@ export default function Auth() {
     }),
     onSuccess: (organization: Organization) => {
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations/my'] });
       toast({ title: "Organisation created!", description: `${organization.name} is ready to go!` });
-      setLocation("/dashboard");
+      // Redirect to organisation dashboard
+      setLocation(`/organization-dashboard?orgId=${organization.id}`);
     },
     onError: (error: any) => {
       console.error("Organisation creation error:", error);

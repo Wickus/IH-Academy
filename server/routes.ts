@@ -223,6 +223,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/organizations/my", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const organizations = await storage.getOrganizationsByUser(currentUser.id);
+      res.json(organizations);
+    } catch (error) {
+      console.error("Error fetching user organizations:", error);
+      res.status(500).json({ message: "Failed to fetch user organizations" });
+    }
+  });
+
   app.get("/api/organizations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
@@ -241,8 +255,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/organizations", async (req: Request, res: Response) => {
     try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const orgData = req.body;
       const organization = await storage.createOrganization(orgData);
+      
+      // Automatically add the current user as the admin of this organisation
+      await storage.addUserToOrganization({
+        userId: currentUser.id,
+        organizationId: organization.id,
+        role: 'admin',
+        isActive: true
+      });
+
       res.json(organization);
     } catch (error) {
       console.error("Error creating organization:", error);
