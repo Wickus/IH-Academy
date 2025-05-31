@@ -261,6 +261,11 @@ export const api = {
     return response.json();
   },
 
+  updateCoach: async (id: number, coachData: any): Promise<any> => {
+    const response = await apiRequest('PUT', `/api/coaches/${id}`, coachData);
+    return response.json();
+  },
+
   // Push notification routes
   subscribeToPush: async (subscription: any): Promise<any> => {
     const response = await apiRequest('POST', '/api/notifications/subscribe', subscription);

@@ -30,7 +30,7 @@ interface CoachFormProps {
   editId?: number;
 }
 
-export default function CoachForm({ onSuccess, initialData }: CoachFormProps) {
+export default function CoachForm({ onSuccess, initialData, isEdit = false, editId }: CoachFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -65,11 +65,30 @@ export default function CoachForm({ onSuccess, initialData }: CoachFormProps) {
     },
   });
 
+  const updateCoachMutation = useMutation({
+    mutationFn: (data: any) => api.updateCoach(editId!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/coaches"] });
+      toast({
+        title: "Success",
+        description: "Coach updated successfully",
+      });
+      onSuccess();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update coach",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = async (data: CoachFormData) => {
     setIsSubmitting(true);
     try {
       const coachData = {
-        organizationId: 1, // Default organization
+        organizationId: initialData?.organizationId || 1, // Use organization from initialData or default
         bio: data.bio || null,
         specializations: data.specializations ? data.specializations.split(",").map(s => s.trim()) : [],
         hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : null,
@@ -81,9 +100,13 @@ export default function CoachForm({ onSuccess, initialData }: CoachFormProps) {
         },
       };
 
-      await createCoachMutation.mutateAsync(coachData);
+      if (isEdit) {
+        await updateCoachMutation.mutateAsync(coachData);
+      } else {
+        await createCoachMutation.mutateAsync(coachData);
+      }
     } catch (error) {
-      console.error('Failed to create coach:', error);
+      console.error(`Failed to ${isEdit ? 'update' : 'create'} coach:`, error);
     } finally {
       setIsSubmitting(false);
     }
