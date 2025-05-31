@@ -128,34 +128,34 @@ export default function Payments() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Participant</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Payment Method</TableHead>
+                <TableRow className="border-b border-slate-200">
+                  <TableHead className="text-[#20366B] font-semibold">Participant</TableHead>
+                  <TableHead className="text-[#20366B] font-semibold">Class</TableHead>
+                  <TableHead className="text-[#20366B] font-semibold">Amount</TableHead>
+                  <TableHead className="text-[#20366B] font-semibold">Status</TableHead>
+                  <TableHead className="text-[#20366B] font-semibold">Date</TableHead>
+                  <TableHead className="text-[#20366B] font-semibold">Payment Method</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking.id}>
+                {bookings.map((booking, index) => (
+                  <TableRow key={booking.id} className={`border-b border-slate-100 hover:bg-slate-50 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{booking.participantName}</div>
-                        <div className="text-sm text-muted-foreground">{booking.participantEmail}</div>
+                        <div className="font-semibold text-[#20366B]">{booking.participantName}</div>
+                        <div className="text-sm text-slate-600">{booking.participantEmail}</div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{booking.class?.name}</div>
-                        <Badge variant="outline" className="text-xs">
+                        <div className="font-semibold text-slate-900">{booking.class?.name}</div>
+                        <Badge className="text-xs bg-[#24D3BF]/10 text-[#20366B] border-[#24D3BF]/20 hover:bg-[#24D3BF]/20">
                           {booking.sport?.name}
                         </Badge>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">
+                      <div className="font-bold text-[#24D367] text-lg">
                         {formatCurrency(Number(booking.amount))}
                       </div>
                     </TableCell>
@@ -173,14 +173,14 @@ export default function Payments() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm">
+                      <div className="text-sm text-slate-700 font-medium">
                         {formatDateTime(booking.bookingDate)}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">Payfast</span>
+                        <CreditCard className="mr-2 h-4 w-4 text-[#278DD4]" />
+                        <span className="text-sm font-medium text-slate-700">Payfast</span>
                       </div>
                     </TableCell>
                   </TableRow>
