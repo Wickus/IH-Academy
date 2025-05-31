@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import NotificationModal from "@/components/notification-modal";
+import SimpleNotificationModal from "@/components/simple-notification-modal";
 
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -335,7 +335,7 @@ export default function PublicDiscovery() {
       </div>
 
       {/* Notification Modal */}
-      <NotificationModal 
+      <SimpleNotificationModal 
         isOpen={showNotificationSetup}
         onClose={() => {
           localStorage.setItem('hasSeenNotificationSetup', 'true');
