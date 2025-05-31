@@ -91,11 +91,13 @@ export default function Auth() {
       maxMembers: 500
     }),
     onSuccess: (organization: Organization) => {
-      toast({ title: "Organization created!", description: `${organization.name} is ready to go!` });
-      setLocation("/");
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({ title: "Organisation created!", description: `${organization.name} is ready to go!` });
+      setLocation("/dashboard");
     },
     onError: (error: any) => {
-      toast({ title: "Failed to create organization", description: error.message, variant: "destructive" });
+      console.error("Organisation creation error:", error);
+      toast({ title: "Failed to create organisation", description: error.message || "Please try again", variant: "destructive" });
     }
   });
 
@@ -310,7 +312,7 @@ export default function Auth() {
             <TabsContent value="organization">
               <Card className="border-0 shadow-none bg-transparent">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-gray-900">Create Organization</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-gray-900">Create Organisation</CardTitle>
                   <CardDescription className="text-gray-600">
                     Set up your sports academy, club, or gym
                   </CardDescription>
@@ -318,7 +320,7 @@ export default function Auth() {
                 <CardContent>
                   <form onSubmit={handleCreateOrganization} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="orgName" className="text-gray-700 font-medium">Organization Name</Label>
+                      <Label htmlFor="orgName" className="text-gray-700 font-medium">Organisation Name</Label>
                       <Input
                         id="orgName"
                         value={orgData.name}
@@ -346,7 +348,7 @@ export default function Auth() {
                         id="description"
                         value={orgData.description}
                         onChange={(e) => setOrgData({...orgData, description: e.target.value})}
-                        placeholder="Brief description of your organization"
+                        placeholder="Brief description of your organisation"
                         required
                         className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       />
@@ -404,7 +406,7 @@ export default function Auth() {
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                       disabled={createOrgMutation.isPending}
                     >
-                      {createOrgMutation.isPending ? "Creating organization..." : "Create Organization"}
+                      {createOrgMutation.isPending ? "Creating organisation..." : "Create Organisation"}
                     </Button>
                   </form>
                 </CardContent>
