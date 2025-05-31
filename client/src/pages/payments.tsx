@@ -82,15 +82,15 @@ export default function Payments() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-md bg-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Pending Payments</p>
-                <p className="text-3xl font-bold text-foreground mt-1">
+                <p className="text-sm font-medium text-slate-600">Pending Payments</p>
+                <p className="text-3xl font-bold text-[#20366B] mt-1">
                   {formatCurrency(pendingPayments)}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-[#278DD4] mt-1">
                   {bookings.filter(b => b.paymentStatus === 'pending').length} transactions
                 </p>
               </div>
@@ -101,18 +101,18 @@ export default function Payments() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-md bg-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Failed Payments</p>
-                <p className="text-3xl font-bold text-foreground mt-1">{failedPayments}</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm font-medium text-slate-600">Failed Payments</p>
+                <p className="text-3xl font-bold text-[#20366B] mt-1">{failedPayments}</p>
+                <p className="text-sm text-red-500 mt-1">
                   Requires attention
                 </p>
               </div>
-              <div className="w-12 h-12 bg-error/10 rounded-lg flex items-center justify-center">
-                <AlertCircle className="text-error text-xl" />
+              <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-red-500 rounded-lg flex items-center justify-center">
+                <AlertCircle className="text-white text-xl" />
               </div>
             </div>
           </CardContent>
@@ -120,9 +120,9 @@ export default function Payments() {
       </div>
 
       {/* Payment Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Transactions</CardTitle>
+      <Card className="border-0 shadow-md bg-white">
+        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white rounded-t-lg">
+          <CardTitle className="text-xl font-bold">Payment Transactions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -161,8 +161,13 @@ export default function Payments() {
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
-                        className={`bg-${getPaymentStatusColor(booking.paymentStatus)}/10 text-${getPaymentStatusColor(booking.paymentStatus)} border-${getPaymentStatusColor(booking.paymentStatus)}/20`}
+                        className={
+                          booking.paymentStatus === 'confirmed' 
+                            ? 'bg-[#24D367]/10 text-[#24D367] border-[#24D367]/20 hover:bg-[#24D367]/20' 
+                            : booking.paymentStatus === 'pending'
+                            ? 'bg-[#278DD4]/10 text-[#278DD4] border-[#278DD4]/20 hover:bg-[#278DD4]/20'
+                            : 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20'
+                        }
                       >
                         {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                       </Badge>
@@ -185,13 +190,13 @@ export default function Payments() {
           </div>
 
           {bookings.length === 0 && (
-            <div className="text-center py-8">
-              <div className="text-gray-400 mb-4">
-                <CreditCard className="mx-auto h-12 w-12" />
+            <div className="text-center py-12">
+              <div className="text-[#278DD4] mb-4">
+                <CreditCard className="mx-auto h-16 w-16" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No payments yet</h3>
-              <p className="text-gray-500">
-                Payment transactions will appear here once bookings are made.
+              <h3 className="text-xl font-bold text-[#20366B] mb-2">No payments yet</h3>
+              <p className="text-slate-600">
+                Payment transactions will appear here once bookings are made with ItsHappening.Africa.
               </p>
             </div>
           )}
