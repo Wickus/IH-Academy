@@ -10,7 +10,7 @@ export default function Header() {
             <Menu className="h-5 w-5 text-gray-600" />
           </Button>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
             <p className="text-sm text-gray-600">Manage your academy bookings and classes</p>
           </div>
         </div>
@@ -18,7 +18,7 @@ export default function Header() {
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" className="relative p-2">
             <Bell className="h-5 w-5 text-gray-600" />
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-xs rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center">
               3
             </span>
           </Button>

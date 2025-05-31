@@ -59,8 +59,8 @@ export default function PublicBooking() {
                 <Star className="text-white text-xl" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">ItsBooked</h1>
-                <p className="text-slate-600">Book Your Sports Classes</p>
+                <h1 className="text-2xl font-bold text-slate-800">ItsHappening.Africa</h1>
+                <p className="text-slate-600">Sports booking platform for everyone</p>
               </div>
             </div>
           </div>
