@@ -7,8 +7,7 @@ import {
   CreditCard, 
   BarChart3, 
   Settings,
-  Dumbbell,
-  Trophy
+  Dumbbell 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +18,7 @@ const navigation = [
   { name: "Bookings", href: "/bookings", icon: UserCheck },
   { name: "Coaches", href: "/coaches", icon: Presentation },
   { name: "Payments", href: "/payments", icon: CreditCard },
-  { name: "Achievements", href: "/achievements", icon: BarChart3 },
+  { name: "Reports", href: "/reports", icon: BarChart3 },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
