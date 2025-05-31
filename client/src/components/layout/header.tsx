@@ -20,8 +20,8 @@ export default function Header() {
   const logoutMutation = useMutation({
     mutationFn: () => api.logout(),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.clear();
-      window.location.href = '/';
     }
   });
 

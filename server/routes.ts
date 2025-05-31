@@ -66,6 +66,9 @@ function broadcastBookingNotification(classId: number, className: string, partic
   });
 }
 
+// Simple session storage for demo purposes
+let currentUser: any = null;
+
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = new Server(app);
 
