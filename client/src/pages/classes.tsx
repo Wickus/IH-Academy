@@ -93,12 +93,12 @@ export default function Classes() {
                   <CardTitle className="text-lg text-[#20366B]">{classItem.name}</CardTitle>
                   <Badge 
                     variant="secondary" 
-                    className={`${sportColor} text-white border-0`}
+                    className="bg-[#278DD4] text-white border-0"
                   >
                     {classItem.sport?.name}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">{classItem.description}</p>
+                <p className="text-sm text-slate-600">{classItem.description}</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -125,9 +125,9 @@ export default function Classes() {
                   userId={1}
                 />
 
-                <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                   <div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-slate-500">
                       {formatDate(classItem.startTime)}
                     </p>
                     {classItem.price && (
@@ -137,13 +137,13 @@ export default function Classes() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
                       Edit
                     </Button>
                     <Button 
                       size="sm"
                       disabled={!isUpcoming}
-                      className={isUpcoming ? 'bg-primary hover:bg-primary/90' : ''}
+                      className={isUpcoming ? 'bg-[#24D367] hover:bg-[#1fb557] text-white border-0' : 'bg-slate-400 text-white'}
                     >
                       {isUpcoming ? 'View Details' : 'Completed'}
                     </Button>
