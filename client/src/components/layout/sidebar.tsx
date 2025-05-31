@@ -50,8 +50,8 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center space-x-4 px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
                 isActive
-                  ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg transform scale-105"
-                  : "text-slate-600 hover:bg-white/60 hover:text-primary hover:shadow-md"
+                  ? "bg-primary text-white shadow-lg"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-primary hover:shadow-md"
               )}
             >
               <Icon className={cn(
