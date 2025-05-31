@@ -28,8 +28,12 @@ export default function Sidebar() {
     <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
       <div className="p-8 border-b border-slate-200 bg-white">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-            <Dumbbell className="text-white text-xl" />
+          <div className="w-12 h-12 flex items-center justify-center">
+            <img 
+              src="@assets/image_1748685361802.png" 
+              alt="ItsHappening.Africa Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <h1 className="text-xl font-bold text-primary drop-shadow-sm">ItsHappening.Africa</h1>
