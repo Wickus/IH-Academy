@@ -556,6 +556,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.createUser({
         username: userData.email.split('@')[0], // Use email prefix as username
         email: userData.email,
+        name: userData.name, // Add the required name field
         firstName: userData.name.split(' ')[0] || '',
         lastName: userData.name.split(' ').slice(1).join(' ') || '',
         phone: coachData.phone || null,
