@@ -555,19 +555,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('User data:', userData);
       console.log('Coach data:', coachData);
       
-      // First create the user
-      const user = await storage.createUser({
-        username: userData.email.split('@')[0], // Use email prefix as username
-        email: userData.email,
-        name: userData.name, // Add the required name field
-        firstName: userData.name.split(' ')[0] || '',
-        lastName: userData.name.split(' ').slice(1).join(' ') || '',
-        phone: coachData.phone || null,
-        role: 'coach',
-        organizationId: coachData.organizationId,
-        isActive: true,
-        password: 'temp123' // Temporary password - coach will need to reset
-      });
+      // First check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      let user;
+      
+      if (existingUser) {
+        user = existingUser;
+      } else {
+        // Create unique username by adding timestamp if needed
+        let username = userData.email.split('@')[0];
+        let existingUsername = await storage.getUserByUsername(username);
+        if (existingUsername) {
+          username = `${username}_${Date.now()}`;
+        }
+        
+        user = await storage.createUser({
+          username,
+          email: userData.email,
+          name: userData.name,
+          firstName: userData.name.split(' ')[0] || '',
+          lastName: userData.name.split(' ').slice(1).join(' ') || '',
+          phone: coachData.phone || null,
+          role: 'coach',
+          organizationId: coachData.organizationId,
+          isActive: true,
+          password: 'temp123' // Temporary password - coach will need to reset
+        });
+      }
 
       // Then create the coach with the user ID
       const coach = await storage.createCoach({
