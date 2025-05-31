@@ -52,31 +52,31 @@ export default function Payments() {
   }
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Payments</h1>
-          <p className="text-muted-foreground">Monitor payment status and revenue</p>
+          <h1 className="text-3xl font-bold text-[#20366B]">Payments</h1>
+          <p className="text-slate-600">Monitor payment status and revenue with ItsHappening.Africa</p>
         </div>
       </div>
 
       {/* Payment Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
+        <Card className="border-0 shadow-md bg-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
-                <p className="text-3xl font-bold text-foreground mt-1">
+                <p className="text-sm font-medium text-slate-600">Total Revenue</p>
+                <p className="text-3xl font-bold text-[#20366B] mt-1">
                   {formatCurrency(totalRevenue)}
                 </p>
-                <p className="text-sm text-success mt-1">
+                <p className="text-sm text-[#24D367] mt-1">
                   <TrendingUp className="inline h-4 w-4 mr-1" />
                   +12% from last month
                 </p>
               </div>
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <DollarSign className="text-primary text-xl" />
+              <div className="w-12 h-12 bg-gradient-to-br from-[#278DD4] to-[#24D367] rounded-lg flex items-center justify-center">
+                <DollarSign className="text-white text-xl" />
               </div>
             </div>
           </CardContent>
