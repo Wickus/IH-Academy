@@ -143,8 +143,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.createUser(userData);
       currentUser = user;
       res.json(user);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error registering user:", error);
+      
+      // Handle unique constraint violations
+      if (error.code === '23505') {
+        if (error.constraint === 'users_username_unique') {
+          return res.status(400).json({ message: "Username already exists. Please choose a different username." });
+        }
+        if (error.constraint === 'users_email_unique') {
+          return res.status(400).json({ message: "Email already exists. Please use a different email address." });
+        }
+      }
+      
       res.status(500).json({ message: "Failed to register user" });
     }
   });
