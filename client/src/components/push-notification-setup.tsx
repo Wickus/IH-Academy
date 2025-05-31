@@ -149,17 +149,33 @@ export default function PushNotificationSetup({ onComplete, onDismiss }: PushNot
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-          <div className="p-6 text-center">
-            <div className="flex justify-end mb-4">
-              <Button variant="ghost" size="sm" onClick={onDismiss} className="text-slate-400 hover:text-slate-600">
-                <X className="h-4 w-4" />
+          <div className="relative">
+            {/* Header with gradient */}
+            <div className="bg-gradient-to-r from-[#20366B] to-[#278DD4] rounded-t-2xl p-6 text-center text-white">
+              <div className="absolute top-4 right-4">
+                <Button variant="ghost" size="sm" onClick={onDismiss} className="text-white/80 hover:text-white hover:bg-white/10">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <BellOff className="h-12 w-12 mx-auto mb-3 text-white" />
+              <h3 className="text-xl font-bold">Notifications Not Available</h3>
+              <p className="text-white/90 text-sm mt-2">
+                Your browser doesn't support push notifications or you're not using HTTPS
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 text-center">
+              <p className="text-slate-600 mb-4">
+                To receive notifications, please try using a supported browser or ensure you're on a secure connection.
+              </p>
+              <Button 
+                onClick={onDismiss}
+                className="w-full bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white font-medium"
+              >
+                I Understand
               </Button>
             </div>
-            <BellOff className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">Notifications Not Supported</h3>
-            <p className="text-slate-600 text-sm">
-              Your browser doesn't support push notifications or you're not using HTTPS.
-            </p>
           </div>
         </div>
       </div>

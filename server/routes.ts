@@ -191,7 +191,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/organizations", async (req: Request, res: Response) => {
     try {
       const organizations = await storage.getAllOrganizations();
-      res.json(organizations);
+      
+      // Add follow status for authenticated users
+      if (currentUser) {
+        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+        const followedOrgIds = new Set(userOrgs.map(uo => uo.organizationId));
+        
+        const orgsWithFollowStatus = organizations.map(org => ({
+          ...org,
+          isFollowing: followedOrgIds.has(org.id)
+        }));
+        
+        res.json(orgsWithFollowStatus);
+      } else {
+        res.json(organizations);
+      }
     } catch (error) {
       console.error("Error fetching organizations:", error);
       res.status(500).json({ message: "Failed to fetch organizations" });
