@@ -584,11 +584,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Then create the coach with the user ID
-      const coach = await storage.createCoach({
-        ...coachData,
+      const coachCreateData = {
         userId: user.id,
-        academyId: coachData.organizationId // Map organizationId to academyId for the coaches table
-      });
+        academyId: coachData.organizationId, // Map organizationId to academyId for the coaches table
+        organizationId: coachData.organizationId,
+        bio: coachData.bio,
+        specializations: coachData.specializations,
+        hourlyRate: coachData.hourlyRate,
+        phone: coachData.phone
+      };
+      console.log('Coach create data:', coachCreateData);
+      
+      const coach = await storage.createCoach(coachCreateData);
 
       // Return enriched coach data
       res.json({
