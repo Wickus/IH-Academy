@@ -178,24 +178,27 @@ export default function Coaches() {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-4">
-                  <Button size="sm" className="flex-1 bg-[#278DD4] hover:bg-[#1f7bc4] text-white border-0">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Schedule
-                  </Button>
-                  <Button size="sm" className="flex-1 bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
-                    <Users className="mr-2 h-4 w-4" />
-                    Classes
-                  </Button>
+                <div className="space-y-2 pt-4">
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1 bg-[#278DD4] hover:bg-[#1f7bc4] text-white border-0">
+                      <Calendar className="mr-1 h-4 w-4" />
+                      Schedule
+                    </Button>
+                    <Button size="sm" className="flex-1 bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
+                      <Users className="mr-1 h-4 w-4" />
+                      Classes
+                    </Button>
+                  </div>
                   <Button 
                     size="sm" 
                     onClick={() => {
                       setEditingCoach(coach);
                       setShowEditDialog(true);
                     }}
-                    className="bg-[#20366B] hover:bg-[#1a2c57] text-white border-0"
+                    className="w-full bg-[#20366B] hover:bg-[#1a2c57] text-white border-0"
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Coach Details
                   </Button>
                 </div>
               </div>
