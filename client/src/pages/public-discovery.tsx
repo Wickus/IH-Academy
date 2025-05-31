@@ -51,7 +51,7 @@ export default function PublicDiscovery() {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900">Discover Sports Organizations</h1>
+        <h1 className="text-4xl font-bold tracking-tight text-[#ffffff]">Discover Sports Organizations</h1>
         <p className="text-xl text-slate-600 max-w-2xl mx-auto">
           Find and follow your favorite sports academies, clubs, and training facilities
         </p>
@@ -67,7 +67,6 @@ export default function PublicDiscovery() {
           />
         </div>
       </div>
-
       {/* Featured Classes */}
       <Card className="border-slate-200 bg-white">
         <CardHeader>
@@ -120,7 +119,6 @@ export default function PublicDiscovery() {
           </div>
         </CardContent>
       </Card>
-
       {/* Organizations Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredOrganizations.map((org) => (
@@ -196,7 +194,6 @@ export default function PublicDiscovery() {
           </Card>
         ))}
       </div>
-
       {filteredOrganizations.length === 0 && searchTerm && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No organizations found matching "{searchTerm}"</p>
