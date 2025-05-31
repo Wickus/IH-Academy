@@ -18,6 +18,7 @@ const coachFormSchema = z.object({
   specializations: z.string().optional(),
   hourlyRate: z.string().optional(),
   phone: z.string().optional(),
+  profilePicture: z.string().optional(),
 });
 
 type CoachFormData = z.infer<typeof coachFormSchema>;
@@ -71,6 +72,7 @@ export default function CoachForm({ onSuccess, initialData }: CoachFormProps) {
         specializations: data.specializations ? data.specializations.split(",").map(s => s.trim()) : [],
         hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : null,
         phone: data.phone || null,
+        profilePicture: data.profilePicture || null,
         user: {
           name: data.name,
           email: data.email,
@@ -176,6 +178,24 @@ export default function CoachForm({ onSuccess, initialData }: CoachFormProps) {
               <FormControl>
                 <Input 
                   placeholder="e.g., Basketball, Youth Training, Fitness" 
+                  {...field} 
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="profilePicture"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-[#20366B] font-medium">Profile Picture URL</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="https://example.com/profile-photo.jpg" 
                   {...field} 
                   className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                 />

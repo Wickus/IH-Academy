@@ -591,7 +591,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bio: coachData.bio,
         specializations: coachData.specializations,
         hourlyRate: coachData.hourlyRate,
-        phone: coachData.phone
+        phone: coachData.phone,
+        profilePicture: coachData.profilePicture
       };
       console.log('Coach create data:', coachCreateData);
       
