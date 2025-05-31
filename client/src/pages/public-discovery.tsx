@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import PushNotificationSetup from "@/components/push-notification-setup";
 
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
