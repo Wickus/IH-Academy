@@ -179,7 +179,7 @@ export default function PublicBooking() {
                   onClick={() => setShowBookingForm(false)}
                   className="text-slate-400 hover:text-slate-600"
                 >
-                  ✕
+                  &times;
                 </Button>
               </div>
               
