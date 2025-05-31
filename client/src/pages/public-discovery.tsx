@@ -52,7 +52,7 @@ export default function PublicDiscovery() {
       {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold tracking-tight text-[#ffffff]">Discover Sports Organizations</h1>
-        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+        <p className="text-xl max-w-2xl mx-auto text-[#ffffff]">
           Find and follow your favorite sports academies, clubs, and training facilities
         </p>
         
