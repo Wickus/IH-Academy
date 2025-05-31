@@ -256,6 +256,11 @@ export const api = {
     return response.json();
   },
 
+  createCoach: async (coachData: any): Promise<any> => {
+    const response = await apiRequest('POST', '/api/coaches', coachData);
+    return response.json();
+  },
+
   // Push notification routes
   subscribeToPush: async (subscription: any): Promise<any> => {
     const response = await apiRequest('POST', '/api/notifications/subscribe', subscription);
