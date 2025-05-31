@@ -30,7 +30,7 @@ export default function Sidebar() {
       <div className="p-8 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-center">
           <div className="py-4">
-            <h1 className="text-2xl font-bold text-primary">ItsBooked</h1>
+            <h1 className="text-2xl font-bold" style={{ color: '#20366B' }}>ItsBooked</h1>
           </div>
         </div>
       </div>
