@@ -257,8 +257,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/organizations/:id/follow", async (req: Request, res: Response) => {
     try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const organizationId = parseInt(req.params.id);
-      const userId = 1; // In production, get from session/JWT
+      const userId = currentUser.id;
       
       const userOrg = await storage.addUserToOrganization({
         userId,
@@ -275,8 +279,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/organizations/:id/follow", async (req: Request, res: Response) => {
     try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const organizationId = parseInt(req.params.id);
-      const userId = 1; // In production, get from session/JWT
+      const userId = currentUser.id;
       
       await storage.removeUserFromOrganization(userId, organizationId);
       res.status(204).send();

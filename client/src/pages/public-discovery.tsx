@@ -68,17 +68,23 @@ export default function PublicDiscovery() {
   ) || [];
 
   const followMutation = useMutation({
-    mutationFn: (organizationId: number) => api.followOrganization(organizationId),
-    onSuccess: () => {
+    mutationFn: async (org: Organization) => {
+      if (org.isFollowing) {
+        return api.unfollowOrganization(org.id);
+      } else {
+        return api.followOrganization(org.id);
+      }
+    },
+    onSuccess: (_, org) => {
       toast({
-        title: "Organization followed!",
-        description: "You can now view their classes and book sessions.",
+        title: org.isFollowing ? "Organization unfollowed" : "Organization followed!",
+        description: org.isFollowing ? "You are no longer following this organization." : "You can now view their classes and book sessions.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
     },
     onError: () => {
       toast({
-        title: "Failed to follow organization",
+        title: "Action failed",
         description: "Please try again later.",
         variant: "destructive",
       });
@@ -244,7 +250,7 @@ export default function PublicDiscovery() {
                       <Button
                         variant={org.isFollowing ? "default" : "outline"}
                         size="sm"
-                        onClick={() => followMutation.mutate(org.id)}
+                        onClick={() => followMutation.mutate(org)}
                         disabled={followMutation.isPending}
                         className={`gap-2 transition-all ${
                           org.isFollowing 
