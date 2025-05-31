@@ -26,14 +26,14 @@ export default function Sidebar() {
 
   return (
     <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
-      <div className="p-8 border-b border-white/10 bg-gradient-to-br from-primary to-primary/90">
+      <div className="p-8 border-b border-slate-200 bg-white">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center ring-2 ring-white/30">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
             <Dumbbell className="text-white text-xl" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white drop-shadow-sm">ItsHappening.Africa</h1>
-            <p className="text-sm text-white/90 drop-shadow-sm">Sports Platform</p>
+            <h1 className="text-xl font-bold text-primary drop-shadow-sm">ItsHappening.Africa</h1>
+            <p className="text-sm text-primary/80 drop-shadow-sm">Sports Platform</p>
           </div>
         </div>
       </div>
