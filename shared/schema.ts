@@ -36,6 +36,11 @@ export const organizations = pgTable("organizations", {
   planType: text("plan_type", { enum: ["free", "basic", "premium"] }).default("free"),
   maxClasses: integer("max_classes").default(10),
   maxMembers: integer("max_members").default(100),
+  // Payment gateway credentials
+  payfastMerchantId: text("payfast_merchant_id"),
+  payfastMerchantKey: text("payfast_merchant_key"),
+  payfastPassphrase: text("payfast_passphrase"),
+  payfastSandbox: boolean("payfast_sandbox").default(true),
   // Status
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
