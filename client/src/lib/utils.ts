@@ -94,3 +94,35 @@ export function getAttendanceStatusColor(status: string): string {
   
   return statusColors[status] || 'warning';
 }
+
+export function generateICalEvent(classData: any, booking: any): string {
+  const formatDateForICal = (date: Date) => {
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  };
+
+  const startDate = new Date(classData.startTime);
+  const endDate = new Date(classData.endTime || new Date(startDate.getTime() + 60 * 60 * 1000)); // Default 1 hour duration
+  
+  const icalContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//ItsHappening.Africa//Sports Class//EN',
+    'BEGIN:VEVENT',
+    `UID:booking-${booking.id}@itshappening.africa`,
+    `DTSTART:${formatDateForICal(startDate)}`,
+    `DTEND:${formatDateForICal(endDate)}`,
+    `SUMMARY:${classData.name}`,
+    `DESCRIPTION:Sports class booking for ${booking.participantName}\\nAmount: ${formatCurrency(booking.amount)}\\nPayment Status: ${booking.paymentStatus}`,
+    `LOCATION:${classData.location || 'TBA'}`,
+    `STATUS:${booking.paymentStatus === 'confirmed' ? 'CONFIRMED' : 'TENTATIVE'}`,
+    'BEGIN:VALARM',
+    'TRIGGER:-PT15M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Class starting in 15 minutes',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  return icalContent;
+}

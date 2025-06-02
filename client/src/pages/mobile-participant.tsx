@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { api, type Class, type Organization, type Booking } from "@/lib/api";
-import { formatTime, formatDate, formatCurrency, getSportColor } from "@/lib/utils";
+import { formatTime, formatDate, formatCurrency, getSportColor, generateICalEvent } from "@/lib/utils";
 import { 
   Search, 
   MapPin, 
@@ -365,15 +365,44 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             size="sm"
                             className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
                             onClick={() => {
+                              // Generate and download iCal file
+                              const icalContent = generateICalEvent(booking.class, booking);
+                              const blob = new Blob([icalContent], { type: 'text/calendar' });
+                              const url = URL.createObjectURL(blob);
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.download = `${booking.class?.name?.replace(/\s+/g, '_')}.ics`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(url);
+                              
                               toast({
-                                title: "Calendar Event",
-                                description: `Added ${booking.class?.name} to your calendar`,
+                                title: "Calendar Download",
+                                description: `Calendar event downloaded for ${booking.class?.name}`,
                               });
                             }}
                           >
                             <Calendar className="h-4 w-4" />
                           </Button>
                         </div>
+                        {booking.paymentStatus === 'pending' && (
+                          <div className="mt-2">
+                            <Button 
+                              size="sm"
+                              className="w-full bg-[#24D367] hover:bg-[#24D367]/90 text-white"
+                              onClick={() => {
+                                toast({
+                                  title: "Payment Processing",
+                                  description: "Redirecting to payment gateway...",
+                                });
+                                // Navigate to payment flow
+                              }}
+                            >
+                              Complete Payment
+                            </Button>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))
