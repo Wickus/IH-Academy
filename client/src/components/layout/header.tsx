@@ -31,6 +31,7 @@ export default function Header() {
   const [showNewClassDialog, setShowNewClassDialog] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const { toast } = useToast();
+  const { unreadCount } = useNotifications();
   
   const { data: user } = useQuery({
     queryKey: ['/api/auth/me'],
@@ -120,9 +121,11 @@ export default function Header() {
                   onClick={() => setLocation("/notifications")}
                 >
                   <Bell className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
-                    3
-                  </span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
                 </Button>
               </div>
               <Button 
