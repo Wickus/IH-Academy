@@ -157,18 +157,18 @@ export default function OrganizationSetup() {
                       name="businessModel"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Select Your Business Model</FormLabel>
+                          <FormLabel className="text-slate-900 font-semibold">Select Your Business Model</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                               className="space-y-4"
                             >
-                              <div className="border rounded-lg p-4 space-y-2">
+                              <div className="border border-slate-300 rounded-lg p-4 space-y-2 bg-white">
                                 <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="membership" id="membership" />
-                                  <label htmlFor="membership" className="flex items-center gap-2 font-medium">
-                                    <Users className="h-4 w-4" />
+                                  <label htmlFor="membership" className="flex items-center gap-2 font-medium text-slate-900 cursor-pointer">
+                                    <Users className="h-4 w-4 text-[#20366B]" />
                                     Membership-Based
                                   </label>
                                 </div>
@@ -178,11 +178,11 @@ export default function OrganizationSetup() {
                                 </p>
                               </div>
 
-                              <div className="border rounded-lg p-4 space-y-2">
+                              <div className="border border-slate-300 rounded-lg p-4 space-y-2 bg-white">
                                 <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="pay_per_class" id="pay_per_class" />
-                                  <label htmlFor="pay_per_class" className="flex items-center gap-2 font-medium">
-                                    <Calendar className="h-4 w-4" />
+                                  <label htmlFor="pay_per_class" className="flex items-center gap-2 font-medium text-slate-900 cursor-pointer">
+                                    <Calendar className="h-4 w-4 text-[#20366B]" />
                                     Pay-Per-Class
                                   </label>
                                 </div>
@@ -199,8 +199,8 @@ export default function OrganizationSetup() {
                     />
 
                     {businessModel === "membership" && (
-                      <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
-                        <h3 className="font-medium text-blue-900">Membership Settings</h3>
+                      <div className="space-y-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <h3 className="font-medium text-slate-900">Membership Settings</h3>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField
