@@ -1207,10 +1207,30 @@ export default function GlobalAdminDashboard() {
               </div>
 
               <div className="flex justify-end space-x-4 pt-6 border-t border-slate-200">
-                <Button variant="outline" className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10">
+                <Button 
+                  variant="outline" 
+                  className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
+                  onClick={() => {
+                    setPricingConfig({
+                      membership: {
+                        free: { maxMembers: "25", maxClasses: "5", storage: "1" },
+                        basic: { maxMembers: "100", maxClasses: "25", storage: "10" },
+                        premium: { maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+                      },
+                      payPerClass: {
+                        free: { maxBookings: "50", commission: "5", storage: "1" },
+                        basic: { maxBookings: "200", commission: "3", storage: "10" },
+                        premium: { maxBookings: "Unlimited", commission: "2", storage: "100" }
+                      }
+                    });
+                  }}
+                >
                   Reset to Defaults
                 </Button>
-                <Button className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white">
+                <Button 
+                  className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white"
+                  onClick={savePricingConfiguration}
+                >
                   Save Pricing Configuration
                 </Button>
               </div>
