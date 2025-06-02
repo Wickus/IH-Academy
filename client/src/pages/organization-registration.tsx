@@ -102,13 +102,13 @@ export default function OrganizationRegistration() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Registration successful!",
-        description: "Your organisation has been created successfully. You can now log in.",
+        title: "Organisation Created!",
+        description: "Let's set up your branding and business model.",
       });
-      // Redirect to login page after a brief delay to show the success message
+      // Redirect to organisation setup page
       setTimeout(() => {
-        setLocation("/auth");
-      }, 1500);
+        setLocation(`/organization-setup?orgId=${data.organization.id}`);
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
