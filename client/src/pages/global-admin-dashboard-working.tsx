@@ -455,8 +455,20 @@ export default function GlobalAdminDashboard() {
               className="border-white/30 text-white hover:bg-white/10"
               onClick={async () => {
                 try {
-                  await api.post('/api/auth/logout');
-                  window.location.href = '/';
+                  const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    }
+                  });
+                  
+                  if (response.ok) {
+                    window.location.href = '/';
+                  } else {
+                    console.error('Logout failed');
+                    window.location.href = '/';
+                  }
                 } catch (error) {
                   console.error('Logout failed:', error);
                   window.location.href = '/';
