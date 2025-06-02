@@ -535,7 +535,7 @@ export default function GlobalAdminDashboard() {
                                                     </div>
                                                     <Badge 
                                                       variant="secondary" 
-                                                      className={org.isAdmin ? 'bg-[#24D367]/20 text-[#20366B]' : 'bg-[#24D3BF]/20 text-[#20366B]'}
+                                                      className={org.isAdmin ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#24D3BF]/20 text-[#20366B] border-[#24D3BF]/30'}
                                                     >
                                                       {org.isAdmin ? 'Admin' : 'Follower'}
                                                     </Badge>
