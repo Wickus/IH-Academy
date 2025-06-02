@@ -941,10 +941,19 @@ export default function GlobalAdminDashboard() {
                       <p className="text-sm text-slate-600">per month</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <Input placeholder="Max Members" value="25" className="text-center" />
-                        <Input placeholder="Max Classes" value="5" className="text-center" />
-                        <Input placeholder="Storage (GB)" value="1" className="text-center" />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Members</label>
+                          <Input value="25" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Classes</label>
+                          <Input value="5" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
+                          <Input value="1" className="text-center" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -957,10 +966,19 @@ export default function GlobalAdminDashboard() {
                       <p className="text-sm text-slate-600">per month</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <Input placeholder="Max Members" value="100" className="text-center" />
-                        <Input placeholder="Max Classes" value="25" className="text-center" />
-                        <Input placeholder="Storage (GB)" value="10" className="text-center" />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Members</label>
+                          <Input value="100" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Classes</label>
+                          <Input value="25" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
+                          <Input value="10" className="text-center" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -972,10 +990,19 @@ export default function GlobalAdminDashboard() {
                       <p className="text-sm text-slate-600">per month</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <Input placeholder="Max Members" value="Unlimited" className="text-center" />
-                        <Input placeholder="Max Classes" value="Unlimited" className="text-center" />
-                        <Input placeholder="Storage (GB)" value="100" className="text-center" />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Members</label>
+                          <Input value="Unlimited" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Classes</label>
+                          <Input value="Unlimited" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
+                          <Input value="100" className="text-center" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -993,10 +1020,19 @@ export default function GlobalAdminDashboard() {
                       <p className="text-sm text-slate-600">transaction fee</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <Input placeholder="Max Bookings/Month" value="50" className="text-center" />
-                        <Input placeholder="Commission %" value="5" className="text-center" />
-                        <Input placeholder="Storage (GB)" value="1" className="text-center" />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Bookings/Month</label>
+                          <Input value="50" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Commission %</label>
+                          <Input value="5" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
+                          <Input value="1" className="text-center" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -1009,10 +1045,19 @@ export default function GlobalAdminDashboard() {
                       <p className="text-sm text-slate-600">transaction fee</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <Input placeholder="Max Bookings/Month" value="200" className="text-center" />
-                        <Input placeholder="Commission %" value="3" className="text-center" />
-                        <Input placeholder="Storage (GB)" value="10" className="text-center" />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Bookings/Month</label>
+                          <Input value="200" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Commission %</label>
+                          <Input value="3" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
+                          <Input value="10" className="text-center" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -1024,10 +1069,19 @@ export default function GlobalAdminDashboard() {
                       <p className="text-sm text-slate-600">transaction fee</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <Input placeholder="Max Bookings/Month" value="Unlimited" className="text-center" />
-                        <Input placeholder="Commission %" value="2" className="text-center" />
-                        <Input placeholder="Storage (GB)" value="100" className="text-center" />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Max Bookings/Month</label>
+                          <Input value="Unlimited" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Commission %</label>
+                          <Input value="2" className="text-center" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
+                          <Input value="100" className="text-center" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
