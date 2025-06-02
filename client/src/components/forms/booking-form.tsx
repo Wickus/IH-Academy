@@ -51,7 +51,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
 
   const createBookingMutation = useMutation({
     mutationFn: api.createBooking,
-    onSuccess: (booking) => {
+    onSuccess: async (booking) => {
       queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
       
@@ -60,26 +60,46 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
         description: "Your booking has been created. Redirecting to payment...",
       });
 
-      // Initiate Payfast payment
-      const paymentData = {
-        name_first: booking.participantName.split(' ')[0] || '',
-        name_last: booking.participantName.split(' ').slice(1).join(' ') || '',
-        email_address: booking.participantEmail,
-        m_payment_id: generatePaymentId(),
-        amount: Number(booking.amount),
-        item_name: classData.name,
-        item_description: `Sports class booking for ${classData.name}`,
-        custom_str1: booking.id.toString(),
-        custom_str2: classData.id.toString(),
-        custom_str3: 'class_booking',
-      };
+      try {
+        // Get organization details to access Payfast credentials
+        const organization = await api.getOrganization(classData.organizationId);
+        
+        if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
+          toast({
+            title: "Payment Configuration Error",
+            description: "This organization hasn't configured payment processing yet. Please contact them directly.",
+            variant: "destructive",
+          });
+          return;
+        }
 
-      // Note: Payment ID will be updated via webhook after payment completion
+        // Initiate Payfast payment with organization's credentials
+        const paymentData = {
+          merchant_id: organization.payfastMerchantId,
+          merchant_key: organization.payfastMerchantKey,
+          name_first: booking.participantName.split(' ')[0] || '',
+          name_last: booking.participantName.split(' ').slice(1).join(' ') || '',
+          email_address: booking.participantEmail,
+          m_payment_id: generatePaymentId(),
+          amount: Number(booking.amount),
+          item_name: classData.name,
+          item_description: `Sports class booking for ${classData.name}`,
+          custom_str1: booking.id.toString(),
+          custom_str2: classData.id.toString(),
+          custom_str3: 'class_booking',
+          sandbox: organization.payfastSandbox,
+        };
 
-      // Initiate payment
-      initiatePayfastPayment(paymentData);
-      
-      setPaymentStep('payment');
+        // Initiate payment
+        initiatePayfastPayment(paymentData);
+        setPaymentStep('payment');
+      } catch (error) {
+        toast({
+          title: "Payment Error",
+          description: "Unable to process payment. Please try again or contact support.",
+          variant: "destructive",
+        });
+      }
     },
     onError: (error) => {
       console.error('Booking error:', error);
