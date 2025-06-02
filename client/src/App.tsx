@@ -1,6 +1,7 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NotificationsProvider } from "@/contexts/notifications-context";
@@ -130,26 +131,25 @@ function RoleBasedRouter({ user }: { user?: User }) {
 }
 
 function Router() {
-  const { data: user, isLoading, error } = useQuery({
-    queryKey: ['/api/auth/me'],
-    queryFn: async () => {
-      try {
-        return await api.getCurrentUser();
-      } catch (err) {
-        // If authentication fails, return null instead of throwing
-        if (err instanceof Error && err.message.includes('401')) {
-          return null;
-        }
-        throw err;
-      }
-    },
-    retry: false,
-    staleTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  if (isLoading) {
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const currentUser = await api.getCurrentUser();
+        setUser(currentUser);
+        setIsAuthenticated(true);
+      } catch (error) {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (isAuthenticated === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -160,9 +160,11 @@ function Router() {
     );
   }
 
-  // Show auth page if not authenticated
-  if (!user) {
-    return <Auth />;
+  if (!isAuthenticated || !user) {
+    return <Auth onAuthSuccess={(authenticatedUser) => {
+      setUser(authenticatedUser);
+      setIsAuthenticated(true);
+    }} />;
   }
 
   return <RoleBasedRouter user={user} />;

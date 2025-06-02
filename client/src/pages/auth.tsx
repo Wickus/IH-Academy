@@ -41,7 +41,11 @@ interface OrganizationFormData {
   planType: 'free' | 'basic' | 'premium';
 }
 
-export default function Auth() {
+interface AuthProps {
+  onAuthSuccess?: (user: User) => void;
+}
+
+export default function Auth({ onAuthSuccess }: AuthProps) {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showOrgSetup, setShowOrgSetup] = useState(false);
   const [loginData, setLoginData] = useState<LoginFormData>({ username: "", password: "" });
@@ -82,7 +86,11 @@ export default function Auth() {
     onSuccess: (user: User) => {
       queryClient.setQueryData(['/api/auth/me'], user);
       toast({ title: "Welcome back!", description: `Logged in as ${user.firstName} ${user.lastName}` });
-      setLocation("/");
+      if (onAuthSuccess) {
+        onAuthSuccess(user);
+      } else {
+        setLocation("/");
+      }
     },
     onError: (error: any) => {
       toast({ title: "Login failed", description: error.message || "Invalid credentials", variant: "destructive" });
@@ -99,7 +107,11 @@ export default function Auth() {
         // Don't redirect - stay on auth page to show modal
         setShowOrgSetup(true);
       } else {
-        setLocation("/");
+        if (onAuthSuccess) {
+          onAuthSuccess(user);
+        } else {
+          setLocation("/");
+        }
       }
     },
     onError: (error: any) => {
