@@ -15,9 +15,16 @@ export default function Classes() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingClass, setEditingClass] = useState<any>(null);
 
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: () => api.getCurrentUser(),
+    retry: false
+  });
+
   const { data: classes = [], isLoading } = useQuery({
     queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses({ organizationId: 1 }),
+    queryFn: () => api.getClasses({ organizationId: user?.organizationId || 1 }),
+    enabled: !!user?.organizationId,
   });
 
   const { data: sports = [] } = useQuery({
@@ -76,6 +83,7 @@ export default function Classes() {
               <div className="max-h-[75vh] overflow-y-auto pr-2">
                 <ClassForm 
                   sports={sports}
+                  organizationId={user?.organizationId}
                   onSuccess={() => setShowCreateDialog(false)}
                 />
               </div>
