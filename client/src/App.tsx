@@ -25,6 +25,7 @@ import MobileCoach from "@/pages/mobile-coach";
 import MobileParticipant from "@/pages/mobile-participant";
 import UserDashboard from "@/pages/user-dashboard";
 import Auth from "@/pages/auth";
+import OrganizationSetup from "@/pages/organization-setup";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
