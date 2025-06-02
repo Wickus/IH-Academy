@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { api, type User, type Organization } from "@/lib/api";
 import { UserPlus, LogIn, Building2, Users, Dumbbell } from "lucide-react";
@@ -41,7 +42,8 @@ interface OrganizationFormData {
 }
 
 export default function Auth() {
-  const [activeTab, setActiveTab] = useState<"login" | "register" | "organization">("login");
+  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [showOrgSetup, setShowOrgSetup] = useState(false);
   const [loginData, setLoginData] = useState<LoginFormData>({ username: "", password: "" });
   const [registerData, setRegisterData] = useState<RegisterFormData>({
     username: "", email: "", password: "", firstName: "", lastName: "", phone: "", role: "member"
@@ -74,7 +76,7 @@ export default function Auth() {
       toast({ title: "Registration successful!", description: `Welcome ${user.firstName}!` });
       
       if (user.role === 'organization_admin') {
-        setActiveTab("organization");
+        setShowOrgSetup(true);
       } else {
         setLocation("/");
       }
@@ -139,7 +141,7 @@ export default function Auth() {
           borderRadius: '12px'
         }}>
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-            <TabsList className="grid w-full grid-cols-3 bg-gray-100 p-1 rounded-lg">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
               <TabsTrigger value="login" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
                 <LogIn className="h-4 w-4" />
                 Login
@@ -147,10 +149,6 @@ export default function Auth() {
               <TabsTrigger value="register" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
                 <UserPlus className="h-4 w-4" />
                 Register
-              </TabsTrigger>
-              <TabsTrigger value="organization" className="gap-1 text-gray-700 data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">
-                <Building2 className="h-4 w-4" />
-                Organisation
               </TabsTrigger>
             </TabsList>
 
@@ -311,109 +309,7 @@ export default function Auth() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="organization">
-              <Card className="border-0 shadow-none bg-transparent">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-gray-900">Create Organisation</CardTitle>
-                  <CardDescription className="text-gray-600">
-                    Set up your sports academy, club, or gym
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCreateOrganization} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="orgName" className="text-gray-700 font-medium">Organisation Name</Label>
-                      <Input
-                        id="orgName"
-                        value={orgData.name}
-                        onChange={(e) => setOrgData({...orgData, name: e.target.value})}
-                        required
-                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="orgEmail" className="text-gray-700 font-medium">Contact Email</Label>
-                      <Input
-                        id="orgEmail"
-                        type="email"
-                        value={orgData.email}
-                        onChange={(e) => setOrgData({...orgData, email: e.target.value})}
-                        required
-                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="description" className="text-gray-700 font-medium">Description</Label>
-                      <Input
-                        id="description"
-                        value={orgData.description}
-                        onChange={(e) => setOrgData({...orgData, description: e.target.value})}
-                        placeholder="Brief description of your organisation"
-                        required
-                        className="bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="primaryColor" className="text-gray-700 font-medium">Primary Color</Label>
-                        <Input
-                          id="primaryColor"
-                          type="color"
-                          value={orgData.primaryColor}
-                          onChange={(e) => setOrgData({...orgData, primaryColor: e.target.value})}
-                          className="bg-white border-gray-300 h-10 w-full cursor-pointer"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="secondaryColor" className="text-gray-700 font-medium">Secondary Color</Label>
-                        <Input
-                          id="secondaryColor"
-                          type="color"
-                          value={orgData.secondaryColor}
-                          onChange={(e) => setOrgData({...orgData, secondaryColor: e.target.value})}
-                          className="bg-white border-gray-300 h-10 w-full cursor-pointer"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="accentColor" className="text-gray-700 font-medium">Accent Color</Label>
-                        <Input
-                          id="accentColor"
-                          type="color"
-                          value={orgData.accentColor}
-                          onChange={(e) => setOrgData({...orgData, accentColor: e.target.value})}
-                          className="bg-white border-gray-300 h-10 w-full cursor-pointer"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="planType" className="text-gray-700 font-medium">Plan Type</Label>
-                      <Select value={orgData.planType} onValueChange={(value) => setOrgData({...orgData, planType: value as any})}>
-                        <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue className="text-gray-900" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border-gray-300">
-                          <SelectItem value="free" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">Free - Up to 10 classes, 100 members</SelectItem>
-                          <SelectItem value="basic" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">Basic - Up to 50 classes, 500 members</SelectItem>
-                          <SelectItem value="premium" className="text-gray-900 focus:bg-blue-50 focus:text-blue-900">Premium - Unlimited classes and members</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                      disabled={createOrgMutation.isPending}
-                    >
-                      {createOrgMutation.isPending ? "Creating organisation..." : "Create Organisation"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
+
           </Tabs>
         </Card>
 
