@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { api, type Class, type Organization, type Booking } from "@/lib/api";
 import { formatTime, formatDate, formatCurrency, getSportColor } from "@/lib/utils";
 import { 
@@ -40,6 +42,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [showNotificationSetup, setShowNotificationSetup] = useState(false);
+  const [showAddChild, setShowAddChild] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -498,6 +501,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                     <p className="text-slate-600 mb-3">No children added yet</p>
                     <Button
                       size="sm"
+                      onClick={() => setShowAddChild(true)}
                       className="bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
                     >
                       <Plus className="mr-2 h-4 w-4" />
@@ -541,6 +545,53 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
           onDismiss={() => setShowNotificationSetup(false)}
         />
       )}
+
+      {/* Add Child Modal */}
+      <Dialog open={showAddChild} onOpenChange={setShowAddChild}>
+        <DialogContent className="sm:max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-[#20366B] flex items-center">
+              <Baby className="mr-2 h-5 w-5" />
+              Add Child
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#20366B]">Child's Name</label>
+              <Input placeholder="Enter child's full name" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#20366B]">Date of Birth</label>
+              <Input type="date" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#20366B]">Medical Information (Optional)</label>
+              <Input placeholder="Any allergies, conditions, or notes" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAddChild(false)}
+                className="flex-1 border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  toast({
+                    title: "Feature Coming Soon",
+                    description: "Children management functionality will be available in the next update.",
+                  });
+                  setShowAddChild(false);
+                }}
+                className="flex-1 bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
+              >
+                Add Child
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
