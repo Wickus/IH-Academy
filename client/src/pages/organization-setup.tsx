@@ -18,12 +18,6 @@ import { apiRequest } from "@/lib/queryClient";
 import type { Organization } from "@shared/schema";
 
 const organizationSetupSchema = z.object({
-  name: z.string().min(1, "Organisation name is required"),
-  description: z.string().optional(),
-  address: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email("Valid email is required"),
-  website: z.string().optional(),
   businessModel: z.enum(["membership", "pay_per_class"]),
   membershipPrice: z.string().optional(),
   membershipBillingCycle: z.enum(["monthly", "quarterly", "yearly"]).default("monthly"),
@@ -43,6 +37,13 @@ export default function OrganizationSetup() {
   // Get organization ID from URL params
   const urlParams = new URLSearchParams(window.location.search);
   const orgId = urlParams.get('orgId');
+
+  // Fetch existing organization data
+  const { data: organization } = useQuery({
+    queryKey: [`/api/organizations/${orgId}`],
+    queryFn: () => apiRequest("GET", `/api/organizations/${orgId}`),
+    enabled: !!orgId,
+  });
 
   const form = useForm<OrganizationSetupForm>({
     resolver: zodResolver(organizationSetupSchema),
@@ -116,7 +117,7 @@ export default function OrganizationSetup() {
         {/* Progress Steps */}
         <div className="flex justify-center mb-8">
           <div className="flex space-x-4">
-            {[1, 2, 3].map((step) => (
+            {[1, 2].map((step) => (
               <div
                 key={step}
                 className={`flex items-center justify-center w-12 h-12 rounded-full border-2 font-semibold ${
@@ -134,113 +135,8 @@ export default function OrganizationSetup() {
         <Card className="bg-white/95 backdrop-blur shadow-2xl border-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              {/* Step 1: Basic Information */}
+              {/* Step 1: Business Model */}
               {currentStep === 1 && (
-                <>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Building2 className="h-5 w-5" />
-                      Basic Information
-                    </CardTitle>
-                    <CardDescription>
-                      Tell us about your organisation
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Organisation Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter organisation name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="contact@yourorganisation.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describe your organisation and what you offer"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input placeholder="+27 XX XXX XXXX" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="website"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Website</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://yourorganisation.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Your organisation's address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </>
-              )}
-
-              {/* Step 2: Business Model */}
-              {currentStep === 2 && (
                 <>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -351,8 +247,8 @@ export default function OrganizationSetup() {
                 </>
               )}
 
-              {/* Step 3: Branding */}
-              {currentStep === 3 && (
+              {/* Step 2: Branding */}
+              {currentStep === 2 && (
                 <>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
