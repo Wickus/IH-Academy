@@ -78,7 +78,7 @@ export default function OrganizationSetup() {
         description: "Your organisation has been configured successfully!",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
-      setLocation(`/organization-dashboard?orgId=${orgId}`);
+      setLocation("/dashboard");
     },
     onError: (error: any) => {
       toast({
@@ -213,6 +213,7 @@ export default function OrganizationSetup() {
                                     type="number" 
                                     step="0.01"
                                     placeholder="299.00"
+                                    className="border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]"
                                     {...field}
                                   />
                                 </FormControl>
@@ -229,7 +230,7 @@ export default function OrganizationSetup() {
                                 <FormLabel>Billing Cycle</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]">
                                       <SelectValue />
                                     </SelectTrigger>
                                   </FormControl>
@@ -272,8 +273,8 @@ export default function OrganizationSetup() {
                             <FormLabel>Primary Color</FormLabel>
                             <FormControl>
                               <div className="flex gap-2">
-                                <Input type="color" {...field} className="w-12 h-10" />
-                                <Input {...field} placeholder="#20366B" />
+                                <Input type="color" {...field} className="w-12 h-10 border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]" />
+                                <Input {...field} placeholder="#20366B" className="border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]" />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -289,8 +290,8 @@ export default function OrganizationSetup() {
                             <FormLabel>Secondary Color</FormLabel>
                             <FormControl>
                               <div className="flex gap-2">
-                                <Input type="color" {...field} className="w-12 h-10" />
-                                <Input {...field} placeholder="#278DD4" />
+                                <Input type="color" {...field} className="w-12 h-10 border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]" />
+                                <Input {...field} placeholder="#278DD4" className="border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]" />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -306,8 +307,8 @@ export default function OrganizationSetup() {
                             <FormLabel>Accent Color</FormLabel>
                             <FormControl>
                               <div className="flex gap-2">
-                                <Input type="color" {...field} className="w-12 h-10" />
-                                <Input {...field} placeholder="#24D367" />
+                                <Input type="color" {...field} className="w-12 h-10 border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]" />
+                                <Input {...field} placeholder="#24D367" className="border-[#278DD4] focus:border-[#24D367] focus:ring-[#24D367]" />
                               </div>
                             </FormControl>
                             <FormMessage />
