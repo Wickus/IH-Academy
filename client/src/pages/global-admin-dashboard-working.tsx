@@ -1380,6 +1380,7 @@ export default function GlobalAdminDashboard() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="free">Free</SelectItem>
+                          <SelectItem value="basic">Basic</SelectItem>
                           <SelectItem value="premium">Premium</SelectItem>
                         </SelectContent>
                       </Select>
