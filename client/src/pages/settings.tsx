@@ -423,6 +423,29 @@ export default function Settings() {
               </div>
             </TabsContent>
 
+            <TabsContent value="payments" className="space-y-6">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-[#20366B] mb-2">Payment Gateway Configuration</h3>
+                  <p className="text-slate-600 mb-6">Configure your Payfast merchant account to accept payments for class bookings</p>
+                </div>
+                
+                <PayfastCredentials
+                  initialData={{
+                    payfastMerchantId: organization?.payfastMerchantId || "",
+                    payfastMerchantKey: organization?.payfastMerchantKey || "",
+                    payfastPassphrase: organization?.payfastPassphrase || "",
+                    payfastSandbox: organization?.payfastSandbox ?? true,
+                  }}
+                  onSubmit={onPayfastCredentialsSubmit}
+                  isLoading={updatePayfastCredentialsMutation.isPending}
+                  showTitle={false}
+                  showButtons={true}
+                  showSandboxToggle={true}
+                />
+              </div>
+            </TabsContent>
+
             <TabsContent value="notifications" className="space-y-6">
               <Form {...notificationForm}>
                 <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-6">
