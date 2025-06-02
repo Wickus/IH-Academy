@@ -271,16 +271,19 @@ export default function ChildrenManagement({ userId }: ChildrenManagementProps) 
                     name="medicalInfo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#20366B] font-medium">Medical Information</FormLabel>
+                        <FormLabel className="text-[#20366B] font-medium">Medical Information *</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Any allergies, medical conditions, or special requirements..."
+                            placeholder="Please include:&#10;• Any allergies (food, medication, environmental)&#10;• Medical conditions (asthma, diabetes, etc.)&#10;• Current medications&#10;• Physical limitations or restrictions&#10;• Emergency medical procedures if needed"
                             {...field}
-                            className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[100px]"
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                            className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[120px] bg-white text-slate-900"
+                            style={{ whiteSpace: 'pre-line' }}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Include any important medical information coaches should know
+                        <FormDescription className="text-slate-600">
+                          This information is crucial for your child's safety during activities. Please be thorough and accurate.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -292,6 +295,7 @@ export default function ChildrenManagement({ userId }: ChildrenManagementProps) 
                       type="button" 
                       variant="outline" 
                       onClick={() => setShowAddForm(false)}
+                      className="border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                     >
                       Cancel
                     </Button>
