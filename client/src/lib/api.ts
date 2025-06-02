@@ -347,4 +347,24 @@ export const api = {
   deleteOrganization: async (orgId: number): Promise<void> => {
     await apiRequest('DELETE', `/api/organizations/${orgId}`);
   },
+
+  // Daily Schedule API functions for membership organizations
+  getDailySchedules: async (organizationId: number): Promise<any[]> => {
+    const response = await apiRequest('GET', `/api/daily-schedules/${organizationId}`);
+    return response.json();
+  },
+
+  createDailySchedule: async (scheduleData: any): Promise<any> => {
+    const response = await apiRequest('POST', '/api/daily-schedules', scheduleData);
+    return response.json();
+  },
+
+  updateDailySchedule: async (id: number, scheduleData: any): Promise<any> => {
+    const response = await apiRequest('PUT', `/api/daily-schedules/${id}`, scheduleData);
+    return response.json();
+  },
+
+  deleteDailySchedule: async (id: number): Promise<void> => {
+    await apiRequest('DELETE', `/api/daily-schedules/${id}`);
+  },
 };
