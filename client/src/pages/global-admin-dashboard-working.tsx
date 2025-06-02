@@ -515,6 +515,39 @@ export default function GlobalAdminDashboard() {
                                         {user.isActive ? 'Active Account' : 'Inactive Account'}
                                       </Badge>
                                     </div>
+                                    
+                                    {/* Organization Relationships */}
+                                    {(() => {
+                                      const userOrgs = getUserOrganizations(user.id);
+                                      if (userOrgs.length > 0) {
+                                        return (
+                                          <div className="pt-2 border-t border-slate-200">
+                                            <p className="text-sm font-medium text-[#20366B] mb-2">
+                                              {user.role === 'organization_admin' ? 'Manages Organisation:' : 'Following Organisations:'}
+                                            </p>
+                                            <div className="space-y-2">
+                                              {userOrgs.map((org: any) => (
+                                                <div key={org.id} className="bg-gradient-to-r from-[#278DD4]/10 to-[#24D3BF]/10 p-2 rounded border border-[#278DD4]/20">
+                                                  <div className="flex items-center justify-between">
+                                                    <div>
+                                                      <p className="text-sm font-medium text-[#20366B]">{org.name}</p>
+                                                      <p className="text-xs text-slate-600">{org.description}</p>
+                                                    </div>
+                                                    <Badge 
+                                                      variant="secondary" 
+                                                      className={org.isAdmin ? 'bg-[#24D367]/20 text-[#20366B]' : 'bg-[#24D3BF]/20 text-[#20366B]'}
+                                                    >
+                                                      {org.isAdmin ? 'Admin' : 'Follower'}
+                                                    </Badge>
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      }
+                                      return null;
+                                    })()}
                                   </div>
                                   <div className="flex justify-end pt-4 border-t">
                                     <Button
