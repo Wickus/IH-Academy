@@ -220,31 +220,31 @@ export default function DailyScheduleManagement({ organizationId, organization }
                 Add Schedule
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-[#20366B]">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader className="pb-4 border-b border-slate-200">
+                <DialogTitle className="text-[#20366B] text-xl font-bold">
                   {editingSchedule ? "Edit Daily Schedule" : "Add Daily Schedule"}
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-slate-600">
                   {editingSchedule ? "Update the schedule details below." : "Create a new recurring schedule for your members."}
                 </DialogDescription>
               </DialogHeader>
               
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="dayOfWeek"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Day of Week</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Day of Week</FormLabel>
                           <Select 
                             onValueChange={(value) => field.onChange(parseInt(value))}
                             value={field.value?.toString()}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
                                 <SelectValue placeholder="Select day" />
                               </SelectTrigger>
                             </FormControl>

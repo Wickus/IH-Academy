@@ -163,7 +163,7 @@ export default function DailySchedules() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <DailyScheduleManagement 
         organizationId={userOrganization.id} 
         organization={userOrganization}
