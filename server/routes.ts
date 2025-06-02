@@ -241,7 +241,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/users/:id/status", async (req: Request, res: Response) => {
     try {
-      if (!currentUser || currentUser.role !== 'global_admin') {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied. Global admin only." });
       }
       
@@ -262,18 +263,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/users/:id", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser || currentUser.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied. Global admin only." });
       }
       
       const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId);
+      const targetUser = await storage.getUser(userId);
       
-      if (!user) {
+      if (!targetUser) {
         return res.status(404).json({ message: "User not found" });
       }
       
-      if (user.role === 'global_admin') {
+      if (targetUser.role === 'global_admin') {
         return res.status(400).json({ message: "Cannot delete global admin user" });
       }
       
@@ -331,12 +333,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Organization routes
   app.get("/api/organizations", async (req: Request, res: Response) => {
     try {
-      const includeInactive = req.query.includeInactive === 'true' && currentUser?.role === 'global_admin';
+      const user = getCurrentUser(req);
+      const includeInactive = req.query.includeInactive === 'true' && user?.role === 'global_admin';
       const organizations = await storage.getAllOrganizations(includeInactive);
       
       // Add follow status for authenticated users
-      if (currentUser) {
-        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+      if (user) {
+        const userOrgs = await storage.getUserOrganizations(user.id);
         const followedOrgIds = new Set(userOrgs.map(uo => uo.organizationId));
         
         const orgsWithFollowStatus = organizations.map(org => ({
@@ -356,11 +359,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/organizations/my", async (req: Request, res: Response) => {
     try {
-      if (!currentUser) {
+      const user = getCurrentUser(req);
+      if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const organizations = await storage.getOrganizationsByUser(currentUser.id);
+      const organizations = await storage.getOrganizationsByUser(user.id);
       res.json(organizations);
     } catch (error) {
       console.error("Error fetching user organizations:", error);
@@ -386,12 +390,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/organizations", async (req: Request, res: Response) => {
     try {
-      if (!currentUser) {
+      const user = getCurrentUser(req);
+      if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
       // Only organization admins can create organizations
-      if (currentUser.role !== 'organization_admin') {
+      if (user.role !== 'organization_admin') {
         return res.status(403).json({ message: "Access denied. Organization admin role required." });
       }
 
@@ -399,11 +404,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const organization = await storage.createOrganization(orgData);
       
       // Update the current user's organizationId
-      await storage.updateUser(currentUser.id, { organizationId: organization.id });
+      await storage.updateUser(user.id, { organizationId: organization.id });
       
       // Automatically add the current user as the admin of this organisation
       await storage.addUserToOrganization({
-        userId: currentUser.id,
+        userId: user.id,
         organizationId: organization.id,
         role: 'admin',
         isActive: true
@@ -434,12 +439,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/organizations/:id/follow", async (req: Request, res: Response) => {
     try {
-      if (!currentUser) {
+      const user = getCurrentUser(req);
+      if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
       const organizationId = parseInt(req.params.id);
-      const userId = currentUser.id;
+      const userId = user.id;
       
       const userOrg = await storage.addUserToOrganization({
         userId,
