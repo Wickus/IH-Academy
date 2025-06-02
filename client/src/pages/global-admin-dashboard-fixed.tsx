@@ -263,9 +263,17 @@ export default function GlobalAdminDashboard() {
                           <Button 
                             variant="outline" 
                             size="sm" 
+                            className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
                             onClick={() => updateUserStatusMutation.mutate({ userId: user.id, isActive: !user.isActive })}
                             disabled={updateUserStatusMutation.isPending}
-                            className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                            className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
                           >
                             <UserCheck className="h-3 w-3" />
                             {user.isActive ? 'Deactivate' : 'Activate'}
