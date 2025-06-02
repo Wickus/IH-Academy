@@ -30,7 +30,7 @@ const orgEditSchema = z.object({
   description: z.string().optional(),
   primaryColor: z.string().optional(),
   secondaryColor: z.string().optional(),
-  planType: z.enum(['free', 'premium']).optional(),
+  planType: z.enum(['free', 'basic', 'premium']).optional(),
   isActive: z.boolean(),
 });
 
