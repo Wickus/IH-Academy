@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/layout/header";
 import { api, type GlobalDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
 import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette } from "lucide-react";
@@ -123,13 +124,14 @@ export default function GlobalAdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <Header />
       <div className="p-4 lg:p-8 space-y-8">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#20366B]">Global Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-[#20366B]">System Overview</h1>
             <p className="text-slate-600 mt-2">
-              System-wide overview and organisation management for ItsHappening.Africa
+              Monitor platform-wide statistics and manage organisations
             </p>
           </div>
           <Button className="gap-2 bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white border-0">
