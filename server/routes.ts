@@ -66,8 +66,25 @@ function broadcastBookingNotification(classId: number, className: string, partic
   });
 }
 
-// Simple session storage for demo purposes
-let currentUser: any = null;
+// Session storage using Map for better persistence
+const sessions = new Map<string, any>();
+
+// Helper function to generate session ID
+function generateSessionId(): string {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+// Middleware to get current user from session
+function getCurrentUser(req: any): any {
+  const sessionId = req.headers.cookie?.split(';')
+    .find((c: string) => c.trim().startsWith('sessionId='))
+    ?.split('=')[1];
+  
+  if (sessionId && sessions.has(sessionId)) {
+    return sessions.get(sessionId);
+  }
+  return null;
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = new Server(app);
@@ -141,7 +158,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userData.name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
       }
       const user = await storage.createUser(userData);
-      currentUser = user;
+      const sessionId = generateSessionId();
+      sessions.set(sessionId, user);
+      res.cookie('sessionId', sessionId, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 24 hours
       res.json(user);
     } catch (error: any) {
       console.error("Error registering user:", error);
@@ -169,7 +188,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      currentUser = user;
+      const sessionId = generateSessionId();
+      sessions.set(sessionId, user);
+      res.cookie('sessionId', sessionId, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 24 hours
       res.json(user);
     } catch (error) {
       console.error("Error logging in:", error);
@@ -179,7 +200,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/logout", async (req: Request, res: Response) => {
     try {
-      currentUser = null;
+      const sessionId = req.headers.cookie?.split(';')
+        .find((c: string) => c.trim().startsWith('sessionId='))
+        ?.split('=')[1];
+      
+      if (sessionId) {
+        sessions.delete(sessionId);
+      }
+      
+      res.clearCookie('sessionId');
       res.json({ message: "Logged out successfully" });
     } catch (error) {
       console.error("Error logging out:", error);
@@ -189,10 +218,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
-      if (!currentUser) {
+      const user = getCurrentUser(req);
+      if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
-      res.json(currentUser);
+      res.json(user);
     } catch (error) {
       res.status(401).json({ message: "Not authenticated" });
     }
