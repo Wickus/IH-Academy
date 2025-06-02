@@ -311,6 +311,7 @@ hr,
 .bg-white input {
   color: #1E293B !important;
   background-color: #FFFFFF !important;
+  border: 2px solid #E2E8F0 !important;
 }
 
 .border-yellow-500 {
@@ -318,21 +319,25 @@ hr,
 }
 
 /* Ensure all text inputs are visible */
-input[type="text"], input[type="email"], input[type="search"] {
+input[type="text"], input[type="email"], input[type="search"], input[type="password"] {
   color: #1E293B !important;
   background-color: #FFFFFF !important;
-  border-color: #E2E8F0 !important;
+  border: 2px solid #E2E8F0 !important;
+  padding: 0.75rem !important;
+  border-radius: 0.5rem !important;
 }
 
-input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus {
+input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus, input[type="password"]:focus {
   border-color: #20366B !important;
   box-shadow: 0 0 0 3px rgba(32, 54, 107, 0.1) !important;
+  outline: none !important;
 }
 
 /* Fix all input field styling to ensure visibility */
 .input, input {
   color: #1E293B !important;
   background-color: #FFFFFF !important;
+  border: 2px solid #E2E8F0 !important;
 }
 
 /* Remove ALL yellow elements from the app */
@@ -544,25 +549,21 @@ label {
   font-weight: 500 !important;
 }
 
-/* Ensure all form elements have proper contrast */
-.space-y-4 > div {
-  background-color: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
-}
-
 /* Form Field Content */
 .space-y-4 p {
   color: #64748B !important;
 }
 
-/* Radio button containers */
-.border.rounded-lg.p-4 {
+/* Radio button containers - more specific targeting */
+.border.border-slate-300.rounded-lg.p-4.space-y-2.bg-white {
   background-color: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
+  border: 2px solid #E2E8F0 !important;
   color: #1E293B !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
 }
 
-.border.rounded-lg.p-4:hover {
+.border.border-slate-300.rounded-lg.p-4.space-y-2.bg-white:hover {
   border-color: #20366B !important;
   background-color: #F8FAFC !important;
+  box-shadow: 0 4px 8px rgba(32, 54, 107, 0.1) !important;
 }
