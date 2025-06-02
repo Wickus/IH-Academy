@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Check, Trash2, MoreVertical } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useNotifications } from "@/contexts/notifications-context";
 
 interface Notification {
   id: number;
@@ -21,48 +22,14 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  useEffect(() => {
-    setNotifications([
-      {
-        id: 1,
-        title: "New Class Booking",
-        message: "Sarah Johnson booked Water Polo class for tomorrow at 2:00 PM",
-        time: "2 minutes ago",
-        type: "booking",
-        isRead: false,
-        priority: "high"
-      },
-      {
-        id: 2,
-        title: "Payment Received",
-        message: "Payment confirmed for Basketball class - R300.00",
-        time: "1 hour ago",
-        type: "payment",
-        isRead: false,
-        priority: "medium"
-      },
-      {
-        id: 3,
-        title: "Class Reminder",
-        message: "Tennis class starts in 30 minutes with 8 participants",
-        time: "3 hours ago",
-        type: "reminder",
-        isRead: true,
-        priority: "medium"
-      },
-      {
-        id: 4,
-        title: "New Member Registration",
-        message: "Michael Smith has registered and is awaiting approval",
-        time: "1 day ago",
-        type: "booking",
-        isRead: false,
-        priority: "low"
-      }
-    ]);
-  }, []);
+  
+  const { 
+    notifications, 
+    unreadCount, 
+    markAsRead, 
+    deleteNotification, 
+    markAllAsRead 
+  } = useNotifications();
 
   const getNotificationIcon = (type: string) => {
     const iconMap = {
@@ -91,24 +58,6 @@ export default function NotificationsPage() {
                      (filter === 'read' && notification.isRead);
     return typeMatch && readMatch;
   });
-
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-
-  const markAsRead = (id: number) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id ? { ...notification, isRead: true } : notification
-      )
-    );
-  };
-
-  const deleteNotification = (id: number) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(notification => ({ ...notification, isRead: true })));
-  };
 
   const openNotification = (notification: Notification) => {
     setSelectedNotification(notification);
