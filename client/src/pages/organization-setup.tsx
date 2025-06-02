@@ -41,9 +41,12 @@ export default function OrganizationSetup() {
   // Fetch existing organization data
   const { data: organization } = useQuery({
     queryKey: [`/api/organizations/${orgId}`],
-    queryFn: () => apiRequest("GET", `/api/organizations/${orgId}`),
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/organizations/${orgId}`);
+      return response.json();
+    },
     enabled: !!orgId,
-  });
+  }) as { data: Organization | undefined };
 
   const form = useForm<OrganizationSetupForm>({
     resolver: zodResolver(organizationSetupSchema),
@@ -91,7 +94,7 @@ export default function OrganizationSetup() {
   };
 
   const nextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -321,7 +324,7 @@ export default function OrganizationSetup() {
                           background: `linear-gradient(135deg, ${form.watch("primaryColor")} 0%, ${form.watch("secondaryColor")} 100%)` 
                         }}
                       >
-                        {form.watch("name") || "Your Organisation"}
+                        {organization?.name || "Your Organisation"}
                       </div>
                     </div>
                   </CardContent>
@@ -340,7 +343,7 @@ export default function OrganizationSetup() {
                   Previous
                 </Button>
 
-                {currentStep < 3 ? (
+                {currentStep < 2 ? (
                   <Button 
                     type="button" 
                     onClick={nextStep}
