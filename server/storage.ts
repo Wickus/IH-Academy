@@ -735,6 +735,36 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return !!deletedChild;
   }
+
+  // Daily Schedule methods for membership organizations
+  async getDailySchedulesByOrganization(organizationId: number): Promise<DailySchedule[]> {
+    return await db.select().from(dailySchedules)
+      .where(and(eq(dailySchedules.organizationId, organizationId), eq(dailySchedules.isActive, true)))
+      .orderBy(dailySchedules.dayOfWeek, dailySchedules.startTime);
+  }
+
+  async createDailySchedule(schedule: InsertDailySchedule): Promise<DailySchedule> {
+    const [newSchedule] = await db.insert(dailySchedules).values(schedule).returning();
+    return newSchedule;
+  }
+
+  async updateDailySchedule(id: number, schedule: Partial<InsertDailySchedule>): Promise<DailySchedule | undefined> {
+    const [updatedSchedule] = await db.update(dailySchedules).set(schedule).where(eq(dailySchedules.id, id)).returning();
+    return updatedSchedule || undefined;
+  }
+
+  async deleteDailySchedule(id: number): Promise<boolean> {
+    const [deletedSchedule] = await db.update(dailySchedules)
+      .set({ isActive: false })
+      .where(eq(dailySchedules.id, id))
+      .returning();
+    return !!deletedSchedule;
+  }
+
+  async getDailySchedule(id: number): Promise<DailySchedule | undefined> {
+    const [schedule] = await db.select().from(dailySchedules).where(eq(dailySchedules.id, id));
+    return schedule || undefined;
+  }
 }
 
 export const storage = new DatabaseStorage();

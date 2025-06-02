@@ -1397,6 +1397,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Daily Schedule routes for membership organizations
+  app.get("/api/daily-schedules/:organizationId", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.organizationId);
+      const schedules = await storage.getDailySchedulesByOrganization(organizationId);
+      res.json(schedules);
+    } catch (error) {
+      console.error("Error fetching daily schedules:", error);
+      res.status(500).json({ message: "Failed to fetch daily schedules" });
+    }
+  });
+
+  app.post("/api/daily-schedules", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'organization_admin' && currentUser.role !== 'global_admin')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const scheduleData = req.body;
+      const schedule = await storage.createDailySchedule(scheduleData);
+      res.status(201).json(schedule);
+    } catch (error) {
+      console.error("Error creating daily schedule:", error);
+      res.status(500).json({ message: "Failed to create daily schedule" });
+    }
+  });
+
+  app.put("/api/daily-schedules/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'organization_admin' && currentUser.role !== 'global_admin')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const scheduleId = parseInt(req.params.id);
+      const scheduleData = req.body;
+      const schedule = await storage.updateDailySchedule(scheduleId, scheduleData);
+      
+      if (!schedule) {
+        return res.status(404).json({ message: "Daily schedule not found" });
+      }
+      
+      res.json(schedule);
+    } catch (error) {
+      console.error("Error updating daily schedule:", error);
+      res.status(500).json({ message: "Failed to update daily schedule" });
+    }
+  });
+
+  app.delete("/api/daily-schedules/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'organization_admin' && currentUser.role !== 'global_admin')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const scheduleId = parseInt(req.params.id);
+      const success = await storage.deleteDailySchedule(scheduleId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Daily schedule not found" });
+      }
+      
+      res.json({ message: "Daily schedule deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting daily schedule:", error);
+      res.status(500).json({ message: "Failed to delete daily schedule" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;

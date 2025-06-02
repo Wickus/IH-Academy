@@ -242,9 +242,29 @@ export const userStats = pgTable("user_stats", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Daily schedules for membership organizations
+export const dailySchedules = pgTable("daily_schedules", {
+  id: serial("id").primaryKey(),
+  organizationId: integer("organization_id").references(() => organizations.id).notNull(),
+  dayOfWeek: integer("day_of_week").notNull(), // 0 = Sunday, 1 = Monday, etc.
+  startTime: text("start_time").notNull(), // Format: "09:00"
+  endTime: text("end_time").notNull(), // Format: "10:00"
+  className: text("class_name").notNull(),
+  description: text("description"),
+  sportId: integer("sport_id").references(() => sports.id),
+  coachId: integer("coach_id").references(() => coaches.id),
+  capacity: integer("capacity").notNull().default(20),
+  location: text("location"),
+  requirements: text("requirements"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const insertAchievementSchema = createInsertSchema(achievements);
 export const insertUserAchievementSchema = createInsertSchema(userAchievements);
 export const insertUserStatsSchema = createInsertSchema(userStats);
+export const insertDailyScheduleSchema = createInsertSchema(dailySchedules);
 
 export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
@@ -252,6 +272,8 @@ export type UserAchievement = typeof userAchievements.$inferSelect;
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type UserStats = typeof userStats.$inferSelect;
 export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
+export type DailySchedule = typeof dailySchedules.$inferSelect;
+export type InsertDailySchedule = z.infer<typeof insertDailyScheduleSchema>;
 
 // Memberships for organizations using membership business model
 export const memberships = pgTable("memberships", {
