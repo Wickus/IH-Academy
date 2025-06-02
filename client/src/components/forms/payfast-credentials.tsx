@@ -164,9 +164,9 @@ export default function PayfastCredentials({
                 control={form.control}
                 name="payfastSandbox"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-300 p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Sandbox Mode</FormLabel>
+                      <FormLabel className="text-base text-[#20366B] font-medium">Sandbox Mode</FormLabel>
                       <FormDescription>
                         Use Payfast sandbox for testing. Disable for live payments.
                       </FormDescription>
@@ -182,11 +182,11 @@ export default function PayfastCredentials({
               />
             )}
 
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="bg-gradient-to-r from-[#278DD4]/10 to-[#24D3BF]/10 border border-[#278DD4]/20 rounded-lg p-4">
               <div className="flex items-start space-x-2">
-                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
-                <div className="text-sm text-amber-800">
-                  <p className="font-medium mb-1">Security Notice</p>
+                <AlertTriangle className="h-4 w-4 text-[#278DD4] mt-0.5" />
+                <div className="text-sm text-[#20366B]">
+                  <p className="font-semibold mb-1">Security Notice</p>
                   <p>
                     Your payment credentials are encrypted before storage. Only use your live 
                     credentials when you're ready to accept real payments.
