@@ -1138,6 +1138,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Membership Management API Routes
+  app.get("/api/memberships", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const organizationId = req.query.organizationId ? parseInt(req.query.organizationId as string) : currentUser.organizationId;
+      
+      if (!organizationId) {
+        return res.status(400).json({ message: "Organization ID required" });
+      }
+
+      const memberships = await storage.getMembershipsByOrganization(organizationId);
+      res.json(memberships);
+    } catch (error) {
+      console.error("Error fetching memberships:", error);
+      res.status(500).json({ message: "Failed to fetch memberships" });
+    }
+  });
+
+  app.post("/api/memberships", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { userId, organizationId } = req.body;
+      
+      // Get organization details for pricing
+      const organization = await storage.getOrganization(organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      if (organization.businessModel !== "membership") {
+        return res.status(400).json({ message: "Organization does not use membership model" });
+      }
+
+      // Calculate membership dates
+      const startDate = new Date();
+      const endDate = new Date();
+      
+      if (organization.membershipBillingCycle === "monthly") {
+        endDate.setMonth(endDate.getMonth() + 1);
+      } else if (organization.membershipBillingCycle === "quarterly") {
+        endDate.setMonth(endDate.getMonth() + 3);
+      } else if (organization.membershipBillingCycle === "yearly") {
+        endDate.setFullYear(endDate.getFullYear() + 1);
+      }
+
+      const membershipData = {
+        userId,
+        organizationId,
+        status: "pending" as const,
+        startDate,
+        endDate,
+        price: organization.membershipPrice || "0.00",
+        billingCycle: organization.membershipBillingCycle || "monthly",
+        autoRenew: true,
+        nextBillingDate: endDate,
+      };
+
+      const membership = await storage.createMembership(membershipData);
+      res.json(membership);
+    } catch (error) {
+      console.error("Error creating membership:", error);
+      res.status(500).json({ message: "Failed to create membership" });
+    }
+  });
+
+  app.put("/api/memberships/:id", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const membershipId = parseInt(req.params.id);
+      const updates = req.body;
+
+      const membership = await storage.updateMembership(membershipId, updates);
+      
+      if (!membership) {
+        return res.status(404).json({ message: "Membership not found" });
+      }
+
+      res.json(membership);
+    } catch (error) {
+      console.error("Error updating membership:", error);
+      res.status(500).json({ message: "Failed to update membership" });
+    }
+  });
+
+  app.get("/api/users/available-for-membership", async (req: Request, res: Response) => {
+    try {
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const organizationId = req.query.organizationId ? parseInt(req.query.organizationId as string) : currentUser.organizationId;
+      
+      if (!organizationId) {
+        return res.status(400).json({ message: "Organization ID required" });
+      }
+
+      const availableUsers = await storage.getAvailableUsersForMembership(organizationId);
+      res.json(availableUsers);
+    } catch (error) {
+      console.error("Error fetching available users:", error);
+      res.status(500).json({ message: "Failed to fetch available users" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;

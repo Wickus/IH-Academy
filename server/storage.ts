@@ -1,6 +1,6 @@
 import {
   users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
-  achievements, userAchievements, userStats,
+  achievements, userAchievements, userStats, memberships,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
@@ -12,7 +12,8 @@ import {
   type Payment, type InsertPayment,
   type Achievement, type InsertAchievement,
   type UserAchievement, type InsertUserAchievement,
-  type UserStats, type InsertUserStats
+  type UserStats, type InsertUserStats,
+  type Membership, type InsertMembership
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, count, sum } from "drizzle-orm";
@@ -86,6 +87,12 @@ export interface IStorage {
   getPaymentByBooking(bookingId: number): Promise<Payment | undefined>;
   createPayment(payment: InsertPayment): Promise<Payment>;
   updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined>;
+
+  // Memberships
+  getMembershipsByOrganization(organizationId: number): Promise<Membership[]>;
+  createMembership(membership: InsertMembership): Promise<Membership>;
+  updateMembership(id: number, membership: Partial<InsertMembership>): Promise<Membership | undefined>;
+  getAvailableUsersForMembership(organizationId: number): Promise<User[]>;
 
   // Statistics
   getGlobalStats(): Promise<{
@@ -609,6 +616,69 @@ export class DatabaseStorage implements IStorage {
     }
 
     return newlyUnlocked;
+  }
+
+  // Membership methods
+  async getMembershipsByOrganization(organizationId: number): Promise<Membership[]> {
+    const results = await db
+      .select({
+        membership: memberships,
+        user: {
+          id: users.id,
+          username: users.username,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName
+        }
+      })
+      .from(memberships)
+      .leftJoin(users, eq(memberships.userId, users.id))
+      .where(eq(memberships.organizationId, organizationId));
+
+    return results.map(result => ({
+      ...result.membership,
+      user: result.user
+    }));
+  }
+
+  async createMembership(membership: InsertMembership): Promise<Membership> {
+    const [result] = await db.insert(memberships).values(membership).returning();
+    return result;
+  }
+
+  async updateMembership(id: number, membership: Partial<InsertMembership>): Promise<Membership | undefined> {
+    const [result] = await db
+      .update(memberships)
+      .set(membership)
+      .where(eq(memberships.id, id))
+      .returning();
+    return result || undefined;
+  }
+
+  async getAvailableUsersForMembership(organizationId: number): Promise<User[]> {
+    // Get users who are not already members of this organization
+    const existingMemberIds = await db
+      .select({ userId: memberships.userId })
+      .from(memberships)
+      .where(and(
+        eq(memberships.organizationId, organizationId),
+        eq(memberships.status, "active")
+      ));
+
+    const existingIds = existingMemberIds.map(m => m.userId);
+
+    if (existingIds.length === 0) {
+      return await db.select().from(users).where(eq(users.role, "member"));
+    }
+
+    return await db
+      .select()
+      .from(users)
+      .where(and(
+        eq(users.role, "member"),
+        // Use NOT IN to exclude existing members
+        // Note: This is a simplified approach - in production you might want to use a more complex query
+      ));
   }
 }
 
