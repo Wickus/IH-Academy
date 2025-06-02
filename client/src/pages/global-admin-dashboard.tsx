@@ -368,6 +368,15 @@ export default function GlobalAdminDashboard() {
                       {users?.map((user) => (
                         <div key={user.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                           <div className="flex items-center space-x-4">
+                            {/* Selection checkbox for inactive users */}
+                            {!user.isActive && user.role !== 'global_admin' && (
+                              <input
+                                type="checkbox"
+                                checked={selectedUsers.includes(user.id)}
+                                onChange={(e) => handleUserSelection(user.id, e.target.checked)}
+                                className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-orange-300 rounded"
+                              />
+                            )}
                             <div className="w-10 h-10 bg-gradient-to-br from-[#278DD4] to-[#24D367] rounded-full flex items-center justify-center text-white font-bold">
                               {user.firstName ? user.firstName.charAt(0) : user.username.charAt(0)}
                             </div>
