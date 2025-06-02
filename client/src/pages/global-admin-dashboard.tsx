@@ -32,6 +32,8 @@ type GlobalSettingsForm = z.infer<typeof globalSettingsSchema>;
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [showPurgeDialog, setShowPurgeDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

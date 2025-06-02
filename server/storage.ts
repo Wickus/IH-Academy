@@ -22,10 +22,12 @@ export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
+  getInactiveUsers(): Promise<User[]>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  deleteUser(id: number): Promise<boolean>;
 
   // Achievements
   getAllAchievements(): Promise<Achievement[]>;
@@ -240,6 +242,20 @@ export class DatabaseStorage implements IStorage {
   async updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined> {
     const [updatedUser] = await db.update(users).set(user).where(eq(users.id, id)).returning();
     return updatedUser || undefined;
+  }
+
+  async getInactiveUsers(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.isActive, false));
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    try {
+      await db.delete(users).where(eq(users.id, id));
+      return true;
+    } catch (error) {
+      console.error("Error permanently deleting user:", error);
+      return false;
+    }
   }
 
   // Organization methods
