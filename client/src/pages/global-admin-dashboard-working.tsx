@@ -257,6 +257,36 @@ export default function GlobalAdminDashboard() {
     }
   };
 
+  const updateOrgStatusMutation = useMutation({
+    mutationFn: ({ orgId, isActive }: { orgId: number; isActive: boolean }) => {
+      return fetch(`/api/organizations/${orgId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ isActive }),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to update organization status');
+        return res.json();
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({
+        title: "Success",
+        description: "Organisation status updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update organisation status",
+        variant: "destructive",
+      });
+    },
+  });
+
   const bulkPurgeMutation = useMutation({
     mutationFn: async ({ userIds, purgeInactive }: { userIds?: number[]; purgeInactive?: boolean }) => {
       const response = await fetch('/api/users/bulk-purge', {
@@ -726,6 +756,16 @@ export default function GlobalAdminDashboard() {
                       >
                         <Eye className="h-4 w-4" />
                         View
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => updateOrgStatusMutation.mutate({ orgId: org.id, isActive: !org.isActive })}
+                        disabled={updateOrgStatusMutation.isPending}
+                        className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
+                      >
+                        <UserCheck className="h-3 w-3" />
+                        {org.isActive ? 'Deactivate' : 'Activate'}
                       </Button>
                     </div>
                   </div>
