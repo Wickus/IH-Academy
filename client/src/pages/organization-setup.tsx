@@ -39,6 +39,10 @@ export default function OrganizationSetup() {
   const [currentStep, setCurrentStep] = useState(1);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Get organization ID from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const orgId = urlParams.get('orgId');
 
   const form = useForm<OrganizationSetupForm>({
     resolver: zodResolver(organizationSetupSchema),
@@ -53,33 +57,36 @@ export default function OrganizationSetup() {
 
   const businessModel = form.watch("businessModel");
 
-  const createOrganizationMutation = useMutation({
+  const updateOrganizationMutation = useMutation({
     mutationFn: async (data: OrganizationSetupForm) => {
+      if (!orgId) {
+        throw new Error("Organisation ID is required");
+      }
       const organizationData = {
         ...data,
         membershipPrice: businessModel === "membership" ? parseFloat(data.membershipPrice || "0") : 0,
       };
-      return apiRequest("POST", "/api/organizations", organizationData);
+      return apiRequest("PUT", `/api/organizations/${orgId}`, organizationData);
     },
     onSuccess: () => {
       toast({
-        title: "Organisation Created",
-        description: "Your organisation has been set up successfully!",
+        title: "Organisation Setup Complete",
+        description: "Your organisation has been configured successfully!",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
-      setLocation("/dashboard");
+      setLocation(`/organization-dashboard?orgId=${orgId}`);
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to create organisation",
+        description: error.message || "Failed to update organisation",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: OrganizationSetupForm) => {
-    createOrganizationMutation.mutate(data);
+    updateOrganizationMutation.mutate(data);
   };
 
   const nextStep = () => {
@@ -448,10 +455,10 @@ export default function OrganizationSetup() {
                 ) : (
                   <Button 
                     type="submit" 
-                    disabled={createOrganizationMutation.isPending}
+                    disabled={updateOrganizationMutation.isPending}
                     className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#20366B] hover:to-[#278DD4] text-white font-semibold"
                   >
-                    {createOrganizationMutation.isPending ? "Creating..." : "Create Organisation"}
+                    {updateOrganizationMutation.isPending ? "Saving..." : "Complete Setup"}
                   </Button>
                 )}
               </div>
