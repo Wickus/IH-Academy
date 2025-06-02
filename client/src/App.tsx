@@ -16,6 +16,7 @@ import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
 import Achievements from "@/pages/achievements";
 import Notifications from "@/pages/notifications";
+import Memberships from "@/pages/memberships";
 import PublicBooking from "@/pages/public-booking";
 import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
 import PublicDiscovery from "@/pages/public-discovery";
@@ -70,6 +71,16 @@ function RoleBasedRouter({ user }: { user?: User }) {
 
   // Organization Admin/Coach Interface  
   if (user?.role === 'organization_admin' || user?.role === 'coach') {
+    // If organization admin without an organization, show setup
+    if (user?.role === 'organization_admin' && !user?.organizationId) {
+      return (
+        <Switch>
+          <Route path="/setup" component={OrganizationSetup} />
+          <Route component={() => <OrganizationSetup />} />
+        </Switch>
+      );
+    }
+
     return (
       <AppLayout>
         <Switch>
@@ -77,6 +88,7 @@ function RoleBasedRouter({ user }: { user?: User }) {
           <Route path="/classes" component={Classes} />
           <Route path="/bookings" component={Bookings} />
           <Route path="/coaches" component={Coaches} />
+          <Route path="/memberships" component={Memberships} />
           <Route path="/payments" component={Payments} />
           <Route path="/reports" component={Reports} />
           <Route path="/settings" component={Settings} />
