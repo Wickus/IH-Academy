@@ -128,9 +128,12 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
     onSuccess: (organization: Organization) => {
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations/my'] });
+      setShowOrgSetup(false); // Close the modal first
       toast({ title: "Organisation created!", description: `${organization.name} is ready for setup!` });
-      // Redirect to organisation setup page
-      setLocation(`/organization-setup?orgId=${organization.id}`);
+      // Use setTimeout to ensure modal closes before redirect
+      setTimeout(() => {
+        setLocation(`/organization-setup?orgId=${organization.id}`);
+      }, 100);
     },
     onError: (error: any) => {
       console.error("Organisation creation error:", error);
