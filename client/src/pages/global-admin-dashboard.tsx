@@ -8,12 +8,45 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/layout/header";
 import { api, type GlobalDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette, DollarSign } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const globalSettingsSchema = z.object({
+  defaultMembershipPrice: z.string().min(1, "Price is required"),
+  basicPlanPrice: z.string().min(1, "Price is required"),
+  premiumPlanPrice: z.string().min(1, "Price is required"),
+  payfastMerchantId: z.string().min(1, "Merchant ID is required"),
+  payfastMerchantKey: z.string().min(1, "Merchant Key is required"),
+  payfastPassphrase: z.string().optional(),
+  payfastSandbox: z.boolean().default(true),
+});
+
+type GlobalSettingsForm = z.infer<typeof globalSettingsSchema>;
 
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const settingsForm = useForm<GlobalSettingsForm>({
+    resolver: zodResolver(globalSettingsSchema),
+    defaultValues: {
+      defaultMembershipPrice: "299.00",
+      basicPlanPrice: "199.00", 
+      premiumPlanPrice: "499.00",
+      payfastMerchantId: "",
+      payfastMerchantKey: "",
+      payfastPassphrase: "",
+      payfastSandbox: true,
+    },
+  });
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/stats/global'],

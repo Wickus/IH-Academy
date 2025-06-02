@@ -355,7 +355,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
       {/* Organisation Setup Modal */}
       <Dialog open={showOrgSetup} onOpenChange={setShowOrgSetup}>
-        <DialogContent className="sm:max-w-[600px] bg-white">
+        <DialogContent className="sm:max-w-[90vw] md:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
           <DialogHeader>
             <DialogTitle className="text-2xl text-[#20366B] font-bold">Set Up Your Organisation</DialogTitle>
           </DialogHeader>
