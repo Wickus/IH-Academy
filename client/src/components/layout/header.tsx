@@ -13,6 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -50,13 +55,29 @@ export default function Header() {
     logoutMutation.mutate();
   };
 
-  const handleNotificationClick = () => {
-    console.log("Notification button clicked"); // Debug log
-    toast({
-      title: "Notifications",
-      description: "You have 3 new notifications about class bookings and updates.",
-    });
-  };
+  const mockNotifications = [
+    {
+      id: 1,
+      title: "New Class Booking",
+      message: "Sarah Johnson booked Water Polo class for tomorrow at 2:00 PM",
+      time: "2 minutes ago",
+      type: "booking"
+    },
+    {
+      id: 2,
+      title: "Payment Received",
+      message: "Payment confirmed for Basketball class - R300.00",
+      time: "1 hour ago",
+      type: "payment"
+    },
+    {
+      id: 3,
+      title: "Class Reminder",
+      message: "Tennis class starts in 30 minutes with 8 participants",
+      time: "3 hours ago",
+      type: "reminder"
+    }
+  ];
 
   const handleNewClassClick = () => {
     console.log("New Class button clicked"); // Debug log
@@ -86,17 +107,48 @@ export default function Header() {
         <div className="flex items-center space-x-4">
           {user?.role !== 'global_admin' && (
             <>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="relative p-2 hover:bg-white/10 text-white"
-                onClick={handleNotificationClick}
-              >
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
-                  3
-                </span>
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="relative p-2 hover:bg-white/10 text-white"
+                  >
+                    <Bell className="h-5 w-5" />
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
+                      3
+                    </span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0" align="end">
+                  <div className="p-4 border-b border-slate-200">
+                    <h3 className="font-semibold text-[#20366B]">Notifications</h3>
+                    <p className="text-sm text-slate-600">You have 3 new notifications</p>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {mockNotifications.map((notification) => (
+                      <div key={notification.id} className="p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer">
+                        <div className="flex items-start space-x-3">
+                          <div className={`w-2 h-2 rounded-full mt-2 ${
+                            notification.type === 'booking' ? 'bg-[#24D367]' :
+                            notification.type === 'payment' ? 'bg-[#278DD4]' : 'bg-[#24D3BF]'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-[#20366B] text-sm">{notification.title}</p>
+                            <p className="text-slate-600 text-sm mt-1">{notification.message}</p>
+                            <p className="text-xs text-slate-400 mt-2">{notification.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-3 border-t border-slate-200">
+                    <Button variant="ghost" className="w-full text-[#278DD4] hover:bg-[#278DD4]/10">
+                      View All Notifications
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <Button 
                 className="bg-[#24D367] hover:bg-[#24D367]/90 text-white shadow-md"
                 onClick={handleNewClassClick}

@@ -36,6 +36,7 @@ const SPORT_ICONS = [
   { emoji: "🏉", name: "Rugby" },
   { emoji: "🎱", name: "Pool" },
   { emoji: "🏊", name: "Swimming" },
+  { emoji: "🤽", name: "Water Polo" },
   { emoji: "🏃", name: "Running" },
   { emoji: "🚴", name: "Cycling" },
   { emoji: "🧘", name: "Yoga" },
