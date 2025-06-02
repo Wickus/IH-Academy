@@ -321,4 +321,24 @@ export const api = {
   deleteOrganization: async (orgId: number): Promise<void> => {
     await apiRequest('DELETE', `/api/organizations/${orgId}`);
   },
+
+  // Children Management
+  getUserChildren: async (userId: number): Promise<any[]> => {
+    const response = await apiRequest('GET', `/api/children/${userId}`);
+    return response.json();
+  },
+
+  createChild: async (childData: any): Promise<any> => {
+    const response = await apiRequest('POST', '/api/children', childData);
+    return response.json();
+  },
+
+  updateChild: async (childId: number, childData: any): Promise<any> => {
+    const response = await apiRequest('PUT', `/api/children/${childId}`, childData);
+    return response.json();
+  },
+
+  deleteChild: async (childId: number): Promise<void> => {
+    await apiRequest('DELETE', `/api/children/${childId}`);
+  },
 };

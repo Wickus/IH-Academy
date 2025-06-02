@@ -1038,6 +1038,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Children management routes
+  app.get("/api/children/:userId", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const children = await storage.getUserChildren(userId);
+      res.json(children);
+    } catch (error) {
+      console.error("Error fetching children:", error);
+      res.status(500).json({ message: "Failed to fetch children" });
+    }
+  });
+
+  app.post("/api/children", async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const childData = {
+        ...req.body,
+        parentId: req.user.id,
+      };
+
+      const child = await storage.createChild(childData);
+      res.status(201).json(child);
+    } catch (error) {
+      console.error("Error creating child:", error);
+      res.status(500).json({ message: "Failed to create child" });
+    }
+  });
+
+  app.put("/api/children/:id", async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const childId = parseInt(req.params.id);
+      const child = await storage.updateChild(childId, req.body);
+      
+      if (!child) {
+        return res.status(404).json({ message: "Child not found" });
+      }
+
+      res.json(child);
+    } catch (error) {
+      console.error("Error updating child:", error);
+      res.status(500).json({ message: "Failed to update child" });
+    }
+  });
+
+  app.delete("/api/children/:id", async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const childId = parseInt(req.params.id);
+      const success = await storage.deleteChild(childId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Child not found" });
+      }
+
+      res.json({ message: "Child deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting child:", error);
+      res.status(500).json({ message: "Failed to delete child" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;

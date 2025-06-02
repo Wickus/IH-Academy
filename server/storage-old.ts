@@ -73,6 +73,12 @@ export interface IStorage {
   createPayment(payment: InsertPayment): Promise<Payment>;
   updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined>;
 
+  // Children Management
+  getUserChildren(userId: number): Promise<any[]>;
+  createChild(child: any): Promise<any>;
+  updateChild(id: number, child: any): Promise<any | undefined>;
+  deleteChild(id: number): Promise<boolean>;
+
   // Statistics
   getGlobalStats(): Promise<{
     totalOrganizations: number;
@@ -411,6 +417,46 @@ export class DatabaseStorage implements IStorage {
       activeCoaches,
       upcomingClasses,
     };
+  }
+
+  // Children Management methods
+  async getUserChildren(userId: number): Promise<any[]> {
+    const result = await db.query(`
+      SELECT * FROM children 
+      WHERE parent_id = $1 AND is_active = true 
+      ORDER BY created_at DESC
+    `, [userId]);
+    return result.rows;
+  }
+
+  async createChild(child: any): Promise<any> {
+    const result = await db.query(`
+      INSERT INTO children (parent_id, name, date_of_birth, medical_info, emergency_contact, emergency_phone)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `, [child.parentId, child.name, child.dateOfBirth || null, child.medicalInfo || null, child.emergencyContact || null, child.emergencyPhone || null]);
+    return result.rows[0];
+  }
+
+  async updateChild(id: number, child: any): Promise<any | undefined> {
+    const result = await db.query(`
+      UPDATE children 
+      SET name = COALESCE($2, name),
+          date_of_birth = COALESCE($3, date_of_birth),
+          medical_info = COALESCE($4, medical_info),
+          emergency_contact = COALESCE($5, emergency_contact),
+          emergency_phone = COALESCE($6, emergency_phone)
+      WHERE id = $1 AND is_active = true
+      RETURNING *
+    `, [id, child.name, child.dateOfBirth, child.medicalInfo, child.emergencyContact, child.emergencyPhone]);
+    return result.rows[0] || undefined;
+  }
+
+  async deleteChild(id: number): Promise<boolean> {
+    const result = await db.query(`
+      UPDATE children SET is_active = false WHERE id = $1
+    `, [id]);
+    return result.rowCount > 0;
   }
 }
 
