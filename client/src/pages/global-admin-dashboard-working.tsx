@@ -1,22 +1,51 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Trash2 } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Trash2, Edit2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const userEditSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  email: z.string().email("Invalid email address"),
+  role: z.enum(['global_admin', 'organization_admin', 'coach', 'member']),
+  isActive: z.boolean(),
+});
+
+type UserEditFormData = z.infer<typeof userEditSchema>;
 
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [showPurgeDialog, setShowPurgeDialog] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const editForm = useForm<UserEditFormData>({
+    resolver: zodResolver(userEditSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      role: "member",
+      isActive: true,
+    },
+  });
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/stats/global'],
@@ -70,6 +99,57 @@ export default function GlobalAdminDashboard() {
       });
     },
   });
+
+  const updateUserMutation = useMutation({
+    mutationFn: ({ userId, userData }: { userId: number; userData: UserEditFormData }) => {
+      return fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(userData),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to update user');
+        return res.json();
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setShowEditDialog(false);
+      setEditingUser(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "User updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update user",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditUser = (user: any) => {
+    setEditingUser(user);
+    editForm.reset({
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+    });
+    setShowEditDialog(true);
+  };
+
+  const onEditSubmit = (data: UserEditFormData) => {
+    if (editingUser) {
+      updateUserMutation.mutate({ userId: editingUser.id, userData: data });
+    }
+  };
 
   const bulkPurgeMutation = useMutation({
     mutationFn: async ({ userIds, purgeInactive }: { userIds?: number[]; purgeInactive?: boolean }) => {
@@ -408,6 +488,15 @@ export default function GlobalAdminDashboard() {
                                       </Badge>
                                     </div>
                                   </div>
+                                  <div className="flex justify-end pt-4 border-t">
+                                    <Button
+                                      onClick={() => handleEditUser(user)}
+                                      className="bg-[#278DD4] hover:bg-[#20366B] text-white"
+                                    >
+                                      <Edit2 className="h-4 w-4 mr-2" />
+                                      Edit User
+                                    </Button>
+                                  </div>
                                 </div>
                               </DialogContent>
                             </Dialog>
@@ -507,6 +596,128 @@ export default function GlobalAdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Edit User Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#20366B]">Edit User</DialogTitle>
+            <DialogDescription>
+              Update user information for {editingUser?.firstName && editingUser?.lastName ? `${editingUser.firstName} ${editingUser.lastName}` : editingUser?.username}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter first name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={editForm.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter last name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={editForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="Enter email address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="coach">Coach</SelectItem>
+                        <SelectItem value="organization_admin">Organisation Admin</SelectItem>
+                        <SelectItem value="global_admin">Global Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Status</FormLabel>
+                    <Select onValueChange={(value) => field.onChange(value === 'true')} value={field.value.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="true">Active</SelectItem>
+                        <SelectItem value="false">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowEditDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={updateUserMutation.isPending}
+                  className="bg-[#24D367] hover:bg-[#24D367]/90"
+                >
+                  {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
