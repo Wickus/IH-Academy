@@ -20,7 +20,7 @@ import Notifications from "@/pages/notifications";
 import Memberships from "@/pages/memberships";
 import DailySchedules from "@/pages/daily-schedules";
 import PublicBooking from "@/pages/public-booking";
-import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
+import GlobalAdminDashboard from "@/pages/global-admin-dashboard-fixed";
 import PublicDiscovery from "@/pages/public-discovery";
 import OrganizationDashboard from "@/pages/organization-dashboard";
 import OrganizationClasses from "@/pages/organization-classes";
