@@ -48,6 +48,8 @@ export default function GlobalAdminDashboard() {
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [showOrgEditDialog, setShowOrgEditDialog] = useState(false);
   const [editingOrg, setEditingOrg] = useState<any>(null);
+  const [showBookingsDialog, setShowBookingsDialog] = useState(false);
+  const [showRevenueDialog, setShowRevenueDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -108,6 +110,15 @@ export default function GlobalAdminDashboard() {
       return response.json();
     },
     enabled: showUsers && !!users,
+  });
+
+  const { data: allBookings = [] } = useQuery({
+    queryKey: ['/api/bookings'],
+    queryFn: async () => {
+      const response = await fetch('/api/bookings', { credentials: 'include' });
+      if (!response.ok) return [];
+      return response.json();
+    },
   });
 
   const updateUserStatusMutation = useMutation({
@@ -395,12 +406,9 @@ export default function GlobalAdminDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white border border-slate-200">
+        <TabsList className="grid w-full grid-cols-2 bg-white border border-slate-200">
           <TabsTrigger value="overview" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
             Overview
-          </TabsTrigger>
-          <TabsTrigger value="organizations" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
-            Organisations
           </TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" />
@@ -439,21 +447,33 @@ export default function GlobalAdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-l-4 border-l-[#24D3BF] shadow-lg">
+            <Card 
+              className="bg-white border-l-4 border-l-[#24D3BF] shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => setShowBookingsDialog(true)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Bookings</CardTitle>
-                <CreditCard className="h-4 w-4 text-[#24D3BF]" />
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-[#24D3BF]" />
+                  <Eye className="h-3 w-3 text-slate-400" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#20366B]">{stats?.totalBookings || 0}</div>
-                <p className="text-xs text-slate-600">Across all organisations</p>
+                <div className="text-2xl font-bold text-[#20366B]">{allBookings?.length || 0}</div>
+                <p className="text-xs text-slate-600">Click to view all bookings</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-l-4 border-l-[#278DD4] shadow-lg">
+            <Card 
+              className="bg-white border-l-4 border-l-[#278DD4] shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => setShowRevenueDialog(true)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Revenue</CardTitle>
-                <TrendingUp className="h-4 w-4 text-[#278DD4]" />
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#278DD4]" />
+                  <Eye className="h-3 w-3 text-slate-400" />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">{formatCurrency(stats?.totalRevenue || 0)}</div>
