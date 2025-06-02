@@ -24,7 +24,7 @@ export default function Header() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.clear();
-      setLocation('/auth');
+      // The app will automatically redirect to Auth component when user becomes null
     }
   });
 
