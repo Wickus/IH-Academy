@@ -66,6 +66,11 @@ export default function Settings() {
     queryFn: () => api.getOrganization(1),
   });
 
+  const { data: sports } = useQuery({
+    queryKey: ["/api/sports"],
+    queryFn: api.getSports,
+  });
+
   const organizationForm = useForm({
     resolver: zodResolver(organizationSchema),
     defaultValues: {
@@ -319,6 +324,75 @@ export default function Settings() {
                   </div>
                 </form>
               </Form>
+            </TabsContent>
+
+            <TabsContent value="sports" className="space-y-6">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#20366B]">Sports Management</h3>
+                    <p className="text-slate-600">Add and manage the sports available at your organisation</p>
+                  </div>
+                  <Dialog open={showSportForm} onOpenChange={setShowSportForm}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Sport
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[525px]">
+                      <DialogHeader>
+                        <DialogTitle className="text-[#20366B]">Add New Sport</DialogTitle>
+                      </DialogHeader>
+                      <SportForm onSuccess={() => setShowSportForm(false)} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sports?.map((sport) => (
+                    <Card key={sport.id} className="border border-slate-200 hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="text-2xl">{sport.icon}</div>
+                            <div>
+                              <h4 className="font-semibold text-[#20366B]">{sport.name}</h4>
+                              <Badge 
+                                variant="outline" 
+                                style={{ backgroundColor: sport.color + '20', color: sport.color, borderColor: sport.color }}
+                              >
+                                {sport.color}
+                              </Badge>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => {
+                              toast({
+                                title: "Feature Coming Soon",
+                                description: "Sport deletion will be available in a future update",
+                              });
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {(!sports || sports.length === 0) && (
+                  <div className="text-center py-8">
+                    <Dumbbell className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                    <h3 className="text-lg font-medium text-slate-600 mb-2">No Sports Added Yet</h3>
+                    <p className="text-slate-500 mb-4">Add your first sport to get started with class management</p>
+                  </div>
+                )}
+              </div>
             </TabsContent>
 
             <TabsContent value="notifications" className="space-y-6">
