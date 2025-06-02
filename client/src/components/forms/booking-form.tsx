@@ -74,10 +74,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
         custom_str3: 'class_booking',
       };
 
-      // Update booking with payment ID
-      api.updateBooking(booking.id, { 
-        payfastPaymentId: paymentData.m_payment_id 
-      });
+      // Note: Payment ID will be updated via webhook after payment completion
 
       // Initiate payment
       initiatePayfastPayment(paymentData);
@@ -102,12 +99,12 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
         classId: classData.id,
         participantName: data.participantName,
         participantEmail: data.participantEmail,
-        participantPhone: data.participantPhone || null,
-        participantAge: data.participantAge ? parseInt(data.participantAge) : null,
+        participantPhone: data.participantPhone || undefined,
+        participantAge: data.participantAge ? parseInt(data.participantAge) : undefined,
         paymentStatus: 'pending' as const,
         paymentMethod: 'payfast' as const,
         amount: Number(classData.price),
-        notes: data.notes || null,
+        notes: data.notes || undefined,
       };
 
       await createBookingMutation.mutateAsync(bookingData);
@@ -144,7 +141,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
   return (
     <div className="space-y-6">
       {/* Class Information Summary */}
-      <Card className="bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] text-white border-[#24D3BF]">
+      <Card className="bg-gradient-to-br from-[#20366B] to-[#278DD4] text-white border-[#278DD4]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">{classData.name}</CardTitle>
@@ -288,7 +285,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
               />
 
               {/* Payment Information */}
-              <div className="bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] p-4 rounded-lg">
+              <div className="bg-gradient-to-br from-[#20366B] to-[#278DD4] p-4 rounded-lg">
                 <div className="flex items-center space-x-2 mb-3">
                   <Shield className="h-5 w-5 text-white" />
                   <h4 className="font-medium text-white">Secure Payment with Payfast</h4>
@@ -311,7 +308,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || createBookingMutation.isPending || classData.availableSpots === 0}
-                  className="bg-primary hover:bg-primary/90 text-white"
+                  className="bg-[#24D367] hover:bg-[#24D367]/90 text-white"
                 >
                   {isSubmitting || createBookingMutation.isPending ? (
                     "Processing..."
