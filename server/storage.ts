@@ -1,6 +1,6 @@
 import {
   users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
-  achievements, userAchievements, userStats, memberships, children,
+  achievements, userAchievements, userStats, memberships, children, dailySchedules,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
@@ -14,7 +14,8 @@ import {
   type UserAchievement, type InsertUserAchievement,
   type UserStats, type InsertUserStats,
   type Membership, type InsertMembership,
-  type Child, type InsertChild
+  type Child, type InsertChild,
+  type DailySchedule, type InsertDailySchedule
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, count, sum } from "drizzle-orm";
