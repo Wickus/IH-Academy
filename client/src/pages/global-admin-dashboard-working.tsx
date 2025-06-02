@@ -24,7 +24,18 @@ const userEditSchema = z.object({
   isActive: z.boolean(),
 });
 
+const orgEditSchema = z.object({
+  name: z.string().min(1, "Organization name is required"),
+  email: z.string().email("Invalid email address"),
+  description: z.string().optional(),
+  primaryColor: z.string().optional(),
+  secondaryColor: z.string().optional(),
+  planType: z.enum(['free', 'premium']).optional(),
+  isActive: z.boolean(),
+});
+
 type UserEditFormData = z.infer<typeof userEditSchema>;
+type OrgEditFormData = z.infer<typeof orgEditSchema>;
 
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
@@ -33,6 +44,10 @@ export default function GlobalAdminDashboard() {
   const [showPurgeDialog, setShowPurgeDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showOrgDialog, setShowOrgDialog] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState<any>(null);
+  const [showOrgEditDialog, setShowOrgEditDialog] = useState(false);
+  const [editingOrg, setEditingOrg] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -43,6 +58,19 @@ export default function GlobalAdminDashboard() {
       lastName: "",
       email: "",
       role: "member",
+      isActive: true,
+    },
+  });
+
+  const orgEditForm = useForm<OrgEditFormData>({
+    resolver: zodResolver(orgEditSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      description: "",
+      primaryColor: "#278DD4",
+      secondaryColor: "#24D367",
+      planType: "free",
       isActive: true,
     },
   });
@@ -167,6 +195,65 @@ export default function GlobalAdminDashboard() {
   const onEditSubmit = (data: UserEditFormData) => {
     if (editingUser) {
       updateUserMutation.mutate({ userId: editingUser.id, userData: data });
+    }
+  };
+
+  const updateOrgMutation = useMutation({
+    mutationFn: ({ orgId, orgData }: { orgId: number; orgData: OrgEditFormData }) => {
+      return fetch(`/api/organizations/${orgId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(orgData),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to update organization');
+        return res.json();
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      setShowOrgEditDialog(false);
+      setEditingOrg(null);
+      orgEditForm.reset();
+      toast({
+        title: "Success",
+        description: "Organisation updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update organisation",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleViewOrg = (org: any) => {
+    setSelectedOrg(org);
+    setShowOrgDialog(true);
+  };
+
+  const handleEditOrg = (org: any) => {
+    setEditingOrg(org);
+    orgEditForm.reset({
+      name: org.name || "",
+      email: org.email || "",
+      description: org.description || "",
+      primaryColor: org.primaryColor || "#278DD4",
+      secondaryColor: org.secondaryColor || "#24D367",
+      planType: org.planType || "free",
+      isActive: org.isActive ?? true,
+    });
+    setShowOrgDialog(false);
+    setShowOrgEditDialog(true);
+  };
+
+  const onOrgEditSubmit = (data: OrgEditFormData) => {
+    if (editingOrg) {
+      updateOrgMutation.mutate({ orgId: editingOrg.id, orgData: data });
     }
   };
 
@@ -631,7 +718,12 @@ export default function GlobalAdminDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleViewOrg(org)}
+                        className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                      >
                         <Eye className="h-4 w-4" />
                         View
                       </Button>
