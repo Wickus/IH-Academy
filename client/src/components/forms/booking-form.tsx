@@ -40,6 +40,17 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentStep, setPaymentStep] = useState<'form' | 'payment' | 'confirmation'>('form');
 
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: api.getCurrentUser,
+  });
+
+  const { data: children = [] } = useQuery({
+    queryKey: ["/api/children", currentUser?.id],
+    queryFn: () => currentUser ? api.getUserChildren(currentUser.id) : Promise.resolve([]),
+    enabled: !!currentUser,
+  });
+
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
@@ -48,8 +59,12 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
       participantPhone: "",
       participantAge: "",
       notes: "",
+      bookingFor: "self",
     },
   });
+
+  const watchBookingFor = form.watch("bookingFor");
+  const watchChildId = form.watch("childId");
 
   const createBookingMutation = useMutation({
     mutationFn: api.createBooking,
