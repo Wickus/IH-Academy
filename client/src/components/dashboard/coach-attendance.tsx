@@ -151,7 +151,7 @@ export default function CoachAttendance() {
           <CardTitle className="text-lg font-semibold">Coach Attendance Register</CardTitle>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-secondary hover:bg-secondary/90 text-white">
+              <Button className="bg-[#278DD4] hover:bg-[#20366B] text-white border-0">
                 <MonitorSmartphone className="mr-2 h-4 w-4" />
                 Mobile View
               </Button>
@@ -164,7 +164,7 @@ export default function CoachAttendance() {
                 <p className="text-sm text-muted-foreground">
                   Access the mobile-optimized attendance interface for coaches to mark attendance on-the-go.
                 </p>
-                <Button className="w-full bg-secondary hover:bg-secondary/90 text-white">
+                <Button className="w-full bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
                   Open Mobile Interface
                 </Button>
               </div>
@@ -304,7 +304,7 @@ export default function CoachAttendance() {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                className="p-4 h-auto flex-col bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                className="p-4 h-auto flex-col bg-[#278DD4]/10 text-[#278DD4] border-[#278DD4]/20 hover:bg-[#278DD4]/20"
                 onClick={() => {
                   if (attendance.length > 0) {
                     handleDownloadIcal(attendance[0].booking.id);
@@ -318,7 +318,7 @@ export default function CoachAttendance() {
               
               <Button
                 variant="outline"
-                className="p-4 h-auto flex-col bg-secondary/10 text-secondary border-secondary/20 hover:bg-secondary/20"
+                className="p-4 h-auto flex-col bg-[#24D367]/10 text-[#24D367] border-[#24D367]/20 hover:bg-[#24D367]/20"
               >
                 <Mail className="h-5 w-5 mb-2" />
                 <span className="text-sm font-medium">Send Reminders</span>
@@ -326,7 +326,7 @@ export default function CoachAttendance() {
               
               <Button
                 variant="outline"
-                className="p-4 h-auto flex-col bg-accent/10 text-accent border-accent/20 hover:bg-accent/20"
+                className="p-4 h-auto flex-col bg-[#24D3BF]/10 text-[#24D3BF] border-[#24D3BF]/20 hover:bg-[#24D3BF]/20"
               >
                 <CreditCard className="h-5 w-5 mb-2" />
                 <span className="text-sm font-medium">Payment Status</span>

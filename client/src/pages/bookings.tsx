@@ -62,7 +62,7 @@ export default function Bookings() {
         </div>
       </div>
 
-      <Card>
+      <Card className="border-slate-200 shadow-md">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>All Bookings</CardTitle>
