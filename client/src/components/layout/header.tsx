@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Bell, Menu, Plus, LogOut, User } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
+  const [, setLocation] = useLocation();
   const { data: user } = useQuery({
     queryKey: ['/api/auth/me'],
     queryFn: () => api.getCurrentUser(),
@@ -22,6 +24,7 @@ export default function Header() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.clear();
+      setLocation('/auth');
     }
   });
 
