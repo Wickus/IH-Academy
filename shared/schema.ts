@@ -33,6 +33,11 @@ export const organizations = pgTable("organizations", {
   primaryColor: text("primary_color").default("#20366B"),
   secondaryColor: text("secondary_color").default("#278DD4"),
   accentColor: text("accent_color").default("#24D367"),
+  // Business model
+  businessModel: text("business_model", { enum: ["membership", "pay_per_class"] }).notNull().default("pay_per_class"),
+  // Membership settings (for membership model)
+  membershipPrice: decimal("membership_price", { precision: 10, scale: 2 }).default("0.00"),
+  membershipBillingCycle: text("membership_billing_cycle", { enum: ["monthly", "quarterly", "yearly"] }).default("monthly"),
   // Subscription/plan info
   planType: text("plan_type", { enum: ["free", "basic", "premium"] }).default("free"),
   maxClasses: integer("max_classes").default(10),
@@ -248,6 +253,26 @@ export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type UserStats = typeof userStats.$inferSelect;
 export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
 
+// Memberships for organizations using membership business model
+export const memberships = pgTable("memberships", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  organizationId: integer("organization_id").references(() => organizations.id).notNull(),
+  status: text("status", { enum: ["active", "expired", "cancelled", "pending"] }).notNull().default("pending"),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  billingCycle: text("billing_cycle", { enum: ["monthly", "quarterly", "yearly"] }).notNull(),
+  autoRenew: boolean("auto_renew").notNull().default(true),
+  // Payment tracking
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  nextBillingDate: timestamp("next_billing_date"),
+  lastPaymentDate: timestamp("last_payment_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Parent-Child relationships for family bookings
 export const children = pgTable("children", {
   id: serial("id").primaryKey(),
@@ -261,8 +286,11 @@ export const children = pgTable("children", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const insertMembershipSchema = createInsertSchema(memberships);
 export const insertChildSchema = createInsertSchema(children);
 
+export type Membership = typeof memberships.$inferSelect;
+export type InsertMembership = z.infer<typeof insertMembershipSchema>;
 export type Child = typeof children.$inferSelect;
 export type InsertChild = z.infer<typeof insertChildSchema>;
 
