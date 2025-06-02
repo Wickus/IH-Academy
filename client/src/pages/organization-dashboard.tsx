@@ -17,7 +17,7 @@ interface OrganizationDashboardProps {
 }
 
 export default function OrganizationDashboard({ user, organization }: OrganizationDashboardProps) {
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: [`/api/stats/organization/${organization.id}`],
     queryFn: () => api.getOrganizationStats(organization.id),
@@ -153,7 +153,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           <div className="grid gap-4 md:grid-cols-3">
             <Button 
               className="h-24 flex-col gap-2 bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
-              onClick={() => navigate('/classes')}
+              onClick={() => setLocation('/classes')}
             >
               <Plus className="h-6 w-6" />
               <span>Create New Class</span>
@@ -161,7 +161,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
             <Button 
               variant="outline" 
               className="h-24 flex-col gap-2 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
-              onClick={() => navigate('/coaches')}
+              onClick={() => setLocation('/coaches')}
             >
               <UserPlus className="h-6 w-6" />
               <span>Invite Coach</span>
@@ -169,7 +169,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
             <Button 
               variant="outline" 
               className="h-24 flex-col gap-2 border-[#24D3BF] text-[#24D3BF] hover:bg-[#24D3BF] hover:text-white"
-              onClick={() => navigate('/reports')}
+              onClick={() => setLocation('/reports')}
             >
               <BarChart3 className="h-6 w-6" />
               <span>View Analytics</span>

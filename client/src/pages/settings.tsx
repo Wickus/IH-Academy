@@ -12,6 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { 
   Settings as SettingsIcon, 
   Building, 
@@ -24,10 +26,12 @@ import {
   Save,
   User,
   Plus,
-  Dumbbell
+  Dumbbell,
+  Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import SportForm from "@/components/forms/sport-form";
 
 const organizationSchema = z.object({
   name: z.string().min(1, "Organization name is required"),
@@ -49,6 +53,7 @@ const notificationSchema = z.object({
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("organization");
+  const [showSportForm, setShowSportForm] = useState(false);
   const { toast } = useToast();
 
   const { data: currentUser } = useQuery({
@@ -157,10 +162,14 @@ export default function Settings() {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-slate-100">
+            <TabsList className="grid w-full grid-cols-5 bg-slate-100">
               <TabsTrigger value="organization" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
                 <Building className="mr-2 h-4 w-4" />
                 Organization
+              </TabsTrigger>
+              <TabsTrigger value="sports" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+                <Dumbbell className="mr-2 h-4 w-4" />
+                Sports
               </TabsTrigger>
               <TabsTrigger value="notifications" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
                 <Bell className="mr-2 h-4 w-4" />
