@@ -22,9 +22,9 @@ export default function Header() {
   const logoutMutation = useMutation({
     mutationFn: () => api.logout(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.clear();
-      // The app will automatically redirect to Auth component when user becomes null
+      queryClient.setQueryData(['/api/auth/me'], null);
+      queryClient.removeQueries();
+      window.location.reload();
     }
   });
 
