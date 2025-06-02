@@ -57,6 +57,26 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Mutation for updating payment status
+  const updatePaymentMutation = useMutation({
+    mutationFn: ({ bookingId, paymentStatus }: { bookingId: number; paymentStatus: string }) =>
+      api.updateBookingPayment(bookingId, paymentStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      toast({
+        title: "Payment Completed",
+        description: "Your booking has been confirmed!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Payment Failed",
+        description: "Unable to process payment. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Form for adding children
   const childForm = useForm<ChildFormData>({
     resolver: zodResolver(childSchema),
