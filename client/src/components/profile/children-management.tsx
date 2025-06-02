@@ -27,10 +27,10 @@ import { queryClient } from "@/lib/queryClient";
 
 const childSchema = z.object({
   name: z.string().min(1, "Child's name is required"),
-  dateOfBirth: z.string().optional(),
-  medicalInfo: z.string().optional(),
-  emergencyContact: z.string().optional(),
-  emergencyPhone: z.string().optional(),
+  dateOfBirth: z.string().min(1, "Date of birth is required for age verification"),
+  medicalInfo: z.string().min(1, "Medical information is required for child safety"),
+  emergencyContact: z.string().min(1, "Emergency contact is required"),
+  emergencyPhone: z.string().min(1, "Emergency phone number is required"),
 });
 
 type ChildFormData = z.infer<typeof childSchema>;
