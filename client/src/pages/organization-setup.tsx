@@ -70,15 +70,16 @@ export default function OrganizationSetup() {
         ...data,
         membershipPrice: businessModel === "membership" ? parseFloat(data.membershipPrice || "0") : 0,
       };
-      return apiRequest("PUT", `/api/organizations/${orgId}`, organizationData);
+      const response = await apiRequest("PUT", `/api/organizations/${orgId}`, organizationData);
+      return response.json();
     },
     onSuccess: () => {
       toast({
         title: "Organisation Setup Complete",
-        description: "Your organisation has been configured successfully!",
+        description: "Please complete payment to access your dashboard.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
-      setLocation("/dashboard");
+      setLocation(`/organization-payment?orgId=${orgId}`);
     },
     onError: (error: any) => {
       toast({
