@@ -63,6 +63,19 @@ export default function GlobalAdminDashboard() {
     enabled: showUsers,
   });
 
+  // Fetch user organizations for displaying relationships
+  const { data: userOrganizations = [] } = useQuery({
+    queryKey: ['/api/user-organizations'],
+    queryFn: async () => {
+      const response = await fetch('/api/user-organizations', {
+        credentials: 'include',
+      });
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: showUsers && !!users,
+  });
+
   const updateUserStatusMutation = useMutation({
     mutationFn: ({ userId, isActive }: { userId: number; isActive: boolean }) =>
       api.updateUserStatus(userId, isActive),
@@ -212,6 +225,21 @@ export default function GlobalAdminDashboard() {
     } else if (selectedUsers.length > 0) {
       bulkPurgeMutation.mutate({ userIds: selectedUsers });
     }
+  };
+
+  // Helper function to get user's organization relationships
+  const getUserOrganizations = (userId: number) => {
+    if (!userOrganizations || !organizations) return [];
+    
+    const userOrgRelations = userOrganizations.filter((rel: any) => rel.userId === userId);
+    return userOrgRelations.map((rel: any) => {
+      const org = organizations.find((o: any) => o.id === rel.organizationId);
+      return {
+        ...org,
+        role: rel.role,
+        isAdmin: rel.role === 'admin'
+      };
+    }).filter(Boolean);
   };
 
   if (statsLoading || orgsLoading) {

@@ -415,6 +415,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/user-organizations", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+
+      const userOrganizations = await storage.getAllUserOrganizations();
+      res.json(userOrganizations);
+    } catch (error) {
+      console.error("Error fetching user-organization relationships:", error);
+      res.status(500).json({ message: "Failed to fetch user-organization relationships" });
+    }
+  });
+
   app.get("/api/organizations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
