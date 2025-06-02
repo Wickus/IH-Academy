@@ -73,6 +73,11 @@ export default function OrganizationPayment() {
     );
   }
 
+  // Debug: Log the values to see what we're getting
+  console.log('Organization data:', organization);
+  console.log('Business model from org:', organization.businessModel);
+  console.log('Business model from URL:', businessModel);
+
   // Dynamic pricing based on business model
   const getPlans = () => {
     if (organization?.businessModel === "membership") {
