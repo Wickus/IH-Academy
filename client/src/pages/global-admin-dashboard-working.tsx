@@ -911,6 +911,253 @@ export default function GlobalAdminDashboard() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Organization Details Dialog */}
+      <Dialog open={showOrgDialog} onOpenChange={setShowOrgDialog}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#20366B]">Organisation Details</DialogTitle>
+            <DialogDescription>
+              Complete information for {selectedOrg?.name}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrg && (
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-[#20366B]/5 via-[#278DD4]/5 to-[#24D367]/5 p-4 rounded-lg border border-[#278DD4]/20">
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                    style={{ backgroundColor: selectedOrg.primaryColor || '#278DD4' }}
+                  >
+                    {selectedOrg.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[#20366B]">{selectedOrg.name}</h3>
+                    <p className="text-sm text-slate-600">{selectedOrg.email}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#20366B]">Description</label>
+                  <p className="text-sm text-slate-700 bg-slate-50 p-2 rounded border">
+                    {selectedOrg.description || 'No description provided'}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#20366B]">Plan Type</label>
+                    <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded border">
+                      <Badge 
+                        variant="secondary" 
+                        className={selectedOrg.planType === 'premium' ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#278DD4]/20 text-[#20366B] border-[#278DD4]/30'}
+                      >
+                        {selectedOrg.planType || 'free'}
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#20366B]">Status</label>
+                    <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded border">
+                      <div className={`w-2 h-2 rounded-full ${selectedOrg.isActive ? 'bg-[#24D367]' : 'bg-red-500'}`}></div>
+                      <span className="text-sm text-slate-700">
+                        {selectedOrg.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#20366B]">Primary Color</label>
+                    <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded border">
+                      <div 
+                        className="w-4 h-4 rounded border"
+                        style={{ backgroundColor: selectedOrg.primaryColor || '#278DD4' }}
+                      ></div>
+                      <span className="text-sm text-slate-700">
+                        {selectedOrg.primaryColor || '#278DD4'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#20366B]">Organisation ID</label>
+                    <p className="text-sm text-slate-700 bg-slate-50 p-2 rounded border">
+                      #{selectedOrg.id}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-[#278DD4]/20">
+                <Button
+                  onClick={() => handleEditOrg(selectedOrg)}
+                  className="w-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white"
+                >
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Organisation
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Organization Edit Dialog */}
+      <Dialog open={showOrgEditDialog} onOpenChange={setShowOrgEditDialog}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367] p-4 rounded-t-lg text-white -m-6 mb-4">
+            <DialogTitle className="text-white text-lg font-bold">Edit Organisation</DialogTitle>
+            <DialogDescription className="text-white/90 text-sm">
+              Update details for {editingOrg?.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...orgEditForm}>
+            <form onSubmit={orgEditForm.handleSubmit(onOrgEditSubmit)} className="space-y-4">
+              <FormField
+                control={orgEditForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#20366B] text-sm font-medium">Organisation Name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Organisation name" 
+                        className="h-9 border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-600 text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={orgEditForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#20366B] text-sm font-medium">Email</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="email" 
+                        placeholder="Email address" 
+                        className="h-9 border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-600 text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={orgEditForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#20366B] text-sm font-medium">Description</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Organisation description" 
+                        className="h-9 border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-600 text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <FormField
+                  control={orgEditForm.control}
+                  name="planType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#20366B] text-sm font-medium">Plan Type</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-9 border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20">
+                            <SelectValue placeholder="Select plan" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="free">Free</SelectItem>
+                          <SelectItem value="premium">Premium</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-600 text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={orgEditForm.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#20366B] text-sm font-medium">Status</FormLabel>
+                      <Select onValueChange={(value) => field.onChange(value === 'true')} value={field.value.toString()}>
+                        <FormControl>
+                          <SelectTrigger className="h-9 border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="true">
+                            <div className="flex items-center">
+                              <div className="w-2 h-2 rounded-full bg-[#24D367] mr-2"></div>
+                              Active
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="false">
+                            <div className="flex items-center">
+                              <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
+                              Inactive
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-600 text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-[#278DD4]/20">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowOrgEditDialog(false)}
+                  className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10 h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={updateOrgMutation.isPending}
+                  className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white h-9"
+                >
+                  {updateOrgMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
