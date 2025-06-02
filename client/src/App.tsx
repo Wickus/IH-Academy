@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { NotificationsProvider } from "@/contexts/notifications-context";
 import { api, type User } from "@/lib/api";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import NotFound from "@/pages/not-found";
@@ -128,10 +129,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <NotificationsProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </NotificationsProvider>
     </QueryClientProvider>
   );
 }
