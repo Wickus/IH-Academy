@@ -31,8 +31,9 @@ export default function OrganizationPayment() {
 
   const createPaymentMutation = useMutation({
     mutationFn: async (planType: string) => {
+      const amount = planType === "professional" ? 299 : planType === "enterprise" ? 599 : 0;
       const response = await apiRequest("POST", "/api/create-payment-intent", {
-        amount: planType === "basic" ? 299 : planType === "premium" ? 599 : 99,
+        amount,
         organizationId: orgId,
         planType
       });
@@ -73,22 +74,23 @@ export default function OrganizationPayment() {
 
   const plans = [
     {
-      name: "Starter",
-      price: "R99",
+      name: "Free",
+      price: "R0",
       period: "/month",
-      value: "starter",
+      value: "free",
       features: [
-        "Up to 50 members",
-        "5 active classes",
+        "Up to 25 members",
+        "3 active classes",
         "Basic booking system",
-        "Email support"
+        "Community support",
+        "14-day trial of all features"
       ]
     },
     {
       name: "Professional",
       price: "R299",
       period: "/month",
-      value: "basic",
+      value: "professional",
       popular: true,
       features: [
         "Up to 200 members",
@@ -103,7 +105,7 @@ export default function OrganizationPayment() {
       name: "Enterprise",
       price: "R599",
       period: "/month",
-      value: "premium",
+      value: "enterprise",
       features: [
         "Unlimited members",
         "Unlimited classes",
@@ -151,8 +153,12 @@ export default function OrganizationPayment() {
               </div>
               <div className="text-center">
                 <Users className="h-8 w-8 text-[#278DD4] mx-auto mb-2" />
-                <p className="font-medium capitalize">{organization.businessModel?.replace('_', ' ')}</p>
-                <p className="text-sm text-gray-600">Business Model</p>
+                <p className="font-medium capitalize">
+                  {organization.businessModel === 'membership' ? 'Membership-Based' : 
+                   organization.businessModel === 'pay_per_class' ? 'Pay-Per-Class' : 
+                   'Not Set'}
+                </p>
+                <p className="text-sm text-slate-600">Business Model</p>
               </div>
               <div className="text-center">
                 <Calendar className="h-8 w-8 text-[#24D367] mx-auto mb-2" />

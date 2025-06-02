@@ -172,7 +172,7 @@ export default function OrganizationSetup() {
                                     Membership-Based
                                   </label>
                                 </div>
-                                <p className="text-sm text-gray-600 ml-6">
+                                <p className="text-sm text-slate-600 ml-6">
                                   Members pay a monthly subscription and can book from your daily schedule of classes.
                                   Perfect for gyms, studios, and regular training programs.
                                 </p>
@@ -186,7 +186,7 @@ export default function OrganizationSetup() {
                                     Pay-Per-Class
                                   </label>
                                 </div>
-                                <p className="text-sm text-gray-600 ml-6">
+                                <p className="text-sm text-slate-600 ml-6">
                                   Users book and pay for individual classes or clinics. 
                                   Ideal for workshops, private lessons, and one-off events.
                                 </p>
