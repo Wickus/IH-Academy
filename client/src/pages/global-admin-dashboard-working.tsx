@@ -445,10 +445,27 @@ export default function GlobalAdminDashboard() {
               ItsHappening.Africa platform overview and management
             </p>
           </div>
-          <Button className="bg-white text-[#20366B] hover:bg-white/90">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Organisation
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button className="bg-white text-[#20366B] hover:bg-white/90">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Organisation
+            </Button>
+            <Button 
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10"
+              onClick={async () => {
+                try {
+                  await api.post('/api/auth/logout');
+                  window.location.href = '/';
+                } catch (error) {
+                  console.error('Logout failed:', error);
+                  window.location.href = '/';
+                }
+              }}
+            >
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 
