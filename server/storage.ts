@@ -49,6 +49,7 @@ export interface IStorage {
 
   // User-Organization relationships
   getUserOrganizations(userId: number): Promise<UserOrganization[]>;
+  getAllUserOrganizations(): Promise<UserOrganization[]>;
   addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization>;
   removeUserFromOrganization(userId: number, organizationId: number): Promise<boolean>;
   updateUserOrganizationRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined>;
@@ -302,6 +303,10 @@ export class DatabaseStorage implements IStorage {
   // User-Organization relationship methods
   async getUserOrganizations(userId: number): Promise<UserOrganization[]> {
     return await db.select().from(userOrganizations).where(eq(userOrganizations.userId, userId));
+  }
+
+  async getAllUserOrganizations(): Promise<UserOrganization[]> {
+    return await db.select().from(userOrganizations);
   }
 
   async addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization> {
