@@ -521,8 +521,10 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus,
 /* Fix Radio Button and Form Element Visibility */
 [data-radix-radio-item] {
   background-color: #FFFFFF !important;
-  border: 2px solid #E2E8F0 !important;
+  border: 2px solid #20366B !important;
   color: #20366B !important;
+  width: 20px !important;
+  height: 20px !important;
 }
 
 [data-radix-radio-item][data-state="checked"] {
@@ -531,7 +533,13 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus,
 }
 
 [data-radix-radio-item][data-state="checked"]::after {
+  content: '' !important;
+  display: block !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
   background-color: #FFFFFF !important;
+  margin: auto !important;
 }
 
 /* Radio Group Labels */
@@ -543,10 +551,30 @@ label[for*="radio"] {
   cursor: pointer !important;
 }
 
-/* Form Labels */
-label {
+/* Form Labels - Force dark text everywhere */
+label, 
+.form-label,
+[class*="label"],
+h1, h2, h3, h4, h5, h6,
+.text-white,
+[class*="text-white"] {
   color: #1E293B !important;
   font-weight: 500 !important;
+}
+
+/* Specific heading overrides */
+h1.text-white, h2.text-white, h3.text-white {
+  color: #1E293B !important;
+}
+
+/* Form field labels and text */
+.space-y-4 label,
+.form-item label,
+[for="membership"],
+[for="pay_per_class"],
+[for="billingCycle"] {
+  color: #1E293B !important;
+  font-weight: 600 !important;
 }
 
 /* Form Field Content */
@@ -566,4 +594,45 @@ label {
   border-color: #20366B !important;
   background-color: #F8FAFC !important;
   box-shadow: 0 4px 8px rgba(32, 54, 107, 0.1) !important;
+}
+
+/* Fix all white text visibility issues */
+.text-slate-900,
+.text-gray-900,
+.font-medium,
+.font-semibold,
+p, span, div {
+  color: #1E293B !important;
+}
+
+/* Card content text visibility */
+.bg-white * {
+  color: #1E293B !important;
+}
+
+.bg-slate-50 * {
+  color: #1E293B !important;
+}
+
+/* Membership settings section */
+.space-y-4.p-4 h3 {
+  color: #1E293B !important;
+  font-weight: 600 !important;
+}
+
+/* All form control text */
+.form-control,
+.form-control *,
+.space-y-4,
+.space-y-4 * {
+  color: #1E293B !important;
+}
+
+/* Override any remaining white text */
+* {
+  color: inherit !important;
+}
+
+.text-white {
+  color: #1E293B !important;
 }
