@@ -1,10 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   User, 
   Calendar, 
@@ -15,13 +21,19 @@ import {
   Activity,
   Star,
   Clock,
-  MapPin
+  MapPin,
+  LogOut,
+  Settings,
+  ChevronDown
 } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
+import { useToast } from "@/hooks/use-toast";
 
 export default function UserDashboard() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/me"],
@@ -37,6 +49,25 @@ export default function UserDashboard() {
   const { data: followedOrganizations = [] } = useQuery({
     queryKey: ["/api/organizations"],
     queryFn: api.getOrganizations,
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: api.logout,
+    onSuccess: () => {
+      queryClient.clear();
+      setLocation('/');
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Logout failed",
+        description: "There was an error logging out. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   if (!currentUser) {
@@ -69,6 +100,44 @@ export default function UserDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto px-4 py-8">
+        {/* User Profile Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-[#20366B] rounded-full flex items-center justify-center">
+              <User className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-[#20366B]">
+                {currentUser.firstName || currentUser.username}
+              </h2>
+              <p className="text-slate-600">{currentUser.email}</p>
+            </div>
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center space-x-2">
+                <Settings className="h-4 w-4" />
+                <span>Account</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setLocation('/settings')}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>{logoutMutation.isPending ? "Logging out..." : "Logout"}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-[#20366B] to-[#278DD4] rounded-xl p-8 text-white">
