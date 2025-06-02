@@ -50,6 +50,7 @@ export default function GlobalAdminDashboard() {
   const [editingOrg, setEditingOrg] = useState<any>(null);
   const [showBookingsDialog, setShowBookingsDialog] = useState(false);
   const [showRevenueDialog, setShowRevenueDialog] = useState(false);
+  const [showOrganizations, setShowOrganizations] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -419,14 +420,20 @@ export default function GlobalAdminDashboard() {
         <TabsContent value="overview" className="space-y-8">
           {/* Global Stats */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-white border-l-4 border-l-[#278DD4] shadow-lg">
+            <Card 
+              className="bg-white border-l-4 border-l-[#278DD4] shadow-lg cursor-pointer hover:shadow-xl transition-shadow" 
+              onClick={() => setShowOrganizations(!showOrganizations)}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Organisations</CardTitle>
-                <Building2 className="h-4 w-4 text-[#278DD4]" />
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-[#278DD4]" />
+                  {showOrganizations ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">{stats?.totalOrganizations || 0}</div>
-                <p className="text-xs text-slate-600">Active sports organisations</p>
+                <p className="text-xs text-slate-600">Click to view all organisations</p>
               </CardContent>
             </Card>
 
@@ -724,6 +731,81 @@ export default function GlobalAdminDashboard() {
                                 Delete
                               </Button>
                             )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Organisations List */}
+          {showOrganizations && (
+            <Card className="bg-white shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-[#278DD4] to-[#24D367] text-white rounded-t-lg">
+                <CardTitle className="text-white">Platform Organisations</CardTitle>
+                <CardDescription className="text-blue-100">
+                  All registered organisations across ItsHappening.Africa
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {orgsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#278DD4] border-t-transparent"></div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      {organizations?.map((org: any) => (
+                        <div key={org.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center space-x-4">
+                            <div 
+                              className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shadow-lg"
+                              style={{ backgroundColor: org.primaryColor || '#278DD4' }}
+                            >
+                              {org.name.charAt(0)}
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-[#20366B]">{org.name}</h4>
+                              <p className="text-sm text-slate-600">{org.email}</p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <Badge 
+                                  variant="secondary" 
+                                  className={org.planType === 'premium' ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#278DD4]/20 text-[#20366B] border-[#278DD4]/30'}
+                                >
+                                  {org.planType || 'free'}
+                                </Badge>
+                                <Badge 
+                                  variant={org.isActive ? 'default' : 'secondary'}
+                                  className={org.isActive ? 'bg-[#24D367] text-white' : 'bg-red-100 text-red-700'}
+                                >
+                                  {org.isActive ? 'Active' : 'Inactive'}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleViewOrg(org)}
+                              className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                            >
+                              <Eye className="h-4 w-4" />
+                              View
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => updateOrgStatusMutation.mutate({ orgId: org.id, isActive: !org.isActive })}
+                              disabled={updateOrgStatusMutation.isPending}
+                              className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
+                            >
+                              <UserCheck className="h-3 w-3" />
+                              {org.isActive ? 'Deactivate' : 'Activate'}
+                            </Button>
                           </div>
                         </div>
                       ))}
