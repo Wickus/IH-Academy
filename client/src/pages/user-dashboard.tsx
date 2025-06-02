@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,8 @@ import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
 
 export default function UserDashboard() {
+  const [, setLocation] = useLocation();
+  
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: api.getCurrentUser,
@@ -89,7 +92,7 @@ export default function UserDashboard() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/discover')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -103,7 +106,7 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/achievements')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -117,7 +120,7 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/discover')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -131,7 +134,7 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/achievements')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -144,6 +147,24 @@ export default function UserDashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <Button 
+            onClick={() => setLocation('/discover')} 
+            className="bg-[#278DD4] hover:bg-[#20366B] text-white"
+          >
+            <BookOpen className="mr-2 h-4 w-4" />
+            Discover Classes
+          </Button>
+          <Button 
+            onClick={() => setLocation('/book')} 
+            className="bg-[#24D367] hover:bg-[#1FB55A] text-white"
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            Book a Class
+          </Button>
         </div>
 
         {/* Main Content Tabs */}
