@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Trash2, Calendar, Phone, MapPin } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function GlobalAdminDashboard() {
@@ -66,43 +66,6 @@ export default function GlobalAdminDashboard() {
       toast({
         title: "Error",
         description: error.message || "Failed to delete user",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateOrgStatusMutation = useMutation({
-    mutationFn: ({ orgId, isActive }: { orgId: number; isActive: boolean }) =>
-      api.updateOrganizationStatus(orgId, isActive),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
-      toast({
-        title: "Success",
-        description: "Organisation status updated successfully",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update organisation status",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const deleteOrgMutation = useMutation({
-    mutationFn: (orgId: number) => api.deleteOrganization(orgId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
-      toast({
-        title: "Success",
-        description: "Organisation deleted successfully",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete organisation",
         variant: "destructive",
       });
     },
@@ -224,9 +187,7 @@ export default function GlobalAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">{stats?.totalOrganizations || 0}</div>
-                <p className="text-xs text-slate-600">
-                  Active sports organisations
-                </p>
+                <p className="text-xs text-slate-600">Active sports organisations</p>
               </CardContent>
             </Card>
 
@@ -243,9 +204,7 @@ export default function GlobalAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">{stats?.totalUsers || 0}</div>
-                <p className="text-xs text-slate-600">
-                  Click to view all users
-                </p>
+                <p className="text-xs text-slate-600">Click to view all users</p>
               </CardContent>
             </Card>
 
@@ -256,9 +215,7 @@ export default function GlobalAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">{stats?.totalBookings || 0}</div>
-                <p className="text-xs text-slate-600">
-                  Across all organisations
-                </p>
+                <p className="text-xs text-slate-600">Across all organisations</p>
               </CardContent>
             </Card>
 
@@ -269,14 +226,12 @@ export default function GlobalAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">{formatCurrency(stats?.totalRevenue || 0)}</div>
-                <p className="text-xs text-slate-600">
-                  Platform-wide revenue
-                </p>
+                <p className="text-xs text-slate-600">Platform-wide revenue</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Users Management - Only show when expanded */}
+          {/* Users Management */}
           {showUsers && (
             <Card className="bg-white shadow-lg border-0">
               <CardHeader className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] text-white rounded-t-lg">
@@ -293,7 +248,7 @@ export default function GlobalAdminDashboard() {
                   </div>
                 ) : (
                   <>
-                    {/* Bulk Operations Controls */}
+                    {/* Bulk Purge Controls */}
                     {users && users.filter((user: any) => !user.isActive && user.role !== 'global_admin').length > 0 && (
                       <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
                         <div className="flex items-center justify-between mb-4">
@@ -317,7 +272,6 @@ export default function GlobalAdminDashboard() {
                                 <Button
                                   variant="destructive"
                                   size="sm"
-                                  disabled={selectedUsers.length === 0 && !users.some((user: any) => !user.isActive && user.role !== 'global_admin')}
                                   className="bg-red-600 hover:bg-red-700"
                                 >
                                   <Trash2 className="h-4 w-4 mr-2" />
@@ -336,10 +290,7 @@ export default function GlobalAdminDashboard() {
                                     You are about to delete {selectedUsers.length > 0 ? selectedUsers.length : 'all inactive'} user accounts.
                                   </p>
                                   <div className="flex justify-end space-x-2">
-                                    <Button
-                                      variant="outline"
-                                      onClick={() => setShowPurgeDialog(false)}
-                                    >
+                                    <Button variant="outline" onClick={() => setShowPurgeDialog(false)}>
                                       Cancel
                                     </Button>
                                     {selectedUsers.length > 0 && (
@@ -352,16 +303,14 @@ export default function GlobalAdminDashboard() {
                                         {bulkPurgeMutation.isPending ? 'Purging...' : `Purge ${selectedUsers.length} Selected`}
                                       </Button>
                                     )}
-                                    {users && users.filter((user: any) => !user.isActive && user.role !== 'global_admin').length > 0 && (
-                                      <Button
-                                        variant="destructive"
-                                        onClick={() => handleBulkPurge(true)}
-                                        disabled={bulkPurgeMutation.isPending}
-                                        className="bg-red-700 hover:bg-red-800"
-                                      >
-                                        {bulkPurgeMutation.isPending ? 'Purging...' : 'Purge All Inactive'}
-                                      </Button>
-                                    )}
+                                    <Button
+                                      variant="destructive"
+                                      onClick={() => handleBulkPurge(true)}
+                                      disabled={bulkPurgeMutation.isPending}
+                                      className="bg-red-700 hover:bg-red-800"
+                                    >
+                                      {bulkPurgeMutation.isPending ? 'Purging...' : 'Purge All Inactive'}
+                                    </Button>
                                   </div>
                                 </div>
                               </DialogContent>
@@ -370,112 +319,123 @@ export default function GlobalAdminDashboard() {
                         </div>
                       </div>
                     )}
+
+                    {/* Users List */}
                     <div className="space-y-4">
                       {users?.map((user: any) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] flex items-center justify-center text-white font-bold">
-                            {user.firstName?.charAt(0) || user.username.charAt(0)}
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-[#20366B]">
-                              {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
-                            </h3>
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                              <Mail className="h-3 w-3" />
-                              {user.email}
+                        <div key={user.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center space-x-4">
+                            {!user.isActive && user.role !== 'global_admin' && (
+                              <input
+                                type="checkbox"
+                                checked={selectedUsers.includes(user.id)}
+                                onChange={(e) => handleUserSelection(user.id, e.target.checked)}
+                                className="h-4 w-4 text-[#24D367] focus:ring-[#24D367] border-gray-300 rounded"
+                              />
+                            )}
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] flex items-center justify-center text-white font-bold">
+                              {user.firstName?.charAt(0) || user.username.charAt(0)}
                             </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge 
-                                variant={user.role === 'global_admin' ? 'default' : user.role === 'organization_admin' ? 'secondary' : 'outline'}
-                                className={
-                                  user.role === 'global_admin' ? 'bg-[#20366B] text-white' : 
-                                  user.role === 'organization_admin' ? 'bg-[#278DD4] text-white' : 
-                                  user.role === 'coach' ? 'bg-[#24D3BF] text-white' :
-                                  'bg-[#24D367] text-white'
-                                }
-                              >
-                                {user.role.replace('_', ' ')}
-                              </Badge>
-                              <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
-                                {user.isActive ? 'Active' : 'Inactive'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
-                              >
-                                <Eye className="h-4 w-4" />
-                                View
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md">
-                              <DialogHeader>
-                                <DialogTitle className="text-[#20366B]">User Details</DialogTitle>
-                                <DialogDescription>
-                                  Complete information for {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] flex items-center justify-center text-white font-bold text-lg">
-                                    {user.firstName?.charAt(0) || user.username.charAt(0)}
-                                  </div>
-                                  <div>
-                                    <h3 className="font-semibold text-[#20366B]">
-                                      {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
-                                    </h3>
-                                    <p className="text-sm text-slate-600">@{user.username}</p>
-                                  </div>
-                                </div>
-                                <div className="space-y-3">
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <Mail className="h-4 w-4 text-[#278DD4]" />
-                                    <span className="text-slate-600">{user.email}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <UserCheck className="h-4 w-4 text-[#24D367]" />
-                                    <span className="text-slate-600">Role: {user.role.replace('_', ' ')}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
-                                      {user.isActive ? 'Active Account' : 'Inactive Account'}
-                                    </Badge>
-                                  </div>
-                                </div>
+                            <div>
+                              <h3 className="font-semibold text-[#20366B]">
+                                {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                              </h3>
+                              <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <Mail className="h-3 w-3" />
+                                {user.email}
                               </div>
-                            </DialogContent>
-                          </Dialog>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => updateUserStatusMutation.mutate({ userId: user.id, isActive: !user.isActive })}
-                            disabled={updateUserStatusMutation.isPending}
-                            className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
-                          >
-                            <UserCheck className="h-3 w-3" />
-                            {user.isActive ? 'Deactivate' : 'Activate'}
-                          </Button>
-                          {user.role !== 'global_admin' && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge 
+                                  variant={user.role === 'global_admin' ? 'default' : user.role === 'organization_admin' ? 'secondary' : 'outline'}
+                                  className={
+                                    user.role === 'global_admin' ? 'bg-[#20366B] text-white' : 
+                                    user.role === 'organization_admin' ? 'bg-[#278DD4] text-white' : 
+                                    user.role === 'coach' ? 'bg-[#24D3BF] text-white' :
+                                    'bg-[#24D367] text-white'
+                                  }
+                                >
+                                  {user.role.replace('_', ' ')}
+                                </Badge>
+                                <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
+                                  {user.isActive ? 'Active' : 'Inactive'}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                  View
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle className="text-[#20366B]">User Details</DialogTitle>
+                                  <DialogDescription>
+                                    Complete information for {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] flex items-center justify-center text-white font-bold text-lg">
+                                      {user.firstName?.charAt(0) || user.username.charAt(0)}
+                                    </div>
+                                    <div>
+                                      <h3 className="font-semibold text-[#20366B]">
+                                        {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                                      </h3>
+                                      <p className="text-sm text-slate-600">@{user.username}</p>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-3">
+                                    <div className="flex items-center gap-2 text-sm">
+                                      <Mail className="h-4 w-4 text-[#278DD4]" />
+                                      <span className="text-slate-600">{user.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm">
+                                      <UserCheck className="h-4 w-4 text-[#24D367]" />
+                                      <span className="text-slate-600">Role: {user.role.replace('_', ' ')}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm">
+                                      <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
+                                        {user.isActive ? 'Active Account' : 'Inactive Account'}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                             <Button 
-                              variant="destructive" 
+                              variant="outline" 
                               size="sm" 
-                              onClick={() => deleteUserMutation.mutate(user.id)}
-                              disabled={deleteUserMutation.isPending}
+                              onClick={() => updateUserStatusMutation.mutate({ userId: user.id, isActive: !user.isActive })}
+                              disabled={updateUserStatusMutation.isPending}
+                              className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
                             >
-                              Delete
+                              <UserCheck className="h-3 w-3" />
+                              {user.isActive ? 'Deactivate' : 'Activate'}
                             </Button>
-                          )}
+                            {user.role !== 'global_admin' && (
+                              <Button 
+                                variant="destructive" 
+                                size="sm" 
+                                onClick={() => deleteUserMutation.mutate(user.id)}
+                                disabled={deleteUserMutation.isPending}
+                              >
+                                Delete
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -518,23 +478,6 @@ export default function GlobalAdminDashboard() {
                       <Button variant="outline" size="sm" className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
                         <Eye className="h-4 w-4" />
                         View
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => updateOrgStatusMutation.mutate({ orgId: org.id, isActive: !org.isActive })}
-                        disabled={updateOrgStatusMutation.isPending}
-                        className="gap-1 border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
-                      >
-                        {org.isActive ? 'Deactivate' : 'Activate'}
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        size="sm" 
-                        onClick={() => deleteOrgMutation.mutate(org.id)}
-                        disabled={deleteOrgMutation.isPending}
-                      >
-                        Delete
                       </Button>
                     </div>
                   </div>
