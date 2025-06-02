@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +56,26 @@ export default function Auth() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: api.getCurrentUser,
+  });
+
+  const { data: userOrganisations } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!currentUser && currentUser.role === 'organization_admin',
+  });
+
+  // Check if current user is an organisation admin without an organisation
+  useEffect(() => {
+    if (currentUser?.role === 'organization_admin' && userOrganisations !== undefined) {
+      if (userOrganisations.length === 0) {
+        setShowOrgSetup(true);
+      }
+    }
+  }, [currentUser, userOrganisations]);
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginFormData) => api.login(credentials),
