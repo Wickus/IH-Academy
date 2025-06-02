@@ -101,11 +101,11 @@ export default function WeeklyCalendar() {
             const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             
             return (
-              <div key={index} className={`text-center ${isToday ? 'bg-primary/10 rounded-lg p-2' : ''}`}>
-                <p className={`text-sm font-medium mb-2 ${isToday ? 'text-primary' : 'text-slate-600'}`}>
+              <div key={index} className={`text-center ${isToday ? 'bg-[#278DD4]/10 rounded-lg p-2 border border-[#278DD4]/20' : ''}`}>
+                <p className={`text-sm font-medium mb-2 ${isToday ? 'text-[#20366B] font-semibold' : 'text-slate-600'}`}>
                   {dayNames[index]}
                 </p>
-                <p className={`text-lg font-bold ${isToday ? 'text-primary' : 'text-slate-800'}`}>
+                <p className={`text-lg font-bold ${isToday ? 'text-[#278DD4]' : 'text-slate-800'}`}>
                   {day.getDate()}
                 </p>
               </div>

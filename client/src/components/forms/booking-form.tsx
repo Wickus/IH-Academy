@@ -220,11 +220,14 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
       </Card>
 
       {/* Booking Form */}
-      <Card className="bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] text-white border-[#24D3BF]">
-        <CardHeader>
-          <CardTitle>Participant Information</CardTitle>
+      <Card className="border-0 shadow-md bg-white">
+        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
+          <CardTitle className="flex items-center">
+            <Shield className="mr-2 h-5 w-5" />
+            Participant Information
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

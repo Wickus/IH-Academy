@@ -52,17 +52,17 @@ export default function PayfastCredentials({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-0 shadow-md bg-white">
       {showTitle && (
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <CreditCard className="h-5 w-5 text-[#278DD4]" />
-            <CardTitle className="text-[#20366B]">Payfast Payment Gateway</CardTitle>
-          </div>
+        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
+          <CardTitle className="flex items-center text-xl">
+            <CreditCard className="h-5 w-5 mr-2" />
+            Payfast Payment Gateway
+          </CardTitle>
         </CardHeader>
       )}
       
-      <CardContent className="space-y-6">
+      <CardContent className="p-6 space-y-6">
         <Alert>
           <Shield className="h-4 w-4" />
           <AlertDescription>
@@ -71,18 +71,18 @@ export default function PayfastCredentials({
           </AlertDescription>
         </Alert>
 
-        <div className="bg-slate-50 p-4 rounded-lg">
+        <div className="bg-gradient-to-r from-[#24D367]/10 to-[#24D3BF]/10 p-4 rounded-lg border border-[#24D367]/20">
           <div className="flex items-start space-x-3">
-            <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-[#278DD4] mt-0.5" />
             <div>
-              <h4 className="font-medium text-slate-800 mb-1">Need a Payfast Account?</h4>
+              <h4 className="font-medium text-[#20366B] mb-1">Need a Payfast Account?</h4>
               <p className="text-sm text-slate-600 mb-2">
                 Sign up for a Payfast merchant account to start accepting payments.
               </p>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-[#278DD4] border-[#278DD4] hover:bg-[#278DD4]/10"
+                className="text-[#278DD4] border-[#278DD4] hover:bg-[#278DD4] hover:text-white"
                 onClick={() => window.open('https://www.payfast.co.za/', '_blank')}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
@@ -99,12 +99,12 @@ export default function PayfastCredentials({
               name="payfastMerchantId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Merchant ID</FormLabel>
+                  <FormLabel className="text-[#20366B] font-medium">Merchant ID</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="e.g., 15720320" 
                       {...field}
-                      className="font-mono"
+                      className="font-mono border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                     />
                   </FormControl>
                   <FormDescription>
@@ -120,12 +120,12 @@ export default function PayfastCredentials({
               name="payfastMerchantKey"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Merchant Key</FormLabel>
+                  <FormLabel className="text-[#20366B] font-medium">Merchant Key</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="e.g., s3opz0f8hkx4x" 
                       {...field}
-                      className="font-mono"
+                      className="font-mono border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                       type="password"
                     />
                   </FormControl>
@@ -142,12 +142,12 @@ export default function PayfastCredentials({
               name="payfastPassphrase"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Passphrase (Optional)</FormLabel>
+                  <FormLabel className="text-[#20366B] font-medium">Passphrase (Optional)</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Leave blank if not configured"
                       {...field}
-                      className="font-mono"
+                      className="font-mono border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                       type="password"
                     />
                   </FormControl>
