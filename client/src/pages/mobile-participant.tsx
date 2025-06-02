@@ -384,23 +384,9 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             variant="outline" 
                             size="sm"
                             className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
-                            onClick={() => {
+                            onClick={async () => {
                               try {
-                                // Generate and download iCal file
-                                const icalContent = generateICalEvent(booking.class, booking);
-                                const blob = new Blob([icalContent], { type: 'text/calendar;charset=utf-8' });
-                                const url = URL.createObjectURL(blob);
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.download = `${booking.class?.name?.replace(/[^a-zA-Z0-9]/g, '_')}_booking.ics`;
-                                link.style.display = 'none';
-                                document.body.appendChild(link);
-                                link.click();
-                                setTimeout(() => {
-                                  document.body.removeChild(link);
-                                  URL.revokeObjectURL(url);
-                                }, 100);
-                                
+                                await api.downloadIcal(booking.id);
                                 toast({
                                   title: "Calendar Event",
                                   description: `Calendar file downloaded: ${booking.class?.name}`,
@@ -423,24 +409,22 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             <Button 
                               size="sm"
                               className="w-full bg-[#24D367] hover:bg-[#24D367]/90 text-white"
+                              disabled={updatePaymentMutation.isPending}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 toast({
-                                  title: "Payment Gateway",
-                                  description: `Opening payment for ${formatCurrency(booking.amount)} - ${booking.class?.name}`,
+                                  title: "Processing Payment",
+                                  description: `Processing payment for ${formatCurrency(booking.amount)} - ${booking.class?.name}`,
                                 });
-                                // In a real implementation, this would navigate to a payment processor
-                                // For now, we'll simulate payment completion after 2 seconds
-                                setTimeout(() => {
-                                  toast({
-                                    title: "Payment Completed",
-                                    description: "Your booking has been confirmed!",
-                                  });
-                                }, 2000);
+                                // Update the booking payment status
+                                updatePaymentMutation.mutate({
+                                  bookingId: booking.id,
+                                  paymentStatus: 'confirmed'
+                                });
                               }}
                             >
-                              Complete Payment • {formatCurrency(booking.amount)}
+                              {updatePaymentMutation.isPending ? 'Processing...' : `Complete Payment • ${formatCurrency(booking.amount)}`}
                             </Button>
                           </div>
                         )}

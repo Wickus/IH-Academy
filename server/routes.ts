@@ -1086,8 +1086,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const updatedBooking = await storage.updateBooking(bookingId, { 
-        paymentStatus,
-        updatedAt: new Date()
+        paymentStatus
       });
       
       if (!updatedBooking) {
