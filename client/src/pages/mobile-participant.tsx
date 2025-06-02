@@ -23,7 +23,9 @@ import {
   Star,
   Filter,
   ChevronRight,
-  Play
+  Play,
+  Baby,
+  Plus
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
@@ -65,6 +67,13 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
     queryFn: () => api.getSports(),
   });
 
+  // Fetch user's children (optional for now)
+  const { data: children } = useQuery({
+    queryKey: ['/api/children', user.id],
+    queryFn: () => api.getUserChildren(user.id),
+    enabled: false, // Temporarily disabled until children API is fixed
+  });
+
   const followOrgMutation = useMutation({
     mutationFn: (organizationId: number) => api.followOrganization(organizationId),
     onSuccess: () => {
@@ -104,21 +113,21 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
       {/* Bottom Navigation */}
       <Tabs defaultValue="discover" className="w-full">
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#20366B] to-[#278DD4] border-t border-[#278DD4]/20 z-50">
           <TabsList className="w-full h-16 bg-transparent rounded-none p-0 grid grid-cols-4">
-            <TabsTrigger value="discover" className="flex-col h-16 rounded-none gap-1">
+            <TabsTrigger value="discover" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <Compass className="h-5 w-5" />
               <span className="text-xs">Discover</span>
             </TabsTrigger>
-            <TabsTrigger value="bookings" className="flex-col h-16 rounded-none gap-1">
+            <TabsTrigger value="bookings" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <BookOpen className="h-5 w-5" />
               <span className="text-xs">Bookings</span>
             </TabsTrigger>
-            <TabsTrigger value="organizations" className="flex-col h-16 rounded-none gap-1">
+            <TabsTrigger value="organizations" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <Star className="h-5 w-5" />
               <span className="text-xs">Following</span>
             </TabsTrigger>
-            <TabsTrigger value="profile" className="flex-col h-16 rounded-none gap-1">
+            <TabsTrigger value="profile" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <User className="h-5 w-5" />
               <span className="text-xs">Profile</span>
             </TabsTrigger>
@@ -402,18 +411,18 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
         <TabsContent value="profile" className="mt-0 pb-20">
           <div className="p-4">
             {/* Profile Header */}
-            <Card className="mb-6">
-              <CardContent className="p-6 text-center">
-                <Avatar className="w-20 h-20 mx-auto mb-4">
-                  <AvatarFallback className="bg-primary text-white text-2xl">
+            <Card className="mb-6 border-0 shadow-lg">
+              <CardContent className="p-6 text-center bg-gradient-to-br from-[#20366B] to-[#278DD4] text-white rounded-lg">
+                <Avatar className="w-20 h-20 mx-auto mb-4 border-4 border-white/20">
+                  <AvatarFallback className="bg-gradient-to-br from-[#24D367] to-[#24D3BF] text-[#20366B] text-2xl font-bold">
                     {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-white">
                   {user.firstName} {user.lastName}
                 </h2>
-                <p className="text-gray-600">{user.email}</p>
-                <Badge className="mt-2">
+                <p className="text-white/80">{user.email}</p>
+                <Badge className="mt-2 bg-white/20 text-white border-white/30 hover:bg-white/30">
                   {user.role === 'member' ? 'Member' : user.role}
                 </Badge>
               </CardContent>
@@ -421,16 +430,16 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-primary">{bookings?.length || 0}</div>
-                  <div className="text-sm text-gray-500">Total Bookings</div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-4 text-center bg-gradient-to-br from-[#24D367] to-[#24D3BF] text-white rounded-lg">
+                  <div className="text-2xl font-bold text-white">{bookings?.length || 0}</div>
+                  <div className="text-sm text-white/80">Total Bookings</div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">{upcomingBookings.length}</div>
-                  <div className="text-sm text-gray-500">Upcoming</div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-4 text-center bg-gradient-to-br from-[#278DD4] to-[#20366B] text-white rounded-lg">
+                  <div className="text-2xl font-bold text-white">{upcomingBookings.length}</div>
+                  <div className="text-sm text-white/80">Upcoming</div>
                 </CardContent>
               </Card>
             </div>
@@ -455,25 +464,69 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               </Card>
             </div>
 
+            {/* Children Section */}
+            <Card className="mb-6">
+              <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
+                <CardTitle className="flex items-center">
+                  <Baby className="mr-2 h-5 w-5" />
+                  Children ({children?.length || 0})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {children && children.length > 0 ? (
+                  <div className="space-y-3">
+                    {children.map((child: any) => (
+                      <div key={child.id} className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-[#278DD4]/10 rounded-lg">
+                              <Baby className="h-4 w-4 text-[#278DD4]" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-[#20366B]">{child.name}</p>
+                              <p className="text-sm text-slate-600">Age {child.age}</p>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-slate-400" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <Baby className="mx-auto h-12 w-12 text-slate-400 mb-3" />
+                    <p className="text-slate-600 mb-3">No children added yet</p>
+                    <Button
+                      size="sm"
+                      className="bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Child
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Profile Actions */}
             <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start h-12">
-                <User className="h-5 w-5 mr-3" />
-                Edit Profile
-                <ChevronRight className="h-4 w-4 ml-auto" />
+              <Button variant="outline" className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10">
+                <User className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B]">Edit Profile</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12">
-                <CreditCard className="h-5 w-5 mr-3" />
-                Payment Methods
-                <ChevronRight className="h-4 w-4 ml-auto" />
+              <Button variant="outline" className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10">
+                <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B]">Payment Methods</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12">
-                <Heart className="h-5 w-5 mr-3" />
-                Favorite Organizations
-                <ChevronRight className="h-4 w-4 ml-auto" />
+              <Button variant="outline" className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10">
+                <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B]">Favourite Organisations</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12 text-red-600 border-red-200">
-                Sign Out
+              <Button variant="outline" className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50">
+                <span>Sign Out</span>
                 <ChevronRight className="h-4 w-4 ml-auto" />
               </Button>
             </div>
