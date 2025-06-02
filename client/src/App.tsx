@@ -14,6 +14,7 @@ import Payments from "@/pages/payments";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
 import Achievements from "@/pages/achievements";
+import Notifications from "@/pages/notifications";
 import PublicBooking from "@/pages/public-booking";
 import GlobalAdminDashboard from "@/pages/global-admin-dashboard";
 import PublicDiscovery from "@/pages/public-discovery";
@@ -77,6 +78,7 @@ function RoleBasedRouter({ user }: { user?: User }) {
           <Route path="/reports" component={Reports} />
           <Route path="/settings" component={Settings} />
           <Route path="/achievements" component={Achievements} />
+          <Route path="/notifications" component={Notifications} />
           <Route component={NotFound} />
         </Switch>
       </AppLayout>
