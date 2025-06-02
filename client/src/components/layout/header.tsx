@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/contexts/notifications-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,17 +112,19 @@ export default function Header() {
         <div className="flex items-center space-x-4">
           {user?.role !== 'global_admin' && (
             <>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="relative p-2 hover:bg-white/10 text-white"
-                onClick={() => setLocation("/notifications")}
-              >
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
-                  3
-                </span>
-              </Button>
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="relative p-2 hover:bg-white/10 text-white"
+                  onClick={() => setLocation("/notifications")}
+                >
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
+                    3
+                  </span>
+                </Button>
+              </div>
               <Button 
                 className="bg-[#24D367] hover:bg-[#24D367]/90 text-white shadow-md"
                 onClick={handleNewClassClick}
