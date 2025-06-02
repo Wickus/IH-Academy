@@ -45,8 +45,8 @@ export default function ChildrenManagement({ userId }: ChildrenManagementProps) 
   const { toast } = useToast();
 
   const { data: children = [] } = useQuery({
-    queryKey: ["/api/children", userId],
-    queryFn: () => api.getUserChildren(userId),
+    queryKey: ["/api/children"],
+    queryFn: () => api.getUserChildren(),
   });
 
   const form = useForm<ChildFormData>({

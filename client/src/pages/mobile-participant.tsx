@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +41,14 @@ interface MobileParticipantProps {
   user: any;
 }
 
+const childSchema = z.object({
+  name: z.string().min(1, "Child's name is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  medicalInfo: z.string().optional(),
+});
+
+type ChildFormData = z.infer<typeof childSchema>;
+
 export default function MobileParticipant({ user }: MobileParticipantProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSport, setSelectedSport] = useState<string>("all");
@@ -45,6 +56,16 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   const [showAddChild, setShowAddChild] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Form for adding children
+  const childForm = useForm<ChildFormData>({
+    resolver: zodResolver(childSchema),
+    defaultValues: {
+      name: "",
+      dateOfBirth: "",
+      medicalInfo: "",
+    },
+  });
 
   // Fetch public classes
   const { data: classes, isLoading: classesLoading } = useQuery({
@@ -76,6 +97,48 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
     queryFn: () => api.getUserChildren(),
     enabled: !!user, // Only fetch if user is authenticated
   });
+
+  // Create child mutation
+  const createChildMutation = useMutation({
+    mutationFn: api.createChild,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/children'] });
+      toast({
+        title: "Success",
+        description: "Child added successfully",
+      });
+      setShowAddChild(false);
+      childForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add child",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle add child form submission
+  const handleAddChild = () => {
+    const formData = childForm.getValues();
+    if (!formData.name || !formData.dateOfBirth) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in the child's name and date of birth",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createChildMutation.mutate({
+      name: formData.name,
+      dateOfBirth: formData.dateOfBirth,
+      medicalInfo: formData.medicalInfo || "",
+      emergencyContact: user.firstName + " " + user.lastName,
+      emergencyPhone: user.phone || "",
+    });
+  };
 
   const followOrgMutation = useMutation({
     mutationFn: (organizationId: number) => api.followOrganization(organizationId),
@@ -555,22 +618,53 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               Add Child
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#20366B]">Child's Name</label>
-              <Input placeholder="Enter child's full name" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#20366B]">Date of Birth</label>
-              <Input type="date" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#20366B]">Medical Information (Optional)</label>
-              <div className="text-xs text-slate-600 mb-2 p-2 bg-slate-50 rounded border-l-4 border-[#24D367]">
-                <strong>What to include:</strong> Food allergies, medical conditions (asthma, diabetes, epilepsy), medications being taken, emergency contact restrictions, or any special care instructions coaches should know about.
-              </div>
-              <Input placeholder="e.g., Allergic to nuts, has asthma inhaler, diabetic" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
-            </div>
+          <Form {...childForm}>
+            <form className="space-y-4 py-4">
+              <FormField
+                control={childForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-[#20366B]">Child's Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter child's full name" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={childForm.control}
+                name="dateOfBirth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-[#20366B]">Date of Birth</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="date" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={childForm.control}
+                name="medicalInfo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-[#20366B]">Medical Information (Optional)</FormLabel>
+                    <div className="text-xs text-slate-600 mb-2 p-2 bg-slate-50 rounded border-l-4 border-[#24D367]">
+                      <strong>What to include:</strong> Food allergies, medical conditions (asthma, diabetes, epilepsy), medications being taken, emergency contact restrictions, or any special care instructions coaches should know about.
+                    </div>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., Allergic to nuts, has asthma inhaler, diabetic" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
             <div className="flex gap-2 pt-4">
               <Button 
                 variant="outline" 
@@ -580,19 +674,13 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 Cancel
               </Button>
               <Button 
-                onClick={() => {
-                  toast({
-                    title: "Feature Coming Soon",
-                    description: "Children management functionality will be available in the next update.",
-                  });
-                  setShowAddChild(false);
-                }}
+                onClick={handleAddChild}
                 className="flex-1 bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
               >
                 Add Child
               </Button>
             </div>
-          </div>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
