@@ -100,12 +100,15 @@ export default function OrganizationRegistration() {
 
       return { organization: orgResponse, user: userResponse };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Registration successful!",
         description: "Your organisation has been created successfully. You can now log in.",
       });
-      setCurrentStep(4); // Success step
+      // Redirect to login page after a brief delay to show the success message
+      setTimeout(() => {
+        setLocation("/auth");
+      }, 1500);
     },
     onError: (error: any) => {
       toast({
