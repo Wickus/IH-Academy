@@ -189,12 +189,15 @@ export default function Classes() {
 
       {classes.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
+          <div className="text-[#278DD4] mb-4">
             <Users className="mx-auto h-12 w-12" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No classes yet</h3>
-          <p className="text-gray-500 mb-4">Get started by creating your first class or clinic.</p>
-          <Button onClick={() => setShowCreateDialog(true)}>
+          <h3 className="text-lg font-medium text-[#20366B] mb-2">No classes yet</h3>
+          <p className="text-slate-600 mb-4">Get started by creating your first class or clinic.</p>
+          <Button 
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+          >
             <Plus className="mr-2 h-4 w-4" />
             Create First Class
           </Button>
