@@ -512,3 +512,57 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus 
   background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
   color: white;
 }
+
+/* Fix Radio Button and Form Element Visibility */
+[data-radix-radio-item] {
+  background-color: #FFFFFF !important;
+  border: 2px solid #E2E8F0 !important;
+  color: #20366B !important;
+}
+
+[data-radix-radio-item][data-state="checked"] {
+  background-color: #20366B !important;
+  border-color: #20366B !important;
+}
+
+[data-radix-radio-item][data-state="checked"]::after {
+  background-color: #FFFFFF !important;
+}
+
+/* Radio Group Labels */
+label[for*="membership"], 
+label[for*="pay_per_class"],
+label[for*="radio"] {
+  color: #1E293B !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+}
+
+/* Form Labels */
+label {
+  color: #1E293B !important;
+  font-weight: 500 !important;
+}
+
+/* Ensure all form elements have proper contrast */
+.space-y-4 > div {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+/* Form Field Content */
+.space-y-4 p {
+  color: #64748B !important;
+}
+
+/* Radio button containers */
+.border.rounded-lg.p-4 {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  color: #1E293B !important;
+}
+
+.border.rounded-lg.p-4:hover {
+  border-color: #20366B !important;
+  background-color: #F8FAFC !important;
+}
