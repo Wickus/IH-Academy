@@ -132,8 +132,21 @@ function RoleBasedRouter({ user }: { user?: User }) {
 function Router() {
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['/api/auth/me'],
-    queryFn: () => api.getCurrentUser(),
-    retry: false
+    queryFn: async () => {
+      try {
+        return await api.getCurrentUser();
+      } catch (err) {
+        // If authentication fails, return null instead of throwing
+        if (err instanceof Error && err.message.includes('401')) {
+          return null;
+        }
+        throw err;
+      }
+    },
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false
   });
 
   if (isLoading) {
@@ -148,7 +161,7 @@ function Router() {
   }
 
   // Show auth page if not authenticated
-  if (error || !user) {
+  if (!user) {
     return <Auth />;
   }
 
