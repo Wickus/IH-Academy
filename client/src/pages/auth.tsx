@@ -115,7 +115,7 @@ export default function Auth() {
     registerMutation.mutate(registerData);
   };
 
-  const handleCreateOrganization = (e: React.FormEvent) => {
+  const handleOrgSetup = (e: React.FormEvent) => {
     e.preventDefault();
     createOrgMutation.mutate(orgData);
   };
@@ -319,6 +319,105 @@ export default function Auth() {
           </p>
         </div>
       </div>
+
+      {/* Organisation Setup Modal */}
+      <Dialog open={showOrgSetup} onOpenChange={setShowOrgSetup}>
+        <DialogContent className="sm:max-w-[600px] bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-[#20366B] font-bold">Set Up Your Organisation</DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handleOrgSetup} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="orgName" className="text-[#20366B] font-medium">Organisation Name *</Label>
+                <Input
+                  id="orgName"
+                  value={orgData.name}
+                  onChange={(e) => setOrgData({...orgData, name: e.target.value})}
+                  placeholder="Enter your organisation name"
+                  required
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] bg-white"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="orgDescription" className="text-[#20366B] font-medium">Description *</Label>
+                <Input
+                  id="orgDescription"
+                  value={orgData.description}
+                  onChange={(e) => setOrgData({...orgData, description: e.target.value})}
+                  placeholder="Brief description of your organisation"
+                  required
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] bg-white"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="orgEmail" className="text-[#20366B] font-medium">Contact Email *</Label>
+                <Input
+                  id="orgEmail"
+                  type="email"
+                  value={orgData.email}
+                  onChange={(e) => setOrgData({...orgData, email: e.target.value})}
+                  placeholder="contact@yourorganisation.com"
+                  required
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] bg-white"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-[#20366B] font-medium">Select Your Plan</Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                  {[
+                    { value: 'free', name: 'Free', price: 'R0/month', features: ['Up to 10 classes', 'Up to 100 members', 'Basic analytics'] },
+                    { value: 'basic', name: 'Basic', price: 'R299/month', features: ['Up to 50 classes', 'Up to 500 members', 'Advanced analytics', 'Email support'] },
+                    { value: 'premium', name: 'Premium', price: 'R599/month', features: ['Unlimited classes', 'Unlimited members', 'Full analytics suite', 'Priority support'] }
+                  ].map((plan) => (
+                    <div
+                      key={plan.value}
+                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                        orgData.planType === plan.value 
+                          ? 'border-[#278DD4] bg-[#278DD4]/10' 
+                          : 'border-slate-300 hover:border-[#278DD4]/50'
+                      }`}
+                      onClick={() => setOrgData({...orgData, planType: plan.value as any})}
+                    >
+                      <div className="text-center">
+                        <h3 className="font-semibold text-[#20366B]">{plan.name}</h3>
+                        <p className="text-2xl font-bold text-[#278DD4] mt-2">{plan.price}</p>
+                        <ul className="text-sm text-slate-600 mt-3 space-y-1">
+                          {plan.features.map((feature, idx) => (
+                            <li key={idx}>• {feature}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowOrgSetup(false)}
+                className="border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                Skip for Now
+              </Button>
+              <Button 
+                type="submit"
+                disabled={createOrgMutation.isPending}
+                className="bg-[#24D367] hover:bg-[#24D367]/90 text-white"
+              >
+                {createOrgMutation.isPending ? "Creating..." : "Create Organisation"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
