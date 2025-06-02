@@ -72,50 +72,107 @@ export default function OrganizationPayment() {
     );
   }
 
-  const plans = [
-    {
-      name: "Free",
-      price: "R0",
-      period: "/month",
-      value: "free",
-      features: [
-        "Up to 25 members",
-        "3 active classes",
-        "Basic booking system",
-        "Community support",
-        "14-day trial of all features"
-      ]
-    },
-    {
-      name: "Professional",
-      price: "R299",
-      period: "/month",
-      value: "professional",
-      popular: true,
-      features: [
-        "Up to 200 members",
-        "Unlimited classes",
-        "Advanced analytics",
-        "Payment processing",
-        "WhatsApp notifications",
-        "Priority support"
-      ]
-    },
-    {
-      name: "Enterprise",
-      price: "R599",
-      period: "/month",
-      value: "enterprise",
-      features: [
-        "Unlimited members",
-        "Unlimited classes",
-        "Multi-location support",
-        "Custom branding",
-        "API access",
-        "Dedicated support"
-      ]
+  // Dynamic pricing based on business model
+  const getPlans = () => {
+    if (organization?.businessModel === "membership") {
+      return [
+        {
+          name: "Free",
+          price: "R0",
+          period: "/month",
+          value: "free",
+          features: [
+            "Up to 25 members",
+            "3 active classes",
+            "Basic membership management",
+            "Community support",
+            "14-day trial of all features"
+          ]
+        },
+        {
+          name: "Professional",
+          price: "R299",
+          period: "/month",
+          value: "professional",
+          popular: true,
+          features: [
+            "Up to 200 members",
+            "Unlimited classes",
+            "Membership subscriptions",
+            "Advanced analytics",
+            "Payment processing",
+            "WhatsApp notifications",
+            "Priority support"
+          ]
+        },
+        {
+          name: "Enterprise",
+          price: "R599",
+          period: "/month",
+          value: "enterprise",
+          features: [
+            "Unlimited members",
+            "Unlimited classes",
+            "Advanced membership tiers",
+            "Multi-location support",
+            "Custom branding",
+            "API access",
+            "Dedicated support"
+          ]
+        }
+      ];
+    } else {
+      // Pay-per-class model
+      return [
+        {
+          name: "Free",
+          price: "R0",
+          period: "/month",
+          value: "free",
+          features: [
+            "Up to 25 bookings",
+            "3 active classes",
+            "Basic booking system",
+            "Community support",
+            "14-day trial of all features"
+          ]
+        },
+        {
+          name: "Professional",
+          price: "R299",
+          period: "/month",
+          value: "professional",
+          popular: true,
+          features: [
+            "Up to 500 bookings",
+            "Unlimited classes",
+            "Per-class payments",
+            "Advanced analytics",
+            "Payment processing",
+            "WhatsApp notifications",
+            "Priority support"
+          ]
+        },
+        {
+          name: "Enterprise",
+          price: "R599",
+          period: "/month",
+          value: "enterprise",
+          features: [
+            "Unlimited bookings",
+            "Unlimited classes",
+            "Advanced pricing models",
+            "Multi-location support",
+            "Custom branding",
+            "API access",
+            "Dedicated support"
+          ]
+        }
+      ];
     }
-  ];
+  };
+
+  const plans = getPlans();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367] p-6">
