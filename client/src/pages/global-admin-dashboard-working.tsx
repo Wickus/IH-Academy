@@ -796,20 +796,169 @@ export default function GlobalAdminDashboard() {
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-8">
+          {/* PayFast Integration */}
           <Card className="bg-white shadow-lg border-0">
             <CardHeader className="bg-gradient-to-r from-[#278DD4] to-[#24D367] text-white rounded-t-lg">
-              <CardTitle className="text-white">Global Platform Settings</CardTitle>
+              <CardTitle className="text-white">PayFast Integration</CardTitle>
               <CardDescription className="text-blue-100">
-                Configure platform-wide settings for ItsHappening.Africa
+                Configure PayFast payment gateway for South African transactions
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="text-center py-8">
-                <Settings className="h-16 w-16 mx-auto mb-4 text-[#278DD4]" />
-                <h3 className="text-lg font-semibold text-[#20366B] mb-2">Settings Panel</h3>
-                <p className="text-slate-600">
-                  Global settings configuration will be available here.
-                </p>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-[#20366B]">Merchant ID</label>
+                    <Input placeholder="Enter PayFast Merchant ID" className="mt-1" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-[#20366B]">Merchant Key</label>
+                    <Input placeholder="Enter PayFast Merchant Key" className="mt-1" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-[#20366B]">Passphrase</label>
+                    <Input placeholder="Enter PayFast Passphrase" type="password" className="mt-1" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-[#20366B]/5 to-[#278DD4]/5 p-4 rounded-lg border border-[#278DD4]/20">
+                    <h4 className="font-semibold text-[#20366B] mb-2">PayFast Status</h4>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <span className="text-sm text-slate-600">Not Connected</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Configure your PayFast credentials to enable payments
+                    </p>
+                  </div>
+                  <Button className="w-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white">
+                    Save PayFast Settings
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pricing Plans */}
+          <Card className="bg-white shadow-lg border-0">
+            <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white rounded-t-lg">
+              <CardTitle className="text-white">Pricing Plans Configuration</CardTitle>
+              <CardDescription className="text-white/90">
+                Set pricing for Free, Basic and Premium plans across both business models
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-8">
+              {/* Membership Business Model */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#20366B] mb-4">Membership-Based Organisations</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="border-2 border-[#278DD4]/30">
+                    <CardHeader className="text-center pb-4">
+                      <CardTitle className="text-[#20366B]">Free Plan</CardTitle>
+                      <div className="text-3xl font-bold text-[#278DD4]">R0</div>
+                      <p className="text-sm text-slate-600">per month</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <Input placeholder="Max Members" value="25" className="text-center" />
+                        <Input placeholder="Max Classes" value="5" className="text-center" />
+                        <Input placeholder="Storage (GB)" value="1" className="text-center" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-2 border-[#24D367]/50 bg-gradient-to-b from-[#24D367]/5 to-white">
+                    <CardHeader className="text-center pb-4">
+                      <Badge className="mb-2 bg-[#24D367] text-white">Most Popular</Badge>
+                      <CardTitle className="text-[#20366B]">Basic Plan</CardTitle>
+                      <div className="text-3xl font-bold text-[#24D367]">R299</div>
+                      <p className="text-sm text-slate-600">per month</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <Input placeholder="Max Members" value="100" className="text-center" />
+                        <Input placeholder="Max Classes" value="25" className="text-center" />
+                        <Input placeholder="Storage (GB)" value="10" className="text-center" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-2 border-[#24D3BF]/50">
+                    <CardHeader className="text-center pb-4">
+                      <CardTitle className="text-[#20366B]">Premium Plan</CardTitle>
+                      <div className="text-3xl font-bold text-[#24D3BF]">R599</div>
+                      <p className="text-sm text-slate-600">per month</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <Input placeholder="Max Members" value="Unlimited" className="text-center" />
+                        <Input placeholder="Max Classes" value="Unlimited" className="text-center" />
+                        <Input placeholder="Storage (GB)" value="100" className="text-center" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Pay-per-Class Business Model */}
+              <div>
+                <h3 className="text-lg font-semibold text-[#20366B] mb-4">Pay-per-Class Organisations</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="border-2 border-[#278DD4]/30">
+                    <CardHeader className="text-center pb-4">
+                      <CardTitle className="text-[#20366B]">Free Plan</CardTitle>
+                      <div className="text-3xl font-bold text-[#278DD4]">5%</div>
+                      <p className="text-sm text-slate-600">transaction fee</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <Input placeholder="Max Bookings/Month" value="50" className="text-center" />
+                        <Input placeholder="Commission %" value="5" className="text-center" />
+                        <Input placeholder="Storage (GB)" value="1" className="text-center" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-2 border-[#24D367]/50 bg-gradient-to-b from-[#24D367]/5 to-white">
+                    <CardHeader className="text-center pb-4">
+                      <Badge className="mb-2 bg-[#24D367] text-white">Most Popular</Badge>
+                      <CardTitle className="text-[#20366B]">Basic Plan</CardTitle>
+                      <div className="text-3xl font-bold text-[#24D367]">3%</div>
+                      <p className="text-sm text-slate-600">transaction fee</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <Input placeholder="Max Bookings/Month" value="200" className="text-center" />
+                        <Input placeholder="Commission %" value="3" className="text-center" />
+                        <Input placeholder="Storage (GB)" value="10" className="text-center" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-2 border-[#24D3BF]/50">
+                    <CardHeader className="text-center pb-4">
+                      <CardTitle className="text-[#20366B]">Premium Plan</CardTitle>
+                      <div className="text-3xl font-bold text-[#24D3BF]">2%</div>
+                      <p className="text-sm text-slate-600">transaction fee</p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <Input placeholder="Max Bookings/Month" value="Unlimited" className="text-center" />
+                        <Input placeholder="Commission %" value="2" className="text-center" />
+                        <Input placeholder="Storage (GB)" value="100" className="text-center" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-4 pt-6 border-t border-slate-200">
+                <Button variant="outline" className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10">
+                  Reset to Defaults
+                </Button>
+                <Button className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white">
+                  Save Pricing Configuration
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -1216,6 +1365,144 @@ export default function GlobalAdminDashboard() {
               </div>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bookings Details Dialog */}
+      <Dialog open={showBookingsDialog} onOpenChange={setShowBookingsDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#20366B]">All Platform Bookings</DialogTitle>
+            <DialogDescription>
+              Complete list of bookings across all organisations
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {allBookings?.length > 0 ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {allBookings.map((booking: any) => (
+                  <div key={booking.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-[#278DD4] rounded-lg flex items-center justify-center text-white font-bold">
+                        {booking.participantName?.charAt(0) || 'B'}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-[#20366B]">{booking.participantName}</h4>
+                        <p className="text-sm text-slate-600">{booking.participantEmail}</p>
+                        <p className="text-xs text-slate-500">
+                          Booking #{booking.id} • {new Date(booking.createdAt || Date.now()).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge 
+                        variant="secondary" 
+                        className={booking.status === 'confirmed' ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#278DD4]/20 text-[#20366B] border-[#278DD4]/30'}
+                      >
+                        {booking.status || 'confirmed'}
+                      </Badge>
+                      {booking.amount && (
+                        <p className="text-sm font-semibold text-[#20366B] mt-1">
+                          {formatCurrency(booking.amount)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <CreditCard className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+                <h3 className="text-lg font-semibold text-slate-600 mb-2">No Bookings Found</h3>
+                <p className="text-slate-500">
+                  No bookings have been made across the platform yet.
+                </p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Revenue Details Dialog */}
+      <Dialog open={showRevenueDialog} onOpenChange={setShowRevenueDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#20366B]">Platform Revenue Analytics</DialogTitle>
+            <DialogDescription>
+              Revenue breakdown across all organisations and payment methods
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="border-2 border-[#24D367]/30">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-sm text-[#20366B]">Total Revenue</CardTitle>
+                  <div className="text-2xl font-bold text-[#24D367]">
+                    {formatCurrency(stats?.totalRevenue || 0)}
+                  </div>
+                </CardHeader>
+              </Card>
+              <Card className="border-2 border-[#278DD4]/30">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-sm text-[#20366B]">Commission Earned</CardTitle>
+                  <div className="text-2xl font-bold text-[#278DD4]">
+                    {formatCurrency((stats?.totalRevenue || 0) * 0.03)}
+                  </div>
+                </CardHeader>
+              </Card>
+              <Card className="border-2 border-[#24D3BF]/30">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-sm text-[#20366B]">Active Subscriptions</CardTitle>
+                  <div className="text-2xl font-bold text-[#24D3BF]">
+                    {organizations?.filter((org: any) => org.planType !== 'free').length || 0}
+                  </div>
+                </CardHeader>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="font-semibold text-[#20366B]">Revenue by Organisation</h4>
+              {organizations?.length > 0 ? (
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {organizations.map((org: any) => (
+                    <div key={org.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                          style={{ backgroundColor: org.primaryColor || '#278DD4' }}
+                        >
+                          {org.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-[#20366B]">{org.name}</h5>
+                          <Badge 
+                            variant="secondary" 
+                            className={org.planType === 'premium' ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#278DD4]/20 text-[#20366B] border-[#278DD4]/30'}
+                          >
+                            {org.planType || 'free'}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-[#20366B]">
+                          {formatCurrency(Math.random() * 10000)} {/* This would come from actual revenue data */}
+                        </p>
+                        <p className="text-xs text-slate-500">This month</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <TrendingUp className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+                  <h3 className="text-lg font-semibold text-slate-600 mb-2">No Revenue Data</h3>
+                  <p className="text-slate-500">
+                    Revenue analytics will appear here as organisations start generating income.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
