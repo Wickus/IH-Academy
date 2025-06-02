@@ -512,9 +512,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/classes", async (req: Request, res: Response) => {
     try {
       const { organizationId, coachId, date, public: isPublic } = req.query;
-      let classes;
+      let classes: any[] = [];
 
-      if (isPublic === 'true') {
+      // Data isolation: Organisation admins only see their own organisation's classes
+      if (currentUser?.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+        if (userOrgs.length > 0) {
+          classes = await storage.getClassesByOrganization(userOrgs[0].organizationId);
+        } else {
+          classes = []; // No organisation set up yet
+        }
+      } else if (isPublic === 'true') {
         classes = await storage.getPublicClasses();
       } else if (organizationId) {
         classes = await storage.getClassesByOrganization(parseInt(organizationId as string));
@@ -640,9 +648,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/bookings", async (req: Request, res: Response) => {
     try {
       const { email, classId, recent, organizationId } = req.query;
-      let bookings;
+      let bookings: any[] = [];
 
-      if (email) {
+      // Data isolation: Organisation admins only see bookings for their organisation's classes
+      if (currentUser?.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+        if (userOrgs.length > 0) {
+          const orgClasses = await storage.getClassesByOrganization(userOrgs[0].organizationId);
+          const orgClassIds = orgClasses.map(cls => cls.id);
+          
+          // Get all bookings and filter to only org classes
+          const allBookings = await storage.getRecentBookings(1000);
+          bookings = allBookings.filter(booking => orgClassIds.includes(booking.classId));
+        } else {
+          bookings = []; // No organisation set up yet
+        }
+      } else if (email) {
         bookings = await storage.getBookingsByEmail(email as string);
       } else if (classId) {
         bookings = await storage.getBookingsByClass(parseInt(classId as string));
