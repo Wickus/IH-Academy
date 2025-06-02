@@ -266,9 +266,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="className"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Class Name</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Class Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., Morning Yoga" {...field} />
+                            <Input 
+                              placeholder="e.g., Morning Yoga" 
+                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -282,9 +286,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="startTime"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Start Time</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Start Time</FormLabel>
                           <FormControl>
-                            <Input type="time" {...field} />
+                            <Input 
+                              type="time" 
+                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -296,9 +304,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="endTime"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>End Time</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">End Time</FormLabel>
                           <FormControl>
-                            <Input type="time" {...field} />
+                            <Input 
+                              type="time" 
+                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
