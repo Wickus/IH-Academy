@@ -376,6 +376,28 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus 
   outline-offset: 2px !important;
 }
 
+/* Fix tab styling to use brand colors */
+[data-state="active"][role="tab"] {
+  background-color: #20366B !important;
+  color: white !important;
+}
+
+[data-state="inactive"][role="tab"] {
+  background-color: #F8FAFC !important;
+  color: #64748B !important;
+}
+
+[data-state="inactive"][role="tab"]:hover {
+  background-color: #278DD4 !important;
+  color: white !important;
+}
+
+/* Ensure tabs list has proper styling */
+[role="tablist"] {
+  background-color: #F1F5F9 !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
 /* Fix select dropdown highlights */
 .select-item[data-highlighted] {
   background-color: #EBF4FF !important;
