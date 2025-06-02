@@ -1,5 +1,5 @@
 import {
-  users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
+  users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments, children,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
@@ -8,7 +8,8 @@ import {
   type Class, type InsertClass,
   type Booking, type InsertBooking,
   type Attendance, type InsertAttendance,
-  type Payment, type InsertPayment
+  type Payment, type InsertPayment,
+  type Child, type InsertChild
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
@@ -74,9 +75,9 @@ export interface IStorage {
   updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined>;
 
   // Children Management
-  getUserChildren(userId: number): Promise<any[]>;
-  createChild(child: any): Promise<any>;
-  updateChild(id: number, child: any): Promise<any | undefined>;
+  getUserChildren(userId: number): Promise<Child[]>;
+  createChild(child: InsertChild): Promise<Child>;
+  updateChild(id: number, child: Partial<InsertChild>): Promise<Child | undefined>;
   deleteChild(id: number): Promise<boolean>;
 
   // Statistics
@@ -420,43 +421,50 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Children Management methods
-  async getUserChildren(userId: number): Promise<any[]> {
-    const result = await db.query(`
-      SELECT * FROM children 
-      WHERE parent_id = $1 AND is_active = true 
-      ORDER BY created_at DESC
-    `, [userId]);
-    return result.rows;
+  async getUserChildren(userId: number): Promise<Child[]> {
+    try {
+      const result = await db.select()
+        .from(children)
+        .where(and(eq(children.parentId, userId), eq(children.isActive, true)))
+        .orderBy(desc(children.createdAt));
+      return result;
+    } catch (error) {
+      console.error('Error fetching children:', error);
+      return [];
+    }
   }
 
-  async createChild(child: any): Promise<any> {
-    const result = await db.query(`
-      INSERT INTO children (parent_id, name, date_of_birth, medical_info, emergency_contact, emergency_phone)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *
-    `, [child.parentId, child.name, child.dateOfBirth || null, child.medicalInfo || null, child.emergencyContact || null, child.emergencyPhone || null]);
-    return result.rows[0];
+  async createChild(child: InsertChild): Promise<Child> {
+    const [result] = await db.insert(children).values({
+      parentId: child.parentId,
+      name: child.name,
+      dateOfBirth: child.dateOfBirth || null,
+      medicalInfo: child.medicalInfo || null,
+      emergencyContact: child.emergencyContact || null,
+      emergencyPhone: child.emergencyPhone || null,
+    }).returning();
+    return result;
   }
 
-  async updateChild(id: number, child: any): Promise<any | undefined> {
-    const result = await db.query(`
-      UPDATE children 
-      SET name = COALESCE($2, name),
-          date_of_birth = COALESCE($3, date_of_birth),
-          medical_info = COALESCE($4, medical_info),
-          emergency_contact = COALESCE($5, emergency_contact),
-          emergency_phone = COALESCE($6, emergency_phone)
-      WHERE id = $1 AND is_active = true
-      RETURNING *
-    `, [id, child.name, child.dateOfBirth, child.medicalInfo, child.emergencyContact, child.emergencyPhone]);
-    return result.rows[0] || undefined;
+  async updateChild(id: number, child: Partial<InsertChild>): Promise<Child | undefined> {
+    const [result] = await db.update(children)
+      .set({
+        name: child.name,
+        dateOfBirth: child.dateOfBirth,
+        medicalInfo: child.medicalInfo,
+        emergencyContact: child.emergencyContact,
+        emergencyPhone: child.emergencyPhone,
+      })
+      .where(and(eq(children.id, id), eq(children.isActive, true)))
+      .returning();
+    return result || undefined;
   }
 
   async deleteChild(id: number): Promise<boolean> {
-    const result = await db.query(`
-      UPDATE children SET is_active = false WHERE id = $1
-    `, [id]);
-    return result.rowCount > 0;
+    const result = await db.update(children)
+      .set({ isActive: false })
+      .where(eq(children.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 }
 
