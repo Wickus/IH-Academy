@@ -73,10 +73,7 @@ export default function OrganizationPayment() {
     );
   }
 
-  // Debug: Log the values to see what we're getting
-  console.log('Organization data:', organization);
-  console.log('Business model from org:', organization.businessModel);
-  console.log('Business model from URL:', businessModel);
+
 
   // Dynamic pricing based on business model
   const getPlans = () => {
@@ -217,8 +214,8 @@ export default function OrganizationPayment() {
               <div className="text-center">
                 <Users className="h-8 w-8 text-[#278DD4] mx-auto mb-2" />
                 <p className="font-medium capitalize">
-                  {(organization.businessModel || businessModel) === 'membership' ? 'Membership-Based' : 
-                   (organization.businessModel || businessModel) === 'pay_per_class' ? 'Pay-Per-Class' : 
+                  {organization.businessModel === 'membership' ? 'Membership-Based' : 
+                   organization.businessModel === 'pay_per_class' ? 'Pay-Per-Class' : 
                    'Not Set'}
                 </p>
                 <p className="text-sm text-slate-600">Business Model</p>
