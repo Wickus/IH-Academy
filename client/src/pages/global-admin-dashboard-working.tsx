@@ -511,7 +511,7 @@ export default function GlobalAdminDashboard() {
                                       <span className="text-slate-600">Role: {user.role.replace('_', ' ')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm">
-                                      <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white' : ''}>
+                                      <Badge variant={user.isActive ? 'default' : 'destructive'} className={user.isActive ? 'bg-[#24D367] text-white border-[#24D367]' : 'bg-red-500 text-white border-red-500'}>
                                         {user.isActive ? 'Active Account' : 'Inactive Account'}
                                       </Badge>
                                     </div>
