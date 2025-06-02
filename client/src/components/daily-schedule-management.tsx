@@ -194,9 +194,9 @@ export default function DailyScheduleManagement({ organizationId, organization }
   });
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       {/* Header with ItsHappening.Africa branding */}
-      <div className="bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367] p-6 rounded-lg text-white">
+      <div className="bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367] p-8 rounded-xl text-white shadow-lg">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-2">Daily Schedule Management</h1>
@@ -324,13 +324,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="sportId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Sport (Optional)</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Sport (Optional)</FormLabel>
                           <Select 
                             onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
                             value={field.value?.toString()}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
                                 <SelectValue placeholder="Select sport" />
                               </SelectTrigger>
                             </FormControl>
@@ -352,13 +352,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="coachId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Coach (Optional)</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Coach (Optional)</FormLabel>
                           <Select 
                             onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
                             value={field.value?.toString()}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
                                 <SelectValue placeholder="Select coach" />
                               </SelectTrigger>
                             </FormControl>
@@ -382,11 +382,12 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="capacity"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Capacity</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Capacity</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               min="1" 
+                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
                             />
@@ -401,9 +402,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="location"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Location (Optional)</FormLabel>
+                          <FormLabel className="text-[#20366B] font-semibold">Location (Optional)</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., Studio A" {...field} />
+                            <Input 
+                              placeholder="e.g., Studio A" 
+                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -416,10 +421,11 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description (Optional)</FormLabel>
+                        <FormLabel className="text-[#20366B] font-semibold">Description (Optional)</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Brief description of the class..."
+                            className="min-h-[80px] border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                             {...field} 
                           />
                         </FormControl>
@@ -433,10 +439,11 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     name="requirements"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Requirements (Optional)</FormLabel>
+                        <FormLabel className="text-[#20366B] font-semibold">Requirements (Optional)</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Any equipment or prerequisites needed..."
+                            className="min-h-[80px] border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                             {...field} 
                           />
                         </FormControl>
@@ -445,17 +452,18 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     )}
                   />
 
-                  <div className="flex justify-end space-x-2 pt-4">
+                  <div className="flex justify-end space-x-3 pt-6 border-t border-slate-200">
                     <Button 
                       type="button" 
                       variant="outline" 
+                      className="border-slate-300 text-slate-600 hover:bg-slate-50"
                       onClick={() => setIsDialogOpen(false)}
                     >
                       Cancel
                     </Button>
                     <Button 
                       type="submit" 
-                      className="bg-[#24D367] hover:bg-[#24D367]/90"
+                      className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white font-semibold"
                       disabled={createMutation.isPending || updateMutation.isPending}
                     >
                       {createMutation.isPending || updateMutation.isPending ? 
@@ -480,13 +488,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
       ) : (
         <div className="grid gap-6">
           {DAYS_OF_WEEK.map((day) => (
-            <Card key={day.value} className="border-l-4 border-l-[#278DD4]">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center text-[#20366B]">
-                  <Calendar className="h-5 w-5 mr-2" />
+            <Card key={day.value} className="border-l-4 border-l-[#278DD4] shadow-sm hover:shadow-md transition-shadow bg-white">
+              <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-blue-50/30">
+                <CardTitle className="flex items-center text-[#20366B] text-lg font-bold">
+                  <Calendar className="h-5 w-5 mr-2 text-[#278DD4]" />
                   {day.label}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-slate-600 font-medium">
                   {groupedSchedules[day.value]?.length || 0} class
                   {groupedSchedules[day.value]?.length !== 1 ? 'es' : ''} scheduled
                 </CardDescription>
@@ -558,10 +566,10 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                    <p>No classes scheduled for {day.label}</p>
-                    <p className="text-sm">Add a schedule to get started</p>
+                  <div className="text-center py-8 text-slate-500">
+                    <Calendar className="h-12 w-12 mx-auto mb-3 text-[#278DD4]/30" />
+                    <p className="font-medium text-slate-600">No classes scheduled for {day.label}</p>
+                    <p className="text-sm text-slate-500 mt-1">Click "Add Schedule" above to get started</p>
                   </div>
                 )}
               </CardContent>
