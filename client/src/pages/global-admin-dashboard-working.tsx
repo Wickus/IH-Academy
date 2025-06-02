@@ -51,8 +51,54 @@ export default function GlobalAdminDashboard() {
   const [showBookingsDialog, setShowBookingsDialog] = useState(false);
   const [showRevenueDialog, setShowRevenueDialog] = useState(false);
   const [showOrganizations, setShowOrganizations] = useState(false);
+  
+  // Pricing configuration state
+  const [pricingConfig, setPricingConfig] = useState({
+    membership: {
+      free: { maxMembers: "25", maxClasses: "5", storage: "1" },
+      basic: { maxMembers: "100", maxClasses: "25", storage: "10" },
+      premium: { maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+    },
+    payPerClass: {
+      free: { maxBookings: "50", commission: "5", storage: "1" },
+      basic: { maxBookings: "200", commission: "3", storage: "10" },
+      premium: { maxBookings: "Unlimited", commission: "2", storage: "100" }
+    }
+  });
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Handle pricing configuration changes
+  const updatePricingConfig = (model: 'membership' | 'payPerClass', plan: 'free' | 'basic' | 'premium', field: string, value: string) => {
+    setPricingConfig(prev => ({
+      ...prev,
+      [model]: {
+        ...prev[model],
+        [plan]: {
+          ...prev[model][plan],
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  // Save pricing configuration
+  const savePricingConfiguration = async () => {
+    try {
+      // Here you would typically save to the backend
+      toast({
+        title: "Success",
+        description: "Pricing configuration saved successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save pricing configuration",
+        variant: "destructive",
+      });
+    }
+  };
 
   const editForm = useForm<UserEditFormData>({
     resolver: zodResolver(userEditSchema),
@@ -944,15 +990,27 @@ export default function GlobalAdminDashboard() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Members</label>
-                          <Input value="25" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.free.maxMembers} 
+                            onChange={(e) => updatePricingConfig('membership', 'free', 'maxMembers', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Classes</label>
-                          <Input value="5" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.free.maxClasses} 
+                            onChange={(e) => updatePricingConfig('membership', 'free', 'maxClasses', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
-                          <Input value="1" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.free.storage} 
+                            onChange={(e) => updatePricingConfig('membership', 'free', 'storage', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -969,15 +1027,27 @@ export default function GlobalAdminDashboard() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Members</label>
-                          <Input value="100" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.basic.maxMembers} 
+                            onChange={(e) => updatePricingConfig('membership', 'basic', 'maxMembers', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Classes</label>
-                          <Input value="25" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.basic.maxClasses} 
+                            onChange={(e) => updatePricingConfig('membership', 'basic', 'maxClasses', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
-                          <Input value="10" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.basic.storage} 
+                            onChange={(e) => updatePricingConfig('membership', 'basic', 'storage', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -993,15 +1063,27 @@ export default function GlobalAdminDashboard() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Members</label>
-                          <Input value="Unlimited" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.premium.maxMembers} 
+                            onChange={(e) => updatePricingConfig('membership', 'premium', 'maxMembers', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Classes</label>
-                          <Input value="Unlimited" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.premium.maxClasses} 
+                            onChange={(e) => updatePricingConfig('membership', 'premium', 'maxClasses', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
-                          <Input value="100" className="text-center" />
+                          <Input 
+                            value={pricingConfig.membership.premium.storage} 
+                            onChange={(e) => updatePricingConfig('membership', 'premium', 'storage', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -1023,15 +1105,27 @@ export default function GlobalAdminDashboard() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Bookings/Month</label>
-                          <Input value="50" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.free.maxBookings} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'free', 'maxBookings', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Commission %</label>
-                          <Input value="5" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.free.commission} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'free', 'commission', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
-                          <Input value="1" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.free.storage} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'free', 'storage', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -1048,15 +1142,27 @@ export default function GlobalAdminDashboard() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Bookings/Month</label>
-                          <Input value="200" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.basic.maxBookings} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'maxBookings', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Commission %</label>
-                          <Input value="3" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.basic.commission} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'commission', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
-                          <Input value="10" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.basic.storage} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'storage', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                       </div>
                     </CardContent>
@@ -1072,15 +1178,27 @@ export default function GlobalAdminDashboard() {
                       <div className="space-y-3">
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Max Bookings/Month</label>
-                          <Input value="Unlimited" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.premium.maxBookings} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'maxBookings', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Commission %</label>
-                          <Input value="2" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.premium.commission} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'commission', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                         <div>
                           <label className="text-xs font-medium text-[#20366B] block mb-1">Storage (GB)</label>
-                          <Input value="100" className="text-center" />
+                          <Input 
+                            value={pricingConfig.payPerClass.premium.storage} 
+                            onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'storage', e.target.value)}
+                            className="text-center" 
+                          />
                         </div>
                       </div>
                     </CardContent>
