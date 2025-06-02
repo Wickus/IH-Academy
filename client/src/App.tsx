@@ -28,6 +28,7 @@ import MobileParticipant from "@/pages/mobile-participant";
 import UserDashboard from "@/pages/user-dashboard";
 import Auth from "@/pages/auth";
 import OrganizationSetup from "@/pages/organization-setup";
+import OrganizationPayment from "@/pages/organization-payment";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -125,6 +126,8 @@ function RoleBasedRouter({ user }: { user?: User }) {
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
       <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+      <Route path="/organization-setup" component={OrganizationSetup} />
+      <Route path="/organization-payment" component={OrganizationPayment} />
       <Route component={NotFound} />
     </Switch>
   );
