@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ interface OrganizationDashboardProps {
 }
 
 export default function OrganizationDashboard({ user, organization }: OrganizationDashboardProps) {
+  const [, navigate] = useLocation();
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: [`/api/stats/organization/${organization.id}`],
     queryFn: () => api.getOrganizationStats(organization.id),
@@ -150,24 +152,24 @@ export default function OrganizationDashboard({ user, organization }: Organizati
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <Button 
-              className="h-24 flex-col gap-2"
-              style={{ backgroundColor: organization.primaryColor }}
+              className="h-24 flex-col gap-2 bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+              onClick={() => navigate('/classes')}
             >
               <Plus className="h-6 w-6" />
               <span>Create New Class</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-24 flex-col gap-2"
-              style={{ borderColor: organization.secondaryColor, color: organization.secondaryColor }}
+              className="h-24 flex-col gap-2 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+              onClick={() => navigate('/coaches')}
             >
               <UserPlus className="h-6 w-6" />
               <span>Invite Coach</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-24 flex-col gap-2"
-              style={{ borderColor: organization.accentColor, color: organization.accentColor }}
+              className="h-24 flex-col gap-2 border-[#24D3BF] text-[#24D3BF] hover:bg-[#24D3BF] hover:text-white"
+              onClick={() => navigate('/reports')}
             >
               <BarChart3 className="h-6 w-6" />
               <span>View Analytics</span>
