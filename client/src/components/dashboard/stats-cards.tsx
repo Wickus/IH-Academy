@@ -5,9 +5,10 @@ import type { DashboardStats } from "@/lib/api";
 
 interface StatsCardsProps {
   stats?: DashboardStats;
+  onCardClick?: (cardType: string) => void;
 }
 
-export default function StatsCards({ stats }: StatsCardsProps) {
+export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
   if (!stats) return null;
 
   const statsData = [
@@ -19,6 +20,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       color: "from-blue-600 to-blue-500",
       iconBg: "bg-blue-50",
       iconColor: "text-blue-700",
+      cardType: "bookings",
     },
     {
       title: "Active Classes",
@@ -28,6 +30,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       color: "from-green-600 to-green-500",
       iconBg: "bg-emerald-50",
       iconColor: "text-emerald-700",
+      cardType: "classes",
     },
     {
       title: "Revenue",
@@ -37,6 +40,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       color: "from-[#24D3BF] to-[#22C4B0]",
       iconBg: "bg-gradient-to-br from-[#24D3BF] to-[#22C4B0]",
       iconColor: "text-white",
+      cardType: "payments",
     },
     {
       title: "Coaches",
@@ -46,6 +50,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       color: "from-indigo-600 to-indigo-500",
       iconBg: "bg-slate-50",
       iconColor: "text-slate-700",
+      cardType: "coaches",
     },
   ];
 
@@ -55,7 +60,11 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         const Icon = stat.icon;
         
         return (
-          <Card key={index} className="bg-white/70 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <Card 
+            key={index} 
+            className="bg-white/70 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105 group cursor-pointer"
+            onClick={() => onCardClick?.(stat.cardType)}
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
