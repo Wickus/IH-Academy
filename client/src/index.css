@@ -187,6 +187,77 @@ h1, h2, h3, h4, h5, h6 {
   border-color: #E2E8F0 !important;
 }
 
+/* Fix all yellow highlights and borders */
+.bg-yellow-50,
+.hover\\:bg-yellow-50:hover,
+.focus\\:bg-yellow-50:focus {
+  background-color: #EBF4FF !important;
+}
+
+.border-yellow-200,
+.border-yellow-300,
+.border-yellow-400,
+.border-yellow-500 {
+  border-color: #278DD4 !important;
+}
+
+.text-yellow-600,
+.text-yellow-700,
+.text-yellow-800 {
+  color: #20366B !important;
+}
+
+/* Button styling fixes */
+button[class*="yellow"],
+[class*="bg-yellow"] {
+  background-color: #278DD4 !important;
+  color: white !important;
+  border-color: #278DD4 !important;
+}
+
+button[class*="yellow"]:hover,
+[class*="bg-yellow"]:hover {
+  background-color: #20366B !important;
+  border-color: #20366B !important;
+}
+
+/* Table styling improvements */
+table th {
+  background-color: #F8FAFC !important;
+  color: #20366B !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #E2E8F0 !important;
+}
+
+table td {
+  border-bottom: 1px solid #E2E8F0 !important;
+  color: #475569 !important;
+}
+
+table tr:hover {
+  background-color: #EBF4FF !important;
+}
+
+/* Arrow button fixes for calendar navigation */
+button[class*="arrow"],
+button[aria-label*="Previous"],
+button[aria-label*="Next"],
+[data-testid*="arrow"],
+[class*="chevron"] {
+  background-color: #278DD4 !important;
+  color: white !important;
+  border: 1px solid #278DD4 !important;
+}
+
+button[class*="arrow"]:hover,
+button[aria-label*="Previous"]:hover,
+button[aria-label*="Next"]:hover,
+[data-testid*="arrow"]:hover,
+[class*="chevron"]:hover {
+  background-color: #20366B !important;
+  border-color: #20366B !important;
+}
+
 /* Fix input field visibility and borders */
 .bg-white input {
   color: #1E293B !important;
