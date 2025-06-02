@@ -15,9 +15,10 @@ export default function OrganizationPayment() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Get organization ID from URL params
+  // Get organization ID and business model from URL params
   const urlParams = new URLSearchParams(window.location.search);
   const orgId = urlParams.get('orgId');
+  const businessModel = urlParams.get('businessModel') || 'pay_per_class';
 
   // Fetch organization data
   const { data: organization } = useQuery({
@@ -211,8 +212,8 @@ export default function OrganizationPayment() {
               <div className="text-center">
                 <Users className="h-8 w-8 text-[#278DD4] mx-auto mb-2" />
                 <p className="font-medium capitalize">
-                  {organization.businessModel === 'membership' ? 'Membership-Based' : 
-                   organization.businessModel === 'pay_per_class' ? 'Pay-Per-Class' : 
+                  {(organization.businessModel || businessModel) === 'membership' ? 'Membership-Based' : 
+                   (organization.businessModel || businessModel) === 'pay_per_class' ? 'Pay-Per-Class' : 
                    'Not Set'}
                 </p>
                 <p className="text-sm text-slate-600">Business Model</p>

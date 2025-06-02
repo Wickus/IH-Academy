@@ -79,7 +79,7 @@ export default function OrganizationSetup() {
         description: "Please complete payment to access your dashboard.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
-      setLocation(`/organization-payment?orgId=${orgId}`);
+      setLocation(`/organization-payment?orgId=${orgId}&businessModel=${businessModel}`);
     },
     onError: (error: any) => {
       toast({
