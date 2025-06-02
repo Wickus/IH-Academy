@@ -73,36 +73,36 @@ function RoleBasedRouter({ user }: { user?: User }) {
 
   // Organization Admin/Coach Interface  
   if (user?.role === 'organization_admin' || user?.role === 'coach') {
-    // If organization admin without an organization, show setup
-    if (user?.role === 'organization_admin' && !user?.organizationId) {
-      return (
-        <Switch>
-          <Route path="/setup" component={OrganizationSetup} />
-          <Route component={() => <OrganizationSetup />} />
-        </Switch>
-      );
-    }
-
     return (
-      <AppLayout>
-        <Switch>
-          <Route path="/" component={Dashboard} />
-          <Route path="/classes" component={Classes} />
-          <Route path="/bookings" component={Bookings} />
-          <Route path="/coaches" component={Coaches} />
-          <Route path="/memberships" component={Memberships} />
-          <Route path="/payments" component={Payments} />
-          <Route path="/reports" component={Reports} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/achievements" component={Achievements} />
-          <Route path="/notifications" component={Notifications} />
-          <Route component={NotFound} />
-        </Switch>
-      </AppLayout>
+      <Switch>
+        <Route path="/organization-setup" component={OrganizationSetup} />
+        <Route path="/organization-payment" component={OrganizationPayment} />
+        <Route path="/" component={() => (
+          <AppLayout>
+            <Dashboard />
+          </AppLayout>
+        )} />
+        <Route component={() => (
+          <AppLayout>
+            <Switch>
+              <Route path="/classes" component={Classes} />
+              <Route path="/bookings" component={Bookings} />
+              <Route path="/coaches" component={Coaches} />
+              <Route path="/memberships" component={Memberships} />
+              <Route path="/payments" component={Payments} />
+              <Route path="/reports" component={Reports} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/achievements" component={Achievements} />
+              <Route path="/notifications" component={Notifications} />
+              <Route component={NotFound} />
+            </Switch>
+          </AppLayout>
+        )} />
+      </Switch>
     );
   }
 
-  // Member Interface - Show user dashboard if authenticated
+  // Member Interface - Show user dashboard if authenticated  
   if (user) {
     return (
       <Switch>
