@@ -113,31 +113,35 @@ export default function WeeklyCalendar() {
           })}
         </div>
         
-        {/* Today's Classes */}
+        {/* Week Summary */}
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-slate-700">
-            {currentDate.toDateString() === today.toDateString() ? "Today's Classes" : "Classes for " + currentDate.toLocaleDateString()}
+            Classes This Week ({weekClasses.length})
           </h4>
           
-          {todayClasses.length > 0 ? (
-            todayClasses.map((classItem) => {
-              const sportColor = getSportColor(classItem.sport?.name || '');
+          {weekClasses.length > 0 ? (
+            weekClasses.map((classItem) => {
+              const startTime = new Date(classItem.startTime);
+              const endTime = new Date(classItem.endTime);
+              const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
               
               return (
                 <div
                   key={classItem.id}
-                  className={`flex items-center space-x-4 p-4 bg-${sportColor}/5 rounded-lg border-l-4 border-${sportColor}`}
+                  className="flex items-center space-x-4 p-4 bg-slate-50 rounded-lg border-l-4 border-[#278DD4]"
                 >
-                  <div className={`w-3 h-3 bg-${sportColor} rounded-full`}></div>
+                  <div className="w-3 h-3 bg-[#278DD4] rounded-full"></div>
                   <div className="flex-1">
                     <p className="font-medium text-slate-800">{classItem.name}</p>
-                    <p className="text-sm text-slate-600">
-                      {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
-                    </p>
+                    <div className="flex items-center space-x-4 text-sm text-slate-600">
+                      <span>{dayNames[startTime.getDay()]}</span>
+                      <span>{startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - {endTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+                      <span>{classItem.sport?.name || 'Sport'}</span>
+                    </div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-slate-700">
-                      {classItem.bookingCount}/{classItem.capacity}
+                      0/{classItem.capacity}
                     </p>
                     <p className="text-xs text-slate-600">participants</p>
                   </div>
@@ -146,7 +150,7 @@ export default function WeeklyCalendar() {
             })
           ) : (
             <div className="text-center py-8 text-slate-600">
-              <p>No classes scheduled for this day</p>
+              <p>No classes scheduled for this week</p>
             </div>
           )}
         </div>
