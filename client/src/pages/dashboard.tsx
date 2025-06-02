@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { useEffect } from "react";
 import { api } from "@/lib/api";
 import StatsCards from "@/components/dashboard/stats-cards";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
@@ -6,10 +8,34 @@ import RecentBookings from "@/components/dashboard/recent-bookings";
 import CoachAttendance from "@/components/dashboard/coach-attendance";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
+  
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: api.getCurrentUser,
+  });
+
+  const { data: userOrganisations } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: currentUser?.role === 'organization_admin',
+  });
+
   const { data: stats, isLoading } = useQuery({
     queryKey: ["/api/stats"],
     queryFn: api.getStats,
   });
+
+  // Check if organisation admin needs to set up their organisation
+  useEffect(() => {
+    if (currentUser?.role === 'organization_admin' && userOrganisations !== undefined) {
+      if (Array.isArray(userOrganisations) && userOrganisations.length === 0) {
+        // No organisation set up - redirect to auth page to complete setup
+        setLocation("/auth");
+        return;
+      }
+    }
+  }, [currentUser, userOrganisations, setLocation]);
 
   if (isLoading) {
     return (
