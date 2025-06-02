@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -247,6 +247,93 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
         <CardContent className="p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Booking For Selection */}
+              {children.length > 0 && (
+                <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
+                  <FormField
+                    control={form.control}
+                    name="bookingFor"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#20366B] font-medium">Booking for</FormLabel>
+                        <FormControl>
+                          <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                value="self"
+                                checked={field.value === "self"}
+                                onChange={() => field.onChange("self")}
+                                className="text-[#278DD4] focus:ring-[#278DD4]"
+                              />
+                              <span>Myself</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                value="child"
+                                checked={field.value === "child"}
+                                onChange={() => field.onChange("child")}
+                                className="text-[#278DD4] focus:ring-[#278DD4]"
+                              />
+                              <span>My Child</span>
+                            </label>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {watchBookingFor === "child" && (
+                    <FormField
+                      control={form.control}
+                      name="childId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#20366B] font-medium">Select Child</FormLabel>
+                          <FormControl>
+                            <select
+                              {...field}
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                const childId = parseInt(e.target.value);
+                                field.onChange(childId);
+                                
+                                // Auto-fill child's information
+                                const selectedChild = children.find(child => child.id === childId);
+                                if (selectedChild) {
+                                  form.setValue("participantName", selectedChild.name);
+                                  form.setValue("participantEmail", currentUser?.email || "");
+                                  form.setValue("participantPhone", selectedChild.emergencyPhone || "");
+                                  if (selectedChild.dateOfBirth) {
+                                    const age = Math.floor((new Date().getTime() - new Date(selectedChild.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+                                    form.setValue("participantAge", age.toString());
+                                  }
+                                  if (selectedChild.medicalInfo) {
+                                    form.setValue("notes", `Medical Info: ${selectedChild.medicalInfo}`);
+                                  }
+                                }
+                              }}
+                              className="w-full p-2 border border-slate-300 rounded-md focus:border-[#278DD4] focus:ring-[#278DD4]"
+                            >
+                              <option value="">Select a child...</option>
+                              {children.map((child: any) => (
+                                <option key={child.id} value={child.id}>
+                                  {child.name}
+                                  {child.dateOfBirth && ` (${Math.floor((new Date().getTime() - new Date(child.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years old)`}
+                                </option>
+                              ))}
+                            </select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
