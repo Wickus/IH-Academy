@@ -130,10 +130,19 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/organizations/my'] });
       setShowOrgSetup(false); // Close the modal first
       toast({ title: "Organisation created!", description: `${organization.name} is ready for setup!` });
-      // Use setTimeout to ensure modal closes before redirect
+      
+      // Trigger auth success to properly set authentication state
+      if (onAuthSuccess) {
+        const currentUser = queryClient.getQueryData(['/api/auth/me']);
+        if (currentUser) {
+          onAuthSuccess(currentUser as User);
+        }
+      }
+      
+      // Use setTimeout to ensure modal closes and auth state is set before redirect
       setTimeout(() => {
         setLocation(`/organization-setup?orgId=${organization.id}`);
-      }, 100);
+      }, 200);
     },
     onError: (error: any) => {
       console.error("Organisation creation error:", error);
