@@ -258,6 +258,55 @@ button[aria-label*="Next"]:hover,
   border-color: #20366B !important;
 }
 
+/* Fix yellow toggles and switches */
+button[role="switch"],
+.switch,
+[data-state="checked"] {
+  background-color: #24D367 !important;
+}
+
+button[role="switch"][data-state="unchecked"] {
+  background-color: #E5E7EB !important;
+}
+
+/* Fix yellow separators */
+.separator,
+hr,
+[role="separator"] {
+  border-color: #E2E8F0 !important;
+  background-color: #E2E8F0 !important;
+}
+
+/* Fix all yellow styling across platform */
+.bg-yellow-100,
+.bg-yellow-200,
+.bg-yellow-300,
+.bg-yellow-400,
+.bg-yellow-500 {
+  background-color: #EBF4FF !important;
+}
+
+.border-yellow-100,
+.border-yellow-200,
+.border-yellow-300,
+.border-yellow-400,
+.border-yellow-500 {
+  border-color: #278DD4 !important;
+}
+
+/* Mobile view button fixes */
+.mobile-view button,
+[class*="mobile"] button {
+  background-color: #278DD4 !important;
+  color: white !important;
+  border-color: #278DD4 !important;
+}
+
+.mobile-view button:hover,
+[class*="mobile"] button:hover {
+  background-color: #20366B !important;
+}
+
 /* Fix input field visibility and borders */
 .bg-white input {
   color: #1E293B !important;

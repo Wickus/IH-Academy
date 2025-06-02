@@ -51,6 +51,7 @@ export default function Header() {
   };
 
   const handleNotificationClick = () => {
+    console.log("Notification button clicked"); // Debug log
     toast({
       title: "Notifications",
       description: "You have 3 new notifications about class bookings and updates.",
@@ -58,6 +59,7 @@ export default function Header() {
   };
 
   const handleNewClassClick = () => {
+    console.log("New Class button clicked"); // Debug log
     setShowNewClassDialog(true);
   };
 
