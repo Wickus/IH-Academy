@@ -599,26 +599,31 @@ export default function GlobalAdminDashboard() {
 
       {/* Edit User Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-[#20366B]">Edit User</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader className="bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367] p-6 rounded-t-lg text-white -m-6 mb-6">
+            <DialogTitle className="text-white text-xl font-bold">Edit User Details</DialogTitle>
+            <DialogDescription className="text-white/90">
               Update user information for {editingUser?.firstName && editingUser?.lastName ? `${editingUser.firstName} ${editingUser.lastName}` : editingUser?.username}
             </DialogDescription>
           </DialogHeader>
+          
           <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First Name</FormLabel>
+                      <FormLabel className="text-[#20366B] font-medium">First Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter first name" {...field} />
+                        <Input 
+                          placeholder="Enter first name" 
+                          className="border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20"
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-600" />
                     </FormItem>
                   )}
                 />
@@ -628,11 +633,15 @@ export default function GlobalAdminDashboard() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Last Name</FormLabel>
+                      <FormLabel className="text-[#20366B] font-medium">Last Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter last name" {...field} />
+                        <Input 
+                          placeholder="Enter last name" 
+                          className="border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20"
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-600" />
                     </FormItem>
                   )}
                 />
@@ -643,75 +652,110 @@ export default function GlobalAdminDashboard() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-[#20366B] font-medium">Email Address</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Enter email address" {...field} />
+                      <Input 
+                        type="email" 
+                        placeholder="Enter email address" 
+                        className="border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20"
+                        {...field} 
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={editForm.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="member">Member</SelectItem>
-                        <SelectItem value="coach">Coach</SelectItem>
-                        <SelectItem value="organization_admin">Organisation Admin</SelectItem>
-                        <SelectItem value="global_admin">Global Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#20366B] font-medium">User Role</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20">
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="member" className="focus:bg-[#24D367]/10">Member</SelectItem>
+                          <SelectItem value="coach" className="focus:bg-[#24D3BF]/10">Coach</SelectItem>
+                          <SelectItem value="organization_admin" className="focus:bg-[#278DD4]/10">Organisation Admin</SelectItem>
+                          <SelectItem value="global_admin" className="focus:bg-[#20366B]/10">Global Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-600" />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={editForm.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Status</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(value === 'true')} value={field.value.toString()}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="true">Active</SelectItem>
-                        <SelectItem value="false">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={editForm.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#20366B] font-medium">Account Status</FormLabel>
+                      <Select onValueChange={(value) => field.onChange(value === 'true')} value={field.value.toString()}>
+                        <FormControl>
+                          <SelectTrigger className="border-[#278DD4]/30 focus:border-[#278DD4] focus:ring-[#278DD4]/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="true" className="focus:bg-[#24D367]/10">
+                            <div className="flex items-center">
+                              <div className="w-2 h-2 rounded-full bg-[#24D367] mr-2"></div>
+                              Active
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="false" className="focus:bg-red-100">
+                            <div className="flex items-center">
+                              <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
+                              Inactive
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-600" />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              <div className="flex justify-end space-x-2 pt-4">
+              <div className="bg-gradient-to-r from-[#20366B]/5 via-[#278DD4]/5 to-[#24D367]/5 p-4 rounded-lg border border-[#278DD4]/20">
+                <p className="text-sm text-[#20366B] mb-2 font-medium">Update Summary:</p>
+                <p className="text-xs text-slate-600">
+                  Changes will be applied immediately and the user will be notified of any role or status modifications.
+                </p>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-6 border-t border-[#278DD4]/20">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowEditDialog(false)}
+                  className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateUserMutation.isPending}
-                  className="bg-[#24D367] hover:bg-[#24D367]/90"
+                  className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white font-medium px-6"
                 >
-                  {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
+                  {updateUserMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Edit2 className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
