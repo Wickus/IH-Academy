@@ -108,6 +108,11 @@ function RoleBasedRouter({ user }: { user?: User }) {
             <Memberships />
           </AppLayout>
         )} />
+        <Route path="/daily-schedules" component={() => (
+          <AppLayout>
+            <DailySchedules />
+          </AppLayout>
+        )} />
         <Route path="/payments" component={() => (
           <AppLayout>
             <Payments />
