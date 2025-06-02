@@ -331,6 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/organizations/:id/status", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser || currentUser.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied. Global admin only." });
       }
@@ -352,6 +353,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/organizations/:id", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser || currentUser.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied. Global admin only." });
       }
@@ -506,6 +508,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/organizations/:id/follow", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -567,6 +570,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/sports", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser || (currentUser.role !== 'global_admin' && currentUser.role !== 'organization_admin')) {
         return res.status(403).json({ message: "Access denied. Admin access required." });
       }
@@ -598,6 +602,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { organizationId, coachId, date, public: isPublic } = req.query;
       let classes: any[] = [];
+      const currentUser = getCurrentUser(req);
 
       // Data isolation: Organisation admins only see their own organisation's classes
       if (currentUser?.role === 'organization_admin') {
@@ -734,6 +739,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, classId, recent, organizationId } = req.query;
       let bookings: any[] = [];
+      const currentUser = getCurrentUser(req);
 
       // Data isolation: Organisation admins only see bookings for their organisation's classes
       if (currentUser?.role === 'organization_admin') {
