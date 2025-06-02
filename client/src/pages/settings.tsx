@@ -27,11 +27,13 @@ import {
   User,
   Plus,
   Dumbbell,
-  Trash2
+  Trash2,
+  CreditCard
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import SportForm from "@/components/forms/sport-form";
+import PayfastCredentials, { type PayfastCredentialsData } from "@/components/forms/payfast-credentials";
 
 const organizationSchema = z.object({
   name: z.string().min(1, "Organization name is required"),
@@ -113,6 +115,24 @@ export default function Settings() {
     },
   });
 
+  const updatePayfastCredentialsMutation = useMutation({
+    mutationFn: (data: PayfastCredentialsData) => api.updateOrganization(1, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
+      toast({
+        title: "Success",
+        description: "Payfast credentials updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update payment credentials",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onOrganizationSubmit = (data: any) => {
     updateOrganizationMutation.mutate(data);
   };
@@ -122,6 +142,10 @@ export default function Settings() {
       title: "Success",
       description: "Notification preferences updated successfully",
     });
+  };
+
+  const onPayfastCredentialsSubmit = (data: PayfastCredentialsData) => {
+    updatePayfastCredentialsMutation.mutate(data);
   };
 
   if (orgLoading) {
@@ -167,7 +191,7 @@ export default function Settings() {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-slate-100">
+            <TabsList className="grid w-full grid-cols-6 bg-slate-100">
               <TabsTrigger value="organization" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
                 <Building className="mr-2 h-4 w-4" />
                 Organization
@@ -175,6 +199,10 @@ export default function Settings() {
               <TabsTrigger value="sports" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
                 <Dumbbell className="mr-2 h-4 w-4" />
                 Sports
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+                <CreditCard className="mr-2 h-4 w-4" />
+                Payments
               </TabsTrigger>
               <TabsTrigger value="notifications" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
                 <Bell className="mr-2 h-4 w-4" />
