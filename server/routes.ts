@@ -839,11 +839,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { organizationId } = req.query;
       let coaches;
 
-      if (organizationId) {
+      // Get current user context
+      const currentUser = getCurrentUser(req);
+
+      if (currentUser?.role === 'organization_admin') {
+        // Organization admins can only see coaches from their organization
+        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+        if (userOrgs.length > 0) {
+          coaches = await storage.getCoachesByOrganization(userOrgs[0].organizationId);
+        } else {
+          coaches = []; // No organization set up yet
+        }
+      } else if (organizationId) {
         coaches = await storage.getCoachesByOrganization(parseInt(organizationId as string));
+      } else if (currentUser?.role === 'global_admin') {
+        // Global admins can see all coaches if needed, but require explicit organizationId
+        coaches = [];
       } else {
-        // Return all coaches from all organizations (for global admin)
-        coaches = await storage.getCoachesByOrganization(1); // Default to first org
+        coaches = [];
       }
 
       res.json(coaches);
