@@ -95,14 +95,14 @@ export default function OrganizationSetup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-600 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367] p-6">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
             Welcome to ItsHappening.Africa
           </h1>
-          <p className="text-blue-100 text-lg">
-            Let's set up your organisation
+          <p className="text-white/90 text-lg">
+            Let's set up your organisation with our complete sports management platform
           </p>
         </div>
 
@@ -112,10 +112,10 @@ export default function OrganizationSetup() {
             {[1, 2, 3].map((step) => (
               <div
                 key={step}
-                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                className={`flex items-center justify-center w-12 h-12 rounded-full border-2 font-semibold ${
                   currentStep >= step
-                    ? "bg-white text-blue-900 border-white"
-                    : "bg-transparent text-white border-blue-300"
+                    ? "bg-white text-[#20366B] border-white shadow-lg"
+                    : "bg-transparent text-white border-white/50"
                 }`}
               >
                 {step}
@@ -124,7 +124,7 @@ export default function OrganizationSetup() {
           </div>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur">
+        <Card className="bg-white/95 backdrop-blur shadow-2xl border-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               {/* Step 1: Basic Information */}
@@ -426,22 +426,31 @@ export default function OrganizationSetup() {
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between p-6 bg-gray-50">
+              <div className="flex justify-between p-6 bg-gradient-to-r from-slate-50 to-blue-50">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 1}
+                  className="border-[#20366B] text-[#20366B] hover:bg-[#20366B] hover:text-white"
                 >
                   Previous
                 </Button>
 
                 {currentStep < 3 ? (
-                  <Button type="button" onClick={nextStep}>
+                  <Button 
+                    type="button" 
+                    onClick={nextStep}
+                    className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white font-semibold"
+                  >
                     Next
                   </Button>
                 ) : (
-                  <Button type="submit" disabled={createOrganizationMutation.isPending}>
+                  <Button 
+                    type="submit" 
+                    disabled={createOrganizationMutation.isPending}
+                    className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#20366B] hover:to-[#278DD4] text-white font-semibold"
+                  >
                     {createOrganizationMutation.isPending ? "Creating..." : "Create Organisation"}
                   </Button>
                 )}
