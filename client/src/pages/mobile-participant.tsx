@@ -352,8 +352,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             size="sm" 
                             className="flex-1 border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
                             onClick={() => {
-                              // Navigate to class details or show booking details modal
-                              console.log('View booking details for:', booking.id);
+                              toast({
+                                title: "Booking Details",
+                                description: `Viewing details for ${booking.class?.name} on ${formatDate(booking.class!.startTime)}`,
+                              });
                             }}
                           >
                             View Details
@@ -363,8 +365,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             size="sm"
                             className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
                             onClick={() => {
-                              // Add to calendar functionality
-                              console.log('Add to calendar:', booking.id);
+                              toast({
+                                title: "Calendar Event",
+                                description: `Added ${booking.class?.name} to your calendar`,
+                              });
                             }}
                           >
                             <Calendar className="h-4 w-4" />
@@ -412,8 +416,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                           size="sm" 
                           className="w-full border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
                           onClick={() => {
-                            // Navigate to class booking or show rebooking options
-                            console.log('Book again for class:', booking.class?.id);
+                            toast({
+                              title: "Rebooking",
+                              description: `Ready to book ${booking.class?.name} again`,
+                            });
                           }}
                         >
                           Book Again
