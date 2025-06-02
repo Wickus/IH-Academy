@@ -84,6 +84,13 @@ export default function Header() {
     setShowNewClassDialog(true);
   };
 
+  const handleViewAllNotifications = () => {
+    toast({
+      title: "Notifications Center",
+      description: "Full notifications management will be available in a future update.",
+    });
+  };
+
   return (
     <header className="bg-gradient-to-r from-[#20366B] to-[#278DD4] shadow-lg border-b border-[#278DD4]/20 px-4 lg:px-8 py-4">
       <div className="flex items-center justify-between">
@@ -143,7 +150,11 @@ export default function Header() {
                     ))}
                   </div>
                   <div className="p-3 border-t border-slate-200">
-                    <Button variant="ghost" className="w-full text-[#278DD4] hover:bg-[#278DD4]/10">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full text-[#278DD4] hover:bg-[#278DD4]/10"
+                      onClick={handleViewAllNotifications}
+                    >
                       View All Notifications
                     </Button>
                   </div>

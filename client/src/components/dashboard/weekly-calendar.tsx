@@ -9,9 +9,9 @@ import { useState } from "react";
 export default function WeeklyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const { data: todayClasses = [] } = useQuery({
-    queryKey: ["/api/classes", { date: currentDate.toISOString().split('T')[0] }],
-    queryFn: () => api.getClasses({ date: currentDate.toISOString().split('T')[0] }),
+  const { data: allClasses = [] } = useQuery({
+    queryKey: ["/api/classes"],
+    queryFn: () => api.getClasses(),
   });
 
   const getWeekDays = (date: Date) => {
@@ -31,6 +31,27 @@ export default function WeeklyCalendar() {
   const weekDays = getWeekDays(currentDate);
   const today = new Date();
 
+  // Filter classes for the current week
+  const weekClasses = allClasses.filter(classItem => {
+    if (!classItem.startTime) return false;
+    
+    const classDate = new Date(classItem.startTime);
+    const startOfWeek = new Date(weekDays[0]);
+    const endOfWeek = new Date(weekDays[6]);
+    endOfWeek.setHours(23, 59, 59, 999);
+    
+    return classDate >= startOfWeek && classDate <= endOfWeek;
+  });
+
+  // Group classes by day
+  const classesByDay = weekDays.map(day => {
+    const dayClasses = weekClasses.filter(classItem => {
+      const classDate = new Date(classItem.startTime);
+      return classDate.toDateString() === day.toDateString();
+    });
+    return { day, classes: dayClasses };
+  });
+
   const navigateWeek = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
     newDate.setDate(currentDate.getDate() + (direction === 'next' ? 7 : -7));
@@ -49,13 +70,23 @@ export default function WeeklyCalendar() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Weekly Schedule</CardTitle>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" onClick={() => navigateWeek('prev')}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigateWeek('prev')}
+              className="hover:bg-[#278DD4]/10 hover:text-[#278DD4] focus:bg-[#278DD4]/10 focus:text-[#278DD4] focus:outline-none"
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="text-sm font-medium text-slate-700 min-w-[180px] text-center">
               {formatWeekRange(weekDays)}
             </span>
-            <Button variant="ghost" size="sm" onClick={() => navigateWeek('next')}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigateWeek('next')}
+              className="hover:bg-[#278DD4]/10 hover:text-[#278DD4] focus:bg-[#278DD4]/10 focus:text-[#278DD4] focus:outline-none"
+            >
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
