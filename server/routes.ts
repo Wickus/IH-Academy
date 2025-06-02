@@ -408,6 +408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const organizations = await storage.getOrganizationsByUser(user.id);
+      console.log("DEBUG - Organizations for user:", user.username, JSON.stringify(organizations, null, 2));
       res.json(organizations);
     } catch (error) {
       console.error("Error fetching user organizations:", error);
