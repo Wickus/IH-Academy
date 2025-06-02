@@ -288,6 +288,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/users/bulk-purge", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+      
+      const { userIds, purgeInactive } = req.body;
+      
+      let deletedCount = 0;
+      
+      if (purgeInactive) {
+        // Purge all inactive users except global admins
+        const inactiveUsers = await storage.getInactiveUsers();
+        for (const user of inactiveUsers) {
+          if (user.role !== 'global_admin') {
+            await storage.deleteUser(user.id);
+            deletedCount++;
+          }
+        }
+      } else if (userIds && Array.isArray(userIds)) {
+        // Purge specific users
+        for (const userId of userIds) {
+          const user = await storage.getUser(userId);
+          if (user && user.role !== 'global_admin') {
+            await storage.deleteUser(userId);
+            deletedCount++;
+          }
+        }
+      }
+      
+      res.json({ 
+        message: `Successfully purged ${deletedCount} users`,
+        deletedCount 
+      });
+    } catch (error) {
+      console.error("Error bulk purging users:", error);
+      res.status(500).json({ message: "Failed to purge users" });
+    }
+  });
+
   app.put("/api/organizations/:id/status", async (req: Request, res: Response) => {
     try {
       if (!currentUser || currentUser.role !== 'global_admin') {
