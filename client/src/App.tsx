@@ -23,6 +23,7 @@ import OrganizationDashboard from "@/pages/organization-dashboard";
 import OrganizationClasses from "@/pages/organization-classes";
 import MobileCoach from "@/pages/mobile-coach";
 import MobileParticipant from "@/pages/mobile-participant";
+import UserDashboard from "@/pages/user-dashboard";
 import Auth from "@/pages/auth";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
@@ -86,7 +87,23 @@ function RoleBasedRouter({ user }: { user?: User }) {
     );
   }
 
-  // Public/Member Interface (default)
+  // Member Interface - Show user dashboard if authenticated
+  if (user) {
+    return (
+      <Switch>
+        <Route path="/" component={UserDashboard} />
+        <Route path="/dashboard" component={UserDashboard} />
+        <Route path="/discover" component={PublicDiscovery} />
+        <Route path="/book" component={PublicBooking} />
+        <Route path="/organizations/:id" component={PublicBooking} />
+        <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+        <Route path="/achievements" component={Achievements} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
+  // Public Interface (unauthenticated)
   return (
     <Switch>
       <Route path="/" component={PublicDiscovery} />
@@ -94,7 +111,6 @@ function RoleBasedRouter({ user }: { user?: User }) {
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
       <Route path="/organizations/:id/classes" component={OrganizationClasses} />
-      <Route path="/achievements" component={Achievements} />
       <Route component={NotFound} />
     </Switch>
   );
