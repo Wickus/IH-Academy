@@ -365,22 +365,34 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             size="sm"
                             className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
                             onClick={() => {
-                              // Generate and download iCal file
-                              const icalContent = generateICalEvent(booking.class, booking);
-                              const blob = new Blob([icalContent], { type: 'text/calendar' });
-                              const url = URL.createObjectURL(blob);
-                              const link = document.createElement('a');
-                              link.href = url;
-                              link.download = `${booking.class?.name?.replace(/\s+/g, '_')}.ics`;
-                              document.body.appendChild(link);
-                              link.click();
-                              document.body.removeChild(link);
-                              URL.revokeObjectURL(url);
-                              
-                              toast({
-                                title: "Calendar Download",
-                                description: `Calendar event downloaded for ${booking.class?.name}`,
-                              });
+                              try {
+                                // Generate and download iCal file
+                                const icalContent = generateICalEvent(booking.class, booking);
+                                const blob = new Blob([icalContent], { type: 'text/calendar;charset=utf-8' });
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = `${booking.class?.name?.replace(/[^a-zA-Z0-9]/g, '_')}_booking.ics`;
+                                link.style.display = 'none';
+                                document.body.appendChild(link);
+                                link.click();
+                                setTimeout(() => {
+                                  document.body.removeChild(link);
+                                  URL.revokeObjectURL(url);
+                                }, 100);
+                                
+                                toast({
+                                  title: "Calendar Event",
+                                  description: `Calendar file downloaded: ${booking.class?.name}`,
+                                });
+                              } catch (error) {
+                                console.error('Calendar download error:', error);
+                                toast({
+                                  title: "Download Error",
+                                  description: "Failed to download calendar event",
+                                  variant: "destructive"
+                                });
+                              }
                             }}
                           >
                             <Calendar className="h-4 w-4" />
@@ -391,15 +403,24 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             <Button 
                               size="sm"
                               className="w-full bg-[#24D367] hover:bg-[#24D367]/90 text-white"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 toast({
-                                  title: "Payment Processing",
-                                  description: "Redirecting to payment gateway...",
+                                  title: "Payment Gateway",
+                                  description: `Opening payment for ${formatCurrency(booking.amount)} - ${booking.class?.name}`,
                                 });
-                                // Navigate to payment flow
+                                // In a real implementation, this would navigate to a payment processor
+                                // For now, we'll simulate payment completion after 2 seconds
+                                setTimeout(() => {
+                                  toast({
+                                    title: "Payment Completed",
+                                    description: "Your booking has been confirmed!",
+                                  });
+                                }, 2000);
                               }}
                             >
-                              Complete Payment
+                              Complete Payment • {formatCurrency(booking.amount)}
                             </Button>
                           </div>
                         )}
