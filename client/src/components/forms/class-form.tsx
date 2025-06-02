@@ -35,9 +35,10 @@ interface ClassFormProps {
   sports: Sport[];
   onSuccess: () => void;
   initialData?: any;
+  organizationId?: number;
 }
 
-export default function ClassForm({ sports, onSuccess, initialData }: ClassFormProps) {
+export default function ClassForm({ sports, onSuccess, initialData, organizationId }: ClassFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,19 +112,19 @@ export default function ClassForm({ sports, onSuccess, initialData }: ClassFormP
       const endDateTime = new Date(`${data.endTime}:00`).toISOString();
 
       const classData = {
-        organizationId: 1, // Default organization
+        organizationId: organizationId || 1,
         name: data.name,
-        description: data.description || null,
+        description: data.description || undefined,
         sportId: parseInt(data.sportId),
         coachId: parseInt(data.coachId),
         startTime: startDateTime,
         endTime: endDateTime,
         capacity: parseInt(data.capacity),
         price: parseFloat(data.price),
-        location: data.location || null,
-        requirements: data.requirements || null,
+        location: data.location || undefined,
+        requirements: data.requirements || undefined,
         isRecurring: data.isRecurring,
-        recurrencePattern: data.isRecurring ? data.recurrencePattern || null : null,
+        recurrencePattern: data.isRecurring ? data.recurrencePattern || undefined : undefined,
       };
 
       if (initialData?.id) {

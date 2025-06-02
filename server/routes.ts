@@ -482,14 +482,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/sports", async (req: Request, res: Response) => {
     try {
-      const sportData = req.body;
-      const sport = await storage.createSport(sportData);
-      res.json(sport);
+      if (!currentUser || (currentUser.role !== 'global_admin' && currentUser.role !== 'organization_admin')) {
+        return res.status(403).json({ message: "Access denied. Admin access required." });
+      }
+
+      const { name, color, icon } = req.body;
+      
+      if (!name || !color) {
+        return res.status(400).json({ message: "Name and color are required" });
+      }
+
+      const sportData = {
+        name,
+        color: color || '#278DD4',
+        icon: icon || '🏃'
+      };
+
+      const newSport = await storage.createSport(sportData);
+      res.json(newSport);
     } catch (error) {
       console.error("Error creating sport:", error);
       res.status(500).json({ message: "Failed to create sport" });
     }
   });
+
+
 
   // Classes routes
   app.get("/api/classes", async (req: Request, res: Response) => {
