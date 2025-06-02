@@ -1074,6 +1074,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update booking payment status
+  app.put("/api/bookings/:id/payment", async (req: Request, res: Response) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const { paymentStatus } = req.body;
+      
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      const updatedBooking = await storage.updateBooking(bookingId, { 
+        paymentStatus,
+        updatedAt: new Date()
+      });
+      
+      if (!updatedBooking) {
+        return res.status(404).json({ message: "Failed to update booking" });
+      }
+
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      res.status(500).json({ message: "Failed to update payment status" });
+    }
+  });
+
   // Add booking cancellation endpoint for real-time updates
   app.delete("/api/bookings/:id", async (req: Request, res: Response) => {
     try {

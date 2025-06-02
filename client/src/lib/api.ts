@@ -243,6 +243,11 @@ export const api = {
     document.body.removeChild(a);
   },
 
+  updateBookingPayment: async (id: number, paymentStatus: string): Promise<Booking> => {
+    const response = await apiRequest('PUT', `/api/bookings/${id}/payment`, { paymentStatus });
+    return response.json();
+  },
+
   // Attendance
   getAttendance: async (classId: number): Promise<AttendanceRecord[]> => {
     const response = await apiRequest('GET', `/api/attendance/${classId}`);
