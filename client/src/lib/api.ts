@@ -1,4 +1,5 @@
 import { apiRequest } from "./queryClient";
+import type { Child, InsertChild } from "@shared/schema";
 
 export interface GlobalDashboardStats {
   totalOrganizations: number;
