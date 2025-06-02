@@ -1167,6 +1167,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Children management routes
+  // Get current user's children
+  app.get("/api/children", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const children = await storage.getUserChildren(currentUser.id);
+      res.json(children);
+    } catch (error) {
+      console.error("Error fetching children:", error);
+      res.status(500).json({ message: "Failed to fetch children" });
+    }
+  });
+
+  // Get specific user's children (for admin use)
   app.get("/api/children/:userId", async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -1180,13 +1197,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/children", async (req: Request, res: Response) => {
     try {
-      if (!req.user) {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
       const childData = {
         ...req.body,
-        parentId: req.user.id,
+        parentId: currentUser.id,
       };
 
       const child = await storage.createChild(childData);
@@ -1199,7 +1217,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/children/:id", async (req: Request, res: Response) => {
     try {
-      if (!req.user) {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 

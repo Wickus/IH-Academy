@@ -70,11 +70,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
     queryFn: () => api.getSports(),
   });
 
-  // Fetch user's children (optional for now)
-  const { data: children } = useQuery({
-    queryKey: ['/api/children', user.id],
-    queryFn: () => api.getUserChildren(user.id),
-    enabled: false, // Temporarily disabled until children API is fixed
+  // Fetch user's children
+  const { data: children = [] } = useQuery({
+    queryKey: ['/api/children'],
+    queryFn: () => api.getUserChildren(),
+    enabled: !!user, // Only fetch if user is authenticated
   });
 
   const followOrgMutation = useMutation({
