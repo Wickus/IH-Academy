@@ -82,22 +82,57 @@ function RoleBasedRouter({ user }: { user?: User }) {
             <Dashboard />
           </AppLayout>
         )} />
-        <Route component={() => (
+        <Route path="/dashboard" component={() => (
           <AppLayout>
-            <Switch>
-              <Route path="/classes" component={Classes} />
-              <Route path="/bookings" component={Bookings} />
-              <Route path="/coaches" component={Coaches} />
-              <Route path="/memberships" component={Memberships} />
-              <Route path="/payments" component={Payments} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/settings" component={Settings} />
-              <Route path="/achievements" component={Achievements} />
-              <Route path="/notifications" component={Notifications} />
-              <Route component={NotFound} />
-            </Switch>
+            <Dashboard />
           </AppLayout>
         )} />
+        <Route path="/classes" component={() => (
+          <AppLayout>
+            <Classes />
+          </AppLayout>
+        )} />
+        <Route path="/bookings" component={() => (
+          <AppLayout>
+            <Bookings />
+          </AppLayout>
+        )} />
+        <Route path="/coaches" component={() => (
+          <AppLayout>
+            <Coaches />
+          </AppLayout>
+        )} />
+        <Route path="/memberships" component={() => (
+          <AppLayout>
+            <Memberships />
+          </AppLayout>
+        )} />
+        <Route path="/payments" component={() => (
+          <AppLayout>
+            <Payments />
+          </AppLayout>
+        )} />
+        <Route path="/reports" component={() => (
+          <AppLayout>
+            <Reports />
+          </AppLayout>
+        )} />
+        <Route path="/settings" component={() => (
+          <AppLayout>
+            <Settings />
+          </AppLayout>
+        )} />
+        <Route path="/achievements" component={() => (
+          <AppLayout>
+            <Achievements />
+          </AppLayout>
+        )} />
+        <Route path="/notifications" component={() => (
+          <AppLayout>
+            <Notifications />
+          </AppLayout>
+        )} />
+        <Route component={NotFound} />
       </Switch>
     );
   }
