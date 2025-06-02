@@ -69,6 +69,12 @@ function RoleBasedRouter({ user }: { user?: User }) {
 
   // Organization Admin/Coach Interface  
   if (user?.role === 'organization_admin' || user?.role === 'coach') {
+    // Check if organization admin has set up their organization
+    // If not, show auth page so they can complete setup
+    if (user?.role === 'organization_admin') {
+      // This will be handled by checking if user has an organization in the auth page
+    }
+    
     return (
       <AppLayout>
         <Switch>

@@ -76,6 +76,7 @@ export default function Auth() {
       toast({ title: "Registration successful!", description: `Welcome ${user.firstName}!` });
       
       if (user.role === 'organization_admin') {
+        // Don't redirect - stay on auth page to show modal
         setShowOrgSetup(true);
       } else {
         setLocation("/");
