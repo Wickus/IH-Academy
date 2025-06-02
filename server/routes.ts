@@ -76,9 +76,7 @@ function generateSessionId(): string {
 
 // Middleware to get current user from session
 function getCurrentUser(req: any): any {
-  const sessionId = req.headers.cookie?.split(';')
-    .find((c: string) => c.trim().startsWith('sessionId='))
-    ?.split('=')[1];
+  const sessionId = req.cookies?.sessionId;
   
   if (sessionId && sessions.has(sessionId)) {
     return sessions.get(sessionId);
@@ -200,9 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/logout", async (req: Request, res: Response) => {
     try {
-      const sessionId = req.headers.cookie?.split(';')
-        .find((c: string) => c.trim().startsWith('sessionId='))
-        ?.split('=')[1];
+      const sessionId = req.cookies?.sessionId;
       
       if (sessionId) {
         sessions.delete(sessionId);
@@ -230,7 +226,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/users", async (req: Request, res: Response) => {
     try {
-      if (!currentUser || currentUser.role !== 'global_admin') {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied. Global admin only." });
       }
       
