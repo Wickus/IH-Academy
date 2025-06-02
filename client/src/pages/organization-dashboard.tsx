@@ -180,27 +180,27 @@ export default function OrganizationDashboard({ user, organization }: Organizati
 
       {/* Dashboard Widgets */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Bookings</CardTitle>
-            <CardDescription>
+        <Card className="border-0 shadow-md bg-white">
+          <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
+            <CardTitle className="text-xl font-bold">Recent Bookings</CardTitle>
+            <CardDescription className="text-white/80">
               Latest bookings for your classes
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {recentBookings && recentBookings.length > 0 ? (
               <div className="space-y-4">
                 {recentBookings.slice(0, 5).map((booking: any) => (
-                  <div key={booking.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={booking.id} className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors">
                     <div>
-                      <p className="font-medium">{booking.participantName}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="font-semibold text-[#20366B]">{booking.participantName}</p>
+                      <p className="text-sm text-slate-600">
                         {booking.class?.name} • {formatCurrency(booking.amount)}
                       </p>
                     </div>
                     <Badge 
                       variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
-                      style={booking.paymentStatus === 'confirmed' ? { backgroundColor: organization.accentColor } : {}}
+                      className={booking.paymentStatus === 'confirmed' ? 'bg-[#24D367] text-white' : ''}
                     >
                       {booking.paymentStatus}
                     </Badge>
@@ -208,7 +208,10 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">No recent bookings</p>
+              <div className="text-center py-8">
+                <p className="text-slate-600">No recent bookings</p>
+                <p className="text-sm text-slate-500 mt-1">Bookings will appear here once participants register</p>
+              </div>
             )}
           </CardContent>
         </Card>

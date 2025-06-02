@@ -62,18 +62,18 @@ export default function Bookings() {
         </div>
       </div>
 
-      <Card className="border-slate-200 shadow-md">
-        <CardHeader>
+      <Card className="border-0 shadow-md bg-white">
+        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
           <div className="flex items-center justify-between">
-            <CardTitle>All Bookings</CardTitle>
+            <CardTitle className="text-xl font-bold">All Bookings</CardTitle>
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
                 <Input
                   placeholder="Search bookings..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
+                  className="pl-10 w-64 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-slate-900 focus:placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -150,12 +150,14 @@ export default function Bookings() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDownloadIcal(booking.id)}
+                          className="text-[#278DD4] border-[#278DD4] hover:bg-[#278DD4] hover:text-white"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
+                          className="text-[#24D367] border-[#24D367] hover:bg-[#24D367] hover:text-white"
                         >
                           <Calendar className="h-4 w-4" />
                         </Button>
@@ -168,16 +170,16 @@ export default function Bookings() {
           </div>
 
           {filteredBookings.length === 0 && (
-            <div className="text-center py-8">
-              <div className="text-gray-400 mb-4">
-                <Search className="mx-auto h-12 w-12" />
+            <div className="text-center py-12">
+              <div className="text-[#278DD4] mb-4">
+                <Search className="mx-auto h-16 w-16" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-[#20366B] mb-2">
                 {searchTerm ? 'No bookings found' : 'No bookings yet'}
               </h3>
-              <p className="text-gray-500">
+              <p className="text-slate-600">
                 {searchTerm 
-                  ? 'Try adjusting your search terms' 
+                  ? 'Try adjusting your search terms to find specific bookings' 
                   : 'Bookings will appear here once participants start registering for classes.'}
               </p>
             </div>
