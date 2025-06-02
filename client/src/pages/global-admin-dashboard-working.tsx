@@ -54,7 +54,13 @@ export default function GlobalAdminDashboard() {
 
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ['/api/organizations'],
-    queryFn: () => api.getOrganizations(),
+    queryFn: async () => {
+      const response = await fetch('/api/organizations?includeInactive=true', {
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Failed to fetch organizations');
+      return response.json();
+    },
   });
 
   const { data: users, isLoading: usersLoading } = useQuery({
