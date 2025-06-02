@@ -894,6 +894,94 @@ export default function GlobalAdminDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Settings Tab */}
+      <TabsContent value="settings" className="space-y-8">
+        <Card className="bg-white shadow-lg border-0">
+          <CardHeader className="bg-gradient-to-r from-[#278DD4] to-[#24D367] text-white rounded-t-lg">
+            <CardTitle className="text-white">Global Platform Settings</CardTitle>
+            <CardDescription className="text-blue-100">
+              Configure platform-wide settings and payment integration
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <Form {...settingsForm}>
+              <form onSubmit={settingsForm.handleSubmit(onSettingsSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="defaultMembershipPrice" className="text-[#20366B] font-medium">Default Membership Price (ZAR)</Label>
+                    <Input
+                      id="defaultMembershipPrice"
+                      {...settingsForm.register("defaultMembershipPrice")}
+                      placeholder="299.00"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="basicPlanPrice" className="text-[#20366B] font-medium">Basic Plan Price (ZAR)</Label>
+                    <Input
+                      id="basicPlanPrice"
+                      {...settingsForm.register("basicPlanPrice")}
+                      placeholder="199.00"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="premiumPlanPrice" className="text-[#20366B] font-medium">Premium Plan Price (ZAR)</Label>
+                    <Input
+                      id="premiumPlanPrice"
+                      {...settingsForm.register("premiumPlanPrice")}
+                      placeholder="499.00"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold text-[#20366B] mb-4">PayFast Integration</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="payfastMerchantId" className="text-[#20366B] font-medium">Merchant ID</Label>
+                      <Input
+                        id="payfastMerchantId"
+                        {...settingsForm.register("payfastMerchantId")}
+                        placeholder="Enter PayFast Merchant ID"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="payfastMerchantKey" className="text-[#20366B] font-medium">Merchant Key</Label>
+                      <Input
+                        id="payfastMerchantKey"
+                        {...settingsForm.register("payfastMerchantKey")}
+                        placeholder="Enter PayFast Merchant Key"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="payfastPassphrase" className="text-[#20366B] font-medium">Passphrase (Optional)</Label>
+                      <Input
+                        id="payfastPassphrase"
+                        {...settingsForm.register("payfastPassphrase")}
+                        placeholder="Enter PayFast Passphrase"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-6 border-t">
+                  <Button type="submit" className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white">
+                    Save Global Settings
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+    </div>
     </div>
   );
 }
