@@ -45,6 +45,7 @@ export interface Organization {
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
+  businessModel: 'membership' | 'pay_per_class';
   planType: 'free' | 'basic' | 'premium';
   maxClasses: number;
   maxMembers: number;
