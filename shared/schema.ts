@@ -1,5 +1,6 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, json, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { z } from "zod";
 
 export const users = pgTable("users", {
@@ -246,6 +247,33 @@ export type UserAchievement = typeof userAchievements.$inferSelect;
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type UserStats = typeof userStats.$inferSelect;
 export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
+
+// Parent-Child relationships for family bookings
+export const children = pgTable("children", {
+  id: serial("id").primaryKey(),
+  parentId: integer("parent_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  dateOfBirth: date("date_of_birth"),
+  medicalInfo: text("medical_info"),
+  emergencyContact: text("emergency_contact"),
+  emergencyPhone: text("emergency_phone"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertChildSchema = createInsertSchema(children);
+
+export type Child = typeof children.$inferSelect;
+export type InsertChild = z.infer<typeof insertChildSchema>;
+
+// Relations
+export const childrenRelations = relations(children, ({ one }) => ({
+  parent: one(users, { fields: [children.parentId], references: [users.id] }),
+}));
+
+export const usersChildrenRelations = relations(users, ({ many }) => ({
+  children: many(children),
+}));
 
 // Legacy types for backward compatibility (will be removed)
 export type Academy = Organization;

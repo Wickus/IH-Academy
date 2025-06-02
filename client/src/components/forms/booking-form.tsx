@@ -23,6 +23,8 @@ const bookingFormSchema = z.object({
   participantPhone: z.string().optional(),
   participantAge: z.string().optional(),
   notes: z.string().optional(),
+  bookingFor: z.enum(["self", "child"]).default("self"),
+  childId: z.number().optional(),
 });
 
 type BookingFormData = z.infer<typeof bookingFormSchema>;
