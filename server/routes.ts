@@ -363,8 +363,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
+      // Only organization admins can create organizations
+      if (currentUser.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin role required." });
+      }
+
       const orgData = req.body;
       const organization = await storage.createOrganization(orgData);
+      
+      // Update the current user's organizationId
+      await storage.updateUser(currentUser.id, { organizationId: organization.id });
       
       // Automatically add the current user as the admin of this organisation
       await storage.addUserToOrganization({
