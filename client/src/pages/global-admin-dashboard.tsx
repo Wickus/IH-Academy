@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/layout/header";
 import { api, type GlobalDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette, DollarSign } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronDown, ChevronUp, UserCheck, Mail, Calendar, Phone, MapPin, Globe, Palette, DollarSign, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -139,6 +139,69 @@ export default function GlobalAdminDashboard() {
     },
   });
 
+  const bulkPurgeMutation = useMutation({
+    mutationFn: async ({ userIds, purgeInactive }: { userIds?: number[]; purgeInactive?: boolean }) => {
+      const response = await fetch('/api/users/bulk-purge', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userIds, purgeInactive }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to purge users');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setSelectedUsers([]);
+      setShowPurgeDialog(false);
+      toast({
+        title: "Bulk Purge Complete",
+        description: `Successfully purged ${data.deletedCount} users`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to purge users",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleUserSelection = (userId: number, checked: boolean) => {
+    setSelectedUsers(prev => 
+      checked 
+        ? [...prev, userId]
+        : prev.filter(id => id !== userId)
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked && users) {
+      const inactiveUserIds = users
+        .filter(user => !user.isActive && user.role !== 'global_admin')
+        .map(user => user.id);
+      setSelectedUsers(inactiveUserIds);
+    } else {
+      setSelectedUsers([]);
+    }
+  };
+
+  const handleBulkPurge = (purgeAll: boolean = false) => {
+    if (purgeAll) {
+      bulkPurgeMutation.mutate({ purgeInactive: true });
+    } else if (selectedUsers.length > 0) {
+      bulkPurgeMutation.mutate({ userIds: selectedUsers });
+    }
+  };
+
   const onSettingsSubmit = (data: GlobalSettingsForm) => {
     toast({
       title: "Settings Updated",
@@ -267,7 +330,41 @@ export default function GlobalAdminDashboard() {
                       <span className="ml-2 text-slate-600">Loading users...</span>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <>
+                      {/* Bulk Operations Controls */}
+                      {users && users.filter(user => !user.isActive && user.role !== 'global_admin').length > 0 && (
+                        <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <h3 className="font-semibold text-orange-800 mb-1">Inactive User Management</h3>
+                              <p className="text-sm text-orange-600">
+                                {users.filter(user => !user.isActive && user.role !== 'global_admin').length} inactive users found
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleSelectAll(selectedUsers.length === 0)}
+                                className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                              >
+                                {selectedUsers.length === 0 ? 'Select All Inactive' : 'Deselect All'}
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => setShowPurgeDialog(true)}
+                                disabled={selectedUsers.length === 0 && !users.some(user => !user.isActive && user.role !== 'global_admin')}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Bulk Purge ({selectedUsers.length} selected)
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div className="space-y-4">
                       {users?.map((user) => (
                         <div key={user.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                           <div className="flex items-center space-x-4">
@@ -407,7 +504,8 @@ export default function GlobalAdminDashboard() {
                           No users found on the platform.
                         </div>
                       )}
-                    </div>
+                      </div>
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -734,6 +832,59 @@ export default function GlobalAdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Bulk Purge Confirmation Dialog */}
+      <Dialog open={showPurgeDialog} onOpenChange={setShowPurgeDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Confirm Bulk User Purge</DialogTitle>
+            <DialogDescription>
+              This action will permanently delete the selected inactive users from the platform. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-800">
+                {selectedUsers.length > 0 
+                  ? `You are about to permanently delete ${selectedUsers.length} selected inactive users.`
+                  : users && users.filter(user => !user.isActive && user.role !== 'global_admin').length > 0
+                  ? `You are about to permanently delete all ${users.filter(user => !user.isActive && user.role !== 'global_admin').length} inactive users.`
+                  : 'No inactive users to purge.'
+                }
+              </p>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowPurgeDialog(false)}
+                disabled={bulkPurgeMutation.isPending}
+              >
+                Cancel
+              </Button>
+              {selectedUsers.length > 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={() => handleBulkPurge(false)}
+                  disabled={bulkPurgeMutation.isPending}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {bulkPurgeMutation.isPending ? 'Purging...' : `Purge ${selectedUsers.length} Selected`}
+                </Button>
+              )}
+              {users && users.filter(user => !user.isActive && user.role !== 'global_admin').length > 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={() => handleBulkPurge(true)}
+                  disabled={bulkPurgeMutation.isPending}
+                  className="bg-red-700 hover:bg-red-800"
+                >
+                  {bulkPurgeMutation.isPending ? 'Purging...' : 'Purge All Inactive'}
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
