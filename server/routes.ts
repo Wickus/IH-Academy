@@ -1238,7 +1238,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/children/:id", async (req: Request, res: Response) => {
     try {
-      if (!req.user) {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
