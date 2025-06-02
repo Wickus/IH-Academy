@@ -1024,7 +1024,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/notifications/subscribe", async (req: Request, res: Response) => {
     try {
       const { endpoint, keys } = req.body;
-      const userId = req.user?.id;
+      const currentUser = getCurrentUser(req);
+      const userId = currentUser?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -1041,7 +1042,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/notifications/unsubscribe", async (req: Request, res: Response) => {
     try {
       const { endpoint } = req.body;
-      const userId = req.user?.id;
+      const currentUser = getCurrentUser(req);
+      const userId = currentUser?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -1057,7 +1059,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/notifications/test", async (req: Request, res: Response) => {
     try {
-      const userId = req.user?.id;
+      const currentUser = getCurrentUser(req);
+      const userId = currentUser?.id;
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -1237,6 +1240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Membership Management API Routes
   app.get("/api/memberships", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
