@@ -1,6 +1,6 @@
 import {
   users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
-  achievements, userAchievements, userStats, memberships,
+  achievements, userAchievements, userStats, memberships, children,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
@@ -13,7 +13,8 @@ import {
   type Achievement, type InsertAchievement,
   type UserAchievement, type InsertUserAchievement,
   type UserStats, type InsertUserStats,
-  type Membership, type InsertMembership
+  type Membership, type InsertMembership,
+  type Child, type InsertChild
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, count, sum } from "drizzle-orm";
@@ -95,6 +96,12 @@ export interface IStorage {
   createMembership(membership: InsertMembership): Promise<Membership>;
   updateMembership(id: number, membership: Partial<InsertMembership>): Promise<Membership | undefined>;
   getAvailableUsersForMembership(organizationId: number): Promise<User[]>;
+
+  // Children Management
+  getUserChildren(userId: number): Promise<Child[]>;
+  createChild(child: InsertChild): Promise<Child>;
+  updateChild(id: number, child: Partial<InsertChild>): Promise<Child | undefined>;
+  deleteChild(id: number): Promise<boolean>;
 
   // Statistics
   getGlobalStats(): Promise<{
@@ -695,6 +702,38 @@ export class DatabaseStorage implements IStorage {
         // Use NOT IN to exclude existing members
         // Note: This is a simplified approach - in production you might want to use a more complex query
       ));
+  }
+
+  // Children Management methods
+  async getUserChildren(userId: number): Promise<Child[]> {
+    try {
+      const result = await db.select()
+        .from(children)
+        .where(and(eq(children.parentId, userId), eq(children.isActive, true)))
+        .orderBy(desc(children.createdAt));
+      return result;
+    } catch (error) {
+      console.error('Error fetching children:', error);
+      return [];
+    }
+  }
+
+  async createChild(child: InsertChild): Promise<Child> {
+    const [newChild] = await db.insert(children).values(child).returning();
+    return newChild;
+  }
+
+  async updateChild(id: number, child: Partial<InsertChild>): Promise<Child | undefined> {
+    const [updatedChild] = await db.update(children).set(child).where(eq(children.id, id)).returning();
+    return updatedChild || undefined;
+  }
+
+  async deleteChild(id: number): Promise<boolean> {
+    const [deletedChild] = await db.update(children)
+      .set({ isActive: false })
+      .where(eq(children.id, id))
+      .returning();
+    return !!deletedChild;
   }
 }
 

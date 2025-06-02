@@ -566,7 +566,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-[#20366B]">Medical Information (Optional)</label>
-              <Input placeholder="Any allergies, conditions, or notes" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
+              <div className="text-xs text-slate-600 mb-2 p-2 bg-slate-50 rounded border-l-4 border-[#24D367]">
+                <strong>What to include:</strong> Food allergies, medical conditions (asthma, diabetes, epilepsy), medications being taken, emergency contact restrictions, or any special care instructions coaches should know about.
+              </div>
+              <Input placeholder="e.g., Allergic to nuts, has asthma inhaler, diabetic" className="border-[#278DD4]/30 focus:border-[#278DD4]" />
             </div>
             <div className="flex gap-2 pt-4">
               <Button 
