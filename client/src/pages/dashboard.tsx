@@ -6,6 +6,7 @@ import StatsCards from "@/components/dashboard/stats-cards";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
 import RecentBookings from "@/components/dashboard/recent-bookings";
 import CoachAttendance from "@/components/dashboard/coach-attendance";
+import OrganizationDashboard from "@/pages/organization-dashboard";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -73,6 +74,12 @@ export default function Dashboard() {
         </div>
       </div>
     );
+  }
+
+  // If user is an organization admin and has organizations, show OrganizationDashboard
+  if (currentUser?.role === 'organization_admin' && userOrganisations && userOrganisations.length > 0) {
+    const organization = userOrganisations[0];
+    return <OrganizationDashboard user={currentUser} organization={organization} />;
   }
 
   return (
