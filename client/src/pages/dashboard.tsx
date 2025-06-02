@@ -21,9 +21,12 @@ export default function Dashboard() {
     enabled: currentUser?.role === 'organization_admin',
   });
 
+  const organizationId = userOrganisations?.[0]?.organizationId;
+
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["/api/stats"],
-    queryFn: api.getStats,
+    queryKey: ["/api/stats/organization", organizationId],
+    queryFn: () => organizationId ? api.getOrganizationStats(organizationId) : Promise.resolve(undefined),
+    enabled: !!organizationId,
   });
 
   // Check if organisation admin needs to set up their organisation
