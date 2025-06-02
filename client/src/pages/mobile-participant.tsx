@@ -133,6 +133,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
     createChildMutation.mutate({
       name: formData.name,
+      parentId: user.id,
       dateOfBirth: formData.dateOfBirth,
       medicalInfo: formData.medicalInfo || "",
       emergencyContact: user.firstName + " " + user.lastName,
@@ -346,10 +347,26 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="flex-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
+                            onClick={() => {
+                              // Navigate to class details or show booking details modal
+                              console.log('View booking details for:', booking.id);
+                            }}
+                          >
                             View Details
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
+                            onClick={() => {
+                              // Add to calendar functionality
+                              console.log('Add to calendar:', booking.id);
+                            }}
+                          >
                             <Calendar className="h-4 w-4" />
                           </Button>
                         </div>
@@ -390,7 +407,15 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             <span>{formatCurrency(booking.amount)}</span>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
+                          onClick={() => {
+                            // Navigate to class booking or show rebooking options
+                            console.log('Book again for class:', booking.class?.id);
+                          }}
+                        >
                           Book Again
                         </Button>
                       </CardContent>
