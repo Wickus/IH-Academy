@@ -85,10 +85,7 @@ export default function Header() {
   };
 
   const handleViewAllNotifications = () => {
-    toast({
-      title: "Notifications Center",
-      description: "Full notifications management will be available in a future update.",
-    });
+    setLocation("/notifications");
   };
 
   return (
