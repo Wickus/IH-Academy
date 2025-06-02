@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { api } from "@/lib/api";
 import StatsCards from "@/components/dashboard/stats-cards";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
@@ -21,7 +21,7 @@ export default function Dashboard() {
     enabled: currentUser?.role === 'organization_admin',
   });
 
-  const organizationId = userOrganisations?.[0]?.organizationId;
+  const organizationId = userOrganisations?.[0]?.id;
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ["/api/stats/organization", organizationId],
@@ -39,6 +39,25 @@ export default function Dashboard() {
       }
     }
   }, [currentUser, userOrganisations, setLocation]);
+
+  const handleCardClick = useCallback((cardType: string) => {
+    switch (cardType) {
+      case 'bookings':
+        setLocation('/bookings');
+        break;
+      case 'classes':
+        setLocation('/classes');
+        break;
+      case 'payments':
+        setLocation('/payments');
+        break;
+      case 'coaches':
+        setLocation('/coaches');
+        break;
+      default:
+        break;
+    }
+  }, [setLocation]);
 
   if (isLoading) {
     return (
@@ -63,7 +82,7 @@ export default function Dashboard() {
         <p className="text-slate-600">Welcome back! Here's what's happening with ItsHappening.Africa.</p>
       </div>
       
-      <StatsCards stats={stats} />
+      <StatsCards stats={stats} onCardClick={handleCardClick} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
