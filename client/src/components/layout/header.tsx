@@ -1,22 +1,40 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, Menu, Plus, LogOut, User } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import ClassForm from "@/components/forms/class-form";
 
 export default function Header() {
   const [, setLocation] = useLocation();
+  const [showNewClassDialog, setShowNewClassDialog] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const { toast } = useToast();
+  
   const { data: user } = useQuery({
     queryKey: ['/api/auth/me'],
     queryFn: () => api.getCurrentUser(),
     retry: false
+  });
+
+  const { data: sports } = useQuery({
+    queryKey: ["/api/sports"],
+    queryFn: api.getSports,
   });
 
   const logoutMutation = useMutation({
@@ -30,6 +48,17 @@ export default function Header() {
 
   const handleLogout = () => {
     logoutMutation.mutate();
+  };
+
+  const handleNotificationClick = () => {
+    toast({
+      title: "Notifications",
+      description: "You have 3 new notifications about class bookings and updates.",
+    });
+  };
+
+  const handleNewClassClick = () => {
+    setShowNewClassDialog(true);
   };
 
   return (
@@ -55,13 +84,21 @@ export default function Header() {
         <div className="flex items-center space-x-4">
           {user?.role !== 'global_admin' && (
             <>
-              <Button variant="ghost" size="sm" className="relative p-2 hover:bg-white/10 text-white">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative p-2 hover:bg-white/10 text-white"
+                onClick={handleNotificationClick}
+              >
                 <Bell className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
                   3
                 </span>
               </Button>
-              <Button className="bg-[#24D367] hover:bg-[#24D367]/90 text-white shadow-md">
+              <Button 
+                className="bg-[#24D367] hover:bg-[#24D367]/90 text-white shadow-md"
+                onClick={handleNewClassClick}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">New Class</span>
               </Button>
@@ -94,6 +131,22 @@ export default function Header() {
           </DropdownMenu>
         </div>
       </div>
+
+      {/* New Class Dialog */}
+      <Dialog open={showNewClassDialog} onOpenChange={setShowNewClassDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#20366B]">Create New Class</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[75vh] overflow-y-auto pr-2">
+            <ClassForm 
+              sports={sports}
+              organizationId={user?.organizationId || 1}
+              onSuccess={() => setShowNewClassDialog(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

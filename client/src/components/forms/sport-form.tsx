@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const sportFormSchema = z.object({
   name: z.string().min(1, "Sport name is required"),
@@ -21,16 +22,44 @@ interface SportFormProps {
   onSuccess: () => void;
 }
 
+const SPORT_ICONS = [
+  { emoji: "⚽", name: "Soccer" },
+  { emoji: "🏀", name: "Basketball" },
+  { emoji: "🏈", name: "Football" },
+  { emoji: "🎾", name: "Tennis" },
+  { emoji: "🏐", name: "Volleyball" },
+  { emoji: "🏓", name: "Table Tennis" },
+  { emoji: "🏸", name: "Badminton" },
+  { emoji: "🏑", name: "Hockey" },
+  { emoji: "🏒", name: "Ice Hockey" },
+  { emoji: "🥍", name: "Lacrosse" },
+  { emoji: "🏉", name: "Rugby" },
+  { emoji: "🎱", name: "Pool" },
+  { emoji: "🏊", name: "Swimming" },
+  { emoji: "🏃", name: "Running" },
+  { emoji: "🚴", name: "Cycling" },
+  { emoji: "🧘", name: "Yoga" },
+  { emoji: "🤸", name: "Gymnastics" },
+  { emoji: "🥊", name: "Boxing" },
+  { emoji: "🤼", name: "Wrestling" },
+  { emoji: "🏋️", name: "Weightlifting" },
+  { emoji: "🤾", name: "Handball" },
+  { emoji: "🥋", name: "Martial Arts" },
+  { emoji: "🏆", name: "General Sports" },
+  { emoji: "🎯", name: "Darts" },
+];
+
 export default function SportForm({ onSuccess }: SportFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedIcon, setSelectedIcon] = useState("🏃");
   
   const form = useForm<SportFormData>({
     resolver: zodResolver(sportFormSchema),
     defaultValues: {
       name: "",
       color: "#278DD4",
-      icon: "🏃",
+      icon: selectedIcon,
     },
   });
 
@@ -109,14 +138,39 @@ export default function SportForm({ onSuccess }: SportFormProps) {
           name="icon"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#20366B] font-medium">Icon (Emoji)</FormLabel>
+              <FormLabel className="text-[#20366B] font-medium">Icon</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="🏃" 
-                  {...field} 
-                  className="border-slate-200 focus:border-[#278DD4] focus:ring-[#278DD4]"
-                  maxLength={2}
-                />
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="text-3xl p-2 border border-slate-200 rounded-md bg-slate-50">
+                      {selectedIcon}
+                    </div>
+                    <div className="text-sm text-slate-600">
+                      Selected icon for your sport
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-8 gap-2 p-3 border border-slate-200 rounded-md bg-slate-50 max-h-48 overflow-y-auto">
+                    {SPORT_ICONS.map((icon) => (
+                      <button
+                        key={icon.emoji}
+                        type="button"
+                        onClick={() => {
+                          setSelectedIcon(icon.emoji);
+                          field.onChange(icon.emoji);
+                        }}
+                        className={cn(
+                          "p-2 text-2xl rounded-md border-2 transition-all hover:scale-110",
+                          selectedIcon === icon.emoji
+                            ? "border-[#278DD4] bg-[#278DD4]/10"
+                            : "border-transparent hover:border-slate-300 hover:bg-white"
+                        )}
+                        title={icon.name}
+                      >
+                        {icon.emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
