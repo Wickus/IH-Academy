@@ -181,6 +181,11 @@ export const api = {
     return response.json();
   },
 
+  createSport: async (sport: { name: string; color: string; icon: string }): Promise<Sport> => {
+    const response = await apiRequest('POST', '/api/sports', sport);
+    return response.json();
+  },
+
   // Classes
   getClasses: async (params?: { organizationId?: number; coachId?: number; date?: string; public?: boolean }): Promise<Class[]> => {
     const searchParams = new URLSearchParams();

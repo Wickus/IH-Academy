@@ -22,7 +22,9 @@ import {
   Phone,
   Globe,
   Save,
-  User
+  User,
+  Plus,
+  Dumbbell
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
