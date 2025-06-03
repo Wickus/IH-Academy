@@ -46,6 +46,8 @@ export interface Organization {
   secondaryColor: string;
   accentColor: string;
   businessModel: 'membership' | 'pay_per_class';
+  membershipPrice?: string;
+  membershipBillingCycle?: string;
   planType: 'free' | 'basic' | 'premium';
   maxClasses: number;
   maxMembers: number;
@@ -367,5 +369,37 @@ export const api = {
 
   deleteDailySchedule: async (id: number): Promise<void> => {
     await apiRequest('DELETE', `/api/daily-schedules/${id}`);
+  },
+
+  // Membership API functions
+  getMemberships: async (params?: { userId?: number; organizationId?: number }): Promise<any[]> => {
+    const searchParams = new URLSearchParams();
+    if (params?.userId) searchParams.append('userId', params.userId.toString());
+    if (params?.organizationId) searchParams.append('organizationId', params.organizationId.toString());
+    
+    const response = await apiRequest('GET', `/api/memberships?${searchParams.toString()}`);
+    return response.json();
+  },
+
+  createMembership: async (membershipData: {
+    organizationId: number;
+    userId: number;
+    status: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<any> => {
+    const response = await apiRequest('POST', '/api/memberships', membershipData);
+    return response.json();
+  },
+
+  updateMembership: async (id: number, membershipData: any): Promise<any> => {
+    const response = await apiRequest('PUT', `/api/memberships/${id}`, membershipData);
+    return response.json();
+  },
+
+  // Fix authentication method name
+  getMe: async (): Promise<User> => {
+    const response = await apiRequest('GET', '/api/auth/me');
+    return response.json();
   },
 };
