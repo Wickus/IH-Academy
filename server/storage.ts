@@ -94,6 +94,7 @@ export interface IStorage {
   updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined>;
 
   // Memberships
+  getMemberships(params: { userId?: number; organizationId?: number }): Promise<Membership[]>;
   getMembershipsByOrganization(organizationId: number): Promise<Membership[]>;
   createMembership(membership: InsertMembership): Promise<Membership>;
   updateMembership(id: number, membership: Partial<InsertMembership>): Promise<Membership | undefined>;
@@ -648,6 +649,40 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Membership methods
+  async getMemberships(params: { userId?: number; organizationId?: number }): Promise<Membership[]> {
+    let query = db.select({
+      membership: memberships,
+      user: {
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName
+      }
+    })
+    .from(memberships)
+    .leftJoin(users, eq(memberships.userId, users.id));
+
+    const conditions = [];
+    if (params.userId) {
+      conditions.push(eq(memberships.userId, params.userId));
+    }
+    if (params.organizationId) {
+      conditions.push(eq(memberships.organizationId, params.organizationId));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+
+    const results = await query;
+
+    return results.map(result => ({
+      ...result.membership,
+      user: result.user
+    }));
+  }
+
   async getMembershipsByOrganization(organizationId: number): Promise<Membership[]> {
     const results = await db
       .select({
