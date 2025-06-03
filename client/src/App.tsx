@@ -177,7 +177,6 @@ function RoleBasedRouter({ user }: { user?: User }) {
 function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -188,13 +187,11 @@ function Router() {
       } catch (error) {
         setUser(null);
         setIsAuthenticated(false);
-        // Clear any stored location when authentication fails
-        setLocation("/");
       }
     };
 
     checkAuth();
-  }, [setLocation]);
+  }, []);
 
   if (isAuthenticated === null) {
     return (
@@ -211,14 +208,8 @@ function Router() {
     return <Auth onAuthSuccess={(authenticatedUser) => {
       setUser(authenticatedUser);
       setIsAuthenticated(true);
-      // Navigate to appropriate home page based on user role
-      if (authenticatedUser.role === 'global_admin') {
-        setLocation('/');
-      } else if (authenticatedUser.role === 'organization_admin' || authenticatedUser.role === 'coach') {
-        setLocation('/dashboard');
-      } else {
-        setLocation('/');
-      }
+      // Force page reload to ensure proper routing after login
+      window.location.href = '/';
     }} />;
   }
 
