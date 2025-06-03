@@ -1323,6 +1323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/memberships", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -1373,6 +1374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/memberships/:id", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -1395,6 +1397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/users/available-for-membership", async (req: Request, res: Response) => {
     try {
+      const currentUser = getCurrentUser(req);
       if (!currentUser) {
         return res.status(401).json({ message: "Not authenticated" });
       }

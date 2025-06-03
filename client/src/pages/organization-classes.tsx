@@ -157,7 +157,7 @@ export default function OrganizationClasses() {
                     disabled={joinMembershipMutation.isPending}
                     className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white font-semibold"
                   >
-                    {joinMembershipMutation.isPending ? "Joining..." : "Join Membership"}
+                    {joinMembershipMutation.isPending ? "Processing..." : "Become a Member"}
                   </Button>
                 </div>
               </CardContent>
