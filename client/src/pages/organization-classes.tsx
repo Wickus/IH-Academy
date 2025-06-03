@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { api, type Class } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function OrganizationClasses() {
   const [, params] = useRoute("/organizations/:id/classes");
+  const [, setLocation] = useLocation();
   const organizationId = parseInt(params?.id || "0");
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -153,11 +154,10 @@ export default function OrganizationClasses() {
                     </div>
                   </div>
                   <Button
-                    onClick={() => joinMembershipMutation.mutate()}
-                    disabled={joinMembershipMutation.isPending}
+                    onClick={() => setLocation(`/membership-payment/${organization.id}`)}
                     className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white font-semibold"
                   >
-                    {joinMembershipMutation.isPending ? "Processing..." : "Become a Member"}
+                    Become a Member - R{organization.membershipPrice}
                   </Button>
                 </div>
               </CardContent>
