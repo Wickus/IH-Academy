@@ -169,6 +169,8 @@ function RoleBasedRouter({ user }: { user?: User }) {
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
       <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+      <Route path="/membership-payment/:organizationId" component={MembershipPayment} />
+      <Route path="/membership-success" component={MembershipSuccess} />
       <Route path="/organization-setup" component={OrganizationSetup} />
       <Route path="/organization-payment" component={OrganizationPayment} />
       <Route component={NotFound} />

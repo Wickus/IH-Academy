@@ -1487,6 +1487,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PayFast notification handler for membership payments
+  app.post("/api/payfast-notify", async (req: Request, res: Response) => {
+    try {
+      const {
+        payment_status,
+        custom_str1: organizationId,
+        custom_str2: userId,
+        custom_str3: paymentType
+      } = req.body;
+
+      if (payment_status === 'COMPLETE' && paymentType === 'membership') {
+        // Get organization details for membership duration
+        const organization = await storage.getOrganization(parseInt(organizationId));
+        
+        if (organization) {
+          const startDate = new Date();
+          const endDate = new Date();
+          
+          // Calculate end date based on billing cycle
+          if (organization.membershipBillingCycle === "monthly") {
+            endDate.setMonth(endDate.getMonth() + 1);
+          } else if (organization.membershipBillingCycle === "quarterly") {
+            endDate.setMonth(endDate.getMonth() + 3);
+          } else if (organization.membershipBillingCycle === "yearly") {
+            endDate.setFullYear(endDate.getFullYear() + 1);
+          }
+
+          // Create active membership
+          await storage.createMembership({
+            userId: parseInt(userId),
+            organizationId: parseInt(organizationId),
+            status: "active",
+            startDate,
+            endDate,
+            price: organization.membershipPrice || "0.00",
+            billingCycle: organization.membershipBillingCycle || "monthly",
+            autoRenew: true,
+            nextBillingDate: endDate
+          });
+        }
+      }
+
+      res.status(200).send("OK");
+    } catch (error) {
+      console.error("Error processing PayFast notification:", error);
+      res.status(500).send("Error");
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;
