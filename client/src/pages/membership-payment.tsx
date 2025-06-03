@@ -25,15 +25,15 @@ export default function MembershipPayment() {
   });
 
   const handlePayFastPayment = () => {
-    if (!organization || !currentUser) return;
+    if (!organization || !currentUser || !organizationId) return;
 
-    // Generate PayFast payment data
+    // Use default PayFast sandbox credentials for testing
     const paymentData = {
-      merchant_id: organization.payfastMerchantId || "10000100",
-      merchant_key: organization.payfastMerchantKey || "46f0cd694581a",
+      merchant_id: "10000100",
+      merchant_key: "46f0cd694581a",
       amount: organization.membershipPrice,
       item_name: `${organization.name} Membership - ${organization.membershipBillingCycle}`,
-      item_description: `Monthly membership for ${organization.name}`,
+      item_description: `${organization.membershipBillingCycle} membership for ${organization.name}`,
       email_address: currentUser.email,
       name_first: currentUser.firstName || currentUser.username,
       name_last: currentUser.lastName || "",
@@ -45,12 +45,10 @@ export default function MembershipPayment() {
       custom_str3: "membership"
     };
 
-    // Create form and submit to PayFast
+    // Create form and submit to PayFast sandbox
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = organization.payfastSandbox 
-      ? 'https://sandbox.payfast.co.za/eng/process'
-      : 'https://www.payfast.co.za/eng/process';
+    form.action = 'https://sandbox.payfast.co.za/eng/process';
 
     Object.entries(paymentData).forEach(([key, value]) => {
       const input = document.createElement('input');
