@@ -176,7 +176,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
             fontWeight: '900',
             textShadow: '0 2px 4px rgba(0,0,0,0.3)'
           }}>ItsHappening.Africa</h1>
-          <p className="text-white font-medium" style={{
+          <p className="font-medium text-[#ffffff]" style={{
             textShadow: '0 1px 2px rgba(0,0,0,0.3)'
           }}>Sports booking platform for everyone</p>
         </div>
