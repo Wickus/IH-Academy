@@ -87,6 +87,7 @@ export default function Coaches() {
             <div className="max-h-[75vh] overflow-y-auto pr-2">
               <CoachForm 
                 onSuccess={() => setShowCreateDialog(false)}
+                initialData={{ organizationId: userOrgs[0]?.id }}
               />
             </div>
           </DialogContent>
