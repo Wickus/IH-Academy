@@ -171,7 +171,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
     }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2" style={{
+          <h1 className="text-4xl font-bold mb-2 text-[#ffffff]" style={{
             fontFamily: 'Inter, sans-serif',
             fontWeight: '900',
             textShadow: '0 2px 4px rgba(0,0,0,0.3)'
@@ -364,7 +364,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           </p>
         </div>
       </div>
-
       {/* Organisation Setup Modal */}
       <Dialog open={showOrgSetup} onOpenChange={setShowOrgSetup}>
         <DialogContent className="sm:max-w-[90vw] md:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
