@@ -88,7 +88,7 @@ export default function CoachForm({ onSuccess, initialData, isEdit = false, edit
     setIsSubmitting(true);
     try {
       const coachData = {
-        organizationId: initialData?.organizationId || 1, // Use organization from initialData or default
+        organizationId: initialData?.organizationId, // Use organization from initialData
         bio: data.bio || null,
         specializations: data.specializations ? data.specializations.split(",").map(s => s.trim()) : [],
         hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : null,
