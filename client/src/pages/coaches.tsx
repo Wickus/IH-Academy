@@ -14,9 +14,21 @@ export default function Coaches() {
   const [editingCoach, setEditingCoach] = useState<any>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: api.getCurrentUser,
+  });
+
+  const { data: userOrgs = [] } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!currentUser,
+  });
+
   const { data: coaches = [], isLoading } = useQuery({
-    queryKey: ["/api/coaches"],
-    queryFn: () => api.getCoaches(1),
+    queryKey: ["/api/coaches", userOrgs[0]?.id],
+    queryFn: () => api.getCoaches(userOrgs[0]?.id),
+    enabled: !!userOrgs[0]?.id,
   });
 
   if (isLoading) {
