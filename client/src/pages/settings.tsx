@@ -28,7 +28,8 @@ import {
   Plus,
   Dumbbell,
   Trash2,
-  CreditCard
+  CreditCard,
+  Upload
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -53,9 +54,16 @@ const notificationSchema = z.object({
   bookingConfirmations: z.boolean(),
 });
 
+const colorSchema = z.object({
+  primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i, "Must be a valid hex color"),
+  secondaryColor: z.string().regex(/^#[0-9A-F]{6}$/i, "Must be a valid hex color"),
+  accentColor: z.string().regex(/^#[0-9A-F]{6}$/i, "Must be a valid hex color"),
+});
+
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("organization");
   const [showSportForm, setShowSportForm] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const { toast } = useToast();
 
   const { data: currentUser } = useQuery({
@@ -97,6 +105,15 @@ export default function Settings() {
       classReminders: true,
       paymentReminders: true,
       bookingConfirmations: true,
+    },
+  });
+
+  const colorForm = useForm({
+    resolver: zodResolver(colorSchema),
+    defaultValues: {
+      primaryColor: organization?.primaryColor || '#20366B',
+      secondaryColor: organization?.secondaryColor || '#278DD4',
+      accentColor: organization?.accentColor || '#24D367',
     },
   });
 
@@ -151,6 +168,11 @@ export default function Settings() {
       title: "Success",
       description: "Notification preferences updated successfully",
     });
+  };
+
+  const onColorSubmit = (data: any) => {
+    updateOrganizationMutation.mutate(data);
+    setShowColorPicker(false);
   };
 
   const onPayfastCredentialsSubmit = (data: PayfastCredentialsData) => {
@@ -818,24 +840,153 @@ export default function Settings() {
                         </div>
                         
                         <div className="mt-6">
-                          <Button 
-                            variant="outline" 
-                            className="hover:text-white"
-                            style={{
-                              borderColor: organization?.accentColor || '#24D367',
-                              color: organization?.accentColor || '#24D367'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = organization?.accentColor || '#24D367';
-                              e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                              e.currentTarget.style.color = organization?.accentColor || '#24D367';
-                            }}
-                          >
-                            Customize Colors
-                          </Button>
+                          <Dialog open={showColorPicker} onOpenChange={setShowColorPicker}>
+                            <DialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                className="hover:text-white"
+                                style={{
+                                  borderColor: organization?.accentColor || '#24D367',
+                                  color: organization?.accentColor || '#24D367'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = organization?.accentColor || '#24D367';
+                                  e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                  e.currentTarget.style.color = organization?.accentColor || '#24D367';
+                                }}
+                              >
+                                <Palette className="mr-2 h-4 w-4" />
+                                Customize Colors
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[525px]">
+                              <DialogHeader>
+                                <DialogTitle style={{ color: organization?.primaryColor || '#20366B' }}>
+                                  Customize Brand Colors
+                                </DialogTitle>
+                              </DialogHeader>
+                              <Form {...colorForm}>
+                                <form onSubmit={colorForm.handleSubmit(onColorSubmit)} className="space-y-6">
+                                  <div className="space-y-4">
+                                    <FormField
+                                      control={colorForm.control}
+                                      name="primaryColor"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel style={{ color: organization?.primaryColor || '#20366B' }}>
+                                            Primary Color
+                                          </FormLabel>
+                                          <FormDescription>
+                                            Main brand color used for headers and primary elements
+                                          </FormDescription>
+                                          <FormControl>
+                                            <div className="flex items-center space-x-3">
+                                              <Input 
+                                                type="color" 
+                                                {...field}
+                                                className="w-16 h-10 rounded-md border border-slate-300 cursor-pointer"
+                                              />
+                                              <Input 
+                                                type="text" 
+                                                {...field}
+                                                placeholder="#20366B"
+                                                className="flex-1 font-mono text-sm"
+                                              />
+                                            </div>
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+
+                                    <FormField
+                                      control={colorForm.control}
+                                      name="secondaryColor"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel style={{ color: organization?.primaryColor || '#20366B' }}>
+                                            Secondary Color
+                                          </FormLabel>
+                                          <FormDescription>
+                                            Complementary color used for buttons and accents
+                                          </FormDescription>
+                                          <FormControl>
+                                            <div className="flex items-center space-x-3">
+                                              <Input 
+                                                type="color" 
+                                                {...field}
+                                                className="w-16 h-10 rounded-md border border-slate-300 cursor-pointer"
+                                              />
+                                              <Input 
+                                                type="text" 
+                                                {...field}
+                                                placeholder="#278DD4"
+                                                className="flex-1 font-mono text-sm"
+                                              />
+                                            </div>
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+
+                                    <FormField
+                                      control={colorForm.control}
+                                      name="accentColor"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel style={{ color: organization?.primaryColor || '#20366B' }}>
+                                            Accent Color
+                                          </FormLabel>
+                                          <FormDescription>
+                                            Highlight color used for actions and notifications
+                                          </FormDescription>
+                                          <FormControl>
+                                            <div className="flex items-center space-x-3">
+                                              <Input 
+                                                type="color" 
+                                                {...field}
+                                                className="w-16 h-10 rounded-md border border-slate-300 cursor-pointer"
+                                              />
+                                              <Input 
+                                                type="text" 
+                                                {...field}
+                                                placeholder="#24D367"
+                                                className="flex-1 font-mono text-sm"
+                                              />
+                                            </div>
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+
+                                  <div className="flex justify-end space-x-3">
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      onClick={() => setShowColorPicker(false)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button 
+                                      type="submit" 
+                                      disabled={updateOrganizationMutation.isPending}
+                                      className="text-white"
+                                      style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                                    >
+                                      <Save className="mr-2 h-4 w-4" />
+                                      Save Colors
+                                    </Button>
+                                  </div>
+                                </form>
+                              </Form>
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </div>
                     </div>
