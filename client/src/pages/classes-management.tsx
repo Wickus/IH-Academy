@@ -218,10 +218,16 @@ export default function ClassesManagement() {
           <Button
             variant="ghost"
             onClick={() => setLocation('/dashboard')}
-            className="flex items-center gap-2 hover:bg-opacity-20"
+            className="flex items-center gap-2"
             style={{ 
               color: organization.primaryColor,
               borderColor: organization.primaryColor
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${organization.primaryColor}20`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
             <ArrowLeft className="h-4 w-4" />

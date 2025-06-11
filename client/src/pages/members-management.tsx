@@ -146,12 +146,12 @@ export default function MembersManagement() {
   };
 
   // Filter members based on search and membership status
-  const filteredMembers = members.filter(member => {
+  const filteredMembers = members.filter((member: any) => {
     const matchesSearch = member.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.email?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesMembership = membershipFilter === 'all' || 
-      (membershipFilter === 'active' && member.isActive) ||
-      (membershipFilter === 'inactive' && !member.isActive);
+      (membershipFilter === 'active' && (member.isActive !== false)) ||
+      (membershipFilter === 'inactive' && (member.isActive === false));
     return matchesSearch && matchesMembership;
   });
 
@@ -190,10 +190,16 @@ export default function MembersManagement() {
           <Button
             variant="ghost"
             onClick={() => setLocation('/dashboard')}
-            className="flex items-center gap-2 hover:bg-opacity-20"
+            className="flex items-center gap-2"
             style={{ 
               color: organization.secondaryColor,
               borderColor: organization.secondaryColor
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
             <ArrowLeft className="h-4 w-4" />

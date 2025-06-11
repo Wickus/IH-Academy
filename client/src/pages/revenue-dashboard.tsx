@@ -131,10 +131,16 @@ export default function RevenueDashboard() {
           <Button
             variant="ghost"
             onClick={() => setLocation('/dashboard')}
-            className="flex items-center gap-2 hover:bg-opacity-20"
+            className="flex items-center gap-2"
             style={{ 
               color: organization.accentColor,
               borderColor: organization.accentColor
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${organization.accentColor}20`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
             <ArrowLeft className="h-4 w-4" />
