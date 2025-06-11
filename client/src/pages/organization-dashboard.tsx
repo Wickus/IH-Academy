@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import StatsCards from "@/components/dashboard/stats-cards";
 import RecentBookings from "@/components/dashboard/recent-bookings";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
 import CoachAttendance from "@/components/dashboard/coach-attendance";
+import OrganizationSetupFlow from "@/components/onboarding/organization-setup-flow";
 
 interface OrganizationDashboardProps {
   user: User;
@@ -18,19 +20,36 @@ interface OrganizationDashboardProps {
 
 export default function OrganizationDashboard({ user, organization }: OrganizationDashboardProps) {
   const [, setLocation] = useLocation();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check if organization needs onboarding (new organization with default settings)
+  useEffect(() => {
+    const needsOnboarding = (
+      organization.planType === 'free' &&
+      organization.primaryColor === '#20366B' &&
+      organization.secondaryColor === '#278DD4' &&
+      organization.accentColor === '#24D367' &&
+      !organization.logo &&
+      (!organization.membershipPrice || organization.membershipPrice === '299.00')
+    );
+    
+    if (needsOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, [organization]);
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: [`/api/stats/organization/${organization.id}`],
     queryFn: () => api.getOrganizationStats(organization.id),
   });
 
   const { data: classes, isLoading: classesLoading } = useQuery({
-    queryKey: ['/api/classes', { organizationId: organization.id }],
-    queryFn: () => api.getClasses({ organizationId: organization.id }),
+    queryKey: ['/api/classes'],
+    queryFn: () => api.getClasses(),
   });
 
   const { data: recentBookings, isLoading: bookingsLoading } = useQuery({
-    queryKey: ['/api/bookings', { recent: 10, organizationId: organization.id }],
-    queryFn: () => api.getBookings({ recent: 10, organizationId: organization.id }),
+    queryKey: ['/api/bookings'],
+    queryFn: () => api.getBookings(),
   });
 
   if (statsLoading || classesLoading || bookingsLoading) {
