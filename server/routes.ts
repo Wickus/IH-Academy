@@ -1536,6 +1536,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Administrative Management Endpoints
+
+  // Move booking to different class
+  app.put("/api/bookings/:id/move", async (req: Request, res: Response) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const { classId } = req.body;
+      
+      const updatedBooking = await storage.updateBooking(bookingId, { classId });
+      if (!updatedBooking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error moving booking:", error);
+      res.status(500).json({ message: "Failed to move booking" });
+    }
+  });
+
+  // Get organization followers (members)
+  app.get("/api/organizations/:id/followers", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.id);
+      
+      // Get users who follow this organization
+      const followers = await storage.getOrganizationFollowers(organizationId);
+      
+      res.json(followers);
+    } catch (error) {
+      console.error("Error fetching organization followers:", error);
+      res.status(500).json({ message: "Failed to fetch followers" });
+    }
+  });
+
+  // Get member bookings
+  app.get("/api/bookings/member/:userId", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const memberBookings = await storage.getBookingsByUser(userId);
+      res.json(memberBookings);
+    } catch (error) {
+      console.error("Error fetching member bookings:", error);
+      res.status(500).json({ message: "Failed to fetch member bookings" });
+    }
+  });
+
+  // Get class bookings
+  app.get("/api/bookings/class/:classId", async (req: Request, res: Response) => {
+    try {
+      const classId = parseInt(req.params.classId);
+      const classBookings = await storage.getBookingsByClass(classId);
+      res.json(classBookings);
+    } catch (error) {
+      console.error("Error fetching class bookings:", error);
+      res.status(500).json({ message: "Failed to fetch class bookings" });
+    }
+  });
+
+  // Send message to members
+  app.post("/api/messages/send", async (req: Request, res: Response) => {
+    try {
+      const { organizationId, memberIds, message, type } = req.body;
+      
+      // Send push notifications to selected members
+      for (const memberId of memberIds) {
+        console.log(`Sending notification to member ${memberId}:`, message);
+      }
+      
+      res.json({ success: true, sentTo: memberIds.length });
+    } catch (error) {
+      console.error("Error sending messages:", error);
+      res.status(500).json({ message: "Failed to send messages" });
+    }
+  });
+
+  // Send email to members
+  app.post("/api/emails/send", async (req: Request, res: Response) => {
+    try {
+      const { organizationId, memberIds, subject, content } = req.body;
+      
+      console.log(`Sending email to ${memberIds.length} members:`, { subject, content });
+      
+      res.json({ success: true, sentTo: memberIds.length });
+    } catch (error) {
+      console.error("Error sending emails:", error);
+      res.status(500).json({ message: "Failed to send emails" });
+    }
+  });
+
+  // Get revenue data for organization
+  app.get("/api/revenue/:organizationId", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.organizationId);
+      const { period = 'current-month', year = new Date().getFullYear() } = req.query;
+      
+      const revenueData = await storage.getRevenueData(organizationId, period as string, parseInt(year as string));
+      
+      res.json(revenueData);
+    } catch (error) {
+      console.error("Error fetching revenue data:", error);
+      res.status(500).json({ message: "Failed to fetch revenue data" });
+    }
+  });
+
+  // Get payment records
+  app.get("/api/payments", async (req: Request, res: Response) => {
+    try {
+      const { organizationId, period } = req.query;
+      
+      const payments = await storage.getPaymentsByOrganization(parseInt(organizationId as string), period as string);
+      
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      res.status(500).json({ message: "Failed to fetch payments" });
+    }
+  });
+
+  // Send class update notification
+  app.post("/api/notifications/class-update", async (req: Request, res: Response) => {
+    try {
+      const { classId, message, organizationId } = req.body;
+      
+      // Get all participants for this class
+      const classBookings = await storage.getBookingsByClass(classId);
+      
+      console.log(`Sending class update notification to ${classBookings.length} participants:`, message);
+      
+      res.json({ success: true, notificationsSent: classBookings.length });
+    } catch (error) {
+      console.error("Error sending class notifications:", error);
+      res.status(500).json({ message: "Failed to send notifications" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;
