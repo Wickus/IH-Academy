@@ -101,10 +101,41 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
   });
 
   const registerMutation = useMutation({
-    mutationFn: (userData: RegisterFormData) => api.register(userData),
-    onSuccess: (user: User) => {
+    mutationFn: async (userData: RegisterFormData) => {
+      // First register the user
+      const user = await api.register(userData);
+      
+      // If registering as organization admin, also create the organization
+      if (registrationType === "organization") {
+        const orgPayload = {
+          ...orgData,
+          email: userData.email, // Use user's email for organization contact
+          maxClasses: orgData.planType === 'free' ? 10 : orgData.planType === 'basic' ? 50 : 200,
+          maxMembers: orgData.planType === 'free' ? 100 : orgData.planType === 'basic' ? 500 : 2000,
+        };
+        const organization = await api.createOrganization(orgPayload);
+        return { user, organization };
+      }
+      
+      return { user };
+    },
+    onSuccess: (result: any) => {
+      const { user, organization } = result;
       queryClient.setQueryData(['/api/auth/me'], user);
-      toast({ title: "Account created!", description: `Welcome ${user.firstName} ${user.lastName}` });
+      
+      if (organization) {
+        queryClient.setQueryData(['/api/organizations/my'], [organization]);
+        toast({ 
+          title: "Organisation created!", 
+          description: `Welcome ${user.firstName}! ${organization.name} is ready to go.` 
+        });
+      } else {
+        toast({ 
+          title: "Account created!", 
+          description: `Welcome ${user.firstName} ${user.lastName}` 
+        });
+      }
+      
       if (onAuthSuccess) {
         onAuthSuccess(user);
       } else {
@@ -352,7 +383,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                   ) : (
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-white">Organization Registration</h3>
+                        <h3 className="text-lg font-semibold text-white">Organisation Registration</h3>
                         <Button
                           type="button"
                           onClick={() => setRegistrationType(null)}
@@ -364,6 +395,18 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                         </Button>
                       </div>
                       <form onSubmit={handleRegister} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="orgName" className="text-white font-medium">Organisation Name</Label>
+                          <Input
+                            id="orgName"
+                            value={orgData.name}
+                            onChange={(e) => setOrgData({...orgData, name: e.target.value})}
+                            placeholder="Enter your organisation name"
+                            required
+                            className="bg-white/90 border-white/30 text-gray-900 placeholder-gray-500 focus:border-white focus:ring-white"
+                          />
+                        </div>
+                        
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="firstName" className="text-white font-medium">First Name</Label>
@@ -437,7 +480,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                           className="w-full bg-[#20366B] hover:bg-[#1a2d5a] text-white font-medium py-2 px-4 rounded-lg transition-colors"
                           disabled={registerMutation.isPending}
                         >
-                          {registerMutation.isPending ? "Creating account..." : "Create Organization Account"}
+                          {registerMutation.isPending ? "Creating account..." : "Create Organisation Account"}
                         </Button>
                       </form>
                     </div>
