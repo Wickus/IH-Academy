@@ -172,7 +172,11 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           <div className="grid gap-4 md:grid-cols-3">
             {organization.businessModel === 'membership' ? (
               <Button 
-                className="h-24 flex-col gap-2 bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+                className="h-24 flex-col gap-2 text-white border-0 shadow-lg"
+                style={{ 
+                  backgroundColor: organization.accentColor,
+                  '--hover-bg': organization.accentColor + 'CC'
+                } as React.CSSProperties}
                 onClick={() => setLocation('/daily-schedules')}
               >
                 <Calendar className="h-6 w-6" />
@@ -180,7 +184,11 @@ export default function OrganizationDashboard({ user, organization }: Organizati
               </Button>
             ) : (
               <Button 
-                className="h-24 flex-col gap-2 bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+                className="h-24 flex-col gap-2 text-white border-0 shadow-lg"
+                style={{ 
+                  backgroundColor: organization.accentColor,
+                  '--hover-bg': organization.accentColor + 'CC'
+                } as React.CSSProperties}
                 onClick={() => setLocation('/classes')}
               >
                 <Plus className="h-6 w-6" />
@@ -189,7 +197,19 @@ export default function OrganizationDashboard({ user, organization }: Organizati
             )}
             <Button 
               variant="outline" 
-              className="h-24 flex-col gap-2 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+              className="h-24 flex-col gap-2 hover:text-white"
+              style={{
+                borderColor: organization.secondaryColor,
+                color: organization.secondaryColor
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = organization.secondaryColor;
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = organization.secondaryColor;
+              }}
               onClick={() => setLocation('/coaches')}
             >
               <UserPlus className="h-6 w-6" />
@@ -197,7 +217,19 @@ export default function OrganizationDashboard({ user, organization }: Organizati
             </Button>
             <Button 
               variant="outline" 
-              className="h-24 flex-col gap-2 border-[#24D3BF] text-[#24D3BF] hover:bg-[#24D3BF] hover:text-white"
+              className="h-24 flex-col gap-2 hover:text-white"
+              style={{
+                borderColor: organization.primaryColor,
+                color: organization.primaryColor
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = organization.primaryColor;
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = organization.primaryColor;
+              }}
               onClick={() => setLocation('/reports')}
             >
               <BarChart3 className="h-6 w-6" />
@@ -210,7 +242,12 @@ export default function OrganizationDashboard({ user, organization }: Organizati
       {/* Dashboard Widgets */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-0 shadow-md bg-white">
-          <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
+          <CardHeader 
+            className="text-white"
+            style={{
+              background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})`
+            }}
+          >
             <CardTitle className="text-xl font-bold">Recent Bookings</CardTitle>
             <CardDescription className="text-white/80">
               Latest bookings for your classes
@@ -222,14 +259,20 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 {recentBookings.slice(0, 5).map((booking: any) => (
                   <div key={booking.id} className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors">
                     <div>
-                      <p className="font-semibold text-[#20366B]">{booking.participantName}</p>
+                      <p 
+                        className="font-semibold"
+                        style={{ color: organization.primaryColor }}
+                      >
+                        {booking.participantName}
+                      </p>
                       <p className="text-sm text-slate-600">
                         {booking.class?.name} • {formatCurrency(booking.amount)}
                       </p>
                     </div>
                     <Badge 
                       variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
-                      className={booking.paymentStatus === 'confirmed' ? 'bg-[#24D367] text-white' : ''}
+                      className={booking.paymentStatus === 'confirmed' ? 'text-white' : ''}
+                      style={booking.paymentStatus === 'confirmed' ? { backgroundColor: organization.accentColor } : {}}
                     >
                       {booking.paymentStatus}
                     </Badge>
@@ -296,7 +339,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full"
+                  className="h-2 rounded-full transition-all duration-300"
                   style={{ 
                     backgroundColor: organization.primaryColor,
                     width: `${Math.min(100, ((stats?.activeClasses || 0) / organization.maxClasses) * 100)}%`
@@ -311,7 +354,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full"
+                  className="h-2 rounded-full transition-all duration-300"
                   style={{ 
                     backgroundColor: organization.secondaryColor,
                     width: `${Math.min(100, ((stats?.totalMembers || 0) / organization.maxMembers) * 100)}%`
