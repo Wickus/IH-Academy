@@ -105,7 +105,11 @@ export default function BookingsManagement() {
           <Button
             variant="ghost"
             onClick={() => setLocation('/dashboard')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:bg-opacity-20"
+            style={{ 
+              color: organization.primaryColor,
+              borderColor: organization.primaryColor
+            }}
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard

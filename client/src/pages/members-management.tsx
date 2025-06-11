@@ -190,7 +190,11 @@ export default function MembersManagement() {
           <Button
             variant="ghost"
             onClick={() => setLocation('/dashboard')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:bg-opacity-20"
+            style={{ 
+              color: organization.secondaryColor,
+              borderColor: organization.secondaryColor
+            }}
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard

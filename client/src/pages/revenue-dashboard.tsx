@@ -131,7 +131,11 @@ export default function RevenueDashboard() {
           <Button
             variant="ghost"
             onClick={() => setLocation('/dashboard')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:bg-opacity-20"
+            style={{ 
+              color: organization.accentColor,
+              borderColor: organization.accentColor
+            }}
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
