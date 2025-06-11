@@ -63,10 +63,13 @@ export default function Settings() {
     queryFn: api.getCurrentUser,
   });
 
-  const { data: organization, isLoading: orgLoading } = useQuery({
-    queryKey: ["/api/organizations", 1],
-    queryFn: () => api.getOrganization(1),
+  const { data: userOrganizations } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
   });
+
+  const organization = userOrganizations?.[0];
+  const orgLoading = !userOrganizations;
 
   const { data: sports } = useQuery({
     queryKey: ["/api/sports"],
@@ -98,7 +101,10 @@ export default function Settings() {
   });
 
   const updateOrganizationMutation = useMutation({
-    mutationFn: (data: any) => api.updateOrganization(1, data),
+    mutationFn: (data: any) => {
+      if (!organization?.id) throw new Error("No organization found");
+      return api.updateOrganization(organization.id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
       toast({
@@ -116,7 +122,10 @@ export default function Settings() {
   });
 
   const updatePayfastCredentialsMutation = useMutation({
-    mutationFn: (data: PayfastCredentialsData) => api.updateOrganization(1, data),
+    mutationFn: (data: PayfastCredentialsData) => {
+      if (!organization?.id) throw new Error("No organization found");
+      return api.updateOrganization(organization.id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
       toast({
@@ -177,13 +186,23 @@ export default function Settings() {
     <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#20366B]">Settings</h1>
+          <h1 
+            className="text-3xl font-bold"
+            style={{ color: organization?.primaryColor || '#20366B' }}
+          >
+            Settings
+          </h1>
           <p className="text-slate-600">Manage your organization and preferences with ItsHappening.Africa</p>
         </div>
       </div>
 
       <Card className="border-0 shadow-md bg-white">
-        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white rounded-t-lg">
+        <CardHeader 
+          className="text-white rounded-t-lg"
+          style={{
+            background: `linear-gradient(to right, ${organization?.primaryColor || '#20366B'}, ${organization?.secondaryColor || '#278DD4'})`
+          }}
+        >
           <CardTitle className="text-xl font-bold flex items-center">
             <SettingsIcon className="mr-2 h-5 w-5" />
             Organization Settings
@@ -192,27 +211,68 @@ export default function Settings() {
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-6 bg-slate-100">
-              <TabsTrigger value="organization" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+              <TabsTrigger 
+                value="organization" 
+                className="data-[state=active]:text-white"
+                style={{
+                  '--active-bg': organization?.secondaryColor || '#278DD4'
+                } as React.CSSProperties}
+                onFocus={(e) => {
+                  if (activeTab === 'organization') {
+                    e.currentTarget.style.backgroundColor = organization?.secondaryColor || '#278DD4';
+                  }
+                }}
+              >
                 <Building className="mr-2 h-4 w-4" />
                 Organization
               </TabsTrigger>
-              <TabsTrigger value="sports" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+              <TabsTrigger 
+                value="sports" 
+                className="data-[state=active]:text-white"
+                style={{
+                  backgroundColor: activeTab === 'sports' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Dumbbell className="mr-2 h-4 w-4" />
                 Sports
               </TabsTrigger>
-              <TabsTrigger value="payments" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+              <TabsTrigger 
+                value="payments" 
+                className="data-[state=active]:text-white"
+                style={{
+                  backgroundColor: activeTab === 'payments' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Payments
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+              <TabsTrigger 
+                value="notifications" 
+                className="data-[state=active]:text-white"
+                style={{
+                  backgroundColor: activeTab === 'notifications' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Bell className="mr-2 h-4 w-4" />
                 Notifications
               </TabsTrigger>
-              <TabsTrigger value="security" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+              <TabsTrigger 
+                value="security" 
+                className="data-[state=active]:text-white"
+                style={{
+                  backgroundColor: activeTab === 'security' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Shield className="mr-2 h-4 w-4" />
                 Security
               </TabsTrigger>
-              <TabsTrigger value="appearance" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+              <TabsTrigger 
+                value="appearance" 
+                className="data-[state=active]:text-white"
+                style={{
+                  backgroundColor: activeTab === 'appearance' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Palette className="mr-2 h-4 w-4" />
                 Appearance
               </TabsTrigger>
@@ -662,15 +722,51 @@ export default function Settings() {
             <TabsContent value="appearance" className="space-y-6">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#20366B] mb-4">Branding & Appearance</h3>
+                  <h3 className="text-lg font-semibold mb-4" style={{ color: organization?.primaryColor || '#20366B' }}>
+                    Branding & Appearance
+                  </h3>
                   <div className="space-y-4">
                     <div className="rounded-lg border border-slate-200 p-4">
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-[#20366B] mb-2">Organization Logo</h4>
+                          <h4 className="font-medium mb-2" style={{ color: organization?.primaryColor || '#20366B' }}>
+                            Organization Logo
+                          </h4>
                           <p className="text-sm text-slate-600 mb-4">Upload your organization's logo</p>
-                          <Button variant="outline" className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
-                            Upload Logo
+                          
+                          {organization?.logo && (
+                            <div className="mb-4">
+                              <div className="flex items-center space-x-4">
+                                <img 
+                                  src={organization.logo} 
+                                  alt={`${organization.name} logo`}
+                                  className="w-16 h-16 rounded-lg border-2 border-slate-300 object-cover"
+                                />
+                                <div>
+                                  <p className="text-sm font-medium text-slate-800">Current Logo</p>
+                                  <p className="text-xs text-slate-600">Click below to upload a new logo</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          <Button 
+                            variant="outline" 
+                            className="hover:text-white"
+                            style={{
+                              borderColor: organization?.secondaryColor || '#278DD4',
+                              color: organization?.secondaryColor || '#278DD4'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = organization?.secondaryColor || '#278DD4';
+                              e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = organization?.secondaryColor || '#278DD4';
+                            }}
+                          >
+                            {organization?.logo ? 'Update Logo' : 'Upload Logo'}
                           </Button>
                         </div>
                       </div>
@@ -678,21 +774,68 @@ export default function Settings() {
 
                     <div className="rounded-lg border border-slate-200 p-4">
                       <div>
-                        <h4 className="font-medium text-[#20366B] mb-2">Theme Colors</h4>
-                        <p className="text-sm text-slate-600 mb-4">Customize your organization's brand colors</p>
-                        <div className="flex space-x-4">
+                        <h4 className="font-medium mb-2" style={{ color: organization?.primaryColor || '#20366B' }}>
+                          Theme Colors
+                        </h4>
+                        <p className="text-sm text-slate-600 mb-4">Your organization's current brand colors</p>
+                        <div className="flex space-x-6">
                           <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 bg-[#20366B] rounded-lg border-2 border-slate-300"></div>
-                            <span className="text-xs text-slate-600 mt-1">Primary</span>
+                            <div 
+                              className="w-16 h-16 rounded-lg border-2 border-slate-300 shadow-sm"
+                              style={{ backgroundColor: organization?.primaryColor || '#20366B' }}
+                            />
+                            <div className="text-center mt-2">
+                              <span className="text-sm font-medium text-slate-800">Primary</span>
+                              <p className="text-xs text-slate-600 font-mono">
+                                {organization?.primaryColor || '#20366B'}
+                              </p>
+                            </div>
                           </div>
                           <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 bg-[#278DD4] rounded-lg border-2 border-slate-300"></div>
-                            <span className="text-xs text-slate-600 mt-1">Secondary</span>
+                            <div 
+                              className="w-16 h-16 rounded-lg border-2 border-slate-300 shadow-sm"
+                              style={{ backgroundColor: organization?.secondaryColor || '#278DD4' }}
+                            />
+                            <div className="text-center mt-2">
+                              <span className="text-sm font-medium text-slate-800">Secondary</span>
+                              <p className="text-xs text-slate-600 font-mono">
+                                {organization?.secondaryColor || '#278DD4'}
+                              </p>
+                            </div>
                           </div>
                           <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 bg-[#24D367] rounded-lg border-2 border-slate-300"></div>
-                            <span className="text-xs text-slate-600 mt-1">Accent</span>
+                            <div 
+                              className="w-16 h-16 rounded-lg border-2 border-slate-300 shadow-sm"
+                              style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                            />
+                            <div className="text-center mt-2">
+                              <span className="text-sm font-medium text-slate-800">Accent</span>
+                              <p className="text-xs text-slate-600 font-mono">
+                                {organization?.accentColor || '#24D367'}
+                              </p>
+                            </div>
                           </div>
+                        </div>
+                        
+                        <div className="mt-6">
+                          <Button 
+                            variant="outline" 
+                            className="hover:text-white"
+                            style={{
+                              borderColor: organization?.accentColor || '#24D367',
+                              color: organization?.accentColor || '#24D367'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = organization?.accentColor || '#24D367';
+                              e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = organization?.accentColor || '#24D367';
+                            }}
+                          >
+                            Customize Colors
+                          </Button>
                         </div>
                       </div>
                     </div>
