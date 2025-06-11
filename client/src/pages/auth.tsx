@@ -477,10 +477,11 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                         
                         <Button 
                           type="submit" 
-                          className="w-full bg-[#20366B] hover:bg-[#1a2d5a] text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                          className="w-full bg-[#20366B] hover:bg-[#1a2d5a] text-white hover:text-white font-medium py-2 px-4 rounded-lg transition-colors"
                           disabled={registerMutation.isPending}
+                          style={{ color: 'white' }}
                         >
-                          {registerMutation.isPending ? "Creating account..." : "Create Organisation Account"}
+                          <span className="text-white">{registerMutation.isPending ? "Creating account..." : "Create Organisation Account"}</span>
                         </Button>
                       </form>
                     </div>
