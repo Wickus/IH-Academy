@@ -113,7 +113,11 @@ export default function OrganizationDashboard({ user, organization }: Organizati
 
       {/* Organization-Specific Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
+          style={{ borderLeftColor: organization.primaryColor }}
+          onClick={() => setLocation('/bookings-management')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -126,7 +130,11 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
+          style={{ borderLeftColor: organization.secondaryColor }}
+          onClick={() => setLocation('/members-management')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Members</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -139,7 +147,11 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
+          style={{ borderLeftColor: organization.accentColor }}
+          onClick={() => setLocation('/revenue-dashboard')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -152,7 +164,11 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
+          style={{ borderLeftColor: organization.primaryColor }}
+          onClick={() => setLocation('/classes-management')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming Classes</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
