@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Calendar, 
   Users, 
@@ -10,6 +11,7 @@ import {
   Dumbbell 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 
 const navigation = [
@@ -24,6 +26,20 @@ const navigation = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: () => api.getCurrentUser(),
+    retry: false
+  });
+
+  const { data: userOrganizations } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!user && user.role !== 'global_admin'
+  });
+
+  const organization = userOrganizations?.[0];
 
   return (
     <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
@@ -47,14 +63,32 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center space-x-4 px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
                 isActive
-                  ? "bg-[#24D367] text-white shadow-lg"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-primary hover:shadow-md"
+                  ? "text-white shadow-lg"
+                  : "text-slate-600 hover:bg-slate-100 hover:shadow-md"
               )}
+              style={{
+                backgroundColor: isActive ? (organization?.accentColor || '#24D367') : 'transparent',
+                color: isActive ? 'white' : undefined
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.color = organization?.primaryColor || '#20366B';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.color = '#64748b'; // text-slate-600
+                }
+              }}
             >
               <Icon className={cn(
                 "w-5 h-5 transition-transform duration-200",
-                isActive ? "text-white" : "text-slate-500 group-hover:text-primary group-hover:scale-110"
-              )} />
+                isActive ? "text-white" : "text-slate-500 group-hover:scale-110"
+              )} 
+              style={{
+                color: isActive ? 'white' : undefined
+              }}
+              />
               <span className="font-medium">{item.name}</span>
             </Link>
           );
