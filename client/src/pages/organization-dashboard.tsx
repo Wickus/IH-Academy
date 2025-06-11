@@ -90,13 +90,19 @@ export default function OrganizationDashboard({ user, organization }: Organizati
             </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="secondary" className="gap-2">
+            <Button 
+              variant="secondary" 
+              className="gap-2 text-white"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+              onClick={() => setLocation('/settings')}
+            >
               <Settings className="h-4 w-4" />
               Settings
             </Button>
             <Button 
               className="gap-2 bg-white/20 hover:bg-white/30 text-white border-white/30"
               variant="outline"
+              onClick={() => setLocation('/classes')}
             >
               <Plus className="h-4 w-4" />
               New Class

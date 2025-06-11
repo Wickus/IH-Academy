@@ -39,6 +39,14 @@ export default function Header() {
     retry: false
   });
 
+  const { data: userOrganizations } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!user && user.role !== 'global_admin'
+  });
+
+  const organization = userOrganizations?.[0];
+
   const { data: sports } = useQuery({
     queryKey: ["/api/sports"],
     queryFn: api.getSports,
@@ -91,7 +99,15 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-[#20366B] to-[#278DD4] shadow-lg border-b border-[#278DD4]/20 px-4 lg:px-8 py-4">
+    <header 
+      className="shadow-lg px-4 lg:px-8 py-4"
+      style={{
+        background: user?.role === 'global_admin' 
+          ? 'linear-gradient(to right, #20366B, #278DD4)'
+          : `linear-gradient(to right, ${organization?.primaryColor || '#20366B'}, ${organization?.secondaryColor || '#278DD4'})`,
+        borderBottom: `1px solid ${organization?.secondaryColor || '#278DD4'}20`
+      }}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" className="lg:hidden p-2 hover:bg-white/10 text-white">
@@ -122,14 +138,27 @@ export default function Header() {
                 >
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#24D367] text-white text-xs rounded-full flex items-center justify-center">
+                    <span 
+                      className="absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                    >
                       {unreadCount}
                     </span>
                   )}
                 </Button>
               </div>
               <Button 
-                className="bg-[#24D367] hover:bg-[#24D367]/90 text-white shadow-md"
+                className="text-white shadow-md"
+                style={{ 
+                  backgroundColor: organization?.accentColor || '#24D367',
+                  '--hover-bg': (organization?.accentColor || '#24D367') + '90'
+                } as React.CSSProperties}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = (organization?.accentColor || '#24D367') + 'E6';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = organization?.accentColor || '#24D367';
+                }}
                 onClick={handleNewClassClick}
               >
                 <Plus className="mr-2 h-4 w-4" />
