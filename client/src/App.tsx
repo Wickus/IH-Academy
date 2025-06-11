@@ -32,6 +32,10 @@ import OrganizationSetup from "@/pages/organization-setup";
 import OrganizationPayment from "@/pages/organization-payment";
 import MembershipPayment from "@/pages/membership-payment";
 import MembershipSuccess from "@/pages/membership-success";
+import BookingsManagement from "@/pages/bookings-management";
+import MembersManagement from "@/pages/members-management";
+import RevenueDashboard from "@/pages/revenue-dashboard";
+import ClassesManagement from "@/pages/classes-management";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -138,6 +142,26 @@ function RoleBasedRouter({ user }: { user?: User }) {
         <Route path="/notifications" component={() => (
           <AppLayout>
             <Notifications />
+          </AppLayout>
+        )} />
+        <Route path="/bookings-management" component={() => (
+          <AppLayout>
+            <BookingsManagement />
+          </AppLayout>
+        )} />
+        <Route path="/members-management" component={() => (
+          <AppLayout>
+            <MembersManagement />
+          </AppLayout>
+        )} />
+        <Route path="/revenue-dashboard" component={() => (
+          <AppLayout>
+            <RevenueDashboard />
+          </AppLayout>
+        )} />
+        <Route path="/classes-management" component={() => (
+          <AppLayout>
+            <ClassesManagement />
           </AppLayout>
         )} />
         <Route component={NotFound} />
