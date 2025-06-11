@@ -50,6 +50,7 @@ export interface IStorage {
   // User-Organization relationships
   getUserOrganizations(userId: number): Promise<UserOrganization[]>;
   getAllUserOrganizations(): Promise<UserOrganization[]>;
+  getOrganizationFollowers(organizationId: number): Promise<User[]>;
   addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization>;
   removeUserFromOrganization(userId: number, organizationId: number): Promise<boolean>;
   updateUserOrganizationRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined>;
@@ -78,6 +79,7 @@ export interface IStorage {
   getBooking(id: number): Promise<Booking | undefined>;
   getBookingsByClass(classId: number): Promise<Booking[]>;
   getBookingsByEmail(email: string): Promise<Booking[]>;
+  getBookingsByUser(userId: number): Promise<Booking[]>;
   getRecentBookings(limit?: number, organizationId?: number): Promise<Booking[]>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   updateBooking(id: number, booking: Partial<InsertBooking>): Promise<Booking | undefined>;
@@ -90,8 +92,12 @@ export interface IStorage {
   // Payments
   getPayment(id: number): Promise<Payment | undefined>;
   getPaymentByBooking(bookingId: number): Promise<Payment | undefined>;
+  getPaymentsByOrganization(organizationId: number, period?: string): Promise<Payment[]>;
   createPayment(payment: InsertPayment): Promise<Payment>;
   updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined>;
+
+  // Analytics
+  getRevenueData(organizationId: number, period: string, year: number): Promise<any>;
 
   // Memberships
   getMemberships(params: { userId?: number; organizationId?: number }): Promise<Membership[]>;
@@ -433,6 +439,10 @@ export class DatabaseStorage implements IStorage {
 
   async getBookingsByEmail(email: string): Promise<Booking[]> {
     return await db.select().from(bookings).where(eq(bookings.participantEmail, email));
+  }
+
+  async getBookingsByUser(userId: number): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.participantId, userId));
   }
 
   async getRecentBookings(limit = 10, organizationId?: number): Promise<Booking[]> {
