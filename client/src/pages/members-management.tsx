@@ -189,7 +189,7 @@ export default function MembersManagement() {
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
-            onClick={() => setLocation('/organization-dashboard')}
+            onClick={() => setLocation('/dashboard')}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
