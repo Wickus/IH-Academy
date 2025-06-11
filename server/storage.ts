@@ -338,6 +338,19 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
+  async getOrganizationFollowers(organizationId: number): Promise<User[]> {
+    const result = await db
+      .select({ user: users })
+      .from(userOrganizations)
+      .innerJoin(users, eq(userOrganizations.userId, users.id))
+      .where(and(
+        eq(userOrganizations.organizationId, organizationId),
+        eq(userOrganizations.isActive, true)
+      ));
+    
+    return result.map(row => row.user);
+  }
+
   // Sports methods
   async getAllSports(): Promise<Sport[]> {
     return await db.select().from(sports);
@@ -442,7 +455,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBookingsByUser(userId: number): Promise<Booking[]> {
-    return await db.select().from(bookings).where(eq(bookings.participantId, userId));
+    // Get user email first
+    const user = await this.getUser(userId);
+    if (!user) return [];
+    
+    return await db.select().from(bookings).where(eq(bookings.participantEmail, user.email));
   }
 
   async getRecentBookings(limit = 10, organizationId?: number): Promise<Booking[]> {
@@ -504,6 +521,42 @@ export class DatabaseStorage implements IStorage {
   async updatePayment(id: number, payment: Partial<InsertPayment>): Promise<Payment | undefined> {
     const [updatedPayment] = await db.update(payments).set(payment).where(eq(payments.id, id)).returning();
     return updatedPayment || undefined;
+  }
+
+  async getPaymentsByOrganization(organizationId: number, period?: string): Promise<Payment[]> {
+    const result = await db
+      .select({ payment: payments })
+      .from(payments)
+      .innerJoin(bookings, eq(payments.bookingId, bookings.id))
+      .innerJoin(classes, eq(bookings.classId, classes.id))
+      .where(eq(classes.organizationId, organizationId));
+    
+    return result.map(row => row.payment);
+  }
+
+  async getRevenueData(organizationId: number, period: string, year: number): Promise<any> {
+    const result = await db
+      .select({ 
+        month: payments.processedAt,
+        amount: payments.amount 
+      })
+      .from(payments)
+      .innerJoin(bookings, eq(payments.bookingId, bookings.id))
+      .innerJoin(classes, eq(bookings.classId, classes.id))
+      .where(eq(classes.organizationId, organizationId));
+    
+    // Group by month and sum amounts
+    const monthlyData = result.reduce((acc, payment) => {
+      if (payment.month) {
+        const month = new Date(payment.month).getMonth();
+        const amount = parseFloat(payment.amount);
+        acc[month] = (acc[month] || 0) + amount;
+      }
+      return acc;
+    }, {} as Record<number, number>);
+
+    // Return array of monthly totals
+    return Array.from({ length: 12 }, (_, i) => monthlyData[i] || 0);
   }
 
   // Statistics methods
