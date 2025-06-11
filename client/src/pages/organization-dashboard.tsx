@@ -322,6 +322,13 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           </div>
         </CardContent>
       </Card>
+
+      {/* Organization Setup Flow */}
+      <OrganizationSetupFlow
+        isOpen={showOnboarding}
+        onComplete={() => setShowOnboarding(false)}
+        organization={organization}
+      />
     </div>
   );
 }
