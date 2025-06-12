@@ -12,9 +12,24 @@ import { formatDateTime, formatCurrency, getPaymentStatusColor, getTimeAgo } fro
 export default function Bookings() {
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: () => api.getCurrentUser(),
+    retry: false
+  });
+
+  const { data: organizations } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user,
+  });
+
+  const organization = organizations?.[0];
+
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ["/api/bookings", { recent: 100 }],
     queryFn: () => api.getBookings({ recent: 100 }),
+    enabled: !!organization,
   });
 
   const filteredBookings = bookings.filter(booking =>
@@ -31,12 +46,12 @@ export default function Bookings() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !organization) {
     return (
-      <div className="p-4 lg:p-8">
+      <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization?.primaryColor || '#20366B'}10` }}>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Bookings</h1>
+            <h1 className="text-2xl font-bold" style={{ color: organization?.primaryColor || '#20366B' }}>Bookings</h1>
             <p className="text-muted-foreground">Manage participant bookings and registrations</p>
           </div>
         </div>

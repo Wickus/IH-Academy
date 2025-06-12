@@ -17,24 +17,42 @@ import {
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 
 export default function Reports() {
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: () => api.getCurrentUser(),
+    retry: false
+  });
+
+  const { data: organizations } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user,
+  });
+
+  const organization = organizations?.[0];
+
   const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
     queryKey: ["/api/bookings", { recent: 100 }],
     queryFn: () => api.getBookings({ recent: 100 }),
+    enabled: !!organization,
   });
 
   const { data: classes = [], isLoading: classesLoading } = useQuery({
     queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses({ organizationId: 1 }),
+    queryFn: () => api.getClasses({ organizationId: organization?.id }),
+    enabled: !!organization,
   });
 
   const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ["/api/coaches"],
-    queryFn: () => api.getCoaches(1),
+    queryFn: () => api.getCoaches(organization?.id),
+    enabled: !!organization,
   });
 
   const { data: stats } = useQuery({
     queryKey: ["/api/stats"],
     queryFn: api.getStats,
+    enabled: !!organization,
   });
 
   // Calculate report metrics
@@ -63,12 +81,12 @@ export default function Reports() {
 
   const isLoading = bookingsLoading || classesLoading || coachesLoading;
 
-  if (isLoading) {
+  if (isLoading || !organization) {
     return (
-      <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+      <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization?.primaryColor || '#20366B'}10` }}>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#20366B]">Reports</h1>
+            <h1 className="text-3xl font-bold" style={{ color: organization?.primaryColor || '#20366B' }}>Reports</h1>
             <p className="text-slate-600">Generate insights and analytics for your organization</p>
           </div>
         </div>
@@ -88,18 +106,36 @@ export default function Reports() {
   }
 
   return (
-    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization.primaryColor}10` }}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#20366B]">Reports & Analytics</h1>
+          <h1 className="text-3xl font-bold" style={{ color: organization.primaryColor }}>Reports & Analytics</h1>
           <p className="text-slate-600">Generate insights and analytics with ItsHappening.Africa</p>
         </div>
         <div className="flex gap-3">
-          <Button className="bg-[#278DD4] hover:bg-[#1f7bc4] text-white border-0">
+          <Button 
+            className="text-white border-0"
+            style={{ backgroundColor: organization.secondaryColor }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${organization.secondaryColor}dd`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = organization.secondaryColor;
+            }}
+          >
             <Download className="mr-2 h-4 w-4" />
             Export Data
           </Button>
-          <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
+          <Button 
+            className="text-white border-0"
+            style={{ backgroundColor: organization.accentColor }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${organization.accentColor}dd`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = organization.accentColor;
+            }}
+          >
             <FileText className="mr-2 h-4 w-4" />
             Generate Report
           </Button>

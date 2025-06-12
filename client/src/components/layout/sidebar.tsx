@@ -97,12 +97,21 @@ export default function Sidebar() {
       
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium">SJ</span>
+          <div 
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white"
+            style={{ backgroundColor: organization?.primaryColor || '#20366B' }}
+          >
+            <span className="text-sm font-medium">
+              {user?.username?.slice(0, 2).toUpperCase() || 'U'}
+            </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">Sarah Johnson</p>
-            <p className="text-xs text-muted-foreground truncate">Elite Sports Academy</p>
+            <p className="text-sm font-medium text-foreground truncate">
+              {user?.username || 'User'}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {organization?.name || 'Organization'}
+            </p>
           </div>
         </div>
       </div>
