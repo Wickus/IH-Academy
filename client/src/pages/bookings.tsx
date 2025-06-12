@@ -69,16 +69,19 @@ export default function Bookings() {
   }
 
   return (
-    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization.primaryColor}10` }}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#20366B]">Bookings</h1>
+          <h1 className="text-3xl font-bold" style={{ color: organization.primaryColor }}>Bookings</h1>
           <p className="text-slate-600">Manage participant bookings and registrations with ItsHappening.Africa</p>
         </div>
       </div>
 
       <Card className="border-0 shadow-md bg-white">
-        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
+        <CardHeader 
+          className="text-white" 
+          style={{ background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+        >
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold">All Bookings</CardTitle>
             <div className="flex items-center space-x-2">
