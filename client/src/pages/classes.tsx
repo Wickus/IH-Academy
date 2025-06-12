@@ -149,15 +149,15 @@ export default function Classes() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-[#278DD4]" />
+                    <Clock className="h-4 w-4" style={{ color: organization.secondaryColor }} />
                     <span className="text-slate-600">{formatTime(classItem.startTime)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-[#278DD4]" />
-                    <span className="text-[#20366B] font-medium">{classItem.availableSpots || 0}/{classItem.capacity}</span>
+                    <Users className="h-4 w-4" style={{ color: organization.secondaryColor }} />
+                    <span className="font-medium" style={{ color: organization.primaryColor }}>{classItem.availableSpots || 0}/{classItem.capacity}</span>
                   </div>
                   <div className="flex items-center gap-2 col-span-2">
-                    <MapPin className="h-4 w-4 text-[#278DD4]" />
+                    <MapPin className="h-4 w-4" style={{ color: organization.secondaryColor }} />
                     <span className="text-slate-600">{classItem.location || 'Location TBA'}</span>
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export default function Classes() {
                       {formatDate(classItem.startTime)}
                     </p>
                     {classItem.price && (
-                      <p className="font-semibold text-[#24D367] text-base">
+                      <p className="font-semibold text-base" style={{ color: organization.accentColor }}>
                         {formatCurrency(classItem.price)}
                       </p>
                     )}
@@ -186,7 +186,19 @@ export default function Classes() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                      className="hover:text-white"
+                      style={{
+                        borderColor: organization.secondaryColor,
+                        color: organization.secondaryColor
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = organization.secondaryColor;
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = organization.secondaryColor;
+                      }}
                       onClick={() => setEditingClass(classItem)}
                     >
                       Edit
@@ -194,7 +206,8 @@ export default function Classes() {
                     <Button 
                       size="sm"
                       disabled={!isUpcoming}
-                      className={isUpcoming ? 'bg-[#24D367] hover:bg-[#1fb557] text-white border-0' : 'bg-slate-400 text-white'}
+                      className={isUpcoming ? 'text-white border-0' : 'bg-slate-400 text-white'}
+                      style={isUpcoming ? { backgroundColor: organization.accentColor } : {}}
                     >
                       {isUpcoming ? 'View Details' : 'Completed'}
                     </Button>
@@ -208,14 +221,15 @@ export default function Classes() {
 
       {classes.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-[#278DD4] mb-4">
+          <div className="mb-4" style={{ color: organization.secondaryColor }}>
             <Users className="mx-auto h-12 w-12" />
           </div>
-          <h3 className="text-lg font-medium text-[#20366B] mb-2">No classes yet</h3>
+          <h3 className="text-lg font-medium mb-2" style={{ color: organization.primaryColor }}>No classes yet</h3>
           <p className="text-slate-600 mb-4">Get started by creating your first class or clinic.</p>
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+            className="text-white border-0 shadow-lg"
+            style={{ backgroundColor: organization.accentColor }}
           >
             <Plus className="mr-2 h-4 w-4" />
             Create First Class
