@@ -25,18 +25,20 @@ export default function Coaches() {
     enabled: !!currentUser,
   });
 
+  const organization = userOrgs[0];
+
   const { data: coaches = [], isLoading } = useQuery({
-    queryKey: ["/api/coaches", userOrgs[0]?.id],
-    queryFn: () => api.getCoaches(userOrgs[0]?.id),
-    enabled: !!userOrgs[0]?.id,
+    queryKey: ["/api/coaches", organization?.id],
+    queryFn: () => api.getCoaches(organization?.id),
+    enabled: !!organization?.id,
   });
 
-  if (isLoading) {
+  if (isLoading || !organization) {
     return (
-      <div className="p-4 lg:p-8">
+      <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization?.secondaryColor || '#278DD4'}10` }}>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Coaches</h1>
+            <h1 className="text-2xl font-bold" style={{ color: organization?.secondaryColor || '#278DD4' }}>Coaches</h1>
             <p className="text-muted-foreground">Manage your coaching staff</p>
           </div>
         </div>
@@ -67,27 +69,36 @@ export default function Coaches() {
   }
 
   return (
-    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization.secondaryColor}10` }}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#20366B]">Coaches</h1>
+          <h1 className="text-3xl font-bold" style={{ color: organization.secondaryColor }}>Coaches</h1>
           <p className="text-slate-600">Manage your coaching staff with ItsHappening.Africa</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white shadow-lg border-0">
+            <Button 
+              className="text-white shadow-lg border-0"
+              style={{ backgroundColor: organization.accentColor }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = `${organization.accentColor}dd`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = organization.accentColor;
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add New Coach
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-[#20366B]">Add New Coach</DialogTitle>
+              <DialogTitle style={{ color: organization.primaryColor }}>Add New Coach</DialogTitle>
             </DialogHeader>
             <div className="max-h-[75vh] overflow-y-auto pr-2">
               <CoachForm 
                 onSuccess={() => setShowCreateDialog(false)}
-                initialData={{ organizationId: userOrgs[0]?.id }}
+                initialData={{ organizationId: organization?.id }}
               />
             </div>
           </DialogContent>
@@ -97,7 +108,7 @@ export default function Coaches() {
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-[#20366B] text-xl font-bold">Edit Coach</DialogTitle>
+              <DialogTitle className="text-xl font-bold" style={{ color: organization.primaryColor }}>Edit Coach</DialogTitle>
             </DialogHeader>
             <div className="py-4">
               {editingCoach && (

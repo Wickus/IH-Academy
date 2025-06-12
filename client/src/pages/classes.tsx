@@ -21,10 +21,18 @@ export default function Classes() {
     retry: false
   });
 
+  const { data: organizations } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user,
+  });
+
+  const organization = organizations?.[0];
+
   const { data: classes = [], isLoading } = useQuery({
     queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses({ organizationId: user?.organizationId || 1 }),
-    enabled: !!user?.organizationId,
+    queryFn: () => api.getClasses({ organizationId: organization?.id || 1 }),
+    enabled: !!organization?.id,
   });
 
   const { data: sports = [] } = useQuery({
@@ -32,12 +40,12 @@ export default function Classes() {
     queryFn: api.getSports,
   });
 
-  if (isLoading) {
+  if (isLoading || !organization) {
     return (
-      <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+      <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization?.primaryColor || '#20366B'}10` }}>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#20366B]">Classes & Clinics</h1>
+            <h1 className="text-3xl font-bold" style={{ color: organization?.primaryColor || '#20366B' }}>Classes & Clinics</h1>
             <p className="text-slate-600">Manage your sports classes and training sessions with ItsHappening.Africa</p>
           </div>
         </div>
@@ -61,24 +69,35 @@ export default function Classes() {
   }
 
   return (
-    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization.primaryColor}10` }}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#20366B]">Classes & Clinics</h1>
+          <h1 className="text-3xl font-bold" style={{ color: organization.primaryColor }}>Classes & Clinics</h1>
           <p className="text-slate-600">Manage your sports classes and training sessions with ItsHappening.Africa</p>
         </div>
         <div className="flex items-center gap-2">
-          <RealTimeNotifications userId={1} organizationId={1} />
+          <RealTimeNotifications userId={user?.id || 1} organizationId={organization.id} />
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white shadow-lg border-0">
+              <Button 
+                className="text-white shadow-lg border-0"
+                style={{ 
+                  backgroundColor: organization.accentColor,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = `${organization.accentColor}dd`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = organization.accentColor;
+                }}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 New Class
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-[#20366B]">Create New Class</DialogTitle>
+                <DialogTitle style={{ color: organization.primaryColor }}>Create New Class</DialogTitle>
               </DialogHeader>
               <div className="max-h-[75vh] overflow-y-auto pr-2">
                 <ClassForm 
