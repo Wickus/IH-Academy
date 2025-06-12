@@ -7,14 +7,30 @@ import { CreditCard, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
 import { formatCurrency, formatDateTime, getPaymentStatusColor } from "@/lib/utils";
 
 export default function Payments() {
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: () => api.getCurrentUser(),
+    retry: false
+  });
+
+  const { data: organizations } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user,
+  });
+
+  const organization = organizations?.[0];
+
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ["/api/bookings", { recent: 100 }],
     queryFn: () => api.getBookings({ recent: 100 }),
+    enabled: !!organization,
   });
 
   const { data: stats } = useQuery({
     queryKey: ["/api/stats"],
     queryFn: api.getStats,
+    enabled: !!organization,
   });
 
   const totalRevenue = bookings
@@ -27,12 +43,12 @@ export default function Payments() {
 
   const failedPayments = bookings.filter(booking => booking.paymentStatus === 'failed').length;
 
-  if (isLoading) {
+  if (isLoading || !organization) {
     return (
-      <div className="p-4 lg:p-8">
+      <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization?.accentColor || '#24D367'}10` }}>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Payments</h1>
+            <h1 className="text-2xl font-bold" style={{ color: organization?.accentColor || '#24D367' }}>Payments</h1>
             <p className="text-muted-foreground">Monitor payment status and revenue</p>
           </div>
         </div>
@@ -52,10 +68,10 @@ export default function Payments() {
   }
 
   return (
-    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="p-4 lg:p-8 min-h-screen" style={{ backgroundColor: `${organization.accentColor}10` }}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#20366B]">Payments</h1>
+          <h1 className="text-3xl font-bold" style={{ color: organization.accentColor }}>Payments</h1>
           <p className="text-slate-600">Monitor payment status and revenue with ItsHappening.Africa</p>
         </div>
       </div>
