@@ -886,10 +886,30 @@ export default function Settings() {
                     <div className="rounded-lg border border-slate-200 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-[#20366B]">Two-Factor Authentication</h4>
+                          <h4 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Two-Factor Authentication
+                          </h4>
                           <p className="text-sm text-slate-600">Add an extra layer of security to your account</p>
                         </div>
-                        <Button variant="outline" className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                        <Button 
+                          variant="outline" 
+                          className="hover:text-white"
+                          style={{
+                            borderColor: organization?.accentColor || '#24D367',
+                            color: organization?.accentColor || '#24D367'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = organization?.accentColor || '#24D367';
+                            e.currentTarget.style.color = 'white';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = organization?.accentColor || '#24D367';
+                          }}
+                        >
                           Enable 2FA
                         </Button>
                       </div>
@@ -898,7 +918,12 @@ export default function Settings() {
                     <div className="rounded-lg border border-slate-200 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-[#20366B]">Active Sessions</h4>
+                          <h4 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Active Sessions
+                          </h4>
                           <p className="text-sm text-slate-600">Manage your active login sessions</p>
                         </div>
                         <Button variant="outline" className="border-slate-300 text-slate-600 hover:bg-slate-50">
