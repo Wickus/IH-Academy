@@ -47,6 +47,8 @@ export const organizations = pgTable("organizations", {
   payfastMerchantKey: text("payfast_merchant_key"),
   payfastPassphrase: text("payfast_passphrase"),
   payfastSandbox: boolean("payfast_sandbox").default(true),
+  // Global pricing configuration (stored in organization ID 20)
+  pricingConfig: text("pricing_config"),
   // Status
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),

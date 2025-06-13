@@ -1868,6 +1868,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Global admin pricing configuration endpoints
+  app.get("/api/admin/pricing-config", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Get global pricing configuration from organization ID 20 (acts as global settings)
+      const globalOrg = await storage.getOrganization(20);
+      
+      let pricingConfig = {
+        membership: {
+          free: { price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
+          basic: { price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
+          premium: { price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+        },
+        payPerClass: {
+          free: { commission: "5", maxBookings: "50", storage: "1" },
+          basic: { commission: "3", maxBookings: "200", storage: "10" },
+          premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
+        }
+      };
+
+      // If stored pricing config exists, use it
+      if (globalOrg?.pricingConfig) {
+        try {
+          pricingConfig = JSON.parse(globalOrg.pricingConfig);
+        } catch (e) {
+          console.log("Using default pricing config due to parse error");
+        }
+      }
+
+      res.json(pricingConfig);
+    } catch (error: any) {
+      console.error("Error fetching pricing config:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/pricing-config", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const pricingConfig = req.body;
+
+      // Store pricing configuration in organization 20 (global settings)
+      await db.update(organizations)
+        .set({ 
+          pricingConfig: JSON.stringify(pricingConfig),
+          updatedAt: new Date()
+        })
+        .where(eq(organizations.id, 20));
+
+      console.log("Pricing configuration saved:", pricingConfig);
+
+      res.json({ message: "Pricing configuration saved successfully" });
+    } catch (error: any) {
+      console.error("Error saving pricing config:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;

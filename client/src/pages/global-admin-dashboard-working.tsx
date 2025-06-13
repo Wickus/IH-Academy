@@ -102,22 +102,38 @@ export default function GlobalAdminDashboard() {
     }));
   };
 
-  // Save pricing configuration
-  const savePricingConfiguration = async () => {
-    try {
-      // Here you would typically save to the backend
+  // Save pricing configuration mutation
+  const savePricingMutation = useMutation({
+    mutationFn: async (config: typeof pricingConfig) => {
+      const response = await fetch('/api/admin/pricing-config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(config),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save pricing configuration');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
       toast({
         title: "Success",
         description: "Pricing configuration saved successfully",
       });
-    } catch (error) {
+    },
+    onError: () => {
       toast({
         title: "Error",
         description: "Failed to save pricing configuration",
         variant: "destructive",
       });
-    }
-  };
+    },
+  });
 
   const editForm = useForm<UserEditFormData>({
     resolver: zodResolver(userEditSchema),
@@ -1512,9 +1528,10 @@ export default function GlobalAdminDashboard() {
                 </Button>
                 <Button 
                   className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white"
-                  onClick={savePricingConfiguration}
+                  onClick={() => savePricingMutation.mutate(pricingConfig)}
+                  disabled={savePricingMutation.isPending}
                 >
-                  Save Pricing Configuration
+                  {savePricingMutation.isPending ? "Saving..." : "Save Pricing Configuration"}
                 </Button>
               </div>
             </CardContent>
