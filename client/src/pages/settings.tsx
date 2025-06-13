@@ -252,12 +252,7 @@ export default function Settings() {
                 value="organization" 
                 className="data-[state=active]:text-white"
                 style={{
-                  '--active-bg': organization?.secondaryColor || '#278DD4'
-                } as React.CSSProperties}
-                onFocus={(e) => {
-                  if (activeTab === 'organization') {
-                    e.currentTarget.style.backgroundColor = organization?.secondaryColor || '#278DD4';
-                  }
+                  backgroundColor: activeTab === 'organization' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
                 <Building className="mr-2 h-4 w-4" />
