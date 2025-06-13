@@ -43,10 +43,14 @@ export default function PublicDiscovery() {
   const logoutMutation = useMutation({
     mutationFn: () => api.logout(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.clear();
-      // Redirect to auth page
-      window.location.href = '/auth';
+      // Navigate smoothly without clearing data immediately
+      window.location.href = '/';
+      
+      // Clear cache after navigation completes
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+        queryClient.clear();
+      }, 100);
     }
   });
 

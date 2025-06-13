@@ -57,8 +57,15 @@ export default function UserDashboard() {
   const logoutMutation = useMutation({
     mutationFn: api.logout,
     onSuccess: () => {
-      queryClient.clear();
+      // Don't clear query client immediately to prevent style flash
+      // Navigate first, then clear after a small delay
       setLocation('/');
+      
+      // Clear cache after navigation to prevent style flashing
+      setTimeout(() => {
+        queryClient.clear();
+      }, 100);
+      
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of your account.",
