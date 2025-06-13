@@ -73,24 +73,13 @@ export default function UserDashboard() {
     },
   });
 
-  // Show organization-branded loading screen or organization dashboard
+  // Wait for organization data before rendering anything
   if (!currentUser || orgLoading) {
-    const bgStyle = organization 
-      ? { background: `linear-gradient(to bottom right, ${organization.primaryColor}10, ${organization.secondaryColor}10)` }
-      : { background: 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)' };
-    
-    const spinnerColor = organization?.primaryColor || '#278DD4';
-    
     return (
-      <div className="min-h-screen flex items-center justify-center" style={bgStyle}>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
-          <div 
-            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
-            style={{ borderColor: spinnerColor }}
-          ></div>
-          <p className="text-slate-600">
-            {organization ? `Loading ${organization.name} dashboard...` : 'Loading your dashboard...'}
-          </p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#278DD4] mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading your dashboard...</p>
         </div>
       </div>
     );
