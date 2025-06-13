@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Settings as SettingsIcon, 
   Building, 
@@ -67,6 +68,7 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState("organization");
   const [showSportForm, setShowSportForm] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const { data: currentUser } = useQuery({
@@ -77,11 +79,23 @@ export default function Settings() {
   const { data: userOrganizations, isLoading: orgDataLoading } = useQuery({
     queryKey: ["/api/organizations/my"],
     queryFn: api.getUserOrganizations,
-    enabled: !!currentUser,
+    enabled: !!currentUser && currentUser.role !== 'global_admin',
   });
 
-  const organization = userOrganizations?.[0];
-  const orgLoading = orgDataLoading || !userOrganizations;
+  // For global admins, get all organizations to allow them to configure settings
+  const { data: allOrganizations, isLoading: allOrgLoading } = useQuery({
+    queryKey: ["/api/organizations"],
+    queryFn: api.getOrganizations,
+    enabled: !!currentUser && currentUser.role === 'global_admin',
+  });
+
+  const organizations = currentUser?.role === 'global_admin' ? allOrganizations : userOrganizations;
+  
+  // Auto-select first organization if none selected and organizations are available
+  const effectiveSelectedOrgId = selectedOrgId || organizations?.[0]?.id;
+  const organization = organizations?.find(org => org.id === effectiveSelectedOrgId) || organizations?.[0];
+  
+  const orgLoading = (currentUser?.role === 'global_admin' ? allOrgLoading : orgDataLoading) || !organizations;
 
   const { data: sports } = useQuery({
     queryKey: ["/api/sports"],
@@ -357,6 +371,34 @@ export default function Settings() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
+          {currentUser?.role === 'global_admin' && organizations && organizations.length > 1 && (
+            <div className="mb-6 p-4 bg-slate-50 rounded-lg border">
+              <div className="flex items-center gap-4">
+                <Building className="h-5 w-5 text-slate-600" />
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">
+                    Select Organization to Configure
+                  </label>
+                  <Select
+                    value={effectiveSelectedOrgId?.toString()}
+                    onValueChange={(value) => setSelectedOrgId(parseInt(value))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose an organization" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {organizations.map((org) => (
+                        <SelectItem key={org.id} value={org.id.toString()}>
+                          {org.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6" key={organization?.id}>
             <TabsList className="grid w-full grid-cols-6 bg-slate-100">
               <TabsTrigger 
