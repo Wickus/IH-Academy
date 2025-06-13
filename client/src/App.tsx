@@ -196,12 +196,6 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   return (
     <Switch>
       <Route path="/" component={PublicDiscovery} />
-      <Route path="/auth">
-        <Auth onAuthSuccess={(authenticatedUser) => {
-          setUser(authenticatedUser);
-          setIsAuthenticated(true);
-        }} />
-      </Route>
       <Route path="/discover" component={PublicDiscovery} />
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
