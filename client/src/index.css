@@ -42,15 +42,29 @@
   --toast-error: 239 68 68; /* #EF4444 */
 }
 
-/* Dynamic Organization Tab Styling */
-.organization-tabs [data-state="active"] {
+/* Dynamic Organization Tab Styling - Enhanced specificity */
+.organization-tabs button[role="tab"][data-state="active"] {
+  background-color: var(--org-secondary-color, #278DD4) !important;
+  color: white !important;
+  border-color: var(--org-secondary-color, #278DD4) !important;
+}
+
+.organization-tabs button[role="tab"][data-state="inactive"] {
+  background-color: transparent !important;
+  color: rgb(100 116 139) !important;
+  border-color: transparent !important;
+}
+
+/* Additional overrides for Radix UI tabs */
+.organization-tabs [data-radix-collection-item][data-state="active"] {
   background-color: var(--org-secondary-color, #278DD4) !important;
   color: white !important;
 }
 
-.organization-tabs [data-state="inactive"] {
-  background-color: transparent !important;
-  color: inherit !important;
+.organization-tabs [data-radix-collection-item]:hover {
+  background-color: var(--org-secondary-color, #278DD4) !important;
+  color: white !important;
+  opacity: 0.9;
 }
 
 .dark {
