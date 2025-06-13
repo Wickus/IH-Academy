@@ -227,7 +227,7 @@ export default function Payments() {
               <div className="mb-4" style={{ color: organization.secondaryColor }}>
                 <CreditCard className="mx-auto h-16 w-16" />
               </div>
-              <h3 className="text-xl font-bold text-[#20366B] mb-2">No payments yet</h3>
+              <h3 className="text-xl font-bold mb-2" style={{ color: organization.primaryColor }}>No payments yet</h3>
               <p className="text-slate-600">
                 Payment transactions will appear here once bookings are made with ItsHappening.Africa.
               </p>
