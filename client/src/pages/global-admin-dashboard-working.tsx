@@ -74,14 +74,14 @@ export default function GlobalAdminDashboard() {
   // Pricing configuration state
   const [pricingConfig, setPricingConfig] = useState({
     membership: {
-      free: { maxMembers: "25", maxClasses: "5", storage: "1" },
-      basic: { maxMembers: "100", maxClasses: "25", storage: "10" },
-      premium: { maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+      free: { price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
+      basic: { price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
+      premium: { price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
     },
     payPerClass: {
-      free: { maxBookings: "50", commission: "5", storage: "1" },
-      basic: { maxBookings: "200", commission: "3", storage: "10" },
-      premium: { maxBookings: "Unlimited", commission: "2", storage: "100" }
+      free: { commission: "5", maxBookings: "50", storage: "1" },
+      basic: { commission: "3", maxBookings: "200", storage: "10" },
+      premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
     }
   });
   
@@ -1194,7 +1194,18 @@ export default function GlobalAdminDashboard() {
                   <Card className="border-2 border-[#278DD4]/30">
                     <CardHeader className="text-center pb-4">
                       <CardTitle className="text-[#20366B]">Free Plan</CardTitle>
-                      <div className="text-3xl font-bold text-[#278DD4]">R0</div>
+                      <div className="space-y-2">
+                        <div className="text-3xl font-bold text-[#278DD4]">R{pricingConfig.membership.free.price}</div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Price (R)</label>
+                          <Input 
+                            value={pricingConfig.membership.free.price}
+                            onChange={(e) => updatePricingConfig('membership', 'free', 'price', e.target.value)}
+                            className="text-center w-20 mx-auto"
+                            type="number"
+                          />
+                        </div>
+                      </div>
                       <p className="text-sm text-slate-600">per month</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1231,7 +1242,18 @@ export default function GlobalAdminDashboard() {
                     <CardHeader className="text-center pb-4">
                       <Badge className="mb-2 bg-[#24D367] text-white">Most Popular</Badge>
                       <CardTitle className="text-[#20366B]">Basic Plan</CardTitle>
-                      <div className="text-3xl font-bold text-[#24D367]">R299</div>
+                      <div className="space-y-2">
+                        <div className="text-3xl font-bold text-[#24D367]">R{pricingConfig.membership.basic.price}</div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Price (R)</label>
+                          <Input 
+                            value={pricingConfig.membership.basic.price}
+                            onChange={(e) => updatePricingConfig('membership', 'basic', 'price', e.target.value)}
+                            className="text-center w-20 mx-auto"
+                            type="number"
+                          />
+                        </div>
+                      </div>
                       <p className="text-sm text-slate-600">per month</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1267,7 +1289,18 @@ export default function GlobalAdminDashboard() {
                   <Card className="border-2 border-[#24D3BF]/50">
                     <CardHeader className="text-center pb-4">
                       <CardTitle className="text-[#20366B]">Premium Plan</CardTitle>
-                      <div className="text-3xl font-bold text-[#24D3BF]">R599</div>
+                      <div className="space-y-2">
+                        <div className="text-3xl font-bold text-[#24D3BF]">R{pricingConfig.membership.premium.price}</div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Price (R)</label>
+                          <Input 
+                            value={pricingConfig.membership.premium.price}
+                            onChange={(e) => updatePricingConfig('membership', 'premium', 'price', e.target.value)}
+                            className="text-center w-20 mx-auto"
+                            type="number"
+                          />
+                        </div>
+                      </div>
                       <p className="text-sm text-slate-600">per month</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1309,7 +1342,20 @@ export default function GlobalAdminDashboard() {
                   <Card className="border-2 border-[#278DD4]/30">
                     <CardHeader className="text-center pb-4">
                       <CardTitle className="text-[#20366B]">Free Plan</CardTitle>
-                      <div className="text-3xl font-bold text-[#278DD4]">5%</div>
+                      <div className="space-y-2">
+                        <div className="text-3xl font-bold text-[#278DD4]">{pricingConfig.payPerClass.free.commission}%</div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Commission (%)</label>
+                          <Input 
+                            value={pricingConfig.payPerClass.free.commission}
+                            onChange={(e) => updatePricingConfig('payPerClass', 'free', 'commission', e.target.value)}
+                            className="text-center w-20 mx-auto"
+                            type="number"
+                            min="0"
+                            max="100"
+                          />
+                        </div>
+                      </div>
                       <p className="text-sm text-slate-600">transaction fee</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1346,7 +1392,20 @@ export default function GlobalAdminDashboard() {
                     <CardHeader className="text-center pb-4">
                       <Badge className="mb-2 bg-[#24D367] text-white">Most Popular</Badge>
                       <CardTitle className="text-[#20366B]">Basic Plan</CardTitle>
-                      <div className="text-3xl font-bold text-[#24D367]">3%</div>
+                      <div className="space-y-2">
+                        <div className="text-3xl font-bold text-[#24D367]">{pricingConfig.payPerClass.basic.commission}%</div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Commission (%)</label>
+                          <Input 
+                            value={pricingConfig.payPerClass.basic.commission}
+                            onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'commission', e.target.value)}
+                            className="text-center w-20 mx-auto"
+                            type="number"
+                            min="0"
+                            max="100"
+                          />
+                        </div>
+                      </div>
                       <p className="text-sm text-slate-600">transaction fee</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1382,7 +1441,20 @@ export default function GlobalAdminDashboard() {
                   <Card className="border-2 border-[#24D3BF]/50">
                     <CardHeader className="text-center pb-4">
                       <CardTitle className="text-[#20366B]">Premium Plan</CardTitle>
-                      <div className="text-3xl font-bold text-[#24D3BF]">2%</div>
+                      <div className="space-y-2">
+                        <div className="text-3xl font-bold text-[#24D3BF]">{pricingConfig.payPerClass.premium.commission}%</div>
+                        <div>
+                          <label className="text-xs font-medium text-[#20366B] block mb-1">Commission (%)</label>
+                          <Input 
+                            value={pricingConfig.payPerClass.premium.commission}
+                            onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'commission', e.target.value)}
+                            className="text-center w-20 mx-auto"
+                            type="number"
+                            min="0"
+                            max="100"
+                          />
+                        </div>
+                      </div>
                       <p className="text-sm text-slate-600">transaction fee</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -1424,14 +1496,14 @@ export default function GlobalAdminDashboard() {
                   onClick={() => {
                     setPricingConfig({
                       membership: {
-                        free: { maxMembers: "25", maxClasses: "5", storage: "1" },
-                        basic: { maxMembers: "100", maxClasses: "25", storage: "10" },
-                        premium: { maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+                        free: { price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
+                        basic: { price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
+                        premium: { price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
                       },
                       payPerClass: {
-                        free: { maxBookings: "50", commission: "5", storage: "1" },
-                        basic: { maxBookings: "200", commission: "3", storage: "10" },
-                        premium: { maxBookings: "Unlimited", commission: "2", storage: "100" }
+                        free: { commission: "5", maxBookings: "50", storage: "1" },
+                        basic: { commission: "3", maxBookings: "200", storage: "10" },
+                        premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
                       }
                     });
                   }}
