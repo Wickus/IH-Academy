@@ -99,7 +99,7 @@ export default function PaymentSuccess() {
                     <strong>Payment Status:</strong> {booking.paymentStatus === 'confirmed' ? 'Confirmed' : 'Processing'}
                   </p>
                   <p className="text-sm text-green-800">
-                    <strong>Amount:</strong> R{parseFloat(booking.amount).toFixed(2)}
+                    <strong>Amount:</strong> R{parseFloat(booking.amount.toString()).toFixed(2)}
                   </p>
                 </div>
               </div>
