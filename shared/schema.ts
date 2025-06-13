@@ -75,12 +75,43 @@ export const sports = pgTable("sports", {
 export const coaches = pgTable("coaches", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  academyId: integer("academy_id").notNull(),
-  organizationId: integer("organization_id"),
+  organizationId: integer("organization_id").notNull(),
   specializations: text("specializations").array(),
   bio: text("bio"),
   hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
   profilePicture: text("profile_picture"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Coach invitations for multi-tenant support
+export const coachInvitations = pgTable("coach_invitations", {
+  id: serial("id").primaryKey(),
+  organizationId: integer("organization_id").notNull(),
+  email: text("email").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  phone: text("phone"),
+  specializations: text("specializations").array(),
+  hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
+  invitationToken: text("invitation_token").notNull().unique(),
+  status: text("status", { enum: ["pending", "accepted", "expired"] }).default("pending"),
+  invitedBy: integer("invited_by").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Coach availability for classes
+export const coachAvailability = pgTable("coach_availability", {
+  id: serial("id").primaryKey(),
+  coachId: integer("coach_id").notNull(),
+  classId: integer("class_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
+  status: text("status", { enum: ["available", "assigned", "unavailable"] }).default("available"),
+  assignedAt: timestamp("assigned_at"),
+  assignedBy: integer("assigned_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const classes = pgTable("classes", {
@@ -109,10 +140,13 @@ export const bookings = pgTable("bookings", {
   participantAge: integer("participant_age"),
   bookingDate: timestamp("booking_date").notNull(),
   paymentStatus: text("payment_status").notNull().default("pending"), // pending, confirmed, failed, refunded
-  paymentMethod: text("payment_method").default("payfast"),
+  paymentMethod: text("payment_method", { enum: ["payfast", "cash", "card"] }).default("payfast"),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   payfastPaymentId: text("payfast_payment_id"),
   notes: text("notes"),
+  bookingType: text("booking_type", { enum: ["online", "walk_in"] }).default("online"),
+  addedBy: integer("added_by"), // coach id who added walk-in client
+  isNewMember: boolean("is_new_member").default(false), // if walk-in needs registration
 });
 
 export const attendance = pgTable("attendance", {
@@ -159,6 +193,18 @@ export const insertSportSchema = createInsertSchema(sports).omit({
 
 export const insertCoachSchema = createInsertSchema(coaches).omit({
   id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCoachInvitationSchema = createInsertSchema(coachInvitations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCoachAvailabilitySchema = createInsertSchema(coachAvailability).omit({
+  id: true,
+  createdAt: true,
 });
 
 export const insertClassSchema = createInsertSchema(classes).omit({
@@ -192,6 +238,12 @@ export type InsertSport = z.infer<typeof insertSportSchema>;
 
 export type Coach = typeof coaches.$inferSelect;
 export type InsertCoach = z.infer<typeof insertCoachSchema>;
+
+export type CoachInvitation = typeof coachInvitations.$inferSelect;
+export type InsertCoachInvitation = z.infer<typeof insertCoachInvitationSchema>;
+
+export type CoachAvailability = typeof coachAvailability.$inferSelect;
+export type InsertCoachAvailability = z.infer<typeof insertCoachAvailabilitySchema>;
 
 export type Class = typeof classes.$inferSelect;
 export type InsertClass = z.infer<typeof insertClassSchema>;
