@@ -149,15 +149,18 @@ export default function Reports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>
                   {formatCurrency(totalRevenue)}
                 </p>
-                <p className="text-sm text-[#24D367] mt-1">
+                <p className="text-sm mt-1" style={{ color: organization.accentColor }}>
                   <TrendingUp className="inline h-4 w-4 mr-1" />
                   +15% this month
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-[#278DD4] to-[#24D367] rounded-lg flex items-center justify-center">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${organization.secondaryColor}, ${organization.accentColor})` }}
+              >
                 <BarChart3 className="text-white text-xl" />
               </div>
             </div>
@@ -169,12 +172,15 @@ export default function Reports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Total Bookings</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">{totalBookings}</p>
-                <p className="text-sm text-[#278DD4] mt-1">
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>{totalBookings}</p>
+                <p className="text-sm mt-1" style={{ color: organization.secondaryColor }}>
                   {monthlyBookings.length} this month
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] rounded-lg flex items-center justify-center">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${organization.accentColor}, ${organization.secondaryColor})` }}
+              >
                 <Users className="text-white text-xl" />
               </div>
             </div>
@@ -186,12 +192,15 @@ export default function Reports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Active Classes</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">{totalClasses}</p>
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>{totalClasses}</p>
                 <p className="text-sm text-slate-600 mt-1">
                   Across all sports
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-[#20366B] to-[#278DD4] rounded-lg flex items-center justify-center">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+              >
                 <Calendar className="text-white text-xl" />
               </div>
             </div>
@@ -203,12 +212,15 @@ export default function Reports() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Total Coaches</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">{totalCoaches}</p>
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>{totalCoaches}</p>
                 <p className="text-sm text-slate-600 mt-1">
                   Professional staff
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-[#24D367] to-[#1fb557] rounded-lg flex items-center justify-center">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${organization.accentColor}, ${organization.secondaryColor})` }}
+              >
                 <Activity className="text-white text-xl" />
               </div>
             </div>
@@ -219,7 +231,10 @@ export default function Reports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Popular Classes */}
         <Card className="border-0 shadow-md bg-white">
-          <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white rounded-t-lg">
+          <CardHeader 
+            className="text-white rounded-t-lg"
+            style={{ background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+          >
             <CardTitle className="text-xl font-bold flex items-center">
               <PieChart className="mr-2 h-5 w-5" />
               Most Popular Classes
@@ -230,20 +245,23 @@ export default function Reports() {
               {popularClasses.map((classItem, index) => (
                 <div key={classItem.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                      index === 0 ? 'bg-[#24D367]' : 
-                      index === 1 ? 'bg-[#278DD4]' : 
-                      index === 2 ? 'bg-[#24D3BF]' : 'bg-slate-400'
-                    }`}>
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                      style={{
+                        backgroundColor: index === 0 ? organization.accentColor : 
+                                       index === 1 ? organization.secondaryColor : 
+                                       index === 2 ? organization.primaryColor : '#94a3b8'
+                      }}
+                    >
                       {index + 1}
                     </div>
                     <div>
-                      <p className="font-semibold text-[#20366B]">{classItem.name}</p>
+                      <p className="font-semibold" style={{ color: organization.primaryColor }}>{classItem.name}</p>
                       <p className="text-sm text-slate-600">{classItem.sport?.name}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-[#24D367]">{classItem.bookingCount}</p>
+                    <p className="font-bold" style={{ color: organization.accentColor }}>{classItem.bookingCount}</p>
                     <p className="text-xs text-slate-500">bookings</p>
                   </div>
                 </div>
@@ -254,7 +272,10 @@ export default function Reports() {
 
         {/* Recent Activity */}
         <Card className="border-0 shadow-md bg-white">
-          <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white rounded-t-lg">
+          <CardHeader 
+            className="text-white rounded-t-lg"
+            style={{ background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+          >
             <CardTitle className="text-xl font-bold flex items-center">
               <Activity className="mr-2 h-5 w-5" />
               Recent Activity
@@ -265,12 +286,12 @@ export default function Reports() {
               {bookings.slice(0, 5).map((booking) => (
                 <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
                   <div>
-                    <p className="font-semibold text-[#20366B]">{booking.participantName}</p>
+                    <p className="font-semibold" style={{ color: organization.primaryColor }}>{booking.participantName}</p>
                     <p className="text-sm text-slate-600">{booking.class?.name}</p>
                     <p className="text-xs text-slate-500">{formatDateTime(booking.bookingDate)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-[#24D367]">{formatCurrency(Number(booking.amount))}</p>
+                    <p className="font-bold" style={{ color: organization.accentColor }}>{formatCurrency(Number(booking.amount))}</p>
                     <Badge 
                       className={
                         booking.paymentStatus === 'confirmed' 
