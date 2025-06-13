@@ -803,6 +803,21 @@ export default function Settings() {
                       >
                         Test Connection
                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          console.log("Direct test button clicked");
+                          onPayfastCredentialsSubmit({
+                            payfastMerchantId: "15720320",
+                            payfastMerchantKey: "s3opz0f8hkx4x",
+                            payfastPassphrase: "",
+                            payfastSandbox: true
+                          });
+                        }}
+                      >
+                        Test Save Function
+                      </Button>
                     </div>
                   </div>
                   <p className="text-slate-600 mb-6">Configure your PayFast credentials to enable payments for class bookings</p>
@@ -813,19 +828,26 @@ export default function Settings() {
                   )}
                 </div>
                 
-                <PayfastCredentials
-                  initialData={{
-                    payfastMerchantId: organization?.payfastMerchantId || "",
-                    payfastMerchantKey: organization?.payfastMerchantKey || "",
-                    payfastPassphrase: organization?.payfastPassphrase || "",
-                    payfastSandbox: organization?.payfastSandbox ?? true,
-                  }}
-                  onSubmit={onPayfastCredentialsSubmit}
-                  isLoading={updatePayfastCredentialsMutation.isPending}
-                  showTitle={false}
-                  showButtons={true}
-                  showSandboxToggle={true}
-                />
+                {(() => {
+                  console.log("About to render PayfastCredentials component");
+                  console.log("Organization for PayFast:", organization);
+                  console.log("onPayfastCredentialsSubmit function:", onPayfastCredentialsSubmit);
+                  return (
+                    <PayfastCredentials
+                      initialData={{
+                        payfastMerchantId: organization?.payfastMerchantId || "",
+                        payfastMerchantKey: organization?.payfastMerchantKey || "",
+                        payfastPassphrase: organization?.payfastPassphrase || "",
+                        payfastSandbox: organization?.payfastSandbox ?? true,
+                      }}
+                      onSubmit={onPayfastCredentialsSubmit}
+                      isLoading={updatePayfastCredentialsMutation.isPending}
+                      showTitle={false}
+                      showButtons={true}
+                      showSandboxToggle={true}
+                    />
+                  );
+                })()}
               </div>
             </TabsContent>
 
