@@ -28,6 +28,9 @@ import {
   Plus,
   Dumbbell,
   Trash2,
+  CheckCircle,
+  XCircle,
+  Loader2,
   CreditCard,
   Upload
 } from "lucide-react";
@@ -139,15 +142,34 @@ export default function Settings() {
   });
 
   const updatePayfastCredentialsMutation = useMutation({
-    mutationFn: (data: PayfastCredentialsData) => {
+    mutationFn: async (data: PayfastCredentialsData) => {
       if (!organization?.id) throw new Error("No organization found");
-      return api.updateOrganization(organization.id, data);
+      
+      // First test the connection
+      const connectionTest = await api.testPayfastConnection({
+        merchantId: data.payfastMerchantId,
+        merchantKey: data.payfastMerchantKey,
+        passphrase: data.payfastPassphrase,
+        sandbox: data.payfastSandbox,
+      });
+      
+      if (!connectionTest.connected) {
+        throw new Error(`PayFast connection failed: ${connectionTest.message}`);
+      }
+      
+      // If connection test passes, save the credentials
+      return api.updateOrganization(organization.id, {
+        payfastMerchantId: data.payfastMerchantId,
+        payfastMerchantKey: data.payfastMerchantKey,
+        payfastPassphrase: data.payfastPassphrase,
+        payfastSandbox: data.payfastSandbox,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
       toast({
         title: "Success",
-        description: "Payfast credentials updated successfully",
+        description: "PayFast credentials saved and connection verified",
       });
     },
     onError: (error: any) => {

@@ -413,4 +413,15 @@ export const api = {
     const response = await apiRequest('GET', '/api/auth/me');
     return response.json();
   },
+
+  // PayFast connection test
+  testPayfastConnection: async (credentials: {
+    merchantId: string;
+    merchantKey: string;
+    passphrase?: string;
+    sandbox: boolean;
+  }): Promise<{ connected: boolean; message: string; environment?: string }> => {
+    const response = await apiRequest('POST', '/api/test-payfast-connection', credentials);
+    return response.json();
+  },
 };
