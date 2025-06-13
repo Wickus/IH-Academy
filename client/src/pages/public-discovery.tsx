@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { api, type Organization, type Class } from "@/lib/api";
 import { formatCurrency, formatTime } from "@/lib/utils";
 import { MapPin, Clock, Users, Search, Heart, Calendar, User, LogOut, Settings } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import {
@@ -22,6 +22,7 @@ import SimpleNotificationModal from "@/components/simple-notification-modal";
 export default function PublicDiscovery() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showNotificationSetup, setShowNotificationSetup] = useState(false);
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const { data: user } = useQuery({
@@ -43,14 +44,16 @@ export default function PublicDiscovery() {
   const logoutMutation = useMutation({
     mutationFn: () => api.logout(),
     onSuccess: () => {
-      // Navigate smoothly without clearing data immediately
-      window.location.href = '/';
+      // Clear user data immediately but navigate smoothly
+      queryClient.setQueryData(['/api/auth/me'], null);
       
-      // Clear cache after navigation completes
+      // Navigate to home page (will show public discovery for unauthenticated users)
+      setLocation('/');
+      
+      // Clear remaining cache after navigation
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-        queryClient.clear();
-      }, 100);
+        queryClient.removeQueries();
+      }, 50);
     }
   });
 
