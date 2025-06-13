@@ -714,7 +714,10 @@ export default function Settings() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-200 p-4">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base font-medium text-[#20366B]">
+                                <FormLabel 
+                                  className="text-base font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
                                   Push Notifications
                                 </FormLabel>
                                 <FormDescription>
@@ -736,7 +739,12 @@ export default function Settings() {
                     <Separator />
 
                     <div>
-                      <h3 className="text-lg font-semibold text-[#20366B] mb-4">Specific Notifications</h3>
+                      <h3 
+                        className="text-lg font-semibold mb-4"
+                        style={{ color: organization?.primaryColor || '#20366B' }}
+                      >
+                        Specific Notifications
+                      </h3>
                       <div className="space-y-4">
                         <FormField
                           control={notificationForm.control}
@@ -744,7 +752,10 @@ export default function Settings() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-200 p-4">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base font-medium text-[#20366B]">
+                                <FormLabel 
+                                  className="text-base font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
                                   Class Reminders
                                 </FormLabel>
                                 <FormDescription>
@@ -767,7 +778,10 @@ export default function Settings() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-200 p-4">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base font-medium text-[#20366B]">
+                                <FormLabel 
+                                  className="text-base font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
                                   Payment Reminders
                                 </FormLabel>
                                 <FormDescription>
@@ -790,7 +804,10 @@ export default function Settings() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-200 p-4">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base font-medium text-[#20366B]">
+                                <FormLabel 
+                                  className="text-base font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
                                   Booking Confirmations
                                 </FormLabel>
                                 <FormDescription>
@@ -813,7 +830,8 @@ export default function Settings() {
                   <div className="flex justify-end">
                     <Button 
                       type="submit" 
-                      className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0"
+                      className="text-white border-0"
+                      style={{ backgroundColor: organization?.accentColor || '#24D367' }}
                     >
                       <Save className="mr-2 h-4 w-4" />
                       Save Preferences
@@ -826,15 +844,40 @@ export default function Settings() {
             <TabsContent value="security" className="space-y-6">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#20366B] mb-4">Account Security</h3>
+                  <h3 
+                    className="text-lg font-semibold mb-4"
+                    style={{ color: organization?.primaryColor || '#20366B' }}
+                  >
+                    Account Security
+                  </h3>
                   <div className="space-y-4">
                     <div className="rounded-lg border border-slate-200 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-[#20366B]">Change Password</h4>
+                          <h4 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Change Password
+                          </h4>
                           <p className="text-sm text-slate-600">Update your account password</p>
                         </div>
-                        <Button variant="outline" className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white">
+                        <Button 
+                          variant="outline" 
+                          className="hover:text-white"
+                          style={{
+                            borderColor: organization?.secondaryColor || '#278DD4',
+                            color: organization?.secondaryColor || '#278DD4'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = organization?.secondaryColor || '#278DD4';
+                            e.currentTarget.style.color = 'white';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = organization?.secondaryColor || '#278DD4';
+                          }}
+                        >
                           Change Password
                         </Button>
                       </div>
