@@ -58,7 +58,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RoleBasedRouter({ user }: { user?: User }) {
+function RoleBasedRouter({ user, userOrganizations }: { user?: User; userOrganizations?: any[] }) {
   const { isMobile } = useMobileDetection();
 
   // Mobile app routing for coaches and participants
@@ -172,8 +172,26 @@ function RoleBasedRouter({ user }: { user?: User }) {
     );
   }
 
-  // Member Interface - Show user dashboard if authenticated  
+  // Member Interface - Show appropriate dashboard based on organization membership
   if (user) {
+    // If user belongs to organization, show organization dashboard directly
+    if (userOrganizations && userOrganizations.length > 0) {
+      const organization = userOrganizations[0];
+      return (
+        <Switch>
+          <Route path="/" component={() => <OrganizationDashboard user={user} organization={organization} />} />
+          <Route path="/dashboard" component={() => <OrganizationDashboard user={user} organization={organization} />} />
+          <Route path="/discover" component={PublicDiscovery} />
+          <Route path="/book" component={PublicBooking} />
+          <Route path="/organizations/:id" component={PublicBooking} />
+          <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+          <Route path="/achievements" component={Achievements} />
+          <Route component={NotFound} />
+        </Switch>
+      );
+    }
+    
+    // Regular user dashboard for users without organizations
     return (
       <Switch>
         <Route path="/" component={UserDashboard} />
@@ -210,28 +228,53 @@ function RoleBasedRouter({ user }: { user?: User }) {
 function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [userOrganizations, setUserOrganizations] = useState<any[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const loadUserData = async () => {
       try {
         const currentUser = await api.getCurrentUser();
         setUser(currentUser);
         setIsAuthenticated(true);
+        
+        // Preload organization data to avoid style switches
+        try {
+          const orgs = await api.getUserOrganizations();
+          setUserOrganizations(orgs);
+        } catch (orgError) {
+          setUserOrganizations([]);
+        }
+        
+        setDataLoaded(true);
       } catch (error) {
         setUser(null);
         setIsAuthenticated(false);
+        setDataLoaded(true);
       }
     };
 
-    checkAuth();
+    loadUserData();
   }, []);
 
-  if (isAuthenticated === null) {
+  // Show branded loading screen if user has organization
+  if (!dataLoaded) {
+    const organization = userOrganizations[0];
+    const bgStyle = organization 
+      ? { background: `linear-gradient(to bottom right, ${organization.primaryColor}10, ${organization.secondaryColor}10)` }
+      : { background: 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)' };
+    const spinnerColor = organization?.primaryColor || '#278DD4';
+    
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen" style={bgStyle}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <div 
+            className="animate-spin rounded-full h-32 w-32 border-b-2 mx-auto"
+            style={{ borderColor: spinnerColor }}
+          ></div>
+          <p className="mt-4 text-slate-600">
+            {organization ? `Loading ${organization.name}...` : 'Loading...'}
+          </p>
         </div>
       </div>
     );
@@ -241,13 +284,13 @@ function Router() {
     return <Auth onAuthSuccess={(authenticatedUser) => {
       setUser(authenticatedUser);
       setIsAuthenticated(true);
-      // Don't force page reload - let React handle the state transition
+      setDataLoaded(false); // Reload data after auth
     }} />;
   }
 
   return (
     <OrganizationProvider user={user}>
-      <RoleBasedRouter user={user} />
+      <RoleBasedRouter user={user} userOrganizations={userOrganizations} />
     </OrganizationProvider>
   );
 }
