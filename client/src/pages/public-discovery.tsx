@@ -44,16 +44,12 @@ export default function PublicDiscovery() {
   const logoutMutation = useMutation({
     mutationFn: () => api.logout(),
     onSuccess: () => {
-      // Clear user data immediately but navigate smoothly
+      // Clear user data and invalidate auth query to trigger state change
       queryClient.setQueryData(['/api/auth/me'], null);
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       
-      // Navigate to home page (will show auth when not authenticated)
-      setLocation('/');
-      
-      // Clear remaining cache after navigation
-      setTimeout(() => {
-        queryClient.removeQueries();
-      }, 50);
+      // Force page reload to ensure clean state
+      window.location.href = '/';
     }
   });
 
