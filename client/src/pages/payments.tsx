@@ -83,15 +83,18 @@ export default function Payments() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>
                   {formatCurrency(totalRevenue)}
                 </p>
-                <p className="text-sm text-[#24D367] mt-1">
+                <p className="text-sm mt-1" style={{ color: organization.accentColor }}>
                   <TrendingUp className="inline h-4 w-4 mr-1" />
                   +12% from last month
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-[#278DD4] to-[#24D367] rounded-lg flex items-center justify-center">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${organization.secondaryColor}, ${organization.accentColor})` }}
+              >
                 <DollarSign className="text-white text-xl" />
               </div>
             </div>
@@ -103,14 +106,17 @@ export default function Payments() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Pending Payments</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>
                   {formatCurrency(pendingPayments)}
                 </p>
-                <p className="text-sm text-[#278DD4] mt-1">
+                <p className="text-sm mt-1" style={{ color: organization.secondaryColor }}>
                   {bookings.filter(b => b.paymentStatus === 'pending').length} transactions
                 </p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-[#24D3BF] to-[#22C4B0] rounded-lg flex items-center justify-center">
+              <div 
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${organization.accentColor}, ${organization.secondaryColor})` }}
+              >
                 <CreditCard className="text-white text-xl" />
               </div>
             </div>
@@ -122,7 +128,7 @@ export default function Payments() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Failed Payments</p>
-                <p className="text-3xl font-bold text-[#20366B] mt-1">{failedPayments}</p>
+                <p className="text-3xl font-bold mt-1" style={{ color: organization.primaryColor }}>{failedPayments}</p>
                 <p className="text-sm text-red-500 mt-1">
                   Requires attention
                 </p>
@@ -137,7 +143,10 @@ export default function Payments() {
 
       {/* Payment Details */}
       <Card className="border-0 shadow-md bg-white">
-        <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white rounded-t-lg">
+        <CardHeader 
+          className="text-white rounded-t-lg"
+          style={{ background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+        >
           <CardTitle className="text-xl font-bold">Payment Transactions</CardTitle>
         </CardHeader>
         <CardContent>
@@ -145,12 +154,12 @@ export default function Payments() {
             <Table>
               <TableHeader>
                 <TableRow className="border-b border-slate-200">
-                  <TableHead className="text-[#20366B] font-semibold">Participant</TableHead>
-                  <TableHead className="text-[#20366B] font-semibold">Class</TableHead>
-                  <TableHead className="text-[#20366B] font-semibold">Amount</TableHead>
-                  <TableHead className="text-[#20366B] font-semibold">Status</TableHead>
-                  <TableHead className="text-[#20366B] font-semibold">Date</TableHead>
-                  <TableHead className="text-[#20366B] font-semibold">Payment Method</TableHead>
+                  <TableHead className="font-semibold" style={{ color: organization.primaryColor }}>Participant</TableHead>
+                  <TableHead className="font-semibold" style={{ color: organization.primaryColor }}>Class</TableHead>
+                  <TableHead className="font-semibold" style={{ color: organization.primaryColor }}>Amount</TableHead>
+                  <TableHead className="font-semibold" style={{ color: organization.primaryColor }}>Status</TableHead>
+                  <TableHead className="font-semibold" style={{ color: organization.primaryColor }}>Date</TableHead>
+                  <TableHead className="font-semibold" style={{ color: organization.primaryColor }}>Payment Method</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -158,31 +167,39 @@ export default function Payments() {
                   <TableRow key={booking.id} className={`border-b border-slate-100 hover:bg-slate-50 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
                     <TableCell>
                       <div>
-                        <div className="font-semibold text-[#20366B]">{booking.participantName}</div>
+                        <div className="font-semibold" style={{ color: organization.primaryColor }}>{booking.participantName}</div>
                         <div className="text-sm text-slate-600">{booking.participantEmail}</div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
                         <div className="font-semibold text-slate-900">{booking.class?.name}</div>
-                        <Badge className="text-xs bg-[#24D3BF]/10 text-[#20366B] border-[#24D3BF]/20 hover:bg-[#24D3BF]/20">
+                        <Badge 
+                          className="text-xs hover:opacity-80"
+                          style={{
+                            backgroundColor: `${organization.accentColor}20`,
+                            color: organization.primaryColor,
+                            borderColor: `${organization.accentColor}30`
+                          }}
+                        >
                           {booking.sport?.name}
                         </Badge>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="font-bold text-[#24D367] text-lg">
+                      <div className="font-bold text-lg" style={{ color: organization.accentColor }}>
                         {formatCurrency(Number(booking.amount))}
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        className={
+                        className="hover:opacity-80"
+                        style={
                           booking.paymentStatus === 'confirmed' 
-                            ? 'bg-[#24D367]/10 text-[#24D367] border-[#24D367]/20 hover:bg-[#24D367]/20' 
+                            ? { backgroundColor: `${organization.accentColor}20`, color: organization.accentColor, borderColor: `${organization.accentColor}30` }
                             : booking.paymentStatus === 'pending'
-                            ? 'bg-[#278DD4]/10 text-[#278DD4] border-[#278DD4]/20 hover:bg-[#278DD4]/20'
-                            : 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20'
+                            ? { backgroundColor: `${organization.secondaryColor}20`, color: organization.secondaryColor, borderColor: `${organization.secondaryColor}30` }
+                            : { backgroundColor: 'rgb(239 68 68 / 0.1)', color: 'rgb(239 68 68)', borderColor: 'rgb(239 68 68 / 0.2)' }
                         }
                       >
                         {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
@@ -195,7 +212,7 @@ export default function Payments() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <CreditCard className="mr-2 h-4 w-4 text-[#278DD4]" />
+                        <CreditCard className="mr-2 h-4 w-4" style={{ color: organization.secondaryColor }} />
                         <span className="text-sm font-medium text-slate-700">Payfast</span>
                       </div>
                     </TableCell>
@@ -207,7 +224,7 @@ export default function Payments() {
 
           {bookings.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-[#278DD4] mb-4">
+              <div className="mb-4" style={{ color: organization.secondaryColor }}>
                 <CreditCard className="mx-auto h-16 w-16" />
               </div>
               <h3 className="text-xl font-bold text-[#20366B] mb-2">No payments yet</h3>
