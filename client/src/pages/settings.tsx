@@ -284,7 +284,7 @@ export default function Settings() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6" key={organization?.id}>
             <TabsList className="grid w-full grid-cols-6 bg-slate-100">
               <TabsTrigger 
                 value="organization"
