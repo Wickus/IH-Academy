@@ -247,33 +247,70 @@ export default function Settings() {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList 
-              className="grid w-full grid-cols-6 bg-slate-100 organization-tabs"
-              style={{
-                '--org-secondary-color': organization?.secondaryColor || '#278DD4'
-              } as React.CSSProperties}
-            >
-              <TabsTrigger value="organization">
+            <TabsList className="grid w-full grid-cols-6 bg-slate-100">
+              <TabsTrigger 
+                value="organization"
+                className={activeTab === 'organization' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'organization' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'organization' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Building className="mr-2 h-4 w-4" />
                 Organization
               </TabsTrigger>
-              <TabsTrigger value="sports">
+              <TabsTrigger 
+                value="sports"
+                className={activeTab === 'sports' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'sports' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'sports' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Dumbbell className="mr-2 h-4 w-4" />
                 Sports
               </TabsTrigger>
-              <TabsTrigger value="payments">
+              <TabsTrigger 
+                value="payments"
+                className={activeTab === 'payments' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'payments' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'payments' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Payments
               </TabsTrigger>
-              <TabsTrigger value="notifications">
+              <TabsTrigger 
+                value="notifications"
+                className={activeTab === 'notifications' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'notifications' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'notifications' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Bell className="mr-2 h-4 w-4" />
                 Notifications
               </TabsTrigger>
-              <TabsTrigger value="security">
+              <TabsTrigger 
+                value="security"
+                className={activeTab === 'security' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'security' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'security' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Shield className="mr-2 h-4 w-4" />
                 Security
               </TabsTrigger>
-              <TabsTrigger value="appearance">
+              <TabsTrigger 
+                value="appearance"
+                className={activeTab === 'appearance' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'appearance' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'appearance' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
                 <Palette className="mr-2 h-4 w-4" />
                 Appearance
               </TabsTrigger>
