@@ -102,7 +102,7 @@ export default function GlobalAdminDashboard() {
   });
 
   // Update local state when saved pricing config is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (savedPricingConfig) {
       setPricingConfig(savedPricingConfig);
     }
