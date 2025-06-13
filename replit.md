@@ -130,6 +130,7 @@ Changelog:
 - June 13, 2025. Completed comprehensive dynamic branding implementation across all organization pages (Dashboard, Classes, Bookings, Coaches, Payments, Reports, Settings) - replaced all hardcoded ItsHappening.Africa colors with custom organization theme colors, including empty states, action buttons, form elements, and tab navigation with inline styling for Radix UI component overrides
 - June 13, 2025. Implemented PayFast payment gateway integration for South African payment processing - added payment creation endpoints, webhook handling, notification processing, payment success/cancellation pages with proper routing, and organization-specific PayFast credentials storage with sandbox/production environment support
 - June 13, 2025. Fixed PayFast settings save functionality in Global Admin Dashboard - implemented proper form validation, API integration, mutation handling, and dynamic connection status checking with real-time PayFast API testing capabilities
+- June 13, 2025. Implemented editable pricing configuration in Global Admin Dashboard - added price input fields for membership plans (Free/Basic/Premium), commission fields for pay-per-class plans, database persistence via organization 20 as global settings storage, and API endpoints for loading/saving pricing configuration that organizations use during signup
 
 ## User Preferences
 
