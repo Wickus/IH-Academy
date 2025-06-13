@@ -233,6 +233,13 @@ export const api = {
     return response.json();
   },
 
+  getBooking: async (id: number): Promise<Booking> => {
+    const bookings = await api.getBookings();
+    const booking = bookings.find(b => b.id === id);
+    if (!booking) throw new Error('Booking not found');
+    return booking;
+  },
+
   downloadIcal: async (bookingId: number): Promise<void> => {
     const response = await apiRequest('GET', `/api/bookings/${bookingId}/ical`);
     const blob = await response.blob();

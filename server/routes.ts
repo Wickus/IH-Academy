@@ -1560,7 +1560,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Generate payment URL
-      const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox);
+      const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox || false);
 
       res.json({ 
         paymentUrl,
@@ -1572,45 +1572,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayFast notification handler for membership payments
+  // PayFast notification handler for all payments
   app.post("/api/payfast-notify", async (req: Request, res: Response) => {
     try {
+      const notification = req.body;
       const {
         payment_status,
+        m_payment_id,
+        pf_payment_id,
+        amount_gross,
         custom_str1: organizationId,
         custom_str2: userId,
         custom_str3: paymentType
-      } = req.body;
+      } = notification;
 
-      if (payment_status === 'COMPLETE' && paymentType === 'membership') {
-        // Get organization details for membership duration
-        const organization = await storage.getOrganization(parseInt(organizationId));
-        
-        if (organization) {
-          const startDate = new Date();
-          const endDate = new Date();
-          
-          // Calculate end date based on billing cycle
-          if (organization.membershipBillingCycle === "monthly") {
-            endDate.setMonth(endDate.getMonth() + 1);
-          } else if (organization.membershipBillingCycle === "quarterly") {
-            endDate.setMonth(endDate.getMonth() + 3);
-          } else if (organization.membershipBillingCycle === "yearly") {
-            endDate.setFullYear(endDate.getFullYear() + 1);
+      console.log("PayFast notification received:", notification);
+
+      // Validate the notification signature
+      const organization = await storage.getOrganization(parseInt(organizationId || "1"));
+      if (organization && !payfastService.validateNotification(notification, organization.payfastPassphrase)) {
+        console.error("Invalid PayFast notification signature");
+        return res.status(400).send("Invalid signature");
+      }
+
+      if (payment_status === 'COMPLETE') {
+        if (paymentType === 'membership') {
+          // Handle membership payment
+          if (organization) {
+            const startDate = new Date();
+            const endDate = new Date();
+            
+            // Calculate end date based on billing cycle
+            if (organization.membershipBillingCycle === "monthly") {
+              endDate.setMonth(endDate.getMonth() + 1);
+            } else if (organization.membershipBillingCycle === "quarterly") {
+              endDate.setMonth(endDate.getMonth() + 3);
+            } else if (organization.membershipBillingCycle === "yearly") {
+              endDate.setFullYear(endDate.getFullYear() + 1);
+            }
+
+            // Create active membership
+            await storage.createMembership({
+              userId: parseInt(userId),
+              organizationId: parseInt(organizationId),
+              status: "active",
+              startDate,
+              endDate,
+              price: organization.membershipPrice || "0.00",
+              billingCycle: organization.membershipBillingCycle || "monthly",
+              autoRenew: true,
+              nextBillingDate: endDate
+            });
           }
+        } else {
+          // Handle booking payment
+          const bookingIdMatch = m_payment_id.match(/booking_(\d+)_/);
+          if (bookingIdMatch) {
+            const bookingId = parseInt(bookingIdMatch[1]);
+            
+            // Update booking payment status
+            const updatedBooking = await storage.updateBooking(bookingId, {
+              paymentStatus: 'confirmed',
+              payfastPaymentId: pf_payment_id
+            });
 
-          // Create active membership
-          await storage.createMembership({
-            userId: parseInt(userId),
-            organizationId: parseInt(organizationId),
-            status: "active",
-            startDate,
-            endDate,
-            price: organization.membershipPrice || "0.00",
-            billingCycle: organization.membershipBillingCycle || "monthly",
-            autoRenew: true,
-            nextBillingDate: endDate
-          });
+            // Create payment record
+            if (updatedBooking) {
+              await storage.createPayment({
+                bookingId: bookingId,
+                amount: amount_gross,
+                currency: 'ZAR',
+                status: 'completed',
+                payfastPaymentId: pf_payment_id,
+                payfastData: notification,
+                processedAt: new Date()
+              });
+
+              // Get class data for real-time updates
+              const classData = await storage.getClass(updatedBooking.classId);
+              if (classData) {
+                // Calculate availability
+                const existingBookings = await storage.getBookingsByClass(updatedBooking.classId);
+                const confirmedBookings = existingBookings.filter(b => b.paymentStatus === 'confirmed');
+                const availableSpots = classData.capacity - confirmedBookings.length;
+
+                // Broadcast real-time updates
+                broadcastAvailabilityUpdate(updatedBooking.classId, availableSpots, classData.capacity);
+                broadcastBookingNotification(
+                  updatedBooking.classId,
+                  classData.name,
+                  updatedBooking.participantName,
+                  'booked'
+                );
+              }
+            }
+          }
         }
       }
 
