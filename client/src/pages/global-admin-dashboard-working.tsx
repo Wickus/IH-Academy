@@ -187,6 +187,30 @@ export default function GlobalAdminDashboard() {
     },
   });
 
+  // PayFast connection status query
+  const { data: payfastStatus, refetch: refetchPayfastStatus, isLoading: isCheckingPayfast } = useQuery({
+    queryKey: ['/api/test-payfast-connection'],
+    queryFn: async () => {
+      const response = await fetch('/api/test-payfast-connection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          organizationId: 20,
+        }),
+      });
+      
+      if (!response.ok) {
+        return { connected: false, message: 'Failed to test connection' };
+      }
+      
+      return response.json();
+    },
+    enabled: false, // Only run when manually triggered
+  });
+
   const updateUserStatusMutation = useMutation({
     mutationFn: ({ userId, isActive }: { userId: number; isActive: boolean }) =>
       api.updateUserStatus(userId, isActive),
@@ -381,6 +405,11 @@ export default function GlobalAdminDashboard() {
   const onPayfastSubmit = (data: PayfastSettingsData) => {
     console.log("PayFast form submitted:", data);
     savePayfastMutation.mutate(data);
+  };
+
+  // Test PayFast connection after successful save
+  const handleTestConnection = () => {
+    refetchPayfastStatus();
   };
 
   const updateOrgStatusMutation = useMutation({
@@ -1078,12 +1107,35 @@ export default function GlobalAdminDashboard() {
                       <div className="bg-gradient-to-r from-[#20366B]/5 to-[#278DD4]/5 p-4 rounded-lg border border-[#278DD4]/20">
                         <h4 className="font-semibold text-[#20366B] mb-2">PayFast Status</h4>
                         <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                          <span className="text-sm text-slate-600">Not Connected</span>
+                          <div className={`w-3 h-3 rounded-full ${
+                            isCheckingPayfast 
+                              ? 'bg-yellow-500' 
+                              : payfastStatus?.connected 
+                                ? 'bg-green-500' 
+                                : 'bg-red-500'
+                          }`}></div>
+                          <span className="text-sm text-slate-600">
+                            {isCheckingPayfast 
+                              ? 'Checking...' 
+                              : payfastStatus?.connected 
+                                ? 'Connected' 
+                                : 'Not Connected'
+                            }
+                          </span>
                         </div>
                         <p className="text-xs text-slate-500 mt-2">
-                          Configure your PayFast credentials to enable payments
+                          {payfastStatus?.message || 'Configure your PayFast credentials to enable payments'}
                         </p>
+                        <Button 
+                          type="button"
+                          onClick={handleTestConnection}
+                          disabled={isCheckingPayfast}
+                          variant="outline"
+                          size="sm"
+                          className="mt-2 w-full"
+                        >
+                          {isCheckingPayfast ? 'Testing...' : 'Test Connection'}
+                        </Button>
                       </div>
                       <div className="space-y-2">
                         <Button 
