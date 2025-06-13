@@ -47,6 +47,11 @@ export default function PayfastCredentials({
     },
   });
 
+  // Add debugging for form state
+  console.log("Form errors:", form.formState.errors);
+  console.log("Form is valid:", form.formState.isValid);
+  console.log("Form values:", form.getValues());
+
   const handleSubmit = (data: PayfastCredentialsData) => {
     console.log("PayfastCredentials handleSubmit called with:", data);
     console.log("onSubmit function:", onSubmit);
@@ -205,12 +210,18 @@ export default function PayfastCredentials({
                   </Button>
                 )}
                 <Button 
-                  type="submit" 
+                  type="button" 
                   disabled={isLoading}
                   className="bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
-                  onClick={() => console.log("Save button clicked!")}
+                  onClick={() => {
+                    console.log("Save button clicked!");
+                    const formData = form.getValues();
+                    console.log("Form data:", formData);
+                    console.log("Calling onSubmit directly with form data");
+                    onSubmit(formData);
+                  }}
                 >
-                  {isLoading ? "Saving..." : "Save Credentials"}
+                  {isLoading ? "Saving..." : "Save PayFast Settings"}
                 </Button>
               </div>
             )}
