@@ -191,6 +191,22 @@ export default function GlobalAdminDashboard() {
   const { data: payfastStatus, refetch: refetchPayfastStatus, isLoading: isCheckingPayfast } = useQuery({
     queryKey: ['/api/test-payfast-connection'],
     queryFn: async () => {
+      // First get the organization data to get PayFast credentials
+      const orgResponse = await fetch('/api/organizations/20', {
+        credentials: 'include',
+      });
+      
+      if (!orgResponse.ok) {
+        return { connected: false, message: 'Failed to fetch organization data' };
+      }
+      
+      const organization = await orgResponse.json();
+      
+      if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
+        return { connected: false, message: 'PayFast credentials not configured' };
+      }
+
+      // Now test the connection with the organization's credentials
       const response = await fetch('/api/test-payfast-connection', {
         method: 'POST',
         headers: {
@@ -198,12 +214,16 @@ export default function GlobalAdminDashboard() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          organizationId: 20,
+          merchantId: organization.payfastMerchantId,
+          merchantKey: organization.payfastMerchantKey,
+          passphrase: organization.payfastPassphrase || "",
+          sandbox: organization.payfastSandbox ?? true,
         }),
       });
       
       if (!response.ok) {
-        return { connected: false, message: 'Failed to test connection' };
+        const error = await response.json();
+        return { connected: false, message: error.message || 'Failed to test connection' };
       }
       
       return response.json();
@@ -404,10 +424,17 @@ export default function GlobalAdminDashboard() {
 
   const onPayfastSubmit = (data: PayfastSettingsData) => {
     console.log("PayFast form submitted:", data);
-    savePayfastMutation.mutate(data);
+    savePayfastMutation.mutate(data, {
+      onSuccess: () => {
+        // Automatically test connection after successful save
+        setTimeout(() => {
+          refetchPayfastStatus();
+        }, 500);
+      }
+    });
   };
 
-  // Test PayFast connection after successful save
+  // Test PayFast connection manually
   const handleTestConnection = () => {
     refetchPayfastStatus();
   };
