@@ -57,14 +57,16 @@ export default function UserDashboard() {
   const logoutMutation = useMutation({
     mutationFn: api.logout,
     onSuccess: () => {
-      // Don't clear query client immediately to prevent style flash
-      // Navigate first, then clear after a small delay
+      // Clear user data immediately but navigate smoothly
+      queryClient.setQueryData(['/api/auth/me'], null);
+      
+      // Navigate to home page
       setLocation('/');
       
-      // Clear cache after navigation to prevent style flashing
+      // Clear remaining cache after navigation
       setTimeout(() => {
-        queryClient.clear();
-      }, 100);
+        queryClient.removeQueries();
+      }, 50);
       
       toast({
         title: "Logged out successfully",

@@ -55,14 +55,16 @@ export default function Header() {
   const logoutMutation = useMutation({
     mutationFn: () => api.logout(),
     onSuccess: () => {
-      // Navigate to home without clearing data immediately to prevent style flash
+      // Clear user data immediately but navigate smoothly
+      queryClient.setQueryData(['/api/auth/me'], null);
+      
+      // Navigate to public discovery page
       setLocation('/');
       
-      // Clear cache after a small delay to ensure smooth transition
+      // Clear remaining cache after navigation
       setTimeout(() => {
-        queryClient.setQueryData(['/api/auth/me'], null);
         queryClient.removeQueries();
-      }, 100);
+      }, 50);
     }
   });
 
