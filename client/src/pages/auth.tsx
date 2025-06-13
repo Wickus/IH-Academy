@@ -85,7 +85,22 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
   }, [currentUser, userOrganisations]);
 
   const loginMutation = useMutation({
-    mutationFn: (credentials: LoginFormData) => api.login(credentials),
+    mutationFn: async (credentials: LoginFormData) => {
+      const user = await api.login(credentials);
+      
+      // Preload organization data for smoother styling transition
+      if (user.role === 'organization_admin' || user.role === 'coach' || user.role === 'member') {
+        try {
+          const organizations = await api.getUserOrganizations();
+          queryClient.setQueryData(['/api/organizations/my'], organizations);
+        } catch (error) {
+          // Silently handle organization loading error - user can still proceed
+          console.warn('Failed to preload organization data:', error);
+        }
+      }
+      
+      return user;
+    },
     onSuccess: (user: User) => {
       queryClient.setQueryData(['/api/auth/me'], user);
       toast({ title: "Welcome back!", description: `Logged in as ${user.firstName} ${user.lastName}` });
