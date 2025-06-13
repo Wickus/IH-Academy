@@ -74,13 +74,14 @@ export default function Settings() {
     queryFn: api.getCurrentUser,
   });
 
-  const { data: userOrganizations } = useQuery({
+  const { data: userOrganizations, isLoading: orgDataLoading } = useQuery({
     queryKey: ["/api/organizations/my"],
     queryFn: api.getUserOrganizations,
+    enabled: !!currentUser,
   });
 
   const organization = userOrganizations?.[0];
-  const orgLoading = !userOrganizations;
+  const orgLoading = orgDataLoading || !userOrganizations;
 
   const { data: sports } = useQuery({
     queryKey: ["/api/sports"],
@@ -247,6 +248,19 @@ export default function Settings() {
   });
 
   const onPayfastCredentialsSubmit = (data: PayfastCredentialsData) => {
+    console.log("PayFast credentials submitted:", data);
+    console.log("Organization:", organization);
+    console.log("Organization ID:", organization?.id);
+    
+    if (!organization?.id) {
+      toast({
+        title: "Error",
+        description: "No organization found. Please refresh and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     updatePayfastCredentialsMutation.mutate(data);
   };
 
@@ -259,6 +273,22 @@ export default function Settings() {
       deleteSportMutation.mutate(sportId);
     }
   };
+
+  // Debug user authentication and organization data
+  console.log("Current user:", currentUser);
+  console.log("User organizations:", userOrganizations);
+  console.log("Organization:", organization);
+  console.log("Org loading:", orgLoading);
+
+  if (!currentUser) {
+    return (
+      <div className="p-4 lg:p-8 min-h-screen">
+        <div className="text-center">
+          <p>Please log in to access settings.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (orgLoading) {
     return (
