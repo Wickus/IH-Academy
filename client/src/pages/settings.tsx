@@ -523,7 +523,8 @@ export default function Settings() {
                     <Button 
                       type="submit" 
                       disabled={updateOrganizationMutation.isPending}
-                      className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0"
+                      className="text-white border-0"
+                      style={{ backgroundColor: organization?.accentColor || '#24D367' }}
                     >
                       <Save className="mr-2 h-4 w-4" />
                       Save Changes
@@ -537,19 +538,27 @@ export default function Settings() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-[#20366B]">Sports Management</h3>
+                    <h3 
+                      className="text-lg font-semibold"
+                      style={{ color: organization?.primaryColor || '#20366B' }}
+                    >
+                      Sports Management
+                    </h3>
                     <p className="text-slate-600">Add and manage the sports available at your organisation</p>
                   </div>
                   <Dialog open={showSportForm} onOpenChange={setShowSportForm}>
                     <DialogTrigger asChild>
-                      <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
+                      <Button 
+                        className="text-white border-0"
+                        style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                      >
                         <Plus className="mr-2 h-4 w-4" />
                         Add Sport
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[525px]">
                       <DialogHeader>
-                        <DialogTitle className="text-[#20366B]">Add New Sport</DialogTitle>
+                        <DialogTitle style={{ color: organization?.primaryColor || '#20366B' }}>Add New Sport</DialogTitle>
                       </DialogHeader>
                       <SportForm onSuccess={() => setShowSportForm(false)} />
                     </DialogContent>
@@ -564,7 +573,12 @@ export default function Settings() {
                           <div className="flex items-center space-x-3">
                             <div className="text-2xl">{sport.icon}</div>
                             <div>
-                              <h4 className="font-semibold text-[#20366B]">{sport.name}</h4>
+                              <h4 
+                                className="font-semibold"
+                                style={{ color: organization?.primaryColor || '#20366B' }}
+                              >
+                                {sport.name}
+                              </h4>
                               <Badge 
                                 variant="outline" 
                                 style={{ backgroundColor: sport.color + '20', color: sport.color, borderColor: sport.color }}
@@ -605,7 +619,12 @@ export default function Settings() {
             <TabsContent value="payments" className="space-y-6">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#20366B] mb-2">Payment Gateway Configuration</h3>
+                  <h3 
+                    className="text-lg font-semibold mb-2"
+                    style={{ color: organization?.primaryColor || '#20366B' }}
+                  >
+                    Payment Gateway Configuration
+                  </h3>
                   <p className="text-slate-600 mb-6">Configure your Payfast merchant account to accept payments for class bookings</p>
                 </div>
                 
@@ -630,7 +649,12 @@ export default function Settings() {
                 <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-6">
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-[#20366B] mb-4">Communication Preferences</h3>
+                      <h3 
+                        className="text-lg font-semibold mb-4"
+                        style={{ color: organization?.primaryColor || '#20366B' }}
+                      >
+                        Communication Preferences
+                      </h3>
                       <div className="space-y-4">
                         <FormField
                           control={notificationForm.control}
@@ -638,7 +662,10 @@ export default function Settings() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-200 p-4">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base font-medium text-[#20366B]">
+                                <FormLabel 
+                                  className="text-base font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
                                   Email Notifications
                                 </FormLabel>
                                 <FormDescription>
@@ -661,7 +688,10 @@ export default function Settings() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border border-slate-200 p-4">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base font-medium text-[#20366B]">
+                                <FormLabel 
+                                  className="text-base font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
                                   SMS Notifications
                                 </FormLabel>
                                 <FormDescription>
