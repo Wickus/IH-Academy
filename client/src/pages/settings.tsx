@@ -181,10 +181,20 @@ export default function Settings() {
 
   if (orgLoading) {
     return (
-      <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+      <div 
+        className="p-4 lg:p-8 min-h-screen"
+        style={{
+          background: `linear-gradient(to bottom right, #f8fafc, ${organization?.secondaryColor || '#278DD4'}10)`
+        }}
+      >
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#20366B]">Settings</h1>
+            <h1 
+              className="text-3xl font-bold"
+              style={{ color: organization?.primaryColor || '#20366B' }}
+            >
+              Settings
+            </h1>
             <p className="text-slate-600">Manage your organization and preferences</p>
           </div>
         </div>
@@ -205,7 +215,12 @@ export default function Settings() {
   }
 
   return (
-    <div className="p-4 lg:p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div 
+      className="p-4 lg:p-8 min-h-screen"
+      style={{
+        background: `linear-gradient(to bottom right, #f8fafc, ${organization?.secondaryColor || '#278DD4'}10)`
+      }}
+    >
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 
@@ -309,12 +324,29 @@ export default function Settings() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-medium">Organization Name *</FormLabel>
+                          <FormLabel 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Organization Name *
+                          </FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Your organization name" 
                               {...field} 
-                              className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              className="border-slate-300"
+                              style={{
+                                '--focus-border': organization?.secondaryColor || '#278DD4',
+                                '--focus-ring': organization?.secondaryColor || '#278DD4'
+                              } as React.CSSProperties}
+                              onFocus={(e) => {
+                                e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                                e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.borderColor = '#cbd5e1';
+                                e.currentTarget.style.boxShadow = 'none';
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -327,14 +359,27 @@ export default function Settings() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-medium">Email Address *</FormLabel>
+                          <FormLabel 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Email Address *
+                          </FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                               <Input 
                                 placeholder="contact@organization.com" 
                                 {...field} 
-                                className="pl-10 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                                className="pl-10 border-slate-300"
+                                onFocus={(e) => {
+                                  e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                                  e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.borderColor = '#cbd5e1';
+                                  e.currentTarget.style.boxShadow = 'none';
+                                }}
                               />
                             </div>
                           </FormControl>
@@ -348,14 +393,27 @@ export default function Settings() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-medium">Phone Number</FormLabel>
+                          <FormLabel 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Phone Number
+                          </FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                               <Input 
                                 placeholder="+27 12 345 6789" 
                                 {...field} 
-                                className="pl-10 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                                className="pl-10 border-slate-300"
+                                onFocus={(e) => {
+                                  e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                                  e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.borderColor = '#cbd5e1';
+                                  e.currentTarget.style.boxShadow = 'none';
+                                }}
                               />
                             </div>
                           </FormControl>
@@ -369,14 +427,27 @@ export default function Settings() {
                       name="website"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-medium">Website</FormLabel>
+                          <FormLabel 
+                            className="font-medium"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Website
+                          </FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Globe className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                               <Input 
                                 placeholder="https://your-website.com" 
                                 {...field} 
-                                className="pl-10 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                                className="pl-10 border-slate-300"
+                                onFocus={(e) => {
+                                  e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                                  e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.borderColor = '#cbd5e1';
+                                  e.currentTarget.style.boxShadow = 'none';
+                                }}
                               />
                             </div>
                           </FormControl>
@@ -391,12 +462,25 @@ export default function Settings() {
                     name="address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#20366B] font-medium">Address</FormLabel>
+                        <FormLabel 
+                          className="font-medium"
+                          style={{ color: organization?.primaryColor || '#20366B' }}
+                        >
+                          Address
+                        </FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="123 Main Street, City, Province, Postal Code" 
                             {...field} 
-                            className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                            className="border-slate-300"
+                            onFocus={(e) => {
+                              e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                              e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                            }}
+                            onBlur={(e) => {
+                              e.currentTarget.style.borderColor = '#cbd5e1';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -409,12 +493,25 @@ export default function Settings() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#20366B] font-medium">Description</FormLabel>
+                        <FormLabel 
+                          className="font-medium"
+                          style={{ color: organization?.primaryColor || '#20366B' }}
+                        >
+                          Description
+                        </FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Tell us about your organization, mission, and what makes you unique..." 
                             {...field} 
-                            className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[100px]"
+                            className="border-slate-300 min-h-[100px]"
+                            onFocus={(e) => {
+                              e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                              e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                            }}
+                            onBlur={(e) => {
+                              e.currentTarget.style.borderColor = '#cbd5e1';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
