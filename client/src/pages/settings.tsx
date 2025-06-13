@@ -167,6 +167,7 @@ export default function Settings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/test-payfast-connection", organization?.id] });
       toast({
         title: "Success",
         description: "PayFast credentials saved and connection verified",
@@ -224,6 +225,26 @@ export default function Settings() {
     updateOrganizationMutation.mutate(data);
     setShowColorPicker(false);
   };
+
+  // PayFast connection status check
+  const { data: connectionStatus, isLoading: isCheckingConnection, refetch: checkConnection } = useQuery({
+    queryKey: ["/api/test-payfast-connection", organization?.id],
+    queryFn: async () => {
+      if (!organization?.payfastMerchantId || !organization?.payfastMerchantKey) {
+        return { connected: false, message: "Credentials not configured" };
+      }
+      
+      return api.testPayfastConnection({
+        merchantId: organization.payfastMerchantId,
+        merchantKey: organization.payfastMerchantKey,
+        passphrase: organization.payfastPassphrase,
+        sandbox: organization.payfastSandbox ?? true,
+      });
+    },
+    enabled: !!(organization?.payfastMerchantId && organization?.payfastMerchantKey),
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
 
   const onPayfastCredentialsSubmit = (data: PayfastCredentialsData) => {
     updatePayfastCredentialsMutation.mutate(data);
@@ -675,13 +696,49 @@ export default function Settings() {
             <TabsContent value="payments" className="space-y-6">
               <div className="space-y-6">
                 <div>
-                  <h3 
-                    className="text-lg font-semibold mb-2"
-                    style={{ color: organization?.primaryColor || '#20366B' }}
-                  >
-                    Payment Gateway Configuration
-                  </h3>
-                  <p className="text-slate-600 mb-6">Configure your Payfast merchant account to accept payments for class bookings</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 
+                      className="text-lg font-semibold"
+                      style={{ color: organization?.primaryColor || '#20366B' }}
+                    >
+                      PayFast Integration
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      {isCheckingConnection ? (
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-sm">Checking connection...</span>
+                        </div>
+                      ) : connectionStatus?.connected ? (
+                        <div className="flex items-center gap-2 text-green-600">
+                          <CheckCircle className="h-4 w-4" />
+                          <span className="text-sm font-medium">Connected</span>
+                          <Badge variant="outline" className="text-xs">
+                            {connectionStatus.environment}
+                          </Badge>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-red-600">
+                          <XCircle className="h-4 w-4" />
+                          <span className="text-sm font-medium">Not Connected</span>
+                        </div>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => checkConnection()}
+                        disabled={isCheckingConnection || !organization?.payfastMerchantId}
+                      >
+                        Test Connection
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-slate-600 mb-6">Configure your PayFast credentials to enable payments for class bookings</p>
+                  {connectionStatus?.message && !connectionStatus.connected && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                      <p className="text-sm text-red-700">{connectionStatus.message}</p>
+                    </div>
+                  )}
                 </div>
                 
                 <PayfastCredentials
