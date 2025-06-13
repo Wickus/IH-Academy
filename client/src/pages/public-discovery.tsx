@@ -47,8 +47,8 @@ export default function PublicDiscovery() {
       // Clear user data immediately but navigate smoothly
       queryClient.setQueryData(['/api/auth/me'], null);
       
-      // Navigate to home page (will show public discovery for unauthenticated users)
-      setLocation('/');
+      // Navigate to auth page for login/register
+      setLocation('/auth');
       
       // Clear remaining cache after navigation
       setTimeout(() => {
