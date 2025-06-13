@@ -58,7 +58,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RoleBasedRouter({ user }: { user?: User }) {
+function RoleBasedRouter({ user, setUser, setIsAuthenticated }: { 
+  user?: User; 
+  setUser: (user: User | null) => void;
+  setIsAuthenticated: (auth: boolean) => void;
+}) {
   const { isMobile } = useMobileDetection();
 
   // Mobile app routing for coaches and participants
@@ -192,6 +196,12 @@ function RoleBasedRouter({ user }: { user?: User }) {
   return (
     <Switch>
       <Route path="/" component={PublicDiscovery} />
+      <Route path="/auth">
+        <Auth onAuthSuccess={(authenticatedUser) => {
+          setUser(authenticatedUser);
+          setIsAuthenticated(true);
+        }} />
+      </Route>
       <Route path="/discover" component={PublicDiscovery} />
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
@@ -246,7 +256,7 @@ function Router() {
 
   return (
     <OrganizationProvider user={user}>
-      <RoleBasedRouter user={user} />
+      <RoleBasedRouter user={user} setUser={setUser} setIsAuthenticated={setIsAuthenticated} />
     </OrganizationProvider>
   );
 }

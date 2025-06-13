@@ -58,8 +58,8 @@ export default function Header() {
       // Clear user data immediately but navigate smoothly
       queryClient.setQueryData(['/api/auth/me'], null);
       
-      // Navigate to public discovery page
-      setLocation('/');
+      // Navigate to auth page for login/register
+      setLocation('/auth');
       
       // Clear remaining cache after navigation
       setTimeout(() => {
