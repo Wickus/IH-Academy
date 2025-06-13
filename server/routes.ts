@@ -1512,6 +1512,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PayFast connection test endpoint
+  app.post("/api/test-payfast-connection", async (req: Request, res: Response) => {
+    try {
+      const { merchantId, merchantKey, passphrase, sandbox } = req.body;
+      
+      if (!merchantId || !merchantKey) {
+        return res.status(400).json({ message: "Merchant ID and Key are required" });
+      }
+
+      // Test PayFast credentials by creating a test payment data structure
+      const testData: PayFastPaymentData = {
+        merchant_id: merchantId,
+        merchant_key: merchantKey,
+        return_url: "https://test.com/success",
+        cancel_url: "https://test.com/cancel",
+        notify_url: "https://test.com/notify",
+        name_first: "Test",
+        name_last: "User",
+        email_address: "test@test.com",
+        m_payment_id: "test_connection_123",
+        amount: "100.00",
+        item_name: "Connection Test",
+        item_description: "PayFast connection validation test",
+        passphrase: passphrase || undefined
+      };
+
+      try {
+        const testUrl = payfastService.generatePaymentUrl(testData, sandbox || true);
+        
+        // If we can generate a URL without errors, credentials are valid
+        if (testUrl && testUrl.includes('payfast.co.za')) {
+          res.json({ 
+            connected: true, 
+            message: "PayFast credentials are valid",
+            environment: sandbox ? "sandbox" : "production"
+          });
+        } else {
+          res.status(400).json({ 
+            connected: false, 
+            message: "Invalid PayFast credentials"
+          });
+        }
+      } catch (error) {
+        console.error("PayFast validation error:", error);
+        res.status(400).json({ 
+          connected: false, 
+          message: "Failed to validate PayFast credentials"
+        });
+      }
+    } catch (error) {
+      console.error("Error testing PayFast connection:", error);
+      res.status(500).json({ message: "Failed to test connection" });
+    }
+  });
+
   // PayFast payment creation endpoint
   app.post("/api/create-payfast-payment", async (req: Request, res: Response) => {
     try {
