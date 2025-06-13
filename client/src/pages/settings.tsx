@@ -159,6 +159,34 @@ export default function Settings() {
     },
   });
 
+  const deleteSportMutation = useMutation({
+    mutationFn: (sportId: number) => {
+      return fetch(`/api/sports/${sportId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to delete sport');
+        }
+        return response.json();
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/sports"] });
+      toast({
+        title: "Success",
+        description: "Sport deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete sport",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onOrganizationSubmit = (data: any) => {
     updateOrganizationMutation.mutate(data);
   };
@@ -177,6 +205,16 @@ export default function Settings() {
 
   const onPayfastCredentialsSubmit = (data: PayfastCredentialsData) => {
     updatePayfastCredentialsMutation.mutate(data);
+  };
+
+  const handleDeleteSport = (sportId: number) => {
+    const sport = sports?.find(s => s.id === sportId);
+    if (!sport) return;
+
+    const confirmed = window.confirm(`Are you sure you want to delete "${sport.name}"? This action cannot be undone.`);
+    if (confirmed) {
+      deleteSportMutation.mutate(sportId);
+    }
   };
 
   if (orgLoading) {
