@@ -29,6 +29,7 @@ import {
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
 import { useToast } from "@/hooks/use-toast";
+import OrganizationDashboard from "@/pages/organization-dashboard";
 
 export default function UserDashboard() {
   const [, setLocation] = useLocation();
@@ -38,6 +39,13 @@ export default function UserDashboard() {
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: api.getCurrentUser,
+  });
+
+  // Check if user belongs to an organization
+  const { data: userOrganizations, isLoading: orgLoading } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!currentUser,
   });
 
   const { data: myBookings = [] } = useQuery({
@@ -70,15 +78,36 @@ export default function UserDashboard() {
     },
   });
 
-  if (!currentUser) {
+  // Show loading screen with organization branding if available
+  if (!currentUser || orgLoading) {
+    const organization = userOrganizations?.[0];
+    const primaryColor = organization?.primaryColor || '#278DD4';
+    
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background: organization 
+            ? `linear-gradient(to bottom right, ${organization.primaryColor}10, ${organization.secondaryColor}10)` 
+            : 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)'
+        }}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#278DD4] mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading your dashboard...</p>
+          <div 
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
+            style={{ borderColor: primaryColor }}
+          ></div>
+          <p className="text-slate-600">
+            {organization ? `Loading ${organization.name} dashboard...` : 'Loading your dashboard...'}
+          </p>
         </div>
       </div>
     );
+  }
+
+  // If user belongs to an organization, show organization dashboard
+  if (userOrganizations && userOrganizations.length > 0) {
+    return <OrganizationDashboard user={currentUser} organization={userOrganizations[0]} />;
   }
 
   const upcomingBookings = myBookings.filter(booking => 
