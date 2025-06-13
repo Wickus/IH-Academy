@@ -592,12 +592,7 @@ export default function Settings() {
                             variant="ghost"
                             size="sm"
                             className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => {
-                              toast({
-                                title: "Feature Coming Soon",
-                                description: "Sport deletion will be available in a future update",
-                              });
-                            }}
+                            onClick={() => handleDeleteSport(sport.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

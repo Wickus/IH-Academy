@@ -58,6 +58,7 @@ export interface IStorage {
   // Sports
   getAllSports(): Promise<Sport[]>;
   createSport(sport: InsertSport): Promise<Sport>;
+  deleteSport(id: number): Promise<boolean>;
 
   // Coaches
   getCoach(id: number): Promise<Coach | undefined>;
@@ -359,6 +360,16 @@ export class DatabaseStorage implements IStorage {
   async createSport(sport: InsertSport): Promise<Sport> {
     const [newSport] = await db.insert(sports).values(sport).returning();
     return newSport;
+  }
+
+  async deleteSport(id: number): Promise<boolean> {
+    try {
+      await db.delete(sports).where(eq(sports.id, id));
+      return true;
+    } catch (error) {
+      console.error("Error deleting sport:", error);
+      return false;
+    }
   }
 
   // Coach methods
