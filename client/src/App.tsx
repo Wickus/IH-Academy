@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NotificationsProvider } from "@/contexts/notifications-context";
+import { OrganizationProvider } from "@/contexts/organization-context";
 import { api, type User } from "@/lib/api";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import NotFound from "@/pages/not-found";
@@ -240,12 +241,15 @@ function Router() {
     return <Auth onAuthSuccess={(authenticatedUser) => {
       setUser(authenticatedUser);
       setIsAuthenticated(true);
-      // Force page reload to ensure proper routing after login
-      window.location.href = '/';
+      // Don't force page reload - let React handle the state transition
     }} />;
   }
 
-  return <RoleBasedRouter user={user} />;
+  return (
+    <OrganizationProvider user={user}>
+      <RoleBasedRouter user={user} />
+    </OrganizationProvider>
+  );
 }
 
 function App() {
