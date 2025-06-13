@@ -39,6 +39,7 @@ import RevenueDashboard from "@/pages/revenue-dashboard";
 import ClassesManagement from "@/pages/classes-management";
 import PaymentSuccess from "@/pages/payment-success";
 import PaymentCancelled from "@/pages/payment-cancelled";
+import CoachRegister from "@/pages/coach-register";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -206,6 +207,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
       <Route path="/organization-payment" component={OrganizationPayment} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancelled" component={PaymentCancelled} />
+      <Route path="/coach-register/:token" component={CoachRegister} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Mail, Phone, Star, Users, Calendar, Plus, Edit } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Mail, Phone, Star, Users, Calendar, Plus, Edit, UserPlus, Clock, CheckCircle, XCircle } from "lucide-react";
 import CoachForm from "@/components/forms/coach-form";
+import CoachInvitationForm from "@/components/forms/coach-invitation-form";
 
 export default function Coaches() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);

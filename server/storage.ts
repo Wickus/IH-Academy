@@ -417,6 +417,41 @@ export class DatabaseStorage implements IStorage {
     return updatedCoach || undefined;
   }
 
+  // Coach Invitation methods
+  async createCoachInvitation(invitation: InsertCoachInvitation): Promise<CoachInvitation> {
+    const [newInvitation] = await db.insert(coachInvitations).values(invitation).returning();
+    return newInvitation;
+  }
+
+  async getCoachInvitationsByOrganization(organizationId: number): Promise<CoachInvitation[]> {
+    return await db.select().from(coachInvitations).where(eq(coachInvitations.organizationId, organizationId));
+  }
+
+  async getCoachInvitationByToken(token: string): Promise<CoachInvitation | undefined> {
+    const [invitation] = await db.select().from(coachInvitations).where(eq(coachInvitations.invitationToken, token));
+    return invitation || undefined;
+  }
+
+  async updateCoachInvitation(id: number, invitation: Partial<InsertCoachInvitation>): Promise<CoachInvitation | undefined> {
+    const [updatedInvitation] = await db.update(coachInvitations).set(invitation).where(eq(coachInvitations.id, id)).returning();
+    return updatedInvitation || undefined;
+  }
+
+  // Coach Availability methods
+  async getCoachAvailabilityByOrganization(organizationId: number): Promise<CoachAvailability[]> {
+    return await db.select().from(coachAvailability).where(eq(coachAvailability.organizationId, organizationId));
+  }
+
+  async createCoachAvailability(availability: InsertCoachAvailability): Promise<CoachAvailability> {
+    const [newAvailability] = await db.insert(coachAvailability).values(availability).returning();
+    return newAvailability;
+  }
+
+  async updateCoachAvailability(id: number, availability: Partial<InsertCoachAvailability>): Promise<CoachAvailability | undefined> {
+    const [updatedAvailability] = await db.update(coachAvailability).set(availability).where(eq(coachAvailability.id, id)).returning();
+    return updatedAvailability || undefined;
+  }
+
   // Class methods
   async getClass(id: number): Promise<Class | undefined> {
     const [classItem] = await db.select().from(classes).where(eq(classes.id, id));
@@ -518,6 +553,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async markAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
+    const [newAttendance] = await db.insert(attendance).values(attendanceData).returning();
+    return newAttendance;
+  }
+
+  async createAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
     const [newAttendance] = await db.insert(attendance).values(attendanceData).returning();
     return newAttendance;
   }
