@@ -1024,29 +1024,267 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Coach Invitations API
+  app.post("/api/coach-invitations", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+
+      const { email, firstName, lastName, phone, specializations, hourlyRate } = req.body;
+      
+      // Get organization for the current user
+      const userOrgs = await storage.getUserOrganizations(user.id);
+      if (userOrgs.length === 0) {
+        return res.status(400).json({ message: "No organization found for user" });
+      }
+      
+      const organizationId = userOrgs[0].organizationId;
+      
+      // Generate invitation token
+      const invitationToken = generateSessionId();
+      
+      // Set expiration to 7 days from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      
+      const invitation = await storage.createCoachInvitation({
+        organizationId,
+        email,
+        firstName,
+        lastName,
+        phone,
+        specializations: specializations || [],
+        hourlyRate: hourlyRate || "0",
+        invitationToken,
+        status: "pending",
+        invitedBy: user.id,
+        expiresAt
+      });
+
+      // Get organization details for email
+      const organization = await storage.getOrganization(organizationId);
+      
+      // Send invitation email (simplified for now)
+      console.log(`Coach invitation sent to ${email} for organization ${organization?.name}`);
+      console.log(`Invitation link: ${process.env.REPL_URL || 'http://localhost:5000'}/coach-register/${invitationToken}`);
+      
+      res.json({ invitation, invitationLink: `/coach-register/${invitationToken}` });
+    } catch (error) {
+      console.error("Error creating coach invitation:", error);
+      res.status(500).json({ message: "Failed to create coach invitation" });
+    }
+  });
+
+  app.get("/api/coach-invitations", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+
+      const userOrgs = await storage.getUserOrganizations(user.id);
+      if (userOrgs.length === 0) {
+        return res.status(400).json({ message: "No organization found for user" });
+      }
+      
+      const organizationId = userOrgs[0].organizationId;
+      const invitations = await storage.getCoachInvitationsByOrganization(organizationId);
+      
+      res.json(invitations);
+    } catch (error) {
+      console.error("Error fetching coach invitations:", error);
+      res.status(500).json({ message: "Failed to fetch coach invitations" });
+    }
+  });
+
+  app.get("/api/coach-invitations/:token", async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params;
+      const invitation = await storage.getCoachInvitationByToken(token);
+      
+      if (!invitation) {
+        return res.status(404).json({ message: "Invitation not found" });
+      }
+      
+      if (invitation.status !== 'pending') {
+        return res.status(400).json({ message: "Invitation already processed" });
+      }
+      
+      if (new Date() > invitation.expiresAt) {
+        return res.status(400).json({ message: "Invitation expired" });
+      }
+      
+      const organization = await storage.getOrganization(invitation.organizationId);
+      
+      res.json({ 
+        invitation, 
+        organization: {
+          id: organization?.id,
+          name: organization?.name,
+          primaryColor: organization?.primaryColor,
+          secondaryColor: organization?.secondaryColor,
+          accentColor: organization?.accentColor
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching coach invitation:", error);
+      res.status(500).json({ message: "Failed to fetch coach invitation" });
+    }
+  });
+
+  app.post("/api/coach-invitations/:token/accept", async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params;
+      const { username, password, confirmPassword } = req.body;
+      
+      const invitation = await storage.getCoachInvitationByToken(token);
+      
+      if (!invitation) {
+        return res.status(404).json({ message: "Invitation not found" });
+      }
+      
+      if (invitation.status !== 'pending') {
+        return res.status(400).json({ message: "Invitation already processed" });
+      }
+      
+      if (new Date() > invitation.expiresAt) {
+        await storage.updateCoachInvitation(invitation.id, { status: 'expired' });
+        return res.status(400).json({ message: "Invitation expired" });
+      }
+      
+      if (password !== confirmPassword) {
+        return res.status(400).json({ message: "Passwords do not match" });
+      }
+      
+      // Check if user with email already exists
+      let user = await storage.getUserByEmail(invitation.email);
+      
+      if (!user) {
+        // Create new user account
+        user = await storage.createUser({
+          username,
+          password,
+          email: invitation.email,
+          name: `${invitation.firstName} ${invitation.lastName}`,
+          firstName: invitation.firstName,
+          lastName: invitation.lastName,
+          phone: invitation.phone,
+          role: 'coach'
+        });
+      }
+      
+      // Create coach profile for this organization
+      const coach = await storage.createCoach({
+        userId: user.id,
+        organizationId: invitation.organizationId,
+        specializations: invitation.specializations || [],
+        hourlyRate: invitation.hourlyRate || "0",
+        isActive: true
+      });
+      
+      // Add user to organization
+      await storage.addUserToOrganization({
+        userId: user.id,
+        organizationId: invitation.organizationId,
+        role: 'coach',
+        isActive: true
+      });
+      
+      // Update invitation status
+      await storage.updateCoachInvitation(invitation.id, { status: 'accepted' });
+      
+      res.json({ user, coach, message: "Coach invitation accepted successfully" });
+    } catch (error) {
+      console.error("Error accepting coach invitation:", error);
+      res.status(500).json({ message: "Failed to accept coach invitation" });
+    }
+  });
+
+  // Coach Availability API
+  app.get("/api/coach-availability/:organizationId", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['coach', 'organization_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const organizationId = parseInt(req.params.organizationId);
+      const availability = await storage.getCoachAvailabilityByOrganization(organizationId);
+      
+      res.json(availability);
+    } catch (error) {
+      console.error("Error fetching coach availability:", error);
+      res.status(500).json({ message: "Failed to fetch coach availability" });
+    }
+  });
+
+  app.post("/api/coach-availability", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'coach') {
+        return res.status(403).json({ message: "Access denied. Coach only." });
+      }
+      
+      const { classId, organizationId, status } = req.body;
+      
+      // Get coach profile for this organization
+      const coaches = await storage.getCoachesByOrganization(organizationId);
+      const coach = coaches.find(c => c.userId === user.id);
+      
+      if (!coach) {
+        return res.status(404).json({ message: "Coach profile not found for this organization" });
+      }
+      
+      const availability = await storage.createCoachAvailability({
+        coachId: coach.id,
+        classId,
+        organizationId,
+        status: status || 'available'
+      });
+      
+      res.json(availability);
+    } catch (error) {
+      console.error("Error creating coach availability:", error);
+      res.status(500).json({ message: "Failed to create coach availability" });
+    }
+  });
+
+  app.put("/api/coach-availability/:id/assign", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+      
+      const availabilityId = parseInt(req.params.id);
+      
+      const updatedAvailability = await storage.updateCoachAvailability(availabilityId, {
+        status: 'assigned',
+        assignedAt: new Date(),
+        assignedBy: user.id
+      });
+      
+      res.json(updatedAvailability);
+    } catch (error) {
+      console.error("Error assigning coach to class:", error);
+      res.status(500).json({ message: "Failed to assign coach to class" });
+    }
+  });
+
   // Attendance routes
   app.get("/api/attendance/:classId", async (req: Request, res: Response) => {
     try {
+      const user = getCurrentUser(req);
+      if (!user || !['coach', 'organization_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
       const classId = parseInt(req.params.classId);
       const attendance = await storage.getAttendanceByClass(classId);
       
-      // Get booking info for each attendance record
-      const attendanceWithBookings = await Promise.all(
-        attendance.map(async (record: any) => {
-          const booking = await storage.getBooking(record.bookingId);
-          return {
-            booking,
-            attendance: {
-              id: record.id,
-              status: record.status,
-              markedAt: record.markedAt,
-              markedBy: record.markedBy
-            }
-          };
-        })
-      );
-
-      res.json(attendanceWithBookings);
+      res.json(attendance);
     } catch (error) {
       console.error("Error fetching attendance:", error);
       res.status(500).json({ message: "Failed to fetch attendance" });
@@ -1055,8 +1293,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/attendance", async (req: Request, res: Response) => {
     try {
-      const attendanceData = req.body;
-      const attendance = await storage.markAttendance(attendanceData);
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'coach') {
+        return res.status(403).json({ message: "Access denied. Coach only." });
+      }
+      
+      const { classId, bookingId, walkInData, status, notes } = req.body;
+      
+      let attendanceData: any = {
+        classId,
+        status: status || 'present',
+        markedBy: user.id,
+        markedAt: new Date(),
+        notes
+      };
+      
+      if (bookingId) {
+        // Regular booking attendance
+        attendanceData.bookingId = bookingId;
+        
+        // Get booking to find participant
+        const booking = await storage.getBooking(bookingId);
+        if (booking) {
+          attendanceData.participantName = booking.participantName;
+          attendanceData.participantEmail = booking.participantEmail;
+        }
+      } else if (walkInData) {
+        // Walk-in client
+        attendanceData.participantName = walkInData.name;
+        attendanceData.participantEmail = walkInData.email;
+        attendanceData.participantPhone = walkInData.phone;
+        attendanceData.isWalkIn = true;
+        attendanceData.paymentMethod = walkInData.paymentMethod || 'cash';
+        attendanceData.amountPaid = walkInData.amountPaid;
+        
+        // For walk-ins, also create a user account if email provided and doesn't exist
+        if (walkInData.email) {
+          let walkInUser = await storage.getUserByEmail(walkInData.email);
+          if (!walkInUser) {
+            walkInUser = await storage.createUser({
+              username: walkInData.email,
+              email: walkInData.email,
+              name: walkInData.name,
+              phone: walkInData.phone,
+              role: 'member',
+              password: generateSessionId() // Temporary password
+            });
+            
+            console.log(`Created walk-in user account for ${walkInData.email}`);
+            // In production, send welcome email with password reset link
+          }
+          attendanceData.participantUserId = walkInUser.id;
+        }
+      }
+      
+      const attendance = await storage.createAttendance(attendanceData);
       res.json(attendance);
     } catch (error) {
       console.error("Error marking attendance:", error);

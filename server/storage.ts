@@ -1,11 +1,13 @@
 import {
-  users, organizations, userOrganizations, sports, coaches, classes, bookings, attendance, payments,
+  users, organizations, userOrganizations, sports, coaches, coachInvitations, coachAvailability, classes, bookings, attendance, payments,
   achievements, userAchievements, userStats, memberships, children, dailySchedules,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
   type Sport, type InsertSport,
   type Coach, type InsertCoach,
+  type CoachInvitation, type InsertCoachInvitation,
+  type CoachAvailability, type InsertCoachAvailability,
   type Class, type InsertClass,
   type Booking, type InsertBooking,
   type Attendance, type InsertAttendance,
@@ -66,6 +68,17 @@ export interface IStorage {
   createCoach(coach: InsertCoach): Promise<Coach>;
   updateCoach(id: number, coach: Partial<InsertCoach>): Promise<Coach | undefined>;
 
+  // Coach Invitations
+  createCoachInvitation(invitation: InsertCoachInvitation): Promise<CoachInvitation>;
+  getCoachInvitationsByOrganization(organizationId: number): Promise<CoachInvitation[]>;
+  getCoachInvitationByToken(token: string): Promise<CoachInvitation | undefined>;
+  updateCoachInvitation(id: number, invitation: Partial<InsertCoachInvitation>): Promise<CoachInvitation | undefined>;
+
+  // Coach Availability
+  getCoachAvailabilityByOrganization(organizationId: number): Promise<CoachAvailability[]>;
+  createCoachAvailability(availability: InsertCoachAvailability): Promise<CoachAvailability>;
+  updateCoachAvailability(id: number, availability: Partial<InsertCoachAvailability>): Promise<CoachAvailability | undefined>;
+
   // Classes
   getClass(id: number): Promise<Class | undefined>;
   getClassesByOrganization(organizationId: number): Promise<Class[]>;
@@ -88,6 +101,7 @@ export interface IStorage {
   // Attendance
   getAttendanceByClass(classId: number): Promise<Attendance[]>;
   markAttendance(attendance: InsertAttendance): Promise<Attendance>;
+  createAttendance(attendance: InsertAttendance): Promise<Attendance>;
   updateAttendance(id: number, attendance: Partial<InsertAttendance>): Promise<Attendance | undefined>;
 
   // Payments
