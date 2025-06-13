@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -84,6 +84,29 @@ export default function GlobalAdminDashboard() {
       premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
     }
   });
+
+  // Load saved pricing configuration
+  const { data: savedPricingConfig, isLoading: loadingPricingConfig } = useQuery({
+    queryKey: ['/api/admin/pricing-config'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/pricing-config', {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to load pricing configuration');
+      }
+      
+      return response.json();
+    },
+  });
+
+  // Update local state when saved pricing config is loaded
+  React.useEffect(() => {
+    if (savedPricingConfig) {
+      setPricingConfig(savedPricingConfig);
+    }
+  }, [savedPricingConfig]);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();

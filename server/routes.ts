@@ -3,6 +3,9 @@ import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { payfastService, type PayFastPaymentData } from "./payfast";
+import { db } from "./db";
+import { organizations } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -1871,12 +1874,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Global admin pricing configuration endpoints
   app.get("/api/admin/pricing-config", async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== 'global_admin') {
+      if (!(req as any).isAuthenticated() || (req as any).user?.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied" });
       }
 
       // Get global pricing configuration from organization ID 20 (acts as global settings)
-      const globalOrg = await storage.getOrganization(20);
+      const [globalOrg] = await db.select().from(organizations).where(eq(organizations.id, 20));
       
       let pricingConfig = {
         membership: {
@@ -1909,7 +1912,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/pricing-config", async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== 'global_admin') {
+      if (!(req as any).isAuthenticated() || (req as any).user?.role !== 'global_admin') {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -1928,6 +1931,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Pricing configuration saved successfully" });
     } catch (error: any) {
       console.error("Error saving pricing config:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get current pricing for organization signups
+  app.get("/api/pricing", async (req: Request, res: Response) => {
+    try {
+      // Get global pricing configuration from organization ID 20 (acts as global settings)
+      const [globalOrg] = await db.select().from(organizations).where(eq(organizations.id, 20));
+      
+      let pricingConfig = {
+        membership: {
+          free: { price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
+          basic: { price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
+          premium: { price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+        },
+        payPerClass: {
+          free: { commission: "5", maxBookings: "50", storage: "1" },
+          basic: { commission: "3", maxBookings: "200", storage: "10" },
+          premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
+        }
+      };
+
+      // If stored pricing config exists, use it
+      if (globalOrg?.pricingConfig) {
+        try {
+          pricingConfig = JSON.parse(globalOrg.pricingConfig);
+        } catch (e) {
+          console.log("Using default pricing config due to parse error");
+        }
+      }
+
+      res.json(pricingConfig);
+    } catch (error: any) {
+      console.error("Error fetching pricing:", error);
       res.status(500).json({ message: error.message });
     }
   });
