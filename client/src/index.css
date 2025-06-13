@@ -42,6 +42,17 @@
   --toast-error: 239 68 68; /* #EF4444 */
 }
 
+/* Dynamic Organization Tab Styling */
+.organization-tabs [data-state="active"] {
+  background-color: var(--org-secondary-color, #278DD4) !important;
+  color: white !important;
+}
+
+.organization-tabs [data-state="inactive"] {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
 .dark {
   --background: 32 54 107; /* #20366B */
   --foreground: 255 255 255; /* #FFFFFF */
