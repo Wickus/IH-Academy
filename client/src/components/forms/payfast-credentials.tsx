@@ -48,6 +48,8 @@ export default function PayfastCredentials({
   });
 
   const handleSubmit = (data: PayfastCredentialsData) => {
+    console.log("PayfastCredentials handleSubmit called with:", data);
+    console.log("onSubmit function:", onSubmit);
     onSubmit(data);
   };
 
@@ -206,6 +208,7 @@ export default function PayfastCredentials({
                   type="submit" 
                   disabled={isLoading}
                   className="bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
+                  onClick={() => console.log("Save button clicked!")}
                 >
                   {isLoading ? "Saving..." : "Save Credentials"}
                 </Button>
