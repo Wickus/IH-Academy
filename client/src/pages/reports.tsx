@@ -315,14 +315,17 @@ export default function Reports() {
         <Card className="border-0 shadow-md bg-white mt-8">
           <CardContent className="p-12">
             <div className="text-center">
-              <div className="text-[#278DD4] mb-4">
+              <div className="mb-4" style={{ color: organization.secondaryColor }}>
                 <BarChart3 className="mx-auto h-16 w-16" />
               </div>
-              <h3 className="text-xl font-bold text-[#20366B] mb-2">No data to report yet</h3>
+              <h3 className="text-xl font-bold mb-2" style={{ color: organization.primaryColor }}>No data to report yet</h3>
               <p className="text-slate-600 mb-6">
                 Start by creating classes and accepting bookings to generate meaningful reports.
               </p>
-              <Button className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
+              <Button 
+                className="text-white border-0"
+                style={{ backgroundColor: organization.accentColor }}
+              >
                 Get Started
               </Button>
             </div>
