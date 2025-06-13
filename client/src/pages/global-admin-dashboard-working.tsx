@@ -34,8 +34,16 @@ const orgEditSchema = z.object({
   isActive: z.boolean(),
 });
 
+const payfastSettingsSchema = z.object({
+  payfastMerchantId: z.string().min(1, "Merchant ID is required"),
+  payfastMerchantKey: z.string().min(1, "Merchant Key is required"),
+  payfastPassphrase: z.string().optional(),
+  payfastSandbox: z.boolean().default(true),
+});
+
 type UserEditFormData = z.infer<typeof userEditSchema>;
 type OrgEditFormData = z.infer<typeof orgEditSchema>;
+type PayfastSettingsData = z.infer<typeof payfastSettingsSchema>;
 
 export default function GlobalAdminDashboard() {
   const [showUsers, setShowUsers] = useState(false);
@@ -48,6 +56,17 @@ export default function GlobalAdminDashboard() {
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [showOrgEditDialog, setShowOrgEditDialog] = useState(false);
   const [editingOrg, setEditingOrg] = useState<any>(null);
+
+  // PayFast form setup
+  const payfastForm = useForm<PayfastSettingsData>({
+    resolver: zodResolver(payfastSettingsSchema),
+    defaultValues: {
+      payfastMerchantId: "",
+      payfastMerchantKey: "",
+      payfastPassphrase: "",
+      payfastSandbox: true,
+    },
+  });
   const [showBookingsDialog, setShowBookingsDialog] = useState(false);
   const [showRevenueDialog, setShowRevenueDialog] = useState(false);
   const [showOrganizations, setShowOrganizations] = useState(false);
@@ -313,6 +332,55 @@ export default function GlobalAdminDashboard() {
     if (editingOrg) {
       updateOrgMutation.mutate({ orgId: editingOrg.id, orgData: data });
     }
+  };
+
+  // PayFast save mutation
+  const savePayfastMutation = useMutation({
+    mutationFn: async (data: PayfastSettingsData) => {
+      console.log("Saving PayFast settings:", data);
+      
+      // Save to first organization as default for global admin
+      const response = await fetch('/api/organizations/20', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          payfastMerchantId: data.payfastMerchantId,
+          payfastMerchantKey: data.payfastMerchantKey,
+          payfastPassphrase: data.payfastPassphrase,
+          payfastSandbox: data.payfastSandbox,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to save PayFast settings');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({
+        title: "PayFast Settings Saved",
+        description: "PayFast credentials have been updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error saving PayFast settings:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save PayFast settings",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onPayfastSubmit = (data: PayfastSettingsData) => {
+    console.log("PayFast form submitted:", data);
+    savePayfastMutation.mutate(data);
   };
 
   const updateOrgStatusMutation = useMutation({
@@ -962,37 +1030,87 @@ export default function GlobalAdminDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-[#20366B]">Merchant ID</label>
-                    <Input placeholder="Enter PayFast Merchant ID" className="mt-1" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-[#20366B]">Merchant Key</label>
-                    <Input placeholder="Enter PayFast Merchant Key" className="mt-1" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-[#20366B]">Passphrase</label>
-                    <Input placeholder="Enter PayFast Passphrase" type="password" className="mt-1" />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-[#20366B]/5 to-[#278DD4]/5 p-4 rounded-lg border border-[#278DD4]/20">
-                    <h4 className="font-semibold text-[#20366B] mb-2">PayFast Status</h4>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <span className="text-sm text-slate-600">Not Connected</span>
+              <Form {...payfastForm}>
+                <form onSubmit={payfastForm.handleSubmit(onPayfastSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <FormField
+                        control={payfastForm.control}
+                        name="payfastMerchantId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-[#20366B]">Merchant ID</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., 15720320" {...field} className="mt-1" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={payfastForm.control}
+                        name="payfastMerchantKey"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-[#20366B]">Merchant Key</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., s3opz0f8hkx4x" {...field} className="mt-1" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={payfastForm.control}
+                        name="payfastPassphrase"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-[#20366B]">Passphrase (Optional)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter PayFast Passphrase" type="password" {...field} className="mt-1" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">
-                      Configure your PayFast credentials to enable payments
-                    </p>
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-[#20366B]/5 to-[#278DD4]/5 p-4 rounded-lg border border-[#278DD4]/20">
+                        <h4 className="font-semibold text-[#20366B] mb-2">PayFast Status</h4>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <span className="text-sm text-slate-600">Not Connected</span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-2">
+                          Configure your PayFast credentials to enable payments
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Button 
+                          type="button"
+                          onClick={() => {
+                            console.log("Test Form Values clicked!");
+                            console.log("Form values:", payfastForm.getValues());
+                            console.log("Form errors:", payfastForm.formState.errors);
+                          }}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Test Form Values
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={savePayfastMutation.isPending}
+                          className="w-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white"
+                          onClick={() => console.log("Save button clicked!")}
+                        >
+                          {savePayfastMutation.isPending ? "Saving..." : "Save PayFast Settings"}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <Button className="w-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white">
-                    Save PayFast Settings
-                  </Button>
-                </div>
-              </div>
+                </form>
+              </Form>
             </CardContent>
           </Card>
 
