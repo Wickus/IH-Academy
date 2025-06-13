@@ -1159,33 +1159,18 @@ export default function GlobalAdminDashboard() {
                           disabled={isCheckingPayfast}
                           variant="outline"
                           size="sm"
-                          className="mt-2 w-full"
+                          className="mt-3 w-full border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white transition-colors"
                         >
                           {isCheckingPayfast ? 'Testing...' : 'Test Connection'}
                         </Button>
                       </div>
-                      <div className="space-y-2">
-                        <Button 
-                          type="button"
-                          onClick={() => {
-                            console.log("Test Form Values clicked!");
-                            console.log("Form values:", payfastForm.getValues());
-                            console.log("Form errors:", payfastForm.formState.errors);
-                          }}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Test Form Values
-                        </Button>
-                        <Button 
-                          type="submit" 
-                          disabled={savePayfastMutation.isPending}
-                          className="w-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white"
-                          onClick={() => console.log("Save button clicked!")}
-                        >
-                          {savePayfastMutation.isPending ? "Saving..." : "Save PayFast Settings"}
-                        </Button>
-                      </div>
+                      <Button 
+                        type="submit" 
+                        disabled={savePayfastMutation.isPending}
+                        className="w-full bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white"
+                      >
+                        {savePayfastMutation.isPending ? "Saving..." : "Save PayFast Settings"}
+                      </Button>
                     </div>
                   </div>
                 </form>
