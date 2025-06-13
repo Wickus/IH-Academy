@@ -1,0 +1,134 @@
+# ItsHappening.Africa - Sports Academy Management System
+
+## Overview
+
+ItsHappening.Africa is a comprehensive sports academy management system built with a full-stack TypeScript architecture. The application enables sports organizations to manage classes, bookings, payments, memberships, and user interactions through a modern web interface with real-time capabilities.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Routing**: Wouter for client-side navigation
+- **State Management**: TanStack Query for server state management
+- **UI Framework**: Shadcn/ui components with Radix UI primitives
+- **Styling**: Tailwind CSS with custom brand theming
+- **Build Tool**: Vite for development and production builds
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js
+- **Language**: TypeScript with ES modules
+- **Database**: PostgreSQL with Drizzle ORM
+- **Database Provider**: Neon serverless PostgreSQL
+- **Real-time**: WebSocket integration for live updates
+- **File Handling**: Express static file serving
+
+### Multi-tenant Architecture
+- Organization-based multi-tenancy
+- Role-based access control (global_admin, organization_admin, coach, member)
+- Custom branding per organization (colors, logos)
+- Isolated data per organization
+
+## Key Components
+
+### Database Schema (Drizzle ORM)
+- **Users**: Authentication and profile management
+- **Organizations**: Multi-tenant structure with custom branding
+- **Classes**: Sports class scheduling and management
+- **Bookings**: Class registration and attendance tracking
+- **Payments**: Financial transaction handling
+- **Memberships**: Subscription-based access control
+- **Achievements**: Gamification system
+- **Daily Schedules**: Recurring class templates
+
+### Authentication & Authorization
+- Session-based authentication with cookie management
+- Role-based permissions system
+- Organization membership validation
+- Public access for booking and discovery
+
+### Payment Integration
+- PayFast payment gateway integration
+- Support for both membership and pay-per-class models
+- Sandbox and production environment handling
+- Webhook processing for payment confirmations
+
+### Real-time Features
+- WebSocket connections for live updates
+- Real-time class availability tracking
+- Push notifications for mobile devices
+- Live booking status updates
+
+## Data Flow
+
+### User Journey
+1. **Discovery**: Public users browse organizations and classes
+2. **Registration**: Users create accounts and optionally join organizations
+3. **Booking**: Members book classes with payment processing
+4. **Attendance**: Coaches mark attendance during classes
+5. **Analytics**: Organization admins view reports and revenue data
+
+### Admin Workflow
+1. **Organization Setup**: Create organization with branding
+2. **Class Management**: Schedule classes with coaches
+3. **Member Management**: Handle registrations and memberships
+4. **Revenue Tracking**: Monitor payments and analytics
+
+### Real-time Data Synchronization
+- Class availability updates broadcast to all subscribers
+- Booking confirmations sent via WebSocket
+- Attendance tracking with immediate UI updates
+- Notification system for important events
+
+## External Dependencies
+
+### Core Dependencies
+- **@neondatabase/serverless**: PostgreSQL database connectivity
+- **drizzle-orm**: Type-safe database queries and migrations
+- **@tanstack/react-query**: Server state management
+- **@stripe/stripe-js**: Payment processing (alternative to PayFast)
+- **web-push**: Push notification service
+- **nodemailer**: Email delivery system
+
+### UI Dependencies
+- **@radix-ui**: Accessible UI component primitives
+- **tailwindcss**: Utility-first CSS framework
+- **lucide-react**: Icon library
+- **react-hook-form**: Form handling with validation
+- **zod**: Runtime type validation
+
+### Development Dependencies
+- **tsx**: TypeScript execution for development
+- **esbuild**: Production bundling
+- **vite**: Development server and build tool
+
+## Deployment Strategy
+
+### Environment Configuration
+- **Development**: Local development with hot reload
+- **Production**: Node.js server with static file serving
+- **Database**: Neon PostgreSQL with connection pooling
+
+### Build Process
+1. Frontend: Vite builds React app to `dist/public`
+2. Backend: esbuild bundles server code to `dist/index.js`
+3. Database: Drizzle migrations applied on deployment
+
+### Hosting Requirements
+- Node.js 20+ runtime environment
+- PostgreSQL database access
+- Environment variables for API keys and database connection
+- Static file serving capability
+
+### Ports Configuration
+- **Development**: Port 5000 (backend), Port 5001 (frontend)
+- **Production**: Port 80 (external), internal routing handled by Express
+
+## Changelog
+
+Changelog:
+- June 13, 2025. Initial setup
+- June 13, 2025. Completed dynamic branding implementation - all organization pages now use custom theme colors instead of hardcoded ItsHappening.Africa colors
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.

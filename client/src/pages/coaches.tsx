@@ -233,14 +233,15 @@ export default function Coaches() {
 
       {coaches.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
+          <div className="mb-4" style={{ color: organization.secondaryColor }}>
             <Users className="mx-auto h-12 w-12" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No coaches yet</h3>
+          <h3 className="text-lg font-medium mb-2" style={{ color: organization.primaryColor }}>No coaches yet</h3>
           <p className="text-gray-500 mb-4">Add coaches to start managing your team.</p>
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="bg-[#24D367] hover:bg-[#1fb557] text-white shadow-lg border-0"
+            className="text-white shadow-lg border-0"
+            style={{ backgroundColor: organization.accentColor }}
           >
             <Plus className="mr-2 h-4 w-4" />
             Add First Coach
