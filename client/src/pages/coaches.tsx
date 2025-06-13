@@ -13,6 +13,7 @@ import CoachInvitationForm from "@/components/forms/coach-invitation-form";
 
 export default function Coaches() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [editingCoach, setEditingCoach] = useState<any>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   
@@ -32,6 +33,19 @@ export default function Coaches() {
   const { data: coaches = [], isLoading } = useQuery({
     queryKey: ["/api/coaches", organization?.id],
     queryFn: () => api.getCoaches(organization?.id),
+    enabled: !!organization?.id,
+  });
+
+  const { data: invitations = [] } = useQuery({
+    queryKey: ["/api/coach-invitations"],
+    queryFn: async () => {
+      const response = await fetch("/api/coach-invitations", {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!response.ok) throw new Error("Failed to fetch invitations");
+      return response.json();
+    },
     enabled: !!organization?.id,
   });
 
@@ -77,34 +91,63 @@ export default function Coaches() {
           <h1 className="text-3xl font-bold" style={{ color: organization.secondaryColor }}>Coaches</h1>
           <p className="text-slate-600">Manage your coaching staff with ItsHappening.Africa</p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button 
-              className="text-white shadow-lg border-0"
-              style={{ backgroundColor: organization.accentColor }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = `${organization.accentColor}dd`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = organization.accentColor;
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add New Coach
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle style={{ color: organization.primaryColor }}>Add New Coach</DialogTitle>
-            </DialogHeader>
-            <div className="max-h-[75vh] overflow-y-auto pr-2">
-              <CoachForm 
-                onSuccess={() => setShowCreateDialog(false)}
-                initialData={{ organizationId: organization?.id }}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline"
+                className="border-2"
+                style={{ 
+                  borderColor: organization.primaryColor,
+                  color: organization.primaryColor
+                }}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Invite Coach
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle style={{ color: organization.primaryColor }}>Invite New Coach</DialogTitle>
+              </DialogHeader>
+              <div className="max-h-[75vh] overflow-y-auto pr-2">
+                <CoachInvitationForm 
+                  onSuccess={() => setShowInviteDialog(false)}
+                  organization={organization}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                className="text-white shadow-lg border-0"
+                style={{ backgroundColor: organization.accentColor }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = `${organization.accentColor}dd`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = organization.accentColor;
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Direct
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle style={{ color: organization.primaryColor }}>Add Coach Directly</DialogTitle>
+              </DialogHeader>
+              <div className="max-h-[75vh] overflow-y-auto pr-2">
+                <CoachForm 
+                  onSuccess={() => setShowCreateDialog(false)}
+                  initialData={{ organizationId: organization?.id }}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
 
         {/* Edit Coach Dialog */}
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
@@ -138,7 +181,47 @@ export default function Coaches() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Tabs defaultValue="coaches" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="coaches" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Active Coaches ({coaches.length})
+          </TabsTrigger>
+          <TabsTrigger value="invitations" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Pending Invitations ({invitations.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="coaches" className="space-y-6">
+          {coaches.length === 0 ? (
+            <Card className="p-12 text-center">
+              <Users className="h-16 w-16 mx-auto text-slate-400 mb-4" />
+              <h3 className="text-xl font-semibold text-slate-600 mb-2">No Coaches Yet</h3>
+              <p className="text-slate-500 mb-6">Start building your coaching team by inviting professional coaches or adding them directly.</p>
+              <div className="flex justify-center gap-3">
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowInviteDialog(true)}
+                  style={{ 
+                    borderColor: organization.primaryColor,
+                    color: organization.primaryColor
+                  }}
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Invite Coach
+                </Button>
+                <Button 
+                  onClick={() => setShowCreateDialog(true)}
+                  style={{ backgroundColor: organization.accentColor }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Direct
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {coaches.map((coach) => (
           <Card key={coach.id} className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white p-6">
@@ -231,7 +314,97 @@ export default function Coaches() {
             </CardContent>
           </Card>
         ))}
-      </div>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="invitations" className="space-y-6">
+          {invitations.length === 0 ? (
+            <Card className="p-12 text-center">
+              <Clock className="h-16 w-16 mx-auto text-slate-400 mb-4" />
+              <h3 className="text-xl font-semibold text-slate-600 mb-2">No Pending Invitations</h3>
+              <p className="text-slate-500 mb-6">When you invite coaches, they'll appear here until they accept the invitation.</p>
+              <Button 
+                variant="outline"
+                onClick={() => setShowInviteDialog(true)}
+                style={{ 
+                  borderColor: organization.primaryColor,
+                  color: organization.primaryColor
+                }}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Send First Invitation
+              </Button>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {invitations.map((invitation: any) => (
+                <Card key={invitation.id} className="border-l-4" style={{ borderLeftColor: 
+                  invitation.status === 'pending' ? '#F59E0B' : 
+                  invitation.status === 'accepted' ? '#10B981' : '#EF4444' 
+                }}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{invitation.firstName} {invitation.lastName}</h3>
+                        <p className="text-slate-600">{invitation.email}</p>
+                        {invitation.phone && (
+                          <p className="text-slate-500 text-sm">{invitation.phone}</p>
+                        )}
+                        {invitation.specializations && invitation.specializations.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {invitation.specializations.map((spec: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {spec}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 mb-2">
+                          {invitation.status === 'pending' && (
+                            <>
+                              <Clock className="h-4 w-4 text-amber-500" />
+                              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                Pending
+                              </Badge>
+                            </>
+                          )}
+                          {invitation.status === 'accepted' && (
+                            <>
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                Accepted
+                              </Badge>
+                            </>
+                          )}
+                          {invitation.status === 'expired' && (
+                            <>
+                              <XCircle className="h-4 w-4 text-red-500" />
+                              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                                Expired
+                              </Badge>
+                            </>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          Invited {new Date(invitation.createdAt).toLocaleDateString()}
+                        </p>
+                        {invitation.expiresAt && (
+                          <p className="text-xs text-slate-500">
+                            Expires {new Date(invitation.expiresAt).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {coaches.length === 0 && (
         <div className="text-center py-12">
