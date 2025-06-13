@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
+import { payfastService, type PayFastPaymentData } from "./payfast";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -1508,6 +1509,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting daily schedule:", error);
       res.status(500).json({ message: "Failed to delete daily schedule" });
+    }
+  });
+
+  // PayFast payment creation endpoint
+  app.post("/api/create-payfast-payment", async (req: Request, res: Response) => {
+    try {
+      const { bookingId, classId, amount, participantName, participantEmail } = req.body;
+      
+      if (!bookingId || !amount || !participantName || !participantEmail) {
+        return res.status(400).json({ message: "Missing required payment data" });
+      }
+
+      // Get the class to determine which organization's PayFast credentials to use
+      const classData = await storage.getClass(classId);
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      const organization = await storage.getOrganization(classData.organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Check if PayFast credentials are configured
+      if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
+        return res.status(400).json({ message: "PayFast credentials not configured for this organization" });
+      }
+
+      // Split participant name into first and last name
+      const nameParts = participantName.split(' ');
+      const firstName = nameParts[0] || 'Guest';
+      const lastName = nameParts.slice(1).join(' ') || 'User';
+
+      // Create PayFast payment data
+      const paymentData: PayFastPaymentData = {
+        merchant_id: organization.payfastMerchantId,
+        merchant_key: organization.payfastMerchantKey,
+        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking=${bookingId}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking=${bookingId}`,
+        notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
+        name_first: firstName,
+        name_last: lastName,
+        email_address: participantEmail,
+        m_payment_id: `booking_${bookingId}_${Date.now()}`,
+        amount: parseFloat(amount).toFixed(2),
+        item_name: `Class Booking: ${classData.name}`,
+        item_description: `Booking for ${classData.name} on ${new Date(classData.startTime).toLocaleDateString()}`,
+        passphrase: organization.payfastPassphrase || undefined,
+      };
+
+      // Generate payment URL
+      const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox);
+
+      res.json({ 
+        paymentUrl,
+        paymentId: paymentData.m_payment_id 
+      });
+    } catch (error) {
+      console.error("Error creating PayFast payment:", error);
+      res.status(500).json({ message: "Failed to create payment" });
     }
   });
 
