@@ -202,11 +202,53 @@ export default function GlobalAdminDashboard() {
     }
   };
 
+  const saveGlobalSettingsMutation = useMutation({
+    mutationFn: async (data: GlobalSettingsForm) => {
+      console.log("Saving global settings:", data);
+      
+      // For now, we'll save PayFast settings to a default organization
+      // In a real implementation, you might want to save these globally
+      const response = await fetch('/api/organizations/1', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          payfastMerchantId: data.payfastMerchantId,
+          payfastMerchantKey: data.payfastMerchantKey,
+          payfastPassphrase: data.payfastPassphrase,
+          payfastSandbox: data.payfastSandbox,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to save settings');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({
+        title: "Settings Updated",
+        description: "Global PayFast settings have been saved successfully",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error saving global settings:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save settings",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSettingsSubmit = (data: GlobalSettingsForm) => {
-    toast({
-      title: "Settings Updated",
-      description: "Global settings have been saved successfully",
-    });
+    console.log("Global settings form submitted:", data);
+    saveGlobalSettingsMutation.mutate(data);
   };
 
   if (statsLoading || orgsLoading) {
@@ -971,8 +1013,12 @@ export default function GlobalAdminDashboard() {
                 </div>
 
                 <div className="flex justify-end pt-6 border-t">
-                  <Button type="submit" className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white">
-                    Save Global Settings
+                  <Button 
+                    type="submit" 
+                    disabled={saveGlobalSettingsMutation.isPending}
+                    className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white"
+                  >
+                    {saveGlobalSettingsMutation.isPending ? "Saving..." : "Save PayFast Settings"}
                   </Button>
                 </div>
               </form>
