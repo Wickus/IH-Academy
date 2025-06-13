@@ -36,6 +36,8 @@ import BookingsManagement from "@/pages/bookings-management";
 import MembersManagement from "@/pages/members-management";
 import RevenueDashboard from "@/pages/revenue-dashboard";
 import ClassesManagement from "@/pages/classes-management";
+import PaymentSuccess from "@/pages/payment-success";
+import PaymentCancelled from "@/pages/payment-cancelled";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -197,6 +199,8 @@ function RoleBasedRouter({ user }: { user?: User }) {
       <Route path="/membership-success" component={MembershipSuccess} />
       <Route path="/organization-setup" component={OrganizationSetup} />
       <Route path="/organization-payment" component={OrganizationPayment} />
+      <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/payment-cancelled" component={PaymentCancelled} />
       <Route component={NotFound} />
     </Switch>
   );
