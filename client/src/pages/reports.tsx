@@ -293,10 +293,11 @@ export default function Reports() {
                   <div className="text-right">
                     <p className="font-bold" style={{ color: organization.accentColor }}>{formatCurrency(Number(booking.amount))}</p>
                     <Badge 
-                      className={
+                      className="hover:opacity-80"
+                      style={
                         booking.paymentStatus === 'confirmed' 
-                          ? 'bg-[#24D367]/10 text-[#24D367] border-[#24D367]/20' 
-                          : 'bg-[#278DD4]/10 text-[#278DD4] border-[#278DD4]/20'
+                          ? { backgroundColor: `${organization.accentColor}20`, color: organization.accentColor, borderColor: `${organization.accentColor}30` }
+                          : { backgroundColor: `${organization.secondaryColor}20`, color: organization.secondaryColor, borderColor: `${organization.secondaryColor}30` }
                       }
                     >
                       {booking.paymentStatus}
