@@ -611,6 +611,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/sports/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'global_admin' && currentUser.role !== 'organization_admin')) {
+        return res.status(403).json({ message: "Access denied. Admin access required." });
+      }
+
+      const sportId = parseInt(req.params.id);
+      if (isNaN(sportId)) {
+        return res.status(400).json({ message: "Invalid sport ID" });
+      }
+
+      const success = await storage.deleteSport(sportId);
+      if (success) {
+        res.json({ message: "Sport deleted successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to delete sport" });
+      }
+    } catch (error) {
+      console.error("Error deleting sport:", error);
+      res.status(500).json({ message: "Failed to delete sport" });
+    }
+  });
+
 
 
   // Classes routes
