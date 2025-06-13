@@ -48,6 +48,10 @@ export interface Organization {
   businessModel: 'membership' | 'pay_per_class';
   membershipPrice?: string;
   membershipBillingCycle?: string;
+  payfastMerchantId?: string;
+  payfastMerchantKey?: string;
+  payfastPassphrase?: string;
+  payfastSandbox?: boolean;
   planType: 'free' | 'basic' | 'premium';
   maxClasses: number;
   maxMembers: number;
