@@ -1590,7 +1590,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate the notification signature
       const organization = await storage.getOrganization(parseInt(organizationId || "1"));
-      if (organization && !payfastService.validateNotification(notification, organization.payfastPassphrase)) {
+      if (organization && !payfastService.validateNotification(notification, organization.payfastPassphrase || undefined)) {
         console.error("Invalid PayFast notification signature");
         return res.status(400).send("Invalid signature");
       }

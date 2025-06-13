@@ -67,8 +67,16 @@ export class PayFastService {
       ? 'https://sandbox.payfast.co.za/eng/process'
       : 'https://www.payfast.co.za/eng/process';
 
+    // Convert to record for signature generation
+    const dataRecord: Record<string, string> = {};
+    Object.entries(paymentData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        dataRecord[key] = value.toString();
+      }
+    });
+
     // Generate signature
-    const signature = this.generateSignature(paymentData as Record<string, string>, paymentData.passphrase);
+    const signature = this.generateSignature(dataRecord, paymentData.passphrase);
 
     const formFields = Object.entries(paymentData)
       .filter(([key]) => key !== 'passphrase')
@@ -90,8 +98,16 @@ export class PayFastService {
       ? 'https://sandbox.payfast.co.za/eng/process'
       : 'https://www.payfast.co.za/eng/process';
 
+    // Convert to record for signature generation
+    const dataRecord: Record<string, string> = {};
+    Object.entries(paymentData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        dataRecord[key] = value.toString();
+      }
+    });
+
     // Generate signature
-    const signature = this.generateSignature(paymentData as Record<string, string>, paymentData.passphrase);
+    const signature = this.generateSignature(dataRecord, paymentData.passphrase);
 
     // Create query parameters
     const params = new URLSearchParams();
@@ -106,7 +122,15 @@ export class PayFastService {
   }
 
   validateNotification(notification: PayFastNotification, passphrase?: string): boolean {
-    const expectedSignature = this.generateSignature(notification as Record<string, string>, passphrase);
+    // Convert to record for signature generation
+    const dataRecord: Record<string, string> = {};
+    Object.entries(notification).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        dataRecord[key] = value.toString();
+      }
+    });
+    
+    const expectedSignature = this.generateSignature(dataRecord, passphrase);
     return expectedSignature === notification.signature;
   }
 
