@@ -1012,11 +1012,23 @@ export default function GlobalAdminDashboard() {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-6 border-t">
+                <div className="flex justify-end pt-6 border-t space-x-4">
+                  <Button 
+                    type="button"
+                    onClick={() => {
+                      console.log("Direct test button clicked!");
+                      console.log("Form values:", settingsForm.getValues());
+                      console.log("Form errors:", settingsForm.formState.errors);
+                    }}
+                    variant="outline"
+                  >
+                    Test Form Values
+                  </Button>
                   <Button 
                     type="submit" 
                     disabled={saveGlobalSettingsMutation.isPending}
                     className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white"
+                    onClick={() => console.log("Save button clicked!")}
                   >
                     {saveGlobalSettingsMutation.isPending ? "Saving..." : "Save PayFast Settings"}
                   </Button>
