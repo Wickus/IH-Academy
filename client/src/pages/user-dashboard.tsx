@@ -29,23 +29,18 @@ import {
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
 import { useToast } from "@/hooks/use-toast";
+import { useOrganization } from "@/contexts/organization-context";
 import OrganizationDashboard from "@/pages/organization-dashboard";
 
 export default function UserDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { organization, isLoading: orgLoading, hasOrganization } = useOrganization();
   
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: api.getCurrentUser,
-  });
-
-  // Check if user belongs to an organization
-  const { data: userOrganizations, isLoading: orgLoading } = useQuery({
-    queryKey: ["/api/organizations/my"],
-    queryFn: api.getUserOrganizations,
-    enabled: !!currentUser,
   });
 
   const { data: myBookings = [] } = useQuery({
@@ -78,24 +73,20 @@ export default function UserDashboard() {
     },
   });
 
-  // Show loading screen with organization branding if available
+  // Show organization-branded loading screen or organization dashboard
   if (!currentUser || orgLoading) {
-    const organization = userOrganizations?.[0];
-    const primaryColor = organization?.primaryColor || '#278DD4';
+    const bgStyle = organization 
+      ? { background: `linear-gradient(to bottom right, ${organization.primaryColor}10, ${organization.secondaryColor}10)` }
+      : { background: 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)' };
+    
+    const spinnerColor = organization?.primaryColor || '#278DD4';
     
     return (
-      <div 
-        className="min-h-screen flex items-center justify-center"
-        style={{
-          background: organization 
-            ? `linear-gradient(to bottom right, ${organization.primaryColor}10, ${organization.secondaryColor}10)` 
-            : 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)'
-        }}
-      >
+      <div className="min-h-screen flex items-center justify-center" style={bgStyle}>
         <div className="text-center">
           <div 
             className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
-            style={{ borderColor: primaryColor }}
+            style={{ borderColor: spinnerColor }}
           ></div>
           <p className="text-slate-600">
             {organization ? `Loading ${organization.name} dashboard...` : 'Loading your dashboard...'}
@@ -106,8 +97,8 @@ export default function UserDashboard() {
   }
 
   // If user belongs to an organization, show organization dashboard
-  if (userOrganizations && userOrganizations.length > 0) {
-    return <OrganizationDashboard user={currentUser} organization={userOrganizations[0]} />;
+  if (hasOrganization && organization) {
+    return <OrganizationDashboard user={currentUser} organization={organization} />;
   }
 
   const upcomingBookings = myBookings.filter(booking => 
