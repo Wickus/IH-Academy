@@ -669,3 +669,149 @@ export async function sendBookingCancellationEmail(params: {
     return false;
   }
 }
+
+export async function sendWalkInRegistrationEmail(params: {
+  to: string;
+  participantName: string;
+  className: string;
+  organizationName: string;
+  classDate: Date;
+  amountPaid: number;
+  paymentMethod: string;
+  temporaryPassword: string;
+  organizationColors: { primaryColor: string; secondaryColor: string; accentColor: string };
+}): Promise<boolean> {
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR'
+    }).format(amount);
+  };
+
+  const subject = `Welcome to ${params.organizationName} - Class Registration Confirmed`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome to ${params.organizationName}</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="background: linear-gradient(135deg, ${params.organizationColors.primaryColor}, ${params.organizationColors.secondaryColor}); padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">Welcome to ${params.organizationName}!</h1>
+          <p style="color: #ffffff; opacity: 0.95; margin: 8px 0 0 0; font-size: 16px;">Your class registration is confirmed</p>
+        </div>
+        
+        <div style="padding: 40px 30px;">
+          <h2 style="color: ${params.organizationColors.primaryColor}; margin: 0 0 20px 0; font-size: 24px;">Welcome & Account Created</h2>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Dear ${params.participantName},</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Thank you for joining our class! We've created an account for you to easily book future sessions and track your progress.</p>
+          
+          <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${params.organizationColors.accentColor};">
+            <h3 style="margin-top: 0; color: ${params.organizationColors.primaryColor}; font-size: 18px;">Class Details:</h3>
+            <p style="margin: 8px 0; color: #374151;"><strong>Class:</strong> ${params.className}</p>
+            <p style="margin: 8px 0; color: #374151;"><strong>Date & Time:</strong> ${formatDate(params.classDate)}</p>
+            <p style="margin: 8px 0; color: #374151;"><strong>Amount Paid:</strong> ${formatCurrency(params.amountPaid)}</p>
+            <p style="margin: 8px 0; color: #374151;"><strong>Payment Method:</strong> ${params.paymentMethod}</p>
+          </div>
+
+          <div style="background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${params.organizationColors.primaryColor};">
+            <h3 style="margin-top: 0; color: ${params.organizationColors.primaryColor}; font-size: 18px;">Your Account Details:</h3>
+            <p style="margin: 8px 0; color: #374151;"><strong>Email:</strong> ${params.to}</p>
+            <p style="margin: 8px 0; color: #374151;"><strong>Temporary Password:</strong> ${params.temporaryPassword}</p>
+            <p style="margin: 12px 0 0 0; color: #6b7280; font-size: 14px;">
+              <em>Please change your password after your first login for security.</em>
+            </p>
+          </div>
+          
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">
+            You can now log in to your account to:
+          </p>
+          <ul style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px; padding-left: 20px;">
+            <li>Book future classes</li>
+            <li>View your class history</li>
+            <li>Update your profile</li>
+            <li>Track your achievements</li>
+          </ul>
+
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">We're excited to have you as part of our community!</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Best regards,<br><strong style="color: ${params.organizationColors.primaryColor};">${params.organizationName} Team</strong></p>
+        </div>
+        
+        <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            This email was sent by ItsHappening.Africa on behalf of ${params.organizationName}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+    Welcome to ${params.organizationName}!
+    
+    Dear ${params.participantName},
+    
+    Thank you for joining our class! We've created an account for you to easily book future sessions and track your progress.
+    
+    Class Details:
+    - Class: ${params.className}
+    - Date & Time: ${formatDate(params.classDate)}
+    - Amount Paid: ${formatCurrency(params.amountPaid)}
+    - Payment Method: ${params.paymentMethod}
+    
+    Your Account Details:
+    - Email: ${params.to}
+    - Temporary Password: ${params.temporaryPassword}
+    
+    Please change your password after your first login for security.
+    
+    You can now log in to your account to:
+    - Book future classes
+    - View your class history
+    - Update your profile
+    - Track your achievements
+    
+    We're excited to have you as part of our community!
+    
+    Best regards,
+    The ${params.organizationName} Team
+    
+    --
+    This email was sent by ItsHappening.Africa on behalf of ${params.organizationName}
+  `;
+
+  try {
+    const emailSent = await sendEmail({
+      to: params.to,
+      from: 'info@itshappening.africa',
+      subject,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    if (emailSent) {
+      console.log(`Walk-in registration email successfully sent to ${params.to}`);
+    }
+    
+    return emailSent;
+  } catch (error) {
+    console.error('Walk-in registration email failed:', error);
+    return false;
+  }
+}
