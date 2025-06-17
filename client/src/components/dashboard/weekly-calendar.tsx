@@ -69,7 +69,7 @@ export default function WeeklyCalendar() {
   };
 
   return (
-    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
+    <Card className="lg:col-span-2 rounded-xl">
       <CardHeader className="border-b border-gray-200">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Weekly Schedule</CardTitle>
@@ -204,6 +204,6 @@ export default function WeeklyCalendar() {
           )}
         </div>
       </CardContent>
-    </div>
+    </Card>
   );
 }
