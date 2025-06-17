@@ -78,7 +78,16 @@ export default function RecentBookings() {
                   <div className="text-right">
                     <Badge 
                       variant="outline"
-                      className="bg-white/30 text-white border-white/40 mb-1"
+                      className={`mb-1 ${
+                        booking.paymentStatus === 'pending' 
+                          ? 'border-white/40 text-white' 
+                          : 'bg-white/30 text-white border-white/40'
+                      }`}
+                      style={booking.paymentStatus === 'pending' ? {
+                        backgroundColor: organization.accentColor,
+                        color: '#000',
+                        borderColor: organization.accentColor
+                      } : {}}
                     >
                       {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                     </Badge>
