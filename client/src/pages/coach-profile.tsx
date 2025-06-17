@@ -498,6 +498,17 @@ export default function CoachProfile() {
                               {formatCurrency(Number(classItem.price))}
                             </div>
                           </TableCell>
+                          <TableCell>
+                            <Button
+                              size="sm"
+                              style={{ backgroundColor: organization.accentColor, color: 'white' }}
+                              className="hover:opacity-90"
+                              onClick={() => openAttendance(classItem.id)}
+                            >
+                              <Users className="h-4 w-4 mr-1" />
+                              Open Class
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -566,6 +577,277 @@ export default function CoachProfile() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Attendance Modal */}
+      <Dialog open={isAttendanceOpen} onOpenChange={setIsAttendanceOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle style={{ color: organization?.primaryColor }}>
+              Class Attendance - {coachClasses.find(c => c.id === selectedClassId)?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedClassId && (
+            <div className="space-y-6">
+              {/* Class Info */}
+              <div 
+                className="p-4 rounded-lg"
+                style={{ backgroundColor: `${organization?.primaryColor}10` }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold" style={{ color: organization?.primaryColor }}>
+                      {coachClasses.find(c => c.id === selectedClassId)?.name}
+                    </h3>
+                    <p className="text-sm" style={{ color: organization?.secondaryColor }}>
+                      {formatDateTime(coachClasses.find(c => c.id === selectedClassId)?.startTime || '')}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-medium" style={{ color: organization?.primaryColor }}>
+                      Capacity: {coachClasses.find(c => c.id === selectedClassId)?.capacity}
+                    </div>
+                    <div className="text-sm" style={{ color: organization?.secondaryColor }}>
+                      Registered: {classBookings.length}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Registered Participants */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: organization?.primaryColor }}>
+                  Registered Participants ({classBookings.length})
+                </h3>
+                {classBookings.length > 0 ? (
+                  <div className="space-y-2">
+                    {classBookings.map((booking) => {
+                      const attendanceRecord = attendance.find(att => att.bookingId === booking.id);
+                      const isMarked = !!attendanceRecord;
+                      
+                      return (
+                        <div 
+                          key={booking.id} 
+                          className="flex items-center justify-between p-3 rounded-lg"
+                          style={{ 
+                            backgroundColor: `${organization?.secondaryColor}10`,
+                            border: `2px solid ${organization?.secondaryColor}`
+                          }}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: `${organization?.primaryColor}20` }}
+                            >
+                              <Users className="h-4 w-4" style={{ color: organization?.primaryColor }} />
+                            </div>
+                            <div>
+                              <div className="font-medium" style={{ color: organization?.primaryColor }}>
+                                {booking.participantName}
+                              </div>
+                              <div className="text-sm" style={{ color: organization?.secondaryColor }}>
+                                {booking.participantEmail}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {!isMarked ? (
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  size="sm"
+                                  style={{ backgroundColor: organization?.primaryColor, color: 'white' }}
+                                  className="hover:opacity-90"
+                                  onClick={() => handleMarkAttendance(booking.id, 'present')}
+                                  disabled={markAttendanceMutation.isPending}
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Present
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  style={{ 
+                                    color: organization?.secondaryColor,
+                                    borderColor: organization?.secondaryColor
+                                  }}
+                                  onClick={() => handleMarkAttendance(booking.id, 'absent')}
+                                  disabled={markAttendanceMutation.isPending}
+                                >
+                                  <XCircle className="h-4 w-4 mr-1" />
+                                  Absent
+                                </Button>
+                              </div>
+                            ) : (
+                              <Badge 
+                                style={{ 
+                                  backgroundColor: attendanceRecord.status === 'present' 
+                                    ? organization?.primaryColor 
+                                    : organization?.secondaryColor,
+                                  color: 'white'
+                                }}
+                              >
+                                {attendanceRecord.status === 'present' ? 'Present' : 'Absent'}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-slate-500">
+                    No registered participants for this class.
+                  </div>
+                )}
+              </div>
+
+              {/* Walk-in Registration */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4" style={{ color: organization?.primaryColor }}>
+                  Walk-in Registration
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <Label htmlFor="walkInName" style={{ color: organization?.primaryColor }}>
+                      Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="walkInName"
+                      value={walkInData.name}
+                      onChange={(e) => setWalkInData({...walkInData, name: e.target.value})}
+                      placeholder="Client's full name"
+                      style={{ borderColor: organization?.secondaryColor }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="walkInEmail" style={{ color: organization?.primaryColor }}>
+                      Email <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="walkInEmail"
+                      type="email"
+                      value={walkInData.email}
+                      onChange={(e) => setWalkInData({...walkInData, email: e.target.value})}
+                      placeholder="Client's email address"
+                      style={{ borderColor: organization?.secondaryColor }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="walkInPhone" style={{ color: organization?.primaryColor }}>
+                      Phone (Optional)
+                    </Label>
+                    <Input
+                      id="walkInPhone"
+                      value={walkInData.phone}
+                      onChange={(e) => setWalkInData({...walkInData, phone: e.target.value})}
+                      placeholder="Client's phone number"
+                      style={{ borderColor: organization?.secondaryColor }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="walkInPayment" style={{ color: organization?.primaryColor }}>
+                      Payment Method
+                    </Label>
+                    <Select
+                      value={walkInData.paymentMethod}
+                      onValueChange={(value) => setWalkInData({...walkInData, paymentMethod: value})}
+                    >
+                      <SelectTrigger style={{ borderColor: organization?.secondaryColor }}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cash">Cash</SelectItem>
+                        <SelectItem value="card">Card</SelectItem>
+                        <SelectItem value="transfer">Bank Transfer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="walkInAmount" style={{ color: organization?.primaryColor }}>
+                      Amount Paid
+                    </Label>
+                    <Input
+                      id="walkInAmount"
+                      type="number"
+                      step="0.01"
+                      value={walkInData.amountPaid}
+                      onChange={(e) => setWalkInData({...walkInData, amountPaid: e.target.value})}
+                      placeholder="0.00"
+                      style={{ borderColor: organization?.secondaryColor }}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      onClick={handleWalkInSubmit}
+                      disabled={markAttendanceMutation.isPending}
+                      style={{ backgroundColor: organization?.accentColor, color: 'white' }}
+                      className="w-full hover:opacity-90"
+                    >
+                      {markAttendanceMutation.isPending ? 'Adding...' : 'Add Walk-in Client'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Walk-in Participants List */}
+              {attendance.filter(att => att.isWalkIn).length > 0 && (
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-4" style={{ color: organization?.primaryColor }}>
+                    Walk-in Participants
+                  </h3>
+                  <div className="space-y-2">
+                    {attendance.filter(att => att.isWalkIn).map((walkIn) => (
+                      <div 
+                        key={walkIn.id} 
+                        className="flex items-center justify-between p-3 rounded-lg"
+                        style={{ 
+                          backgroundColor: `${organization?.accentColor}10`,
+                          border: `2px solid ${organization?.accentColor}`
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div 
+                            className="w-8 h-8 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${organization?.accentColor}30` }}
+                          >
+                            <UserPlus className="h-4 w-4" style={{ color: organization?.primaryColor }} />
+                          </div>
+                          <div>
+                            <div className="font-medium" style={{ color: organization?.primaryColor }}>
+                              {walkIn.participantName}
+                            </div>
+                            <div className="text-sm" style={{ color: organization?.secondaryColor }}>
+                              {walkIn.participantEmail}
+                            </div>
+                            {walkIn.participantPhone && (
+                              <div className="text-sm" style={{ color: organization?.secondaryColor }}>
+                                {walkIn.participantPhone}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge 
+                            style={{ 
+                              backgroundColor: organization?.accentColor,
+                              color: 'white'
+                            }}
+                          >
+                            Walk-in
+                          </Badge>
+                          <div className="text-sm mt-1" style={{ color: organization?.primaryColor }}>
+                            {walkIn.paymentMethod} - {formatCurrency(Number(walkIn.amountPaid || 0))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
