@@ -26,7 +26,7 @@ const adminNavigation = [
 
 const coachNavigation = [
   { name: "Organizations", href: "/", icon: Calendar },
-  { name: "Availability", href: "/coach-availability/general", icon: Dumbbell },
+  { name: "Availability", href: "/availability", icon: Dumbbell },
   { name: "Classes", href: "/coach-classes", icon: Users },
   { name: "Settings", href: "/coach-settings", icon: Settings },
 ];
