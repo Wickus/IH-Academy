@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { formatTime, formatDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import ClassForm from "@/components/forms/class-form";
 
 export default function CoachAvailability() {
   const [location, setLocation] = useLocation();
@@ -26,6 +27,7 @@ export default function CoachAvailability() {
   const [coachName, setCoachName] = useState<string>("");
   const [editingAvailability, setEditingAvailability] = useState<any>(null);
   const [showAvailabilityDialog, setShowAvailabilityDialog] = useState(false);
+  const [editingClass, setEditingClass] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -106,6 +108,15 @@ export default function CoachAvailability() {
       return allClasses.filter(cls => cls.coachId === parseInt(coachId));
     },
     enabled: !!organization?.id && !!coachId,
+  });
+
+  const { data: sports = [] } = useQuery({
+    queryKey: ['/api/sports'],
+    queryFn: async () => {
+      const response = await fetch('/api/sports');
+      if (!response.ok) throw new Error('Failed to fetch sports');
+      return response.json();
+    }
   });
 
   if (!organization || !coach) {
@@ -267,7 +278,7 @@ export default function CoachAvailability() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation('/classes')}
+                          onClick={() => setEditingClass(classItem)}
                           className="text-xs"
                           style={{
                             borderColor: organization.secondaryColor,
