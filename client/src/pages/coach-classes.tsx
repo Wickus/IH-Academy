@@ -323,14 +323,28 @@ export default function CoachClasses() {
                       const isMarked = !!attendanceRecord;
                       
                       return (
-                        <div key={booking.id} className="flex items-center justify-between p-3 bg-white border rounded-lg">
+                        <div 
+                          key={booking.id} 
+                          className="flex items-center justify-between p-3 rounded-lg"
+                          style={{ 
+                            backgroundColor: `${selectedOrg?.secondaryColor}10`,
+                            border: `2px solid ${selectedOrg?.secondaryColor}`
+                          }}
+                        >
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center">
-                              <Users className="h-4 w-4" />
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: `${selectedOrg?.primaryColor}20` }}
+                            >
+                              <Users className="h-4 w-4" style={{ color: selectedOrg?.primaryColor }} />
                             </div>
                             <div>
-                              <div className="font-medium">{booking.participantName}</div>
-                              <div className="text-sm text-slate-600">{booking.participantEmail}</div>
+                              <div className="font-medium" style={{ color: selectedOrg?.primaryColor }}>
+                                {booking.participantName}
+                              </div>
+                              <div className="text-sm" style={{ color: selectedOrg?.secondaryColor }}>
+                                {booking.participantEmail}
+                              </div>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -543,16 +557,32 @@ export default function CoachClasses() {
                   </h3>
                   <div className="space-y-2">
                     {attendance.filter(att => att.isWalkIn).map((walkIn) => (
-                      <div key={walkIn.id} className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div 
+                        key={walkIn.id} 
+                        className="flex items-center justify-between p-3 rounded-lg"
+                        style={{ 
+                          backgroundColor: `${selectedOrg?.accentColor}10`,
+                          border: `2px solid ${selectedOrg?.accentColor}`
+                        }}
+                      >
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
-                            <UserPlus className="h-4 w-4 text-green-600" />
+                          <div 
+                            className="w-8 h-8 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${selectedOrg?.accentColor}30` }}
+                          >
+                            <UserPlus className="h-4 w-4" style={{ color: selectedOrg?.primaryColor }} />
                           </div>
                           <div>
-                            <div className="font-medium">{walkIn.participantName}</div>
-                            <div className="text-sm text-slate-600">{walkIn.participantEmail}</div>
+                            <div className="font-medium" style={{ color: selectedOrg?.primaryColor }}>
+                              {walkIn.participantName}
+                            </div>
+                            <div className="text-sm" style={{ color: selectedOrg?.secondaryColor }}>
+                              {walkIn.participantEmail}
+                            </div>
                             {walkIn.participantPhone && (
-                              <div className="text-sm text-slate-600">{walkIn.participantPhone}</div>
+                              <div className="text-sm" style={{ color: selectedOrg?.secondaryColor }}>
+                                {walkIn.participantPhone}
+                              </div>
                             )}
                           </div>
                         </div>
