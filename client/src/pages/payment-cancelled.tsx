@@ -1,132 +1,190 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { XCircle, ArrowLeft, CreditCard } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 export default function PaymentCancelled() {
-  const [location, setLocation] = useLocation();
-  const [bookingId, setBookingId] = useState<number | null>(null);
+  const [, setLocation] = useLocation();
+  const [bookingId, setBookingId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Get booking ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    const bookingParam = urlParams.get('booking');
-    if (bookingParam) {
-      setBookingId(parseInt(bookingParam));
-    }
+    const booking = urlParams.get('booking');
+    setBookingId(booking);
   }, []);
 
-  const { data: booking, isLoading } = useQuery({
+  const { data: booking } = useQuery({
     queryKey: ['/api/bookings', bookingId],
-    queryFn: () => bookingId ? api.getBooking(bookingId) : null,
+    queryFn: async () => {
+      if (!bookingId) return null;
+      const bookings = await api.getBookings();
+      return bookings.find(b => b.id === parseInt(bookingId));
+    },
     enabled: !!bookingId,
   });
 
   const { data: classData } = useQuery({
     queryKey: ['/api/classes', booking?.classId],
-    queryFn: () => booking?.classId ? api.getClass(booking.classId) : null,
+    queryFn: async () => {
+      if (!booking?.classId) return null;
+      const classes = await api.getClasses();
+      return classes.find(c => c.id === booking.classId);
+    },
     enabled: !!booking?.classId,
   });
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 flex items-center justify-center p-4">
-        <div className="animate-spin w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
+  const { data: organization } = useQuery({
+    queryKey: ['/api/organizations', classData?.organizationId],
+    queryFn: () => classData ? api.getOrganization(classData.organizationId) : null,
+    enabled: !!classData?.organizationId,
+  });
+
+  const handleRetryPayment = () => {
+    if (booking && classData) {
+      // Redirect to class details page where they can retry payment
+      setLocation(`/classes/${classData.id}`);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl border-0">
-        <CardHeader className="text-center bg-gradient-to-r from-red-500 to-orange-600 text-white rounded-t-lg">
-          <div className="flex justify-center mb-4">
-            <XCircle className="h-16 w-16" />
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ 
+        background: organization 
+          ? `linear-gradient(135deg, ${organization.secondaryColor}10 0%, ${organization.primaryColor}10 100%)`
+          : 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)'
+      }}
+    >
+      <Card className="w-full max-w-lg border-0 shadow-xl">
+        <CardHeader className="text-center pb-6">
+          <div 
+            className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ 
+              backgroundColor: organization?.secondaryColor || '#ef4444'
+            }}
+          >
+            <XCircle className="h-12 w-12 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Payment Cancelled</CardTitle>
-          <p className="text-red-100">Your booking was not completed</p>
+          <CardTitle 
+            className="text-2xl font-bold"
+            style={{ color: organization?.secondaryColor || '#ef4444' }}
+          >
+            Payment Cancelled
+          </CardTitle>
+          <p className="text-gray-600">
+            Your payment was cancelled and no charges were made to your account.
+          </p>
         </CardHeader>
-        
-        <CardContent className="p-6 space-y-6">
-          {booking && classData ? (
-            <>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {classData.name}
-                </h3>
-                <p className="text-gray-600">
-                  Payment was cancelled for {booking.participantName}
-                </p>
-              </div>
 
-              <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
-                <p className="text-sm text-orange-800">
-                  <strong>What happened?</strong> You cancelled the payment process before it was completed.
-                </p>
-                <p className="text-sm text-orange-800 mt-1">
-                  Your spot in the class has not been reserved.
+        <CardContent className="space-y-6">
+          {/* Booking Info */}
+          {booking && classData && (
+            <div 
+              className="p-4 rounded-lg"
+              style={{ 
+                backgroundColor: organization 
+                  ? `${organization.primaryColor}10`
+                  : '#fef2f2'
+              }}
+            >
+              <h3 
+                className="font-semibold mb-2"
+                style={{ color: organization?.primaryColor || '#dc2626' }}
+              >
+                Booking Details
+              </h3>
+              <div className="space-y-1 text-sm">
+                <p><span className="text-gray-500">Class:</span> {classData.name}</p>
+                <p><span className="text-gray-500">Participant:</span> {booking.participantName}</p>
+                <p><span className="text-gray-500">Status:</span> 
+                  <span className="ml-1 text-orange-600 font-medium">Payment Pending</span>
                 </p>
               </div>
+            </div>
+          )}
 
-              <div className="space-y-3">
-                <Button 
-                  onClick={() => {
-                    // Retry payment by redirecting to class booking
-                    setLocation(`/classes/${classData.id}`);
-                  }}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Try Payment Again
-                </Button>
-                
-                <Button 
-                  variant="outline"
-                  onClick={() => setLocation('/classes')}
-                  className="w-full"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Browse Other Classes
-                </Button>
-                
-                <Button 
-                  variant="ghost"
-                  onClick={() => setLocation('/')}
-                  className="w-full text-gray-600"
-                >
-                  Back to Home
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="text-center space-y-4">
-              <p className="text-gray-600">
-                Your payment was cancelled. No charges were made to your account.
-              </p>
+          {/* Information */}
+          <div 
+            className="p-4 rounded-lg border-2"
+            style={{ 
+              borderColor: organization?.accentColor || '#f59e0b',
+              backgroundColor: organization 
+                ? `${organization.accentColor}05`
+                : '#fffbeb'
+            }}
+          >
+            <h4 className="font-semibold mb-2" style={{ color: organization?.primaryColor || '#dc2626' }}>
+              What Happened?
+            </h4>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• Your payment was cancelled before completion</li>
+              <li>• Your booking is still reserved but requires payment</li>
+              <li>• No charges have been made to your payment method</li>
+              <li>• You can try the payment again or contact support</li>
+            </ul>
+          </div>
+
+          {/* Actions */}
+          <div className="space-y-3">
+            {booking && classData && (
+              <Button
+                onClick={handleRetryPayment}
+                className="w-full"
+                style={{ 
+                  backgroundColor: organization?.primaryColor || '#dc2626',
+                  color: 'white'
+                }}
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Try Payment Again
+              </Button>
+            )}
+            
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setLocation('/')}
+                className="flex-1"
+                style={{ 
+                  color: organization?.primaryColor || '#dc2626',
+                  borderColor: organization?.primaryColor || '#dc2626'
+                }}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-700">
-                  If you experienced any issues during the payment process, please contact support.
-                </p>
-              </div>
+              <Button
+                variant="outline"
+                onClick={() => setLocation('/classes')}
+                className="flex-1"
+                style={{ 
+                  color: organization?.secondaryColor || '#ef4444',
+                  borderColor: organization?.secondaryColor || '#ef4444'
+                }}
+              >
+                Browse Classes
+              </Button>
+            </div>
+          </div>
 
-              <div className="space-y-3">
-                <Button 
-                  onClick={() => setLocation('/classes')}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+          {/* Support Info */}
+          {organization?.phone && (
+            <div className="text-center pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-500">
+                Need help? Contact us at{' '}
+                <a 
+                  href={`tel:${organization.phone}`}
+                  className="font-medium"
+                  style={{ color: organization.primaryColor }}
                 >
-                  View Available Classes
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setLocation('/')}
-                  className="w-full"
-                >
-                  Back to Home
-                </Button>
-              </div>
+                  {organization.phone}
+                </a>
+              </p>
             </div>
           )}
         </CardContent>
