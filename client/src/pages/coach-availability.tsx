@@ -267,7 +267,7 @@ export default function CoachAvailability() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation(`/classes/${classItem.id}/edit`)}
+                          onClick={() => setLocation('/classes')}
                           className="text-xs"
                           style={{
                             borderColor: organization.secondaryColor,
@@ -285,16 +285,19 @@ export default function CoachAvailability() {
                           <Edit className="h-3 w-3 mr-1" />
                           Edit
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => deleteClassMutation.mutate(classItem.id)}
-                          disabled={deleteClassMutation.isPending}
-                          className="text-xs border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
-                        >
-                          <Trash2 className="h-3 w-3 mr-1" />
-                          {deleteClassMutation.isPending ? 'Cancelling...' : 'Cancel'}
-                        </Button>
+                        {/* Only show Cancel button for coaches, not org admins */}
+                        {user?.role === 'coach' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => deleteClassMutation.mutate(classItem.id)}
+                            disabled={deleteClassMutation.isPending}
+                            className="text-xs border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            {deleteClassMutation.isPending ? 'Cancelling...' : 'Cancel'}
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
