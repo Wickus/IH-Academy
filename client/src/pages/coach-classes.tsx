@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar, Clock, Users, MapPin, CheckCircle, XCircle, UserPlus, DollarSign } from "lucide-react";
-import { api } from "@/lib/api";
+import { api, type AttendanceRecord } from "@/lib/api";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
