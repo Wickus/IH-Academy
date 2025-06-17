@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import PushNotificationSetup from "@/components/push-notification-setup";
+// import PushNotificationSetup from "@/components/push-notification-setup"; // Temporarily disabled
 import BrandHeader from "@/components/brand-header";
 
 interface MobileParticipantProps {
@@ -52,7 +52,8 @@ type ChildFormData = z.infer<typeof childSchema>;
 export default function MobileParticipant({ user }: MobileParticipantProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSport, setSelectedSport] = useState<string>("all");
-  const [showNotificationSetup, setShowNotificationSetup] = useState(false);
+  // Notification setup disabled to fix service worker errors
+  // const [showNotificationSetup, setShowNotificationSetup] = useState(false);
   const [showAddChild, setShowAddChild] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -595,25 +596,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               </Card>
             </div>
 
-            {/* Push Notification Setup Button */}
-            <div className="mb-6">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-slate-800">Notifications</h3>
-                      <p className="text-sm text-slate-500">Get updates about your classes</p>
-                    </div>
-                    <Button 
-                      onClick={() => setShowNotificationSetup(true)}
-                      className="bg-gradient-to-r from-[#278DD4] to-[#24D367] hover:from-[#20366B] hover:to-[#278DD4] text-white"
-                    >
-                      Setup
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Push Notification Setup temporarily disabled */}
 
             {/* Children Section */}
             <Card className="mb-6">
@@ -686,13 +669,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
         </TabsContent>
       </Tabs>
 
-      {/* Push Notification Modal */}
-      {showNotificationSetup && (
-        <PushNotificationSetup 
-          onComplete={() => setShowNotificationSetup(false)}
-          onDismiss={() => setShowNotificationSetup(false)}
-        />
-      )}
+      {/* Push Notification Modal - temporarily disabled */}
 
       {/* Add Child Modal */}
       <Dialog open={showAddChild} onOpenChange={setShowAddChild}>
