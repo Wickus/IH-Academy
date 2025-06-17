@@ -6,7 +6,7 @@ import { payfastService, type PayFastPaymentData } from "./payfast";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { sendCoachInvitationEmail } from "./email";
+import { sendCoachInvitationEmail, sendCoachAssignmentEmail } from "./email";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -772,24 +772,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Class not found" });
       }
       
-      // If coach was assigned, send email notification with iCal
-      if (classData.coachId && updatedClass.coachId !== classData.coachId) {
+      // If coach was newly assigned, send email notification with iCal
+      if (classData.coachId && classData.coachId !== updatedClass.coachId) {
         try {
           const coach = await storage.getCoach(classData.coachId);
-          const user = await storage.getUser(coach.userId);
-          
-          if (user?.email) {
-            const icalContent = generateICalEvent(updatedClass, { 
-              participantName: user.username,
-              participantEmail: user.email 
-            });
+          if (coach) {
+            const user = await storage.getUser(coach.userId);
             
-            await sendCoachAssignmentEmail(
-              user.email,
-              user.username,
-              updatedClass,
-              icalContent
-            );
+            if (user?.email) {
+              const icalContent = generateICalEvent(updatedClass, { 
+                participantName: user.username,
+                participantEmail: user.email 
+              });
+              
+              await sendCoachAssignmentEmail(
+                user.email,
+                user.username,
+                updatedClass,
+                icalContent
+              );
+            }
           }
         } catch (emailError) {
           console.error("Error sending coach assignment email:", emailError);
