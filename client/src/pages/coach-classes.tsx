@@ -134,12 +134,16 @@ export default function CoachClasses() {
       return;
     }
 
+    if (!selectedClass) return;
+    
     markAttendanceMutation.mutate({
+      classId: selectedClass.id,
       status: 'present',
       walkInData: {
         ...walkInData,
-        amountPaid: parseFloat(walkInData.amountPaid) || 0
-      }
+        amountPaid: walkInData.amountPaid ? parseFloat(walkInData.amountPaid) : 0
+      },
+      notes: null
     });
   };
 
