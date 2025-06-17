@@ -26,9 +26,9 @@ const adminNavigation = [
 
 const coachNavigation = [
   { name: "Organizations", href: "/", icon: Calendar },
-  { name: "Availability", href: "/coach-availability", icon: Dumbbell },
-  { name: "Classes", href: "/classes", icon: Users },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Availability", href: "/coach-availability/general", icon: Dumbbell },
+  { name: "Classes", href: "/coach-classes", icon: Users },
+  { name: "Settings", href: "/coach-settings", icon: Settings },
 ];
 
 export default function Sidebar() {
