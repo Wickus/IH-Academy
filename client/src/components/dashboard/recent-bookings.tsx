@@ -44,7 +44,7 @@ export default function RecentBookings() {
 
   return (
     <Card 
-      className="text-white rounded-lg"
+      className="text-white rounded-xl"
       style={{ 
         background: `linear-gradient(to bottom right, ${organization.primaryColor}, ${organization.secondaryColor})`,
         borderColor: organization.primaryColor

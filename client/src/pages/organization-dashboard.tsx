@@ -359,7 +359,10 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 <span>Classes</span>
                 <span>{stats?.activeClasses || 0} / {organization.maxClasses}</span>
               </div>
-              <div className="w-full bg-secondary rounded-full h-2">
+              <div 
+                className="w-full rounded-full h-2"
+                style={{ backgroundColor: `${organization.primaryColor}20` }}
+              >
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
@@ -374,7 +377,10 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 <span>Members</span>
                 <span>{stats?.totalMembers || 0} / {organization.maxMembers}</span>
               </div>
-              <div className="w-full bg-secondary rounded-full h-2">
+              <div 
+                className="w-full rounded-full h-2"
+                style={{ backgroundColor: `${organization.secondaryColor}20` }}
+              >
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
