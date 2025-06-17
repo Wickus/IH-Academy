@@ -132,17 +132,37 @@ export default function RealTimeAvailability({
     const percentage = (availableSpots / totalSpots) * 100;
     
     if (availableSpots === 0) {
-      return { status: "Full", variant: "destructive" as const, color: "text-red-600" };
+      return { 
+        status: "Full", 
+        variant: "destructive" as const, 
+        color: "text-red-600",
+        bgColor: "#ef4444"
+      };
     } else if (percentage <= 20) {
-      return { status: "Almost Full", variant: "destructive" as const, color: "text-orange-600" };
+      return { 
+        status: "Almost Full", 
+        variant: "destructive" as const, 
+        color: "text-orange-600",
+        bgColor: "#f97316"
+      };
     } else if (percentage <= 50) {
-      return { status: "Filling Up", variant: "secondary" as const, color: "text-yellow-600" };
+      return { 
+        status: "Filling Up", 
+        variant: "secondary" as const, 
+        color: "text-yellow-600",
+        bgColor: organization?.accentColor || "#eab308"
+      };
     } else {
-      return { status: "Available", variant: "default" as const, color: "text-green-600" };
+      return { 
+        status: "Available", 
+        variant: "default" as const, 
+        color: "text-green-600",
+        bgColor: organization?.secondaryColor || "#22c55e"
+      };
     }
   };
 
-  const { status, variant, color } = getAvailabilityStatus();
+  const { status, variant, color, bgColor } = getAvailabilityStatus();
 
   return (
     <div 
@@ -162,11 +182,8 @@ export default function RealTimeAvailability({
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#24D367]' : 'bg-red-500'} animate-pulse`} />
           <Badge 
             variant={variant} 
-            className={`${
-              status === 'Available' ? 'bg-[#24D367] text-white' :
-              status === 'Filling Up' ? 'bg-yellow-500 text-white' :
-              'bg-red-500 text-white'
-            } border-0 text-xs`}
+            className="text-white border-0 text-xs"
+            style={{ backgroundColor: bgColor }}
           >
             {status}
           </Badge>
