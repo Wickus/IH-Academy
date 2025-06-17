@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useOrganization } from "@/contexts/organization-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +19,7 @@ export default function Coaches() {
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [editingCoach, setEditingCoach] = useState<any>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const { toast } = useToast();
   
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/me"],
@@ -392,6 +396,15 @@ export default function Coaches() {
                               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                                 Pending
                               </Badge>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteInvitationMutation.mutate(invitation.id)}
+                                disabled={deleteInvitationMutation.isPending}
+                                className="ml-2 text-red-600 border-red-300 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </>
                           )}
                           {invitation.status === 'accepted' && (
@@ -408,6 +421,15 @@ export default function Coaches() {
                               <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
                                 Expired
                               </Badge>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteInvitationMutation.mutate(invitation.id)}
+                                disabled={deleteInvitationMutation.isPending}
+                                className="ml-2 text-red-600 border-red-300 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </>
                           )}
                         </div>
