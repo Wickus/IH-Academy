@@ -6,6 +6,7 @@ import { payfastService, type PayFastPaymentData } from "./payfast";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import { sendCoachInvitationEmail } from "./email";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -1066,9 +1067,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get organization details for email
       const organization = await storage.getOrganization(organizationId);
       
-      // Send invitation email (simplified for now)
-      console.log(`Coach invitation sent to ${email} for organization ${organization?.name}`);
-      console.log(`Invitation link: ${process.env.REPL_URL || 'http://localhost:5000'}/coach-register/${invitationToken}`);
+      if (organization) {
+        const invitationLink = `${process.env.REPL_URL || 'http://localhost:5000'}/coach-register/${invitationToken}`;
+        
+        // Send invitation email
+        const emailSent = await sendCoachInvitationEmail(
+          organization.name,
+          email,
+          firstName,
+          lastName,
+          invitationLink,
+          {
+            primaryColor: organization.primaryColor || "#20366B",
+            secondaryColor: organization.secondaryColor || "#278DD4",
+            accentColor: organization.accentColor || "#24D367"
+          }
+        );
+        
+        if (emailSent) {
+          console.log(`Coach invitation email sent to ${email} for organization ${organization.name}`);
+        } else {
+          console.error(`Failed to send invitation email to ${email}`);
+        }
+      }
       
       res.json({ invitation, invitationLink: `/coach-register/${invitationToken}` });
     } catch (error) {
