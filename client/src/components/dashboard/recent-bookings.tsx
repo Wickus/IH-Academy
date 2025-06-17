@@ -5,8 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { api } from "@/lib/api";
 import { formatCurrency, getTimeAgo, getPaymentStatusColor } from "@/lib/utils";
+import { useOrganization } from "@/contexts/organization-context";
 
 export default function RecentBookings() {
+  const { organization } = useOrganization();
+  
+  if (!organization) return null;
+  
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ["/api/bookings", { recent: 5 }],
     queryFn: () => api.getBookings({ recent: 5 }),
@@ -38,9 +43,16 @@ export default function RecentBookings() {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-[#24D367] to-[#1FB856] text-white border-[#24D367]">
+    <Card 
+      className="text-white rounded-lg"
+      style={{ 
+        background: `linear-gradient(to bottom right, ${organization.primaryColor}, ${organization.secondaryColor})`,
+        borderColor: organization.primaryColor
+      }}
+    >
       <CardHeader>
         <CardTitle className="text-white">Recent Bookings</CardTitle>
+        <p className="text-white/80 text-sm">Latest bookings for your classes</p>
       </CardHeader>
       
       <CardContent className="space-y-4">
