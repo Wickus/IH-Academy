@@ -6,7 +6,7 @@ import { payfastService, type PayFastPaymentData } from "./payfast";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail } from "./email";
+import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail, sendWalkInRegistrationEmail } from "./email";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -1559,20 +1559,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // For walk-ins, also create a user account if email provided and doesn't exist
         if (walkInData.email) {
           let walkInUser = await storage.getUserByEmail(walkInData.email);
+          let isNewUser = false;
+          let temporaryPassword = '';
+          
           if (!walkInUser) {
+            temporaryPassword = generateSessionId().substring(0, 8); // 8-character temp password
             walkInUser = await storage.createUser({
               username: walkInData.email,
               email: walkInData.email,
               name: walkInData.name,
               phone: walkInData.phone,
               role: 'member',
-              password: generateSessionId() // Temporary password
+              password: temporaryPassword
             });
-            
+            isNewUser = true;
             console.log(`Created walk-in user account for ${walkInData.email}`);
-            // In production, send welcome email with password reset link
           }
           attendanceData.participantUserId = walkInUser.id;
+          
+          // Send welcome email for new users
+          if (isNewUser) {
+            try {
+              const classData = await storage.getClass(classId);
+              const organization = classData ? await storage.getOrganization(classData.organizationId) : null;
+              
+              if (classData && organization) {
+                await sendWalkInRegistrationEmail({
+                  to: walkInData.email,
+                  participantName: walkInData.name,
+                  className: classData.name,
+                  organizationName: organization.name,
+                  classDate: classData.startTime,
+                  amountPaid: walkInData.amountPaid || 0,
+                  paymentMethod: walkInData.paymentMethod,
+                  temporaryPassword,
+                  organizationColors: {
+                    primaryColor: organization.primaryColor,
+                    secondaryColor: organization.secondaryColor,
+                    accentColor: organization.accentColor
+                  }
+                });
+                console.log(`Welcome email sent to walk-in client: ${walkInData.email}`);
+              }
+            } catch (emailError) {
+              console.error('Failed to send welcome email to walk-in client:', emailError);
+              // Don't fail the attendance marking if email fails
+            }
+          }
         }
       }
       
