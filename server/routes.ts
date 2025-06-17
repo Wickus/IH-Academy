@@ -74,6 +74,9 @@ function broadcastBookingNotification(classId: number, className: string, partic
 // Session storage using Map for better persistence
 const sessions = new Map<string, any>();
 
+// In-memory storage for coach availability
+const coachAvailabilityStorage = new Map<string, any>();
+
 // Helper function to generate session ID
 function generateSessionId(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -1343,9 +1346,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const organizationId = parseInt(req.params.organizationId);
-      const availability = await storage.getCoachAvailabilityByOrganization(organizationId);
       
-      res.json(availability);
+      // Get all availability data for this organization
+      const availabilityData = [];
+      coachAvailabilityStorage.forEach((value, key) => {
+        if (key.startsWith(`${organizationId}_`)) {
+          availabilityData.push(value);
+        }
+      });
+      
+      res.json(availabilityData);
     } catch (error) {
       console.error("Error fetching coach availability:", error);
       res.status(500).json({ message: "Failed to fetch coach availability" });
@@ -1361,11 +1371,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { coachId, day, isAvailable, startTime, endTime, breakStartTime, breakEndTime, notes } = req.body;
       
-      // For now, we'll store this as a simple success response
-      // In a real implementation, you'd store this in a coach_availability table
+      // Get organization from user context
+      const userOrgs = await storage.getUserOrganizations(user.id);
+      const organizationId = userOrgs.length > 0 ? userOrgs[0].organizationId : 1;
+      
       const availabilityData = {
         id: Date.now(),
         coachId: parseInt(coachId),
+        organizationId,
         day,
         isAvailable,
         startTime,
@@ -1375,6 +1388,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         notes,
         updatedAt: new Date()
       };
+      
+      // Store in memory using organization_coachId_day as key
+      const storageKey = `${organizationId}_${coachId}_${day}`;
+      coachAvailabilityStorage.set(storageKey, availabilityData);
       
       res.json(availabilityData);
     } catch (error) {
@@ -1392,11 +1409,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { id, coachId, day, isAvailable, startTime, endTime, breakStartTime, breakEndTime, notes } = req.body;
       
-      // For now, we'll store this as a simple success response
-      // In a real implementation, you'd update this in a coach_availability table
+      // Get organization from user context
+      const userOrgs = await storage.getUserOrganizations(user.id);
+      const organizationId = userOrgs.length > 0 ? userOrgs[0].organizationId : 1;
+      
       const updatedAvailabilityData = {
         id: id || Date.now(),
         coachId: parseInt(coachId),
+        organizationId,
         day,
         isAvailable,
         startTime,
@@ -1406,6 +1426,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         notes,
         updatedAt: new Date()
       };
+      
+      // Store in memory using organization_coachId_day as key
+      const storageKey = `${organizationId}_${coachId}_${day}`;
+      coachAvailabilityStorage.set(storageKey, updatedAvailabilityData);
       
       res.json(updatedAvailabilityData);
     } catch (error) {
