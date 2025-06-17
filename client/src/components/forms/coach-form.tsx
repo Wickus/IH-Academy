@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -39,14 +39,28 @@ export default function CoachForm({ onSuccess, initialData, isEdit = false, edit
   const form = useForm<CoachFormData>({
     resolver: zodResolver(coachFormSchema),
     defaultValues: {
-      name: initialData?.displayName || initialData?.user?.name || "",
-      email: initialData?.contactEmail || initialData?.user?.email || "",
-      bio: initialData?.bio || "",
-      specializations: initialData?.specializations?.join(", ") || "",
-      hourlyRate: initialData?.hourlyRate?.toString() || "",
-      phone: initialData?.phone || "",
+      name: "",
+      email: "",
+      bio: "",
+      specializations: "",
+      hourlyRate: "",
+      phone: "",
     },
   });
+
+  // Reset form when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      form.reset({
+        name: initialData.displayName || initialData.user?.name || "",
+        email: initialData.contactEmail || initialData.user?.email || "",
+        bio: initialData.bio || "",
+        specializations: initialData.specializations?.join(", ") || "",
+        hourlyRate: initialData.hourlyRate?.toString() || "",
+        phone: initialData.phone || "",
+      });
+    }
+  }, [initialData, form]);
 
   const createCoachMutation = useMutation({
     mutationFn: api.createCoach,
