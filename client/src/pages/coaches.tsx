@@ -185,16 +185,7 @@ export default function Coaches() {
             <div className="py-4">
               {editingCoach && (
                 <CoachForm
-                  initialData={{
-                    name: editingCoach.user?.name || '',
-                    email: editingCoach.user?.email || '',
-                    phone: editingCoach.user?.phone || '',
-                    bio: editingCoach.bio || '',
-                    specializations: editingCoach.specializations || [],
-                    hourlyRate: editingCoach.hourlyRate || 0,
-                    profilePicture: editingCoach.profilePicture || '',
-                    organizationId: editingCoach.organizationId
-                  }}
+                  initialData={editingCoach}
                   isEdit={true}
                   editId={editingCoach.id}
                   onSuccess={() => {
