@@ -236,6 +236,7 @@ export default function Classes() {
                   initialAvailableSpots={classItem.availableSpots || 0}
                   totalSpots={classItem.capacity}
                   userId={1}
+                  organization={organization}
                 />
 
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100">
