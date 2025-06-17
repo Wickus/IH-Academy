@@ -1,12 +1,32 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, Clock, Users, MapPin } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, Clock, Users, MapPin, CheckCircle, XCircle, UserPlus, DollarSign } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 
 export default function CoachClasses() {
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
+  const [walkInData, setWalkInData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    paymentMethod: 'cash',
+    amountPaid: ''
+  });
+  const { toast } = useToast();
+
   const { data: user } = useQuery({
     queryKey: ['/api/auth/me'],
     queryFn: () => api.getCurrentUser(),
@@ -45,6 +65,86 @@ export default function CoachClasses() {
     acc[orgId].push(classItem);
     return acc;
   }, {} as Record<number, typeof classes>);
+
+  // Get attendance for selected class
+  const { data: attendance = [] } = useQuery({
+    queryKey: ["/api/attendance", selectedClassId],
+    queryFn: () => selectedClassId ? api.getAttendance(selectedClassId) : Promise.resolve([]),
+    enabled: !!selectedClassId,
+  });
+
+  // Get bookings for selected class
+  const { data: classBookings = [] } = useQuery({
+    queryKey: ["/api/bookings", "class", selectedClassId],
+    queryFn: () => selectedClassId ? api.getBookings({ classId: selectedClassId }) : Promise.resolve([]),
+    enabled: !!selectedClassId,
+  });
+
+  // Mark attendance mutation
+  const markAttendanceMutation = useMutation({
+    mutationFn: (data: { bookingId?: number; status: 'present' | 'absent'; walkInData?: any }) =>
+      api.markAttendance({
+        classId: selectedClassId!,
+        bookingId: data.bookingId,
+        status: data.status,
+        walkInData: data.walkInData,
+        markedBy: user?.id || 0
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/attendance", selectedClassId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/bookings", "class", selectedClassId] });
+      toast({
+        title: "Attendance marked",
+        description: "Participant attendance has been recorded successfully.",
+      });
+      // Reset walk-in form
+      setWalkInData({
+        name: '',
+        email: '',
+        phone: '',
+        paymentMethod: 'cash',
+        amountPaid: ''
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to mark attendance. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const openClassAttendance = (classId: number) => {
+    setSelectedClassId(classId);
+    setIsAttendanceOpen(true);
+  };
+
+  const handleMarkAttendance = (bookingId: number, status: 'present' | 'absent') => {
+    markAttendanceMutation.mutate({ bookingId, status });
+  };
+
+  const handleWalkInSubmit = () => {
+    if (!walkInData.name || !walkInData.email) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide at least name and email for walk-in client.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    markAttendanceMutation.mutate({
+      status: 'present',
+      walkInData: {
+        ...walkInData,
+        amountPaid: parseFloat(walkInData.amountPaid) || 0
+      }
+    });
+  };
+
+  const selectedClass = selectedClassId ? coachClasses.find(c => c.id === selectedClassId) : null;
+  const selectedOrg = selectedClass ? userOrganizations?.find(org => org.id === selectedClass.organizationId) : null;
 
   return (
     <div className="p-6 lg:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
@@ -106,6 +206,7 @@ export default function CoachClasses() {
                           <TableHead style={{ color: org.primaryColor }}>Capacity</TableHead>
                           <TableHead style={{ color: org.primaryColor }}>Price</TableHead>
                           <TableHead style={{ color: org.primaryColor }}>Location</TableHead>
+                          <TableHead style={{ color: org.primaryColor }}>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -152,6 +253,19 @@ export default function CoachClasses() {
                                 <span className="text-sm">{classItem.location || 'TBA'}</span>
                               </div>
                             </TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                style={{
+                                  backgroundColor: org.primaryColor,
+                                  color: 'white'
+                                }}
+                                className="hover:opacity-90"
+                                onClick={() => openClassAttendance(classItem.id)}
+                              >
+                                Open Class
+                              </Button>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -163,6 +277,213 @@ export default function CoachClasses() {
           })}
         </div>
       )}
+
+      {/* Attendance Modal */}
+      <Dialog open={isAttendanceOpen} onOpenChange={setIsAttendanceOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle style={{ color: selectedOrg?.primaryColor }}>
+              Take Attendance - {selectedClass?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedClass && (
+            <div className="space-y-6">
+              {/* Class Info */}
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-semibold">Time:</span> {formatDateTime(selectedClass.startTime)}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Location:</span> {selectedClass.location || 'TBA'}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Capacity:</span> {selectedClass.capacity}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Price:</span> {formatCurrency(Number(selectedClass.price))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Registered Participants */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: selectedOrg?.primaryColor }}>
+                  Registered Participants ({classBookings.length})
+                </h3>
+                {classBookings.length > 0 ? (
+                  <div className="space-y-2">
+                    {classBookings.map((booking) => {
+                      const attendanceRecord = attendance.find(att => att.bookingId === booking.id);
+                      const isMarked = !!attendanceRecord;
+                      
+                      return (
+                        <div key={booking.id} className="flex items-center justify-between p-3 bg-white border rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center">
+                              <Users className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="font-medium">{booking.participantName}</div>
+                              <div className="text-sm text-slate-600">{booking.participantEmail}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {!isMarked ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  style={{ backgroundColor: selectedOrg?.primaryColor }}
+                                  className="text-white hover:opacity-90"
+                                  onClick={() => handleMarkAttendance(booking.id, 'present')}
+                                  disabled={markAttendanceMutation.isPending}
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Present
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleMarkAttendance(booking.id, 'absent')}
+                                  disabled={markAttendanceMutation.isPending}
+                                >
+                                  <XCircle className="h-4 w-4 mr-1" />
+                                  Absent
+                                </Button>
+                              </>
+                            ) : (
+                              <Badge
+                                variant={attendanceRecord.status === 'present' ? 'default' : 'destructive'}
+                                style={{
+                                  backgroundColor: attendanceRecord.status === 'present' ? selectedOrg?.primaryColor : undefined
+                                }}
+                              >
+                                {attendanceRecord.status === 'present' ? 'Present' : 'Absent'}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-slate-500">
+                    No registered participants for this class
+                  </div>
+                )}
+              </div>
+
+              {/* Walk-in Client Form */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4" style={{ color: selectedOrg?.primaryColor }}>
+                  Add Walk-in Client
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="walkInName">Full Name *</Label>
+                    <Input
+                      id="walkInName"
+                      value={walkInData.name}
+                      onChange={(e) => setWalkInData({ ...walkInData, name: e.target.value })}
+                      placeholder="Enter client's full name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="walkInEmail">Email Address *</Label>
+                    <Input
+                      id="walkInEmail"
+                      type="email"
+                      value={walkInData.email}
+                      onChange={(e) => setWalkInData({ ...walkInData, email: e.target.value })}
+                      placeholder="Enter email address"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="walkInPhone">Phone Number</Label>
+                    <Input
+                      id="walkInPhone"
+                      value={walkInData.phone}
+                      onChange={(e) => setWalkInData({ ...walkInData, phone: e.target.value })}
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="paymentMethod">Payment Method</Label>
+                    <Select value={walkInData.paymentMethod} onValueChange={(value) => setWalkInData({ ...walkInData, paymentMethod: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cash">Cash</SelectItem>
+                        <SelectItem value="card">Card</SelectItem>
+                        <SelectItem value="transfer">Bank Transfer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="amountPaid">Amount Paid</Label>
+                    <Input
+                      id="amountPaid"
+                      type="number"
+                      step="0.01"
+                      value={walkInData.amountPaid}
+                      onChange={(e) => setWalkInData({ ...walkInData, amountPaid: e.target.value })}
+                      placeholder={`${formatCurrency(Number(selectedClass.price))}`}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      style={{ backgroundColor: selectedOrg?.accentColor }}
+                      className="text-white hover:opacity-90 w-full"
+                      onClick={handleWalkInSubmit}
+                      disabled={markAttendanceMutation.isPending || !walkInData.name || !walkInData.email}
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Add & Mark Present
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Walk-in Participants */}
+              {attendance.some(att => att.isWalkIn) && (
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-4" style={{ color: selectedOrg?.primaryColor }}>
+                    Walk-in Participants
+                  </h3>
+                  <div className="space-y-2">
+                    {attendance.filter(att => att.isWalkIn).map((walkIn) => (
+                      <div key={walkIn.id} className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
+                            <UserPlus className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <div className="font-medium">{walkIn.participantName}</div>
+                            <div className="text-sm text-slate-600">{walkIn.participantEmail}</div>
+                            {walkIn.participantPhone && (
+                              <div className="text-sm text-slate-600">{walkIn.participantPhone}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge style={{ backgroundColor: selectedOrg?.primaryColor }} className="text-white">
+                            Walk-in
+                          </Badge>
+                          <div className="text-sm text-slate-600 mt-1">
+                            {walkIn.paymentMethod} - {formatCurrency(Number(walkIn.amountPaid || 0))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
