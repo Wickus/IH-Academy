@@ -91,8 +91,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     );
   }
 
-  // Organization Admin/Coach Interface  
-  if (user?.role === 'organization_admin' || user?.role === 'coach') {
+  // Organization Admin Interface  
+  if (user?.role === 'organization_admin') {
     return (
       <Switch>
         <Route path="/organization-setup" component={OrganizationSetup} />
@@ -120,26 +120,6 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/coaches" component={() => (
           <AppLayout>
             <Coaches />
-          </AppLayout>
-        )} />
-        <Route path="/coach-profile/:organizationId" component={() => (
-          <AppLayout>
-            <CoachProfile />
-          </AppLayout>
-        )} />
-        <Route path="/coach-classes" component={() => (
-          <AppLayout>
-            <CoachClasses />
-          </AppLayout>
-        )} />
-        <Route path="/coach-settings" component={() => (
-          <AppLayout>
-            <CoachSettings />
-          </AppLayout>
-        )} />
-        <Route path="/availability" component={() => (
-          <AppLayout>
-            <CoachAvailabilityGeneral />
           </AppLayout>
         )} />
         <Route path="/memberships" component={() => (
@@ -202,8 +182,47 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     );
   }
 
-  // Member Interface - Show user dashboard if authenticated  
-  if (user) {
+  // Coach Interface
+  if (user?.role === 'coach') {
+    return (
+      <Switch>
+        <Route path="/" component={() => (
+          <AppLayout>
+            <Dashboard />
+          </AppLayout>
+        )} />
+        <Route path="/dashboard" component={() => (
+          <AppLayout>
+            <Dashboard />
+          </AppLayout>
+        )} />
+        <Route path="/coach-profile/:organizationId" component={() => (
+          <AppLayout>
+            <CoachProfile />
+          </AppLayout>
+        )} />
+        <Route path="/coach-classes" component={() => (
+          <AppLayout>
+            <CoachClasses />
+          </AppLayout>
+        )} />
+        <Route path="/coach-settings" component={() => (
+          <AppLayout>
+            <CoachSettings />
+          </AppLayout>
+        )} />
+        <Route path="/availability" component={() => (
+          <AppLayout>
+            <CoachAvailabilityGeneral />
+          </AppLayout>
+        )} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
+  // Member Interface  
+  if (user?.role === 'member') {
     return (
       <Switch>
         <Route path="/" component={UserDashboard} />
@@ -213,6 +232,19 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/organizations/:id" component={PublicBooking} />
         <Route path="/organizations/:id/classes" component={OrganizationClasses} />
         <Route path="/achievements" component={Achievements} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
+  // Fallback for any other authenticated user
+  if (user) {
+    return (
+      <Switch>
+        <Route path="/" component={UserDashboard} />
+        <Route path="/dashboard" component={UserDashboard} />
+        <Route path="/discover" component={PublicDiscovery} />
+        <Route path="/book" component={PublicBooking} />
         <Route component={NotFound} />
       </Switch>
     );
