@@ -112,7 +112,6 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       const endDateTime = new Date(`${data.endTime}:00`).toISOString();
 
       const classData = {
-        organizationId: organizationId || 1,
         name: data.name,
         description: data.description || undefined,
         sportId: parseInt(data.sportId),
@@ -128,11 +127,14 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       };
 
       if (initialData?.id) {
-        // Update existing class
+        // Update existing class - don't change organizationId
         await updateClassMutation.mutateAsync({ id: initialData.id, ...classData });
       } else {
-        // Create new class
-        await createClassMutation.mutateAsync(classData);
+        // Create new class - include organizationId
+        await createClassMutation.mutateAsync({ 
+          organizationId: organizationId || 1,
+          ...classData 
+        });
       }
     } catch (error) {
       console.error('Failed to create class:', error);
