@@ -425,3 +425,247 @@ export async function sendBookingMoveEmail(params: {
     return false;
   }
 }
+
+export async function sendPaymentReminderEmail(params: {
+  to: string;
+  participantName: string;
+  className: string;
+  amount: string;
+  classDate: Date;
+  paymentUrl: string;
+  organizationName: string;
+}): Promise<boolean> {
+  const { to, participantName, className, amount, classDate, paymentUrl, organizationName } = params;
+  
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-ZA', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Africa/Johannesburg'
+    }).format(date);
+  };
+
+  const subject = `Payment Reminder - ${className}`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Payment Reminder</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">ItsHappening.Africa</h1>
+          <p style="color: #ffffff; opacity: 0.95; margin: 8px 0 0 0; font-size: 16px;">Payment Reminder</p>
+        </div>
+        
+        <div style="padding: 40px 30px;">
+          <h2 style="color: #ea580c; margin: 0 0 20px 0; font-size: 24px;">Payment Required</h2>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Dear ${participantName},</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">We hope you're looking forward to your upcoming class! We noticed that payment for your booking is still pending.</p>
+          
+          <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+            <h3 style="margin-top: 0; color: #92400e; font-size: 18px;">Booking Details:</h3>
+            <p style="margin: 8px 0; color: #92400e;"><strong>Class:</strong> ${className}</p>
+            <p style="margin: 8px 0; color: #92400e;"><strong>Date & Time:</strong> ${formatDate(classDate)}</p>
+            <p style="margin: 8px 0; color: #92400e;"><strong>Amount:</strong> R${amount}</p>
+          </div>
+
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 30px 0; font-size: 16px;">To secure your spot in this class, please complete your payment by clicking the button below:</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${paymentUrl}" style="display: inline-block; background-color: #ea580c; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+              Pay Now - R${amount}
+            </a>
+          </div>
+
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">If you're unable to attend or no longer wish to participate, please let us know as soon as possible so we can offer your spot to someone else.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">If you have any questions about your booking or payment, please don't hesitate to contact us.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Thank you!</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Best regards,<br><strong>${organizationName} Team</strong></p>
+        </div>
+        
+        <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            This email was sent by ItsHappening.Africa on behalf of ${organizationName}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+    Payment Reminder - ${organizationName}
+    
+    Dear ${participantName},
+    
+    We hope you're looking forward to your upcoming class! We noticed that payment for your booking is still pending.
+    
+    Booking Details:
+    - Class: ${className}
+    - Date & Time: ${formatDate(classDate)}
+    - Amount: R${amount}
+    
+    To secure your spot in this class, please complete your payment by visiting: ${paymentUrl}
+    
+    If you're unable to attend or no longer wish to participate, please let us know as soon as possible so we can offer your spot to someone else.
+    
+    If you have any questions about your booking or payment, please don't hesitate to contact us.
+    
+    Thank you!
+    
+    Best regards,
+    The ${organizationName} Team
+    
+    --
+    This email was sent by ItsHappening.Africa on behalf of ${organizationName}
+  `;
+
+  try {
+    const emailSent = await sendEmail({
+      to,
+      from: 'info@itshappening.africa',
+      subject,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    if (emailSent) {
+      console.log(`Payment reminder email successfully sent to ${to}`);
+    }
+    
+    return emailSent;
+  } catch (error) {
+    console.error('Payment reminder email failed:', error);
+    return false;
+  }
+}
+
+export async function sendBookingCancellationEmail(params: {
+  to: string;
+  participantName: string;
+  className: string;
+  amount: string;
+  classDate: Date;
+  organizationName: string;
+}): Promise<boolean> {
+  const { to, participantName, className, amount, classDate, organizationName } = params;
+  
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-ZA', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Africa/Johannesburg'
+    }).format(date);
+  };
+
+  const subject = `Booking Cancelled - ${className}`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Booking Cancelled</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">ItsHappening.Africa</h1>
+          <p style="color: #ffffff; opacity: 0.95; margin: 8px 0 0 0; font-size: 16px;">Booking Cancellation</p>
+        </div>
+        
+        <div style="padding: 40px 30px;">
+          <h2 style="color: #dc2626; margin: 0 0 20px 0; font-size: 24px;">Booking Cancelled</h2>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Dear ${participantName},</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">We regret to inform you that your booking has been cancelled due to non-payment.</p>
+          
+          <div style="background-color: #fee2e2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
+            <h3 style="margin-top: 0; color: #dc2626; font-size: 18px;">Cancelled Booking Details:</h3>
+            <p style="margin: 8px 0; color: #dc2626;"><strong>Class:</strong> ${className}</p>
+            <p style="margin: 8px 0; color: #dc2626;"><strong>Date & Time:</strong> ${formatDate(classDate)}</p>
+            <p style="margin: 8px 0; color: #dc2626;"><strong>Amount:</strong> R${amount}</p>
+          </div>
+
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">We understand that circumstances can change, and we're sorry to see you won't be joining us for this session.</p>
+          
+          <div style="background-color: #dcfce7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a;">
+            <h3 style="margin-top: 0; color: #16a34a; font-size: 18px;">Want to Rebook?</h3>
+            <p style="margin-bottom: 0; color: #16a34a;">If you still want to participate in our classes, you can easily rebook through our system and complete payment to secure your spot.</p>
+          </div>
+
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">We hope to see you in a future class! If you have any questions or need assistance with rebooking, please don't hesitate to contact us.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Thank you for your understanding.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Best regards,<br><strong>${organizationName} Team</strong></p>
+        </div>
+        
+        <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            This email was sent by ItsHappening.Africa on behalf of ${organizationName}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+    Booking Cancellation - ${organizationName}
+    
+    Dear ${participantName},
+    
+    We regret to inform you that your booking has been cancelled due to non-payment.
+    
+    Cancelled Booking Details:
+    - Class: ${className}
+    - Date & Time: ${formatDate(classDate)}
+    - Amount: R${amount}
+    
+    We understand that circumstances can change, and we're sorry to see you won't be joining us for this session.
+    
+    Want to Rebook?
+    If you still want to participate in our classes, you can easily rebook through our system and complete payment to secure your spot.
+    
+    We hope to see you in a future class! If you have any questions or need assistance with rebooking, please don't hesitate to contact us.
+    
+    Thank you for your understanding.
+    
+    Best regards,
+    The ${organizationName} Team
+    
+    --
+    This email was sent by ItsHappening.Africa on behalf of ${organizationName}
+  `;
+
+  try {
+    const emailSent = await sendEmail({
+      to,
+      from: 'info@itshappening.africa',
+      subject,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    if (emailSent) {
+      console.log(`Booking cancellation email successfully sent to ${to}`);
+    }
+    
+    return emailSent;
+  } catch (error) {
+    console.error('Booking cancellation email failed:', error);
+    return false;
+  }
+}

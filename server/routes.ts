@@ -6,7 +6,7 @@ import { payfastService, type PayFastPaymentData } from "./payfast";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail } from "./email";
+import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail } from "./email";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -2477,6 +2477,144 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(pricingConfig);
     } catch (error: any) {
       console.error("Error fetching pricing:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Send payment reminder email for pending booking
+  app.post("/api/bookings/:id/send-payment-reminder", async (req: Request, res: Response) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const user = getCurrentUser(req);
+      
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Get booking details
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      // Get class details
+      const classData = await storage.getClass(booking.classId);
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      // Get organization details
+      const organization = await storage.getOrganization(classData.organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Only send reminder for pending payments
+      if (booking.paymentStatus !== 'pending') {
+        return res.status(400).json({ message: "Booking payment is not pending" });
+      }
+
+      // Generate PayFast payment URL
+      const paymentData: PayFastPaymentData = {
+        merchant_id: organization.payfastMerchantId || '',
+        merchant_key: organization.payfastMerchantKey || '',
+        return_url: `${req.protocol}://${req.get('host')}/payment-success`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled`,
+        notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
+        name_first: booking.participantName.split(' ')[0] || booking.participantName,
+        name_last: booking.participantName.split(' ').slice(1).join(' ') || '',
+        email_address: booking.participantEmail || '',
+        m_payment_id: `booking_${booking.id}`,
+        amount: booking.amount,
+        item_name: classData.name,
+        item_description: `Class booking for ${classData.name}`,
+        passphrase: organization.payfastPassphrase || ''
+      };
+
+      const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox || true);
+
+      // Send payment reminder email
+      const emailSent = await sendPaymentReminderEmail({
+        to: booking.participantEmail || '',
+        participantName: booking.participantName,
+        className: classData.name,
+        amount: booking.amount,
+        classDate: classData.startTime,
+        paymentUrl: paymentUrl,
+        organizationName: organization.name
+      });
+
+      if (emailSent) {
+        res.json({ message: "Payment reminder sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send payment reminder" });
+      }
+    } catch (error: any) {
+      console.error("Error sending payment reminder:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Cancel booking due to non-payment
+  app.post("/api/bookings/:id/cancel-for-non-payment", async (req: Request, res: Response) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const user = getCurrentUser(req);
+      
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Get booking details
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      // Get class details
+      const classData = await storage.getClass(booking.classId);
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      // Get organization details
+      const organization = await storage.getOrganization(classData.organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Only cancel bookings with pending payments
+      if (booking.paymentStatus !== 'pending') {
+        return res.status(400).json({ message: "Booking payment is not pending" });
+      }
+
+      // Cancel the booking by updating status
+      const updatedBooking = await storage.updateBooking(bookingId, { paymentStatus: 'cancelled' });
+      if (!updatedBooking) {
+        return res.status(500).json({ message: "Failed to cancel booking" });
+      }
+
+      // Send cancellation email
+      const emailSent = await sendBookingCancellationEmail({
+        to: booking.participantEmail || '',
+        participantName: booking.participantName,
+        className: classData.name,
+        amount: booking.amount,
+        classDate: classData.startTime,
+        organizationName: organization.name
+      });
+
+      // Broadcast availability update
+      const bookingsForClass = await storage.getBookingsByClass(booking.classId);
+      const availableSpots = classData.capacity - bookingsForClass.length;
+      broadcastAvailabilityUpdate(booking.classId, availableSpots, classData.capacity);
+
+      res.json({ 
+        message: "Booking cancelled successfully",
+        emailSent: emailSent
+      });
+    } catch (error: any) {
+      console.error("Error cancelling booking:", error);
       res.status(500).json({ message: error.message });
     }
   });

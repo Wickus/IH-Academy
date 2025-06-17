@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Download, Mail, Phone, Calendar, ArrowRight } from "lucide-react";
+import { Search, Download, Mail, Phone, Calendar, ArrowRight, CreditCard, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateTime, formatCurrency, getPaymentStatusColor, getTimeAgo } from "@/lib/utils";
 
