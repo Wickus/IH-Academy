@@ -194,3 +194,93 @@ Expires: 7 days from now
     return false; // Don't block the invitation process
   }
 }
+
+export async function sendCoachAssignmentEmail(
+  email: string,
+  coachName: string,
+  classData: any,
+  icalContent: string
+): Promise<boolean> {
+  const classDate = new Date(classData.startTime).toLocaleDateString();
+  const classTime = new Date(classData.startTime).toLocaleTimeString();
+  
+  const subject = `Class Assignment - ${classData.name}`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Class Assignment</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">ItsHappening.Africa</h1>
+          <p style="color: #ffffff; opacity: 0.95; margin: 8px 0 0 0; font-size: 16px;">Class Assignment Notification</p>
+        </div>
+        
+        <div style="padding: 40px 30px;">
+          <h2 style="color: #20366B; margin: 0 0 20px 0; font-size: 24px;">You've been assigned to coach: ${classData.name}</h2>
+          <p style="color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Hello ${coachName},</p>
+          <p style="color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">You have been assigned to coach the following class:</p>
+          
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #278DD4;">
+            <h3 style="color: #20366B; margin: 0 0 15px 0; font-size: 20px;">${classData.name}</h3>
+            <p style="color: #475569; margin: 5px 0;"><strong>Date:</strong> ${classDate}</p>
+            <p style="color: #475569; margin: 5px 0;"><strong>Time:</strong> ${classTime}</p>
+            <p style="color: #475569; margin: 5px 0;"><strong>Location:</strong> ${classData.location || 'TBA'}</p>
+            <p style="color: #475569; margin: 5px 0;"><strong>Capacity:</strong> ${classData.capacity} participants</p>
+            ${classData.description ? `<p style="color: #475569; margin: 5px 0;"><strong>Description:</strong> ${classData.description}</p>` : ''}
+          </div>
+          
+          <p style="color: #475569; font-size: 16px; line-height: 1.6; margin: 20px 0;">A calendar event has been attached to this email so you can add it to your calendar.</p>
+          <p style="color: #475569; font-size: 16px; line-height: 1.6; margin: 20px 0;">Please log in to your coach dashboard to view more details and manage this class.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+    Class Assignment - ${classData.name}
+    
+    Hello ${coachName},
+    
+    You have been assigned to coach: ${classData.name}
+    
+    Class Details:
+    - Date: ${classDate}
+    - Time: ${classTime}
+    - Location: ${classData.location || 'TBA'}
+    - Capacity: ${classData.capacity} participants
+    ${classData.description ? `- Description: ${classData.description}` : ''}
+    
+    A calendar event is attached to this email. Please check your coach dashboard for more details.
+    
+    --
+    ItsHappening.Africa
+  `;
+
+  try {
+    console.log(`Sending coach assignment email to ${email} for class: ${classData.name}`);
+    
+    const emailSent = await sendEmail({
+      to: email,
+      from: 'info@itshappening.africa',
+      subject,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    if (emailSent) {
+      console.log(`Coach assignment email successfully sent to ${email}`);
+    }
+    
+    return emailSent;
+  } catch (error) {
+    console.error('Coach assignment email failed:', error);
+    return false;
+  }
+}

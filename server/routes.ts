@@ -772,10 +772,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Class not found" });
       }
       
+      // If coach was assigned, send email notification with iCal
+      if (classData.coachId && updatedClass.coachId !== classData.coachId) {
+        try {
+          const coach = await storage.getCoach(classData.coachId);
+          const user = await storage.getUser(coach.userId);
+          
+          if (user?.email) {
+            const icalContent = generateICalEvent(updatedClass, { 
+              participantName: user.username,
+              participantEmail: user.email 
+            });
+            
+            await sendCoachAssignmentEmail(
+              user.email,
+              user.username,
+              updatedClass,
+              icalContent
+            );
+          }
+        } catch (emailError) {
+          console.error("Error sending coach assignment email:", emailError);
+          // Continue without failing the update
+        }
+      }
+      
       res.json(updatedClass);
     } catch (error) {
       console.error("Error updating class:", error);
       res.status(500).json({ message: "Failed to update class" });
+    }
+  });
+
+  app.delete("/api/classes/:id", async (req: Request, res: Response) => {
+    try {
+      const classId = parseInt(req.params.id);
+      const currentUser = getCurrentUser(req);
+      
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check if class exists and get class data
+      const classData = await storage.getClass(classId);
+      if (!classData) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      // Only coaches can cancel their own classes, or org admins can cancel any class in their org
+      if (currentUser.role === 'coach') {
+        const coaches = await storage.getCoachesByOrganization(classData.organizationId);
+        const userCoach = coaches.find(c => c.userId === currentUser.id);
+        if (!userCoach || classData.coachId !== userCoach.id) {
+          return res.status(403).json({ message: "You can only cancel your own classes" });
+        }
+      } else if (currentUser.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+        const hasAccess = userOrgs.some(org => org.organizationId === classData.organizationId);
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied" });
+        }
+      } else {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const success = await storage.deleteClass(classId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+
+      res.json({ message: "Class cancelled successfully" });
+    } catch (error) {
+      console.error("Error deleting class:", error);
+      res.status(500).json({ message: "Failed to cancel class" });
     }
   });
 
