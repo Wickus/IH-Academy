@@ -1068,7 +1068,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const organization = await storage.getOrganization(organizationId);
       
       if (organization) {
-        const invitationLink = `${process.env.REPL_URL || 'http://localhost:5000'}/coach-register/${invitationToken}`;
+        const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+        const host = req.headers.host;
+        const baseUrl = `${protocol}://${host}`;
+        const invitationLink = `${baseUrl}/coach-register/${invitationToken}`;
         
         // Send invitation email
         const emailSent = await sendCoachInvitationEmail(
