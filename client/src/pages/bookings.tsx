@@ -305,7 +305,10 @@ export default function Bookings() {
                                 <ArrowRight className="h-4 w-4" />
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
+                            <DialogContent 
+                              className="sm:max-w-[425px]"
+                              style={{ borderColor: organization.secondaryColor }}
+                            >
                               <DialogHeader>
                                 <DialogTitle style={{ color: organization.primaryColor }}>
                                   Move Booking
@@ -351,10 +354,20 @@ export default function Bookings() {
                                   </Select>
                                 </div>
                                 <div className="flex justify-end space-x-2">
-                                  <Button variant="outline" onClick={() => {
-                                    setSelectedBooking(null);
-                                    setSelectedClass("");
-                                  }}>
+                                  <Button 
+                                    variant="outline" 
+                                    onClick={() => {
+                                      setSelectedBooking(null);
+                                      setSelectedClass("");
+                                    }}
+                                    style={{ 
+                                      color: organization.primaryColor,
+                                      borderColor: organization.primaryColor
+                                    }}
+                                    className="hover:text-white"
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.primaryColor}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                  >
                                     Cancel
                                   </Button>
                                   <Button 
