@@ -15,28 +15,9 @@ class PushNotificationService {
   private subscription: PushSubscription | null = null;
 
   async initialize(): Promise<boolean> {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.log('Push notifications not supported');
-      return false;
-    }
-
-    try {
-      // Register service worker
-      this.registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered');
-
-      // Check if already subscribed
-      const existingSubscription = await this.registration.pushManager.getSubscription();
-      if (existingSubscription) {
-        this.subscription = this.convertSubscription(existingSubscription);
-        return true;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Failed to initialize push notifications:', error);
-      return false;
-    }
+    // Temporarily disabled to fix navigation issues on mobile devices
+    console.log('Push notifications temporarily disabled');
+    return false;
   }
 
   async requestPermission(): Promise<boolean> {
