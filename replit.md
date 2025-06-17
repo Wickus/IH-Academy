@@ -132,6 +132,7 @@ Changelog:
 - June 13, 2025. Fixed PayFast settings save functionality in Global Admin Dashboard - implemented proper form validation, API integration, mutation handling, and dynamic connection status checking with real-time PayFast API testing capabilities
 - June 13, 2025. Implemented editable pricing configuration in Global Admin Dashboard - added price input fields for membership plans (Free/Basic/Premium), commission fields for pay-per-class plans, database persistence via organization 20 as global settings storage, and API endpoints for loading/saving pricing configuration that organizations use during signup
 - June 13, 2025. Resolved critical authentication UX issues - eliminated jarring login/logout experience by preloading organization data during authentication to prevent style flash, implementing consistent logout navigation with proper state reset, fixing routing conflicts that caused 404 errors, and ensuring smooth transitions between authenticated and unauthenticated states with professional user experience
+- June 17, 2025. Completed comprehensive dashboard styling consistency - replaced all hardcoded yellow elements with dynamic organization colors, including upcoming class borders, pending status badges, Plan Usage slider backgrounds, and ensured all dashboard cards have consistent rounded corners with proper multi-tenant theming throughout the interface
 
 ## User Preferences
 

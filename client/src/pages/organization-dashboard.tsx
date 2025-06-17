@@ -292,9 +292,15 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                       </p>
                     </div>
                     <Badge 
-                      variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
-                      className={booking.paymentStatus === 'confirmed' ? 'text-white' : ''}
-                      style={booking.paymentStatus === 'confirmed' ? { backgroundColor: organization.accentColor } : {}}
+                      variant="outline"
+                      className="text-white border-white/40"
+                      style={
+                        booking.paymentStatus === 'confirmed' 
+                          ? { backgroundColor: organization.accentColor, color: '#000', borderColor: organization.accentColor }
+                          : booking.paymentStatus === 'pending'
+                          ? { backgroundColor: organization.secondaryColor, color: '#000', borderColor: organization.secondaryColor }
+                          : { backgroundColor: '#ef4444', color: '#fff', borderColor: '#ef4444' }
+                      }
                     >
                       {booking.paymentStatus}
                     </Badge>
