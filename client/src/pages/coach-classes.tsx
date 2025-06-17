@@ -354,12 +354,12 @@ export default function CoachClasses() {
                               </>
                             ) : (
                               <Badge
-                                variant={attendanceRecord.status === 'present' ? 'default' : 'destructive'}
+                                variant={attendanceRecord?.status === 'present' ? 'default' : 'destructive'}
                                 style={{
-                                  backgroundColor: attendanceRecord.status === 'present' ? selectedOrg?.primaryColor : undefined
+                                  backgroundColor: attendanceRecord?.status === 'present' ? selectedOrg?.primaryColor : undefined
                                 }}
                               >
-                                {attendanceRecord.status === 'present' ? 'Present' : 'Absent'}
+                                {attendanceRecord?.status === 'present' ? 'Present' : 'Absent'}
                               </Badge>
                             )}
                           </div>
