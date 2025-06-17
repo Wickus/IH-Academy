@@ -286,7 +286,7 @@ export default function Classes() {
         )}
       </div>
 
-      {classes.length === 0 && (
+      {filteredClasses.length === 0 && !coachFilter && (
         <div className="text-center py-12">
           <div className="mb-4" style={{ color: organization.secondaryColor }}>
             <Users className="mx-auto h-12 w-12" />
