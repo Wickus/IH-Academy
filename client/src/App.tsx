@@ -40,7 +40,7 @@ import ClassesManagement from "@/pages/classes-management";
 import PaymentSuccess from "@/pages/payment-success";
 import PaymentCancelled from "@/pages/payment-cancelled";
 import CoachRegister from "@/pages/coach-register";
-import CoachAvailability from "@/pages/coach-availability";
+
 import CoachProfile from "@/pages/coach-profile";
 import CoachClasses from "@/pages/coach-classes";
 import CoachSettings from "@/pages/coach-settings";
@@ -122,11 +122,6 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
             <Coaches />
           </AppLayout>
         )} />
-        <Route path="/coach-availability/:id" component={() => (
-          <AppLayout>
-            <CoachAvailability />
-          </AppLayout>
-        )} />
         <Route path="/coach-profile/:organizationId" component={() => (
           <AppLayout>
             <CoachProfile />
@@ -142,7 +137,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
             <CoachSettings />
           </AppLayout>
         )} />
-        <Route path="/coach-availability/general" component={() => (
+        <Route path="/availability" component={() => (
           <AppLayout>
             <CoachAvailabilityGeneral />
           </AppLayout>
