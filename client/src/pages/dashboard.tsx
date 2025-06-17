@@ -97,7 +97,10 @@ export default function Dashboard() {
             <div
               key={org.id}
               className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              onClick={() => setLocation(`/coach-profile/${org.id}`)}
+              onClick={() => {
+                console.log('Navigating to organization:', org.id);
+                setLocation(`/organization/${org.id}/dashboard`);
+              }}
               style={{
                 background: `linear-gradient(135deg, ${org.primaryColor} 0%, ${org.secondaryColor} 100%)`
               }}
