@@ -14,13 +14,20 @@ import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
 
 
-const navigation = [
+const adminNavigation = [
   { name: "Dashboard", href: "/", icon: Calendar },
   { name: "Classes & Clinics", href: "/classes", icon: Users },
   { name: "Bookings", href: "/bookings", icon: UserCheck },
   { name: "Coaches", href: "/coaches", icon: Presentation },
   { name: "Payments", href: "/payments", icon: CreditCard },
   { name: "Reports", href: "/reports", icon: BarChart3 },
+  { name: "Settings", href: "/settings", icon: Settings },
+];
+
+const coachNavigation = [
+  { name: "Organizations", href: "/", icon: Calendar },
+  { name: "Availability", href: "/coach-availability", icon: Dumbbell },
+  { name: "Classes", href: "/classes", icon: Users },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -40,6 +47,14 @@ export default function Sidebar() {
   });
 
   const organization = userOrganizations?.[0];
+  
+  // Use different navigation based on user role
+  const navigation = user?.role === 'coach' ? coachNavigation : adminNavigation;
+  
+  // For coaches, use ItsHappening.Africa colors instead of organization colors
+  const isCoach = user?.role === 'coach';
+  const primaryColor = isCoach ? '#20366B' : (organization?.primaryColor || '#20366B');
+  const accentColor = isCoach ? '#24D367' : (organization?.accentColor || '#24D367');
 
   return (
     <nav className="hidden lg:flex lg:flex-col lg:w-72 bg-white/80 backdrop-blur-lg shadow-xl border-r border-white/20">
@@ -67,12 +82,12 @@ export default function Sidebar() {
                   : "text-slate-600 hover:bg-slate-100 hover:shadow-md"
               )}
               style={{
-                backgroundColor: isActive ? (organization?.accentColor || '#24D367') : 'transparent',
+                backgroundColor: isActive ? accentColor : 'transparent',
                 color: isActive ? 'white' : undefined
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.color = organization?.primaryColor || '#20366B';
+                  e.currentTarget.style.color = primaryColor;
                 }
               }}
               onMouseLeave={(e) => {
