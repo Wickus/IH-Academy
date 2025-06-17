@@ -331,11 +331,11 @@ export default function CoachClasses() {
                           </div>
                           <div className="flex items-center space-x-2">
                             {!isMarked ? (
-                              <>
+                              <div className="flex items-center space-x-2">
                                 <Button
                                   size="sm"
-                                  style={{ backgroundColor: selectedOrg?.primaryColor }}
-                                  className="text-white hover:opacity-90"
+                                  style={{ backgroundColor: selectedOrg?.primaryColor, color: 'white' }}
+                                  className="hover:opacity-90"
                                   onClick={() => handleMarkAttendance(booking.id, 'present')}
                                   disabled={markAttendanceMutation.isPending}
                                 >
@@ -345,18 +345,24 @@ export default function CoachClasses() {
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  style={{ 
+                                    borderColor: selectedOrg?.secondaryColor,
+                                    color: selectedOrg?.secondaryColor
+                                  }}
+                                  className="hover:opacity-90"
                                   onClick={() => handleMarkAttendance(booking.id, 'absent')}
                                   disabled={markAttendanceMutation.isPending}
                                 >
                                   <XCircle className="h-4 w-4 mr-1" />
                                   Absent
                                 </Button>
-                              </>
+                              </div>
                             ) : (
                               <Badge
                                 variant={attendanceRecord?.status === 'present' ? 'default' : 'destructive'}
                                 style={{
-                                  backgroundColor: attendanceRecord?.status === 'present' ? selectedOrg?.primaryColor : undefined
+                                  backgroundColor: attendanceRecord?.status === 'present' ? selectedOrg?.primaryColor : '#dc2626',
+                                  color: 'white'
                                 }}
                               >
                                 {attendanceRecord?.status === 'present' ? 'Present' : 'Absent'}
@@ -381,48 +387,113 @@ export default function CoachClasses() {
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="walkInName">Full Name *</Label>
+                    <Label htmlFor="walkInName" style={{ color: selectedOrg?.primaryColor }}>Full Name *</Label>
                     <Input
                       id="walkInName"
                       value={walkInData.name}
                       onChange={(e) => setWalkInData({ ...walkInData, name: e.target.value })}
                       placeholder="Enter client's full name"
+                      style={{ 
+                        borderColor: selectedOrg?.secondaryColor,
+                        '--focus-ring-color': selectedOrg?.primaryColor
+                      } as any}
+                      className="focus:ring-2 focus:ring-opacity-50"
+                      onFocus={(e) => {
+                        e.target.style.borderColor = selectedOrg?.primaryColor || '';
+                        e.target.style.outline = `2px solid ${selectedOrg?.primaryColor}40`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = selectedOrg?.secondaryColor || '';
+                        e.target.style.outline = 'none';
+                      }}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="walkInEmail">Email Address *</Label>
+                    <Label htmlFor="walkInEmail" style={{ color: selectedOrg?.primaryColor }}>Email Address *</Label>
                     <Input
                       id="walkInEmail"
                       type="email"
                       value={walkInData.email}
                       onChange={(e) => setWalkInData({ ...walkInData, email: e.target.value })}
                       placeholder="Enter email address"
+                      style={{ 
+                        borderColor: selectedOrg?.secondaryColor
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = selectedOrg?.primaryColor || '';
+                        e.target.style.outline = `2px solid ${selectedOrg?.primaryColor}40`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = selectedOrg?.secondaryColor || '';
+                        e.target.style.outline = 'none';
+                      }}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="walkInPhone">Phone Number</Label>
+                    <Label htmlFor="walkInPhone" style={{ color: selectedOrg?.primaryColor }}>Phone Number</Label>
                     <Input
                       id="walkInPhone"
                       value={walkInData.phone}
                       onChange={(e) => setWalkInData({ ...walkInData, phone: e.target.value })}
                       placeholder="Enter phone number"
+                      style={{ 
+                        borderColor: selectedOrg?.secondaryColor
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = selectedOrg?.primaryColor || '';
+                        e.target.style.outline = `2px solid ${selectedOrg?.primaryColor}40`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = selectedOrg?.secondaryColor || '';
+                        e.target.style.outline = 'none';
+                      }}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="paymentMethod">Payment Method</Label>
+                    <Label htmlFor="paymentMethod" style={{ color: selectedOrg?.primaryColor }}>Payment Method</Label>
                     <Select value={walkInData.paymentMethod} onValueChange={(value) => setWalkInData({ ...walkInData, paymentMethod: value })}>
-                      <SelectTrigger>
+                      <SelectTrigger
+                        style={{ 
+                          borderColor: selectedOrg?.secondaryColor
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = selectedOrg?.primaryColor || '';
+                          e.currentTarget.style.outline = `2px solid ${selectedOrg?.primaryColor}40`;
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = selectedOrg?.secondaryColor || '';
+                          e.currentTarget.style.outline = 'none';
+                        }}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="cash">Cash</SelectItem>
-                        <SelectItem value="card">Card</SelectItem>
-                        <SelectItem value="transfer">Bank Transfer</SelectItem>
+                        <SelectItem 
+                          value="cash"
+                          style={{ backgroundColor: `${selectedOrg?.secondaryColor}20` }}
+                          className="hover:bg-opacity-30"
+                        >
+                          Cash
+                        </SelectItem>
+                        <SelectItem 
+                          value="card"
+                          style={{ backgroundColor: `${selectedOrg?.secondaryColor}20` }}
+                          className="hover:bg-opacity-30"
+                        >
+                          Card
+                        </SelectItem>
+                        <SelectItem 
+                          value="transfer"
+                          style={{ backgroundColor: `${selectedOrg?.secondaryColor}20` }}
+                          className="hover:bg-opacity-30"
+                        >
+                          Bank Transfer
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="amountPaid">Amount Paid</Label>
+                    <Label htmlFor="amountPaid" style={{ color: selectedOrg?.primaryColor }}>Amount Paid</Label>
                     <Input
                       id="amountPaid"
                       type="number"
@@ -430,12 +501,26 @@ export default function CoachClasses() {
                       value={walkInData.amountPaid}
                       onChange={(e) => setWalkInData({ ...walkInData, amountPaid: e.target.value })}
                       placeholder={`${formatCurrency(Number(selectedClass.price))}`}
+                      style={{ 
+                        borderColor: selectedOrg?.secondaryColor
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = selectedOrg?.primaryColor || '';
+                        e.target.style.outline = `2px solid ${selectedOrg?.primaryColor}40`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = selectedOrg?.secondaryColor || '';
+                        e.target.style.outline = 'none';
+                      }}
                     />
                   </div>
                   <div className="flex items-end">
                     <Button
-                      style={{ backgroundColor: selectedOrg?.accentColor }}
-                      className="text-white hover:opacity-90 w-full"
+                      style={{ 
+                        backgroundColor: selectedOrg?.accentColor,
+                        color: 'white'
+                      }}
+                      className="hover:opacity-90 w-full"
                       onClick={handleWalkInSubmit}
                       disabled={markAttendanceMutation.isPending || !walkInData.name || !walkInData.email}
                     >
@@ -468,10 +553,15 @@ export default function CoachClasses() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge style={{ backgroundColor: selectedOrg?.primaryColor }} className="text-white">
+                          <Badge 
+                            style={{ 
+                              backgroundColor: selectedOrg?.accentColor,
+                              color: 'white'
+                            }}
+                          >
                             Walk-in
                           </Badge>
-                          <div className="text-sm text-slate-600 mt-1">
+                          <div className="text-sm mt-1" style={{ color: selectedOrg?.primaryColor }}>
                             {walkIn.paymentMethod} - {formatCurrency(Number(walkIn.amountPaid || 0))}
                           </div>
                         </div>
