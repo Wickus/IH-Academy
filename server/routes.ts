@@ -2219,11 +2219,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/bookings/:id/move", async (req: Request, res: Response) => {
     try {
       const bookingId = parseInt(req.params.id);
-      const { classId } = req.body;
+      const { classId, reason } = req.body;
       
+      // Get original booking details for email
+      const originalBooking = await storage.getBooking(bookingId);
+      if (!originalBooking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      // Get old and new class details
+      const oldClass = await storage.getClass(originalBooking.classId);
+      const newClass = await storage.getClass(classId);
+      
+      if (!oldClass || !newClass) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+      
+      // Update booking
       const updatedBooking = await storage.updateBooking(bookingId, { classId });
       if (!updatedBooking) {
         return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      // Send email notification to client
+      try {
+        await sendBookingMoveEmail({
+          to: originalBooking.participantEmail,
+          participantName: originalBooking.participantName,
+          oldClass: {
+            name: oldClass.name,
+            startTime: oldClass.startTime,
+            location: oldClass.location
+          },
+          newClass: {
+            name: newClass.name,
+            startTime: newClass.startTime,
+            location: newClass.location
+          },
+          reason: reason,
+          organizationName: oldClass.organization?.name || 'Sports Academy'
+        });
+      } catch (emailError) {
+        console.error("Error sending booking move email:", emailError);
+        // Don't fail the request if email fails
       }
       
       res.json(updatedBooking);
