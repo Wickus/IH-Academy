@@ -1,16 +1,23 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Download, Mail, Phone, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Download, Mail, Phone, Calendar, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { formatDateTime, formatCurrency, getPaymentStatusColor, getTimeAgo } from "@/lib/utils";
 
 export default function Bookings() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedClass, setSelectedClass] = useState("");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: ['/api/auth/me'],
@@ -32,11 +39,66 @@ export default function Bookings() {
     enabled: !!organization,
   });
 
+  const { data: classes = [] } = useQuery({
+    queryKey: ["/api/classes"],
+    queryFn: () => api.getClasses(),
+    enabled: !!organization,
+  });
+
   const filteredBookings = bookings.filter(booking =>
     booking.participantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     booking.participantEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
     booking.class?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Get available classes for move booking - only classes with same cost
+  const getAvailableClasses = (currentBooking: any) => {
+    if (!currentBooking || !classes) return [];
+    return classes.filter(c => 
+      c.id !== currentBooking.classId && 
+      Number(c.price) === Number(currentBooking.amount) &&
+      new Date(c.startTime) > new Date() // Only future classes
+    );
+  };
+
+  const moveBookingMutation = useMutation({
+    mutationFn: async ({ bookingId, newClassId }: { bookingId: number; newClassId: number }) => {
+      const response = await fetch(`/api/bookings/${bookingId}/move`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newClassId }),
+      });
+      if (!response.ok) throw new Error('Failed to move booking');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      toast({
+        title: "Booking Moved",
+        description: "The booking has been successfully moved to the new class.",
+      });
+      setSelectedBooking(null);
+      setSelectedClass("");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to move booking. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleMoveBooking = () => {
+    if (selectedBooking && selectedClass) {
+      moveBookingMutation.mutate({
+        bookingId: selectedBooking.id,
+        newClassId: parseInt(selectedClass),
+      });
+    }
+  };
 
   const handleDownloadIcal = async (bookingId: number) => {
     try {
@@ -131,8 +193,16 @@ export default function Bookings() {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{booking.class?.name}</div>
-                        <Badge variant="outline" className="text-xs">
+                        <div className="font-medium" style={{ color: organization.primaryColor }}>{booking.class?.name}</div>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs" 
+                          style={{ 
+                            backgroundColor: `${organization.secondaryColor}15`,
+                            borderColor: organization.secondaryColor,
+                            color: organization.secondaryColor
+                          }}
+                        >
                           {booking.sport?.name}
                         </Badge>
                       </div>
@@ -152,7 +222,17 @@ export default function Bookings() {
                     <TableCell>
                       <Badge 
                         variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
-                        className={`bg-${getPaymentStatusColor(booking.paymentStatus)}/10 text-${getPaymentStatusColor(booking.paymentStatus)} border-${getPaymentStatusColor(booking.paymentStatus)}/20`}
+                        style={{
+                          backgroundColor: booking.paymentStatus === 'confirmed' 
+                            ? `${organization.accentColor}20` 
+                            : `${organization.secondaryColor}15`,
+                          color: booking.paymentStatus === 'confirmed' 
+                            ? organization.accentColor 
+                            : organization.secondaryColor,
+                          borderColor: booking.paymentStatus === 'confirmed' 
+                            ? `${organization.accentColor}50` 
+                            : `${organization.secondaryColor}30`
+                        }}
                       >
                         {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                       </Badge>
@@ -168,17 +248,113 @@ export default function Bookings() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDownloadIcal(booking.id)}
-                          className="text-[#278DD4] border-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                          style={{
+                            color: organization.primaryColor,
+                            borderColor: organization.primaryColor,
+                          }}
+                          className="hover:text-white"
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.primaryColor}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <Download className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-[#24D367] border-[#24D367] hover:bg-[#24D367] hover:text-white"
+                          style={{
+                            color: organization.accentColor,
+                            borderColor: organization.accentColor,
+                          }}
+                          className="hover:text-white"
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.accentColor}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <Calendar className="h-4 w-4" />
                         </Button>
+                        {user?.role === 'organization_admin' && getAvailableClasses(booking).length > 0 && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                style={{
+                                  color: organization.secondaryColor,
+                                  borderColor: organization.secondaryColor,
+                                }}
+                                className="hover:text-white"
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.secondaryColor}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                onClick={() => setSelectedBooking(booking)}
+                              >
+                                <ArrowRight className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                              <DialogHeader>
+                                <DialogTitle style={{ color: organization.primaryColor }}>
+                                  Move Booking
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <div>
+                                  <label className="text-sm font-medium" style={{ color: organization.primaryColor }}>
+                                    Current Class: {booking.class?.name}
+                                  </label>
+                                  <p className="text-sm text-muted-foreground">
+                                    {booking.participantName} - {formatCurrency(Number(booking.amount))}
+                                  </p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium mb-2 block" style={{ color: organization.primaryColor }}>
+                                    Move to Class:
+                                  </label>
+                                  <Select value={selectedClass} onValueChange={setSelectedClass}>
+                                    <SelectTrigger 
+                                      style={{ 
+                                        borderColor: organization.secondaryColor,
+                                        '&:focus': { borderColor: organization.primaryColor }
+                                      }}
+                                    >
+                                      <SelectValue placeholder="Select a new class..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {getAvailableClasses(booking).map((cls) => (
+                                        <SelectItem 
+                                          key={cls.id} 
+                                          value={cls.id.toString()}
+                                          style={{
+                                            '&:hover': { backgroundColor: `${organization.secondaryColor}15` }
+                                          }}
+                                        >
+                                          {cls.name} - {formatDateTime(cls.startTime)} - {formatCurrency(Number(cls.price))}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex justify-end space-x-2">
+                                  <Button variant="outline" onClick={() => {
+                                    setSelectedBooking(null);
+                                    setSelectedClass("");
+                                  }}>
+                                    Cancel
+                                  </Button>
+                                  <Button 
+                                    onClick={handleMoveBooking}
+                                    disabled={!selectedClass || moveBookingMutation.isPending}
+                                    style={{ 
+                                      backgroundColor: organization.accentColor,
+                                      borderColor: organization.accentColor 
+                                    }}
+                                    className="hover:opacity-90"
+                                  >
+                                    {moveBookingMutation.isPending ? 'Moving...' : 'Move Booking'}
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
