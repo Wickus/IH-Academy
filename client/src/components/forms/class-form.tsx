@@ -174,9 +174,6 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     placeholder="e.g., Youth Basketball Training" 
                     {...field} 
                     className="border-slate-300"
-                    style={{
-                      '--tw-ring-color': organization.secondaryColor,
-                    }}
                     onFocus={(e) => {
                       e.target.style.borderColor = organization.secondaryColor;
                       e.target.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
@@ -200,7 +197,17 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                 <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Sport *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
+                    <SelectTrigger 
+                      className="border-slate-300 text-slate-900"
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = organization.secondaryColor;
+                        e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgb(203 213 225)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
                       <SelectValue placeholder="Select a sport" className="text-slate-900" />
                     </SelectTrigger>
                   </FormControl>
@@ -226,7 +233,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#20366B] font-medium">Description</FormLabel>
+              <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Description</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Describe the class objectives, skill level, and what participants can expect..."
@@ -448,7 +455,16 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           <Button 
             type="submit" 
             disabled={isSubmitting || createClassMutation.isPending || updateClassMutation.isPending}
-            className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+            className="text-white border-0 shadow-lg"
+            style={{ 
+              backgroundColor: organization.accentColor,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = organization.secondaryColor;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = organization.accentColor;
+            }}
           >
             {isSubmitting || createClassMutation.isPending || updateClassMutation.isPending 
               ? (initialData?.id ? "Updating..." : "Creating...") 
