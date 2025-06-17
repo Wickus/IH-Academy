@@ -16,6 +16,8 @@ export default function Bookings() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [selectedClass, setSelectedClass] = useState("");
+  const [moveReason, setMoveReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -78,13 +80,13 @@ export default function Bookings() {
   };
 
   const moveBookingMutation = useMutation({
-    mutationFn: async ({ bookingId, newClassId }: { bookingId: number; newClassId: number }) => {
+    mutationFn: async ({ bookingId, newClassId, reason }: { bookingId: number; newClassId: number; reason: string }) => {
       const response = await fetch(`/api/bookings/${bookingId}/move`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ classId: newClassId }),
+        body: JSON.stringify({ classId: newClassId, reason }),
       });
       if (!response.ok) throw new Error('Failed to move booking');
       return response.json();
@@ -93,10 +95,12 @@ export default function Bookings() {
       queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
       toast({
         title: "Booking Moved",
-        description: "The booking has been successfully moved to the new class.",
+        description: "The booking has been successfully moved and the client has been notified.",
       });
       setSelectedBooking(null);
       setSelectedClass("");
+      setMoveReason("");
+      setCustomReason("");
     },
     onError: () => {
       toast({
@@ -108,10 +112,15 @@ export default function Bookings() {
   });
 
   const handleMoveBooking = () => {
-    if (selectedBooking && selectedClass) {
+    if (selectedBooking && selectedClass && moveReason) {
+      const finalReason = moveReason === 'other' ? customReason : 
+                         moveReason === 'inappropriate' ? `Class not appropriate for ${selectedBooking.participantName}` :
+                         'Make Up Class';
+      
       moveBookingMutation.mutate({
         bookingId: selectedBooking.id,
         newClassId: parseInt(selectedClass),
+        reason: finalReason,
       });
     }
   };
@@ -353,6 +362,69 @@ export default function Bookings() {
                                     </SelectContent>
                                   </Select>
                                 </div>
+                                <div>
+                                  <label className="text-sm font-medium mb-2 block" style={{ color: organization.primaryColor }}>
+                                    Reason for Move:
+                                  </label>
+                                  <Select value={moveReason} onValueChange={setMoveReason}>
+                                    <SelectTrigger 
+                                      style={{ 
+                                        borderColor: organization.secondaryColor
+                                      }}
+                                      className="focus:border-opacity-100"
+                                      onFocus={(e) => e.currentTarget.style.borderColor = organization.primaryColor}
+                                      onBlur={(e) => e.currentTarget.style.borderColor = organization.secondaryColor}
+                                    >
+                                      <SelectValue placeholder="Select reason..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem 
+                                        value="inappropriate"
+                                        className="hover:bg-opacity-10"
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = `${organization.secondaryColor}15`}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                      >
+                                        Class not appropriate for {selectedBooking?.participantName}
+                                      </SelectItem>
+                                      <SelectItem 
+                                        value="makeup"
+                                        className="hover:bg-opacity-10"
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = `${organization.secondaryColor}15`}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                      >
+                                        Make Up Class
+                                      </SelectItem>
+                                      <SelectItem 
+                                        value="other"
+                                        className="hover:bg-opacity-10"
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = `${organization.secondaryColor}15`}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                      >
+                                        Other
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  {moveReason === 'other' && (
+                                    <div className="mt-2">
+                                      <label className="text-sm font-medium mb-1 block" style={{ color: organization.primaryColor }}>
+                                        Custom Reason:
+                                      </label>
+                                      <textarea
+                                        className="w-full p-2 border rounded-md text-sm resize-none"
+                                        style={{ 
+                                          borderColor: organization.secondaryColor,
+                                          outline: 'none'
+                                        }}
+                                        onFocus={(e) => e.currentTarget.style.borderColor = organization.primaryColor}
+                                        onBlur={(e) => e.currentTarget.style.borderColor = organization.secondaryColor}
+                                        rows={3}
+                                        value={customReason}
+                                        onChange={(e) => setCustomReason(e.target.value)}
+                                        placeholder="Please provide a reason for moving this booking..."
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                                 <div className="flex justify-end space-x-2">
                                   <Button 
                                     variant="outline" 
@@ -372,7 +444,7 @@ export default function Bookings() {
                                   </Button>
                                   <Button 
                                     onClick={handleMoveBooking}
-                                    disabled={!selectedClass || moveBookingMutation.isPending}
+                                    disabled={!selectedClass || !moveReason || (moveReason === 'other' && !customReason.trim()) || moveBookingMutation.isPending}
                                     style={{ 
                                       backgroundColor: organization.accentColor,
                                       borderColor: organization.accentColor 
