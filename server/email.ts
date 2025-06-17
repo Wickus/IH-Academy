@@ -284,3 +284,144 @@ export async function sendCoachAssignmentEmail(
     return false;
   }
 }
+
+export async function sendBookingMoveEmail(params: {
+  to: string;
+  participantName: string;
+  oldClass: {
+    name: string;
+    startTime: Date;
+    location: string | null;
+  };
+  newClass: {
+    name: string;
+    startTime: Date;
+    location: string | null;
+  };
+  reason: string;
+  organizationName: string;
+}): Promise<boolean> {
+  const { to, participantName, oldClass, newClass, reason, organizationName } = params;
+  
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-ZA', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Africa/Johannesburg'
+    }).format(date);
+  };
+
+  const subject = `Your Booking Has Been Moved - ${newClass.name}`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Booking Update</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">ItsHappening.Africa</h1>
+          <p style="color: #ffffff; opacity: 0.95; margin: 8px 0 0 0; font-size: 16px;">Booking Update Notification</p>
+        </div>
+        
+        <div style="padding: 40px 30px;">
+          <h2 style="color: #ea580c; margin: 0 0 20px 0; font-size: 24px;">Your Booking Has Been Moved</h2>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Dear ${participantName},</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">We need to inform you that your booking has been moved to a different class.</p>
+          
+          <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+            <h3 style="margin-top: 0; color: #92400e; font-size: 18px;">Reason for Change:</h3>
+            <p style="margin-bottom: 0; color: #92400e; font-size: 16px;">${reason}</p>
+          </div>
+
+          <div style="margin: 30px 0;">
+            <div style="background-color: #fee2e2; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+              <h4 style="margin-top: 0; color: #dc2626; font-size: 16px;">Previous Class</h4>
+              <p style="margin: 8px 0; color: #374151;"><strong>Class:</strong> ${oldClass.name}</p>
+              <p style="margin: 8px 0; color: #374151;"><strong>Date & Time:</strong> ${formatDate(oldClass.startTime)}</p>
+              ${oldClass.location ? `<p style="margin: 8px 0; color: #374151;"><strong>Location:</strong> ${oldClass.location}</p>` : ''}
+            </div>
+            
+            <div style="background-color: #dcfce7; padding: 20px; border-radius: 8px;">
+              <h4 style="margin-top: 0; color: #16a34a; font-size: 16px;">New Class</h4>
+              <p style="margin: 8px 0; color: #374151;"><strong>Class:</strong> ${newClass.name}</p>
+              <p style="margin: 8px 0; color: #374151;"><strong>Date & Time:</strong> ${formatDate(newClass.startTime)}</p>
+              ${newClass.location ? `<p style="margin: 8px 0; color: #374151;"><strong>Location:</strong> ${newClass.location}</p>` : ''}
+            </div>
+          </div>
+
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Your booking details remain the same, only the class has changed. Please make sure to attend the new class at the updated time and location.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">If you have any questions or concerns about this change, please don't hesitate to contact us.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Thank you for your understanding.</p>
+          <p style="color: #374151; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">Best regards,<br><strong>${organizationName} Team</strong></p>
+        </div>
+        
+        <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            This email was sent by ItsHappening.Africa on behalf of ${organizationName}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+    Booking Update - ${organizationName}
+    
+    Dear ${participantName},
+    
+    We need to inform you that your booking has been moved to a different class.
+    
+    Reason for Change: ${reason}
+    
+    Previous Class:
+    - Class: ${oldClass.name}
+    - Date & Time: ${formatDate(oldClass.startTime)}
+    ${oldClass.location ? `- Location: ${oldClass.location}` : ''}
+    
+    New Class:
+    - Class: ${newClass.name}
+    - Date & Time: ${formatDate(newClass.startTime)}
+    ${newClass.location ? `- Location: ${newClass.location}` : ''}
+    
+    Your booking details remain the same, only the class has changed. Please make sure to attend the new class at the updated time and location.
+    
+    If you have any questions or concerns about this change, please don't hesitate to contact us.
+    
+    Thank you for your understanding.
+    
+    Best regards,
+    The ${organizationName} Team
+    
+    --
+    This email was sent by ItsHappening.Africa on behalf of ${organizationName}
+  `;
+
+  try {
+    const emailSent = await sendEmail({
+      to,
+      from: 'info@itshappening.africa',
+      subject,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    if (emailSent) {
+      console.log(`Booking move email successfully sent to ${to}`);
+    }
+    
+    return emailSent;
+  } catch (error) {
+    console.error('Booking move email failed:', error);
+    return false;
+  }
+}
