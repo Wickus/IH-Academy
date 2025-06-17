@@ -188,7 +188,7 @@ export default function Coaches() {
                   initialData={{
                     name: editingCoach.user?.name || '',
                     email: editingCoach.user?.email || '',
-                    phone: editingCoach.phone || '',
+                    phone: editingCoach.user?.phone || '',
                     bio: editingCoach.bio || '',
                     specializations: editingCoach.specializations || [],
                     hourlyRate: editingCoach.hourlyRate || 0,
@@ -251,13 +251,21 @@ export default function Coaches() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {coaches.map((coach) => (
           <Card key={coach.id} className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white p-6">
+            <CardHeader 
+              className="text-white p-6"
+              style={{ 
+                background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` 
+              }}
+            >
               <div className="flex items-center space-x-4">
                 <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
                   {coach.profilePicture ? (
                     <img src={coach.profilePicture} alt={coach.user?.name} className="h-full w-full object-cover" />
                   ) : (
-                    <AvatarFallback className="bg-[#24D367] text-white text-lg font-bold">
+                    <AvatarFallback 
+                      className="text-white text-lg font-bold"
+                      style={{ backgroundColor: organization.accentColor }}
+                    >
                       {coach.user?.name?.split(' ').map((n: string) => n[0]).join('') || 'C'}
                     </AvatarFallback>
                   )}
@@ -278,17 +286,32 @@ export default function Coaches() {
               <div className="space-y-4">
                 {coach.user?.email && (
                   <div className="flex items-center text-sm text-slate-700">
-                    <Mail className="mr-2 h-4 w-4 text-[#278DD4]" />
+                    <Mail 
+                      className="mr-2 h-4 w-4" 
+                      style={{ color: organization.secondaryColor }}
+                    />
                     <span className="text-slate-600">{coach.user.email}</span>
                   </div>
                 )}
 
                 {coach.specializations && coach.specializations.length > 0 && (
                   <div>
-                    <p className="text-sm font-semibold mb-2 text-[#20366B]">Specializations</p>
+                    <p 
+                      className="text-sm font-semibold mb-2"
+                      style={{ color: organization.primaryColor }}
+                    >
+                      Specializations
+                    </p>
                     <div className="flex flex-wrap gap-1">
                       {coach.specializations.map((spec: string, index: number) => (
-                        <Badge key={index} className="bg-[#24D3BF] text-[#20366B] hover:bg-[#1fb5a3] text-xs font-medium">
+                        <Badge 
+                          key={index} 
+                          className="text-xs font-medium"
+                          style={{ 
+                            backgroundColor: organization.accentColor,
+                            color: organization.primaryColor 
+                          }}
+                        >
                           {spec}
                         </Badge>
                       ))}
@@ -298,7 +321,12 @@ export default function Coaches() {
 
                 {coach.bio && (
                   <div>
-                    <p className="text-sm font-semibold mb-2 text-[#20366B]">About</p>
+                    <p 
+                      className="text-sm font-semibold mb-2"
+                      style={{ color: organization.primaryColor }}
+                    >
+                      About
+                    </p>
                     <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
                       {coach.bio}
                     </p>
@@ -306,21 +334,52 @@ export default function Coaches() {
                 )}
 
                 {coach.hourlyRate && (
-                  <div className="bg-gradient-to-r from-[#24D367]/10 to-[#24D3BF]/10 p-3 rounded-lg border border-[#24D367]/20">
+                  <div 
+                    className="p-3 rounded-lg border"
+                    style={{ 
+                      background: `linear-gradient(to right, ${organization.accentColor}10, ${organization.secondaryColor}10)`,
+                      borderColor: `${organization.accentColor}30`
+                    }}
+                  >
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-slate-600 font-medium">Hourly Rate</span>
-                      <span className="font-bold text-[#20366B] text-lg">R{Number(coach.hourlyRate).toFixed(0)}</span>
+                      <span 
+                        className="font-bold text-lg"
+                        style={{ color: organization.primaryColor }}
+                      >
+                        R{Number(coach.hourlyRate).toFixed(0)}
+                      </span>
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-2 pt-4">
                   <div className="flex gap-2">
-                    <Button size="sm" className="flex-1 bg-[#278DD4] hover:bg-[#1f7bc4] text-white border-0">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 text-white border-0"
+                      style={{ 
+                        backgroundColor: organization.secondaryColor
+                      }}
+                      onClick={() => {
+                        // TODO: Navigate to coach schedule
+                        console.log('Navigate to coach schedule for:', coach.id);
+                      }}
+                    >
                       <Calendar className="mr-1 h-4 w-4" />
                       Schedule
                     </Button>
-                    <Button size="sm" className="flex-1 bg-[#24D367] hover:bg-[#1fb557] text-white border-0">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 text-white border-0"
+                      style={{ 
+                        backgroundColor: organization.accentColor
+                      }}
+                      onClick={() => {
+                        // TODO: Navigate to coach's classes
+                        console.log('Navigate to coach classes for:', coach.id);
+                      }}
+                    >
                       <Users className="mr-1 h-4 w-4" />
                       Classes
                     </Button>
@@ -331,7 +390,10 @@ export default function Coaches() {
                       setEditingCoach(coach);
                       setShowEditDialog(true);
                     }}
-                    className="w-full bg-[#20366B] hover:bg-[#1a2c57] text-white border-0"
+                    className="w-full text-white border-0"
+                    style={{ 
+                      backgroundColor: organization.primaryColor
+                    }}
                   >
                     <Edit className="mr-2 h-4 w-4" />
                     Edit Coach Details
