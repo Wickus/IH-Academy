@@ -20,6 +20,7 @@ import {
 import { formatTime, formatDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import ClassForm from "@/components/forms/class-form";
+import AvailabilityForm from "@/components/forms/availability-form";
 
 export default function CoachAvailability() {
   const [location, setLocation] = useLocation();
@@ -381,42 +382,17 @@ export default function CoachAvailability() {
                     Set Availability
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle style={{ color: organization.primaryColor }}>
                       Set Weekly Availability
                     </DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <p className="text-sm text-slate-600">
-                      Configure your weekly availability schedule. This feature will be fully implemented in the next update.
-                    </p>
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={() => setShowAvailabilityDialog(false)}
-                        variant="outline"
-                        style={{
-                          borderColor: organization.secondaryColor,
-                          color: organization.secondaryColor
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        onClick={() => {
-                          setShowAvailabilityDialog(false);
-                          toast({
-                            title: "Availability Updated",
-                            description: "Your availability preferences have been saved.",
-                          });
-                        }}
-                        style={{ backgroundColor: organization.accentColor }}
-                        className="text-white"
-                      >
-                        Save Changes
-                      </Button>
-                    </div>
-                  </div>
+                  <AvailabilityForm
+                    coachId={coachId}
+                    organization={organization}
+                    onSuccess={() => setShowAvailabilityDialog(false)}
+                  />
                 </DialogContent>
               </Dialog>
             </div>
@@ -426,42 +402,20 @@ export default function CoachAvailability() {
 
       {/* Edit Availability Dialog */}
       <Dialog open={!!editingAvailability} onOpenChange={() => setEditingAvailability(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle style={{ color: organization.primaryColor }}>
               Edit {editingAvailability?.day} Availability
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <p className="text-sm text-slate-600">
-              Update availability for {editingAvailability?.day}. This feature will be fully implemented in the next update.
-            </p>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => setEditingAvailability(null)}
-                variant="outline"
-                style={{
-                  borderColor: organization.secondaryColor,
-                  color: organization.secondaryColor
-                }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  setEditingAvailability(null);
-                  toast({
-                    title: "Availability Updated",
-                    description: `${editingAvailability?.day} availability has been updated.`,
-                  });
-                }}
-                style={{ backgroundColor: organization.accentColor }}
-                className="text-white"
-              >
-                Update Availability
-              </Button>
-            </div>
-          </div>
+          {editingAvailability && (
+            <AvailabilityForm
+              coachId={coachId}
+              initialData={editingAvailability}
+              organization={organization}
+              onSuccess={() => setEditingAvailability(null)}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
