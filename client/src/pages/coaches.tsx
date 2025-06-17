@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, Star, Users, Calendar, Plus, Edit, UserPlus, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Mail, Phone, Star, Users, Calendar, Plus, Edit, UserPlus, Clock, CheckCircle, XCircle, Trash2 } from "lucide-react";
 import CoachForm from "@/components/forms/coach-form";
 import CoachInvitationForm from "@/components/forms/coach-invitation-form";
 
@@ -47,6 +47,29 @@ export default function Coaches() {
       return response.json();
     },
     enabled: !!organization?.id,
+  });
+
+  const deleteInvitationMutation = useMutation({
+    mutationFn: async (invitationId: number) => {
+      const response = await fetch(`/api/coach-invitations/${invitationId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!response.ok) throw new Error("Failed to delete invitation");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/coach-invitations"] });
+      toast({ title: "Invitation deleted successfully" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   if (isLoading || !organization) {

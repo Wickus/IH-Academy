@@ -73,6 +73,7 @@ export interface IStorage {
   getCoachInvitationsByOrganization(organizationId: number): Promise<CoachInvitation[]>;
   getCoachInvitationByToken(token: string): Promise<CoachInvitation | undefined>;
   updateCoachInvitation(id: number, invitation: Partial<InsertCoachInvitation>): Promise<CoachInvitation | undefined>;
+  deleteCoachInvitation(id: number): Promise<boolean>;
 
   // Coach Availability
   getCoachAvailabilityByOrganization(organizationId: number): Promise<CoachAvailability[]>;
@@ -435,6 +436,11 @@ export class DatabaseStorage implements IStorage {
   async updateCoachInvitation(id: number, invitation: Partial<InsertCoachInvitation>): Promise<CoachInvitation | undefined> {
     const [updatedInvitation] = await db.update(coachInvitations).set(invitation).where(eq(coachInvitations.id, id)).returning();
     return updatedInvitation || undefined;
+  }
+
+  async deleteCoachInvitation(id: number): Promise<boolean> {
+    const result = await db.delete(coachInvitations).where(eq(coachInvitations.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   // Coach Availability methods

@@ -1123,6 +1123,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/coach-invitations/:id", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+
+      const invitationId = parseInt(req.params.id);
+      if (isNaN(invitationId)) {
+        return res.status(400).json({ message: "Invalid invitation ID" });
+      }
+
+      // Verify the invitation belongs to the user's organization
+      const userOrgs = await storage.getUserOrganizations(user.id);
+      if (userOrgs.length === 0) {
+        return res.status(400).json({ message: "No organization found for user" });
+      }
+      
+      const organizationId = userOrgs[0].organizationId;
+      const invitations = await storage.getCoachInvitationsByOrganization(organizationId);
+      const targetInvitation = invitations.find(inv => inv.id === invitationId);
+      
+      if (!targetInvitation) {
+        return res.status(404).json({ message: "Invitation not found or access denied" });
+      }
+
+      // Delete the invitation
+      await storage.deleteCoachInvitation(invitationId);
+      
+      res.json({ message: "Invitation deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting coach invitation:", error);
+      res.status(500).json({ message: "Failed to delete coach invitation" });
+    }
+  });
+
   app.get("/api/coach-invitations/:token", async (req: Request, res: Response) => {
     try {
       const { token } = req.params;
