@@ -39,8 +39,8 @@ export default function CoachForm({ onSuccess, initialData, isEdit = false, edit
   const form = useForm<CoachFormData>({
     resolver: zodResolver(coachFormSchema),
     defaultValues: {
-      name: initialData?.user?.name || "",
-      email: initialData?.user?.email || "",
+      name: initialData?.displayName || initialData?.user?.name || "",
+      email: initialData?.contactEmail || initialData?.user?.email || "",
       bio: initialData?.bio || "",
       specializations: initialData?.specializations?.join(", ") || "",
       hourlyRate: initialData?.hourlyRate?.toString() || "",
