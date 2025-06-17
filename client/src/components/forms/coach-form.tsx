@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { useOrganization } from "@/contexts/organization-context";
 
 const coachFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -33,6 +34,7 @@ interface CoachFormProps {
 export default function CoachForm({ onSuccess, initialData, isEdit = false, editId }: CoachFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { organization } = useOrganization();
 
   const form = useForm<CoachFormData>({
     resolver: zodResolver(coachFormSchema),
@@ -261,7 +263,8 @@ export default function CoachForm({ onSuccess, initialData, isEdit = false, edit
           <Button 
             type="submit" 
             disabled={isSubmitting || createCoachMutation.isPending}
-            className="bg-[#24D367] hover:bg-[#1fb557] text-white border-0 shadow-lg"
+            className="text-white border-0 shadow-lg"
+            style={{ backgroundColor: organization?.accentColor || '#24D367' }}
           >
             {isSubmitting || createCoachMutation.isPending 
               ? "Creating..." 
