@@ -1554,7 +1554,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         attendanceData.participantPhone = walkInData.phone;
         attendanceData.isWalkIn = true;
         attendanceData.paymentMethod = walkInData.paymentMethod || 'cash';
-        attendanceData.amountPaid = walkInData.amountPaid;
+        attendanceData.amountPaid = walkInData.amountPaid ? parseFloat(walkInData.amountPaid) : null;
         
         // For walk-ins, also create a user account if email provided and doesn't exist
         if (walkInData.email) {
