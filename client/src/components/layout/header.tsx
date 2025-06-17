@@ -101,14 +101,19 @@ export default function Header() {
     setLocation("/notifications");
   };
 
+  // For coaches, use ItsHappening.Africa colors instead of organization colors
+  const isCoach = user?.role === 'coach';
+  const primaryColor = isCoach ? '#20366B' : (organization?.primaryColor || '#20366B');
+  const secondaryColor = isCoach ? '#278DD4' : (organization?.secondaryColor || '#278DD4');
+
   return (
     <header 
       className="shadow-lg px-4 lg:px-8 py-4"
       style={{
         background: user?.role === 'global_admin' 
           ? 'linear-gradient(to right, #20366B, #278DD4)'
-          : `linear-gradient(to right, ${organization?.primaryColor || '#20366B'}, ${organization?.secondaryColor || '#278DD4'})`,
-        borderBottom: `1px solid ${organization?.secondaryColor || '#278DD4'}20`
+          : `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`,
+        borderBottom: `1px solid ${secondaryColor}20`
       }}
     >
       <div className="flex items-center justify-between">
@@ -143,7 +148,7 @@ export default function Header() {
                   {unreadCount > 0 && (
                     <span 
                       className="absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                      style={{ backgroundColor: isCoach ? '#24D367' : (organization?.accentColor || '#24D367') }}
                     >
                       {unreadCount}
                     </span>
@@ -153,14 +158,16 @@ export default function Header() {
               <Button 
                 className="text-white shadow-md"
                 style={{ 
-                  backgroundColor: organization?.accentColor || '#24D367',
-                  '--hover-bg': (organization?.accentColor || '#24D367') + '90'
+                  backgroundColor: isCoach ? '#24D367' : (organization?.accentColor || '#24D367'),
+                  '--hover-bg': (isCoach ? '#24D367' : (organization?.accentColor || '#24D367')) + '90'
                 } as React.CSSProperties}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = (organization?.accentColor || '#24D367') + 'E6';
+                  const color = isCoach ? '#24D367' : (organization?.accentColor || '#24D367');
+                  e.currentTarget.style.backgroundColor = color + 'E6';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = organization?.accentColor || '#24D367';
+                  const color = isCoach ? '#24D367' : (organization?.accentColor || '#24D367');
+                  e.currentTarget.style.backgroundColor = color;
                 }}
                 onClick={handleNewClassClick}
               >
