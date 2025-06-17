@@ -69,9 +69,9 @@ Expires: 7 days from now
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
       <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
         <!-- Header -->
-        <div style="background: linear-gradient(135deg, ${organizationColors.primaryColor} 0%, ${organizationColors.secondaryColor} 100%); padding: 40px 30px; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">ItsHappening.Africa</h1>
-          <p style="color: rgba(255, 255, 255, 0.9); margin: 8px 0 0 0; font-size: 16px;">Sports Academy Management Platform</p>
+        <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); padding: 40px 30px; text-align: center;">
+          <h1 style="color: #ffffff !important; margin: 0; font-size: 28px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">ItsHappening.Africa</h1>
+          <p style="color: #ffffff !important; opacity: 0.95; margin: 8px 0 0 0; font-size: 16px;">Sports Academy Management Platform</p>
         </div>
         
         <!-- Content -->
@@ -101,16 +101,17 @@ Expires: 7 days from now
           <!-- Call to Action Button -->
           <div style="text-align: center; margin: 40px 0;">
             <a href="${invitationLink}" 
-               style="background: linear-gradient(135deg, ${organizationColors.accentColor} 0%, ${organizationColors.secondaryColor} 100%); 
-                      color: white; 
+               style="background: linear-gradient(135deg, #24D367 0%, #278DD4 100%); 
+                      color: #ffffff !important; 
                       text-decoration: none; 
                       padding: 16px 32px; 
                       border-radius: 8px; 
                       font-weight: bold; 
                       font-size: 16px; 
                       display: inline-block; 
-                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                      transition: transform 0.2s;">
+                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+                      border: 2px solid #24D367;
+                      text-shadow: 0 1px 2px rgba(0,0,0,0.1);">
               Complete Your Registration
             </a>
           </div>
