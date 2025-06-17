@@ -80,6 +80,22 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     }
   }
 
+  // Member Interface (check first to prevent fallthrough)
+  if (user?.role === 'member') {
+    return (
+      <Switch>
+        <Route path="/" component={UserDashboard} />
+        <Route path="/dashboard" component={UserDashboard} />
+        <Route path="/discover" component={PublicDiscovery} />
+        <Route path="/book" component={PublicBooking} />
+        <Route path="/organizations/:id" component={PublicBooking} />
+        <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+        <Route path="/achievements" component={Achievements} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   // Global Admin Interface
   if (user?.role === 'global_admin') {
     return (
@@ -221,21 +237,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     );
   }
 
-  // Member Interface  
-  if (user?.role === 'member') {
-    return (
-      <Switch>
-        <Route path="/" component={UserDashboard} />
-        <Route path="/dashboard" component={UserDashboard} />
-        <Route path="/discover" component={PublicDiscovery} />
-        <Route path="/book" component={PublicBooking} />
-        <Route path="/organizations/:id" component={PublicBooking} />
-        <Route path="/organizations/:id/classes" component={OrganizationClasses} />
-        <Route path="/achievements" component={Achievements} />
-        <Route component={NotFound} />
-      </Switch>
-    );
-  }
+
 
   // Fallback for any other authenticated user
   if (user) {
