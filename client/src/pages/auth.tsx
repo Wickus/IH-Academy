@@ -103,7 +103,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(['/api/auth/me'], user);
-      toast({ title: "Welcome back!", description: `Logged in as ${user.firstName} ${user.lastName}` });
+      toast({ title: "Welcome back!", description: `Logged in as ${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user as any).name}` });
       if (onAuthSuccess) {
         onAuthSuccess(user);
       } else {
