@@ -191,6 +191,10 @@ export default function CoachInvitationForm({ onSuccess, organization }: CoachIn
               variant="outline"
               onClick={addSpecialization}
               disabled={!specializationsInput.trim()}
+              style={{ 
+                borderColor: organization?.accentColor || '#fbbf24',
+                color: organization?.accentColor || '#fbbf24'
+              }}
             >
               Add
             </Button>
@@ -198,7 +202,11 @@ export default function CoachInvitationForm({ onSuccess, organization }: CoachIn
           {specializations.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {specializations.map((spec, index) => (
-                <Badge key={index} variant="secondary" className="gap-1">
+                <Badge 
+                  key={index} 
+                  className="gap-1 text-white border-0" 
+                  style={{ backgroundColor: organization?.accentColor || '#fbbf24' }}
+                >
                   {spec}
                   <X
                     className="h-3 w-3 cursor-pointer hover:text-red-500"
