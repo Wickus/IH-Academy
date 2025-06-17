@@ -666,15 +666,18 @@ export class DatabaseStorage implements IStorage {
     const classIds = orgClasses.map(c => c.id);
 
     // Get bookings for organization's classes
-    const orgBookings = classIds.length > 0 
-      ? await db.select().from(bookings).where(inArray(bookings.classId, classIds))
-      : [];
+    let orgBookings: any[] = [];
+    if (classIds.length > 0) {
+      for (const classId of classIds) {
+        const classBookings = await db.select().from(bookings).where(eq(bookings.classId, classId));
+        orgBookings.push(...classBookings);
+      }
+    }
 
-    // Get payments for organization's bookings
-    const bookingIds = orgBookings.map(b => b.id);
-    const orgPayments = bookingIds.length > 0
-      ? await db.select().from(payments).where(and(...bookingIds.map(id => eq(payments.bookingId, id))))
-      : [];
+    // Calculate revenue from booking amounts (since we don't have separate payments table entries)
+    const totalRevenue = orgBookings
+      .filter(b => b.paymentStatus === 'confirmed')
+      .reduce((sum, b) => sum + parseFloat(b.amount), 0);
 
     // Get coaches
     const [coachCount] = await db.select({ count: count() }).from(coaches).where(eq(coaches.organizationId, organizationId));
@@ -686,7 +689,7 @@ export class DatabaseStorage implements IStorage {
     return {
       totalBookings: orgBookings.length,
       activeClasses: orgClasses.filter(c => c.startTime > now).length,
-      totalRevenue: orgPayments.reduce((sum, p) => sum + parseFloat(p.amount), 0),
+      totalRevenue,
       totalCoaches: coachCount.count,
       activeCoaches: coachCount.count, // Assuming all coaches are active
       upcomingClasses: orgClasses.filter(c => c.startTime > now).length,
