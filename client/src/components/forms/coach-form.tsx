@@ -50,15 +50,18 @@ export default function CoachForm({ onSuccess, initialData, isEdit = false, edit
 
   // Reset form when initialData changes
   useEffect(() => {
+    console.log('CoachForm initialData:', initialData);
     if (initialData) {
-      form.reset({
+      const formData = {
         name: initialData.displayName || initialData.user?.name || "",
         email: initialData.contactEmail || initialData.user?.email || "",
         bio: initialData.bio || "",
         specializations: initialData.specializations?.join(", ") || "",
         hourlyRate: initialData.hourlyRate?.toString() || "",
         phone: initialData.phone || "",
-      });
+      };
+      console.log('Setting form data:', formData);
+      form.reset(formData);
     }
   }, [initialData, form]);
 
