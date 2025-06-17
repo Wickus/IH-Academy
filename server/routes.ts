@@ -1071,7 +1071,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         academyId: coachData.organizationId, // Map organizationId to academyId for the coaches table
         organizationId: coachData.organizationId,
         bio: coachData.bio,
-        specializations: coachData.specializations,
+        specializations: Array.isArray(coachData.specializations) ? 
+          coachData.specializations : 
+          (typeof coachData.specializations === 'string' ? 
+            coachData.specializations.split(',').map(s => s.trim()).filter(s => s.length > 0) : 
+            []),
         hourlyRate: coachData.hourlyRate,
         phone: coachData.phone,
         profilePicture: coachData.profilePicture
