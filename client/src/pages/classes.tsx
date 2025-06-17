@@ -205,7 +205,8 @@ export default function Classes() {
                   <CardTitle className="text-lg text-[#20366B]">{classItem.name}</CardTitle>
                   <Badge 
                     variant="secondary" 
-                    className="bg-[#278DD4] text-white border-0"
+                    className="text-white border-0"
+                    style={{ backgroundColor: organization?.primaryColor || '#278DD4' }}
                   >
                     {classItem.sport?.name}
                   </Badge>
