@@ -112,6 +112,59 @@ export default function Bookings() {
     },
   });
 
+  const paymentReminderMutation = useMutation({
+    mutationFn: async (bookingId: number) => {
+      const response = await fetch(`/api/bookings/${bookingId}/send-payment-reminder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error('Failed to send payment reminder');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Payment Reminder Sent",
+        description: "The payment reminder has been sent to the client's email.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to send payment reminder. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const cancelBookingMutation = useMutation({
+    mutationFn: async (bookingId: number) => {
+      const response = await fetch(`/api/bookings/${bookingId}/cancel-for-non-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error('Failed to cancel booking');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      toast({
+        title: "Booking Cancelled",
+        description: "The booking has been cancelled and the client has been notified.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to cancel booking. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleMoveBooking = () => {
     if (selectedBooking && selectedClass && moveReason) {
       const finalReason = moveReason === 'other' ? customReason : 
@@ -461,6 +514,47 @@ export default function Bookings() {
                               </div>
                             </DialogContent>
                           </Dialog>
+                        )}
+                        {/* Payment follow-up buttons for pending bookings */}
+                        {user?.role === 'organization_admin' && booking.paymentStatus === 'pending' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              title="Send Payment Reminder"
+                              onClick={() => paymentReminderMutation.mutate(booking.id)}
+                              disabled={paymentReminderMutation.isPending}
+                              style={{
+                                color: organization.accentColor,
+                                borderColor: organization.accentColor,
+                              }}
+                              className="hover:text-white"
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.accentColor}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
+                              <CreditCard className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              title="Cancel Booking for Non-Payment"
+                              onClick={() => {
+                                if (confirm('Are you sure you want to cancel this booking due to non-payment? The client will be notified by email.')) {
+                                  cancelBookingMutation.mutate(booking.id);
+                                }
+                              }}
+                              disabled={cancelBookingMutation.isPending}
+                              style={{
+                                color: '#dc2626',
+                                borderColor: '#dc2626',
+                              }}
+                              className="hover:text-white"
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </>
                         )}
                       </div>
                     </TableCell>
