@@ -667,7 +667,7 @@ export class DatabaseStorage implements IStorage {
 
     // Get bookings for organization's classes
     const orgBookings = classIds.length > 0 
-      ? await db.select().from(bookings).where(and(...classIds.map(id => eq(bookings.classId, id))))
+      ? await db.select().from(bookings).where(inArray(bookings.classId, classIds))
       : [];
 
     // Get payments for organization's bookings

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarCheck, Users, Coins, Presentation, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useOrganization } from "@/contexts/organization-context";
 import type { DashboardStats } from "@/lib/api";
 
 interface StatsCardsProps {
@@ -9,7 +10,8 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
-  if (!stats) return null;
+  const { organization } = useOrganization();
+  if (!stats || !organization) return null;
 
   const statsData = [
     {
@@ -17,9 +19,9 @@ export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
       value: stats.totalBookings.toString(),
       change: "+12% from last month",
       icon: CalendarCheck,
-      color: "from-blue-600 to-blue-500",
-      iconBg: "bg-blue-50",
-      iconColor: "text-blue-700",
+      color: `linear-gradient(to bottom right, ${organization.primaryColor}, ${organization.secondaryColor})`,
+      iconBg: "bg-white/20",
+      iconColor: "text-white",
       cardType: "bookings",
     },
     {
@@ -27,9 +29,9 @@ export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
       value: stats.activeClasses.toString(),
       subtitle: `${stats.upcomingClasses} starting today`,
       icon: Users,
-      color: "from-green-600 to-green-500",
-      iconBg: "bg-emerald-50",
-      iconColor: "text-emerald-700",
+      color: `linear-gradient(to bottom right, ${organization.secondaryColor}, ${organization.accentColor})`,
+      iconBg: "bg-white/20",
+      iconColor: "text-white",
       cardType: "classes",
     },
     {
@@ -37,8 +39,8 @@ export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
       value: formatCurrency(stats.totalRevenue),
       change: "+8% from last month",
       icon: Coins,
-      color: "from-[#24D3BF] to-[#22C4B0]",
-      iconBg: "bg-gradient-to-br from-[#24D3BF] to-[#22C4B0]",
+      color: `linear-gradient(to bottom right, ${organization.accentColor}, ${organization.primaryColor})`,
+      iconBg: "bg-white/20",
       iconColor: "text-white",
       cardType: "payments",
     },
@@ -47,7 +49,7 @@ export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
       value: stats.totalCoaches.toString(),
       subtitle: `${stats.activeCoaches} active today`,
       icon: Presentation,
-      color: "from-indigo-600 to-indigo-500",
+      color: `linear-gradient(to bottom right, ${organization.primaryColor}88, ${organization.secondaryColor}88)`,
       iconBg: "bg-slate-50",
       iconColor: "text-slate-700",
       cardType: "coaches",
@@ -62,25 +64,26 @@ export default function StatsCards({ stats, onCardClick }: StatsCardsProps) {
         return (
           <Card 
             key={index} 
-            className="bg-white/70 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105 group cursor-pointer"
+            className="text-white shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105 group cursor-pointer rounded-lg"
+            style={{ background: stat.color }}
             onClick={() => onCardClick?.(stat.cardType)}
           >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">{stat.title}</p>
-                  <p className="text-3xl font-bold text-slate-800 mt-2 mb-1">{stat.value}</p>
+                  <p className="text-sm font-semibold text-white/80 uppercase tracking-wide">{stat.title}</p>
+                  <p className="text-3xl font-bold text-white mt-2 mb-1">{stat.value}</p>
                   {stat.change && (
                     <div className="flex items-center space-x-1">
-                      <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
-                      <p className="text-sm font-medium text-emerald-700">
+                      <div className="w-2 h-2 bg-white/30 rounded-full"></div>
+                      <p className="text-sm font-medium text-white/90">
                         <TrendingUp className="inline h-3 w-3 mr-1" />
                         {stat.change}
                       </p>
                     </div>
                   )}
                   {stat.subtitle && (
-                    <p className="text-sm text-slate-500 mt-1 font-medium">{stat.subtitle}</p>
+                    <p className="text-sm text-white/80 mt-1 font-medium">{stat.subtitle}</p>
                   )}
                 </div>
                 <div className={`w-14 h-14 ${stat.iconBg} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
