@@ -15,6 +15,21 @@ import RealTimeNotifications from "@/components/real-time-notifications";
 export default function Classes() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingClass, setEditingClass] = useState<any>(null);
+  const [coachFilter, setCoachFilter] = useState<string | null>(null);
+  const [coachName, setCoachName] = useState<string>("");
+  const [location, setLocation] = useLocation();
+
+  // Check for coach filter in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const coachId = urlParams.get('coach');
+    const coachNameParam = urlParams.get('coachName');
+    
+    if (coachId) {
+      setCoachFilter(coachId);
+      setCoachName(coachNameParam ? decodeURIComponent(coachNameParam) : 'Selected Coach');
+    }
+  }, [location]);
 
   const { data: user } = useQuery({
     queryKey: ['/api/auth/me'],
@@ -40,6 +55,17 @@ export default function Classes() {
     queryKey: ["/api/sports"],
     queryFn: api.getSports,
   });
+
+  // Filter classes by coach if filter is active
+  const filteredClasses = coachFilter 
+    ? classes.filter(cls => cls.coachId === parseInt(coachFilter))
+    : classes;
+
+  const clearCoachFilter = () => {
+    setCoachFilter(null);
+    setCoachName("");
+    setLocation('/classes');
+  };
 
   if (isLoading || !organization) {
     return (
@@ -75,6 +101,26 @@ export default function Classes() {
         <div>
           <h1 className="text-3xl font-bold" style={{ color: organization.primaryColor }}>Classes & Clinics</h1>
           <p className="text-slate-600">Manage your sports classes and training sessions with ItsHappening.Africa</p>
+          {coachFilter && (
+            <div className="flex items-center gap-2 mt-2">
+              <Badge 
+                variant="outline" 
+                className="text-sm"
+                style={{ borderColor: organization.secondaryColor, color: organization.primaryColor }}
+              >
+                <Filter className="mr-1 h-3 w-3" />
+                Showing classes for: {coachName}
+              </Badge>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={clearCoachFilter}
+                className="h-6 w-6 p-0 text-slate-500 hover:text-slate-700"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <RealTimeNotifications userId={user?.id || 1} organizationId={organization.id} />
@@ -129,11 +175,30 @@ export default function Classes() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {classes.map((classItem) => {
-          const sportColor = getSportColor(classItem.sport?.name || '');
-          const isUpcoming = new Date(classItem.startTime) > new Date();
+        {filteredClasses.length === 0 && coachFilter ? (
+          <div className="col-span-full text-center py-12">
+            <div className="text-slate-400 mb-4">
+              <Users className="h-16 w-16 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-600">No classes found</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                {coachName} doesn't have any classes scheduled yet.
+              </p>
+            </div>
+            <Button
+              onClick={clearCoachFilter}
+              variant="outline"
+              className="mt-4"
+              style={{ borderColor: organization.secondaryColor, color: organization.primaryColor }}
+            >
+              View All Classes
+            </Button>
+          </div>
+        ) : (
+          filteredClasses.map((classItem) => {
+            const sportColor = getSportColor(classItem.sport?.name || '');
+            const isUpcoming = new Date(classItem.startTime) > new Date();
 
-          return (
+            return (
             <Card key={classItem.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -216,8 +281,9 @@ export default function Classes() {
                 </div>
               </CardContent>
             </Card>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
       {classes.length === 0 && (
