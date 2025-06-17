@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Calendar, Clock, Users, Settings, Edit } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Calendar, Clock, Users, Settings, Edit, CheckCircle, XCircle, User, UserPlus } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -28,6 +29,17 @@ export default function CoachProfile() {
     specializations: "",
     experience: "",
     phone: "",
+  });
+
+  // Attendance state
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
+  const [walkInData, setWalkInData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    paymentMethod: 'cash',
+    amountPaid: ''
   });
 
   const { data: user } = useQuery({
@@ -70,6 +82,20 @@ export default function CoachProfile() {
   const coachClasses = classes.filter(c => c.coachId === coach?.id);
   const coachAvailability = availability.filter((a: any) => a.coachId === coach?.id);
 
+  // Get attendance for selected class
+  const { data: attendance = [] } = useQuery({
+    queryKey: ["/api/attendance", selectedClassId],
+    queryFn: () => selectedClassId ? api.getAttendance(selectedClassId) : Promise.resolve([]),
+    enabled: !!selectedClassId,
+  });
+
+  // Get bookings for selected class
+  const { data: classBookings = [] } = useQuery({
+    queryKey: ["/api/bookings", "class", selectedClassId],
+    queryFn: () => selectedClassId ? api.getBookings({ classId: selectedClassId }) : Promise.resolve([]),
+    enabled: !!selectedClassId,
+  });
+
   const updateProfileMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await fetch(`/api/coaches/${coach?.id}`, {
@@ -98,6 +124,74 @@ export default function CoachProfile() {
       });
     },
   });
+
+  // Attendance mutations
+  const markAttendanceMutation = useMutation({
+    mutationFn: async ({ classId, bookingId, status, walkInData, notes }: any) => {
+      const response = await fetch('/api/attendance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classId, bookingId, status, walkInData, notes }),
+      });
+      if (!response.ok) throw new Error('Failed to mark attendance');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      toast({
+        title: "Attendance Marked",
+        description: "Attendance has been recorded successfully.",
+      });
+      setWalkInData({ name: '', email: '', phone: '', paymentMethod: 'cash', amountPaid: '' });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to mark attendance. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleMarkAttendance = (bookingId: number, status: 'present' | 'absent') => {
+    if (!selectedClassId) return;
+    
+    markAttendanceMutation.mutate({
+      classId: selectedClassId,
+      bookingId,
+      status,
+      notes: null
+    });
+  };
+
+  const handleWalkInSubmit = () => {
+    if (!walkInData.name || !walkInData.email) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide at least name and email for walk-in client.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedClassId) return;
+    
+    markAttendanceMutation.mutate({
+      classId: selectedClassId,
+      status: 'present',
+      walkInData: {
+        ...walkInData,
+        amountPaid: walkInData.amountPaid ? parseFloat(walkInData.amountPaid) : 0
+      },
+      notes: null
+    });
+  };
+
+  const openAttendance = (classId: number) => {
+    setSelectedClassId(classId);
+    setIsAttendanceOpen(true);
+  };
 
   const handleUpdateProfile = () => {
     updateProfileMutation.mutate({
@@ -365,6 +459,7 @@ export default function CoachProfile() {
                         <TableHead style={{ color: organization.primaryColor }}>Schedule</TableHead>
                         <TableHead style={{ color: organization.primaryColor }}>Capacity</TableHead>
                         <TableHead style={{ color: organization.primaryColor }}>Price</TableHead>
+                        <TableHead style={{ color: organization.primaryColor }}>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
