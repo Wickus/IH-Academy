@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Search, Download, Mail, Phone, Calendar, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateTime, formatCurrency, getPaymentStatusColor, getTimeAgo } from "@/lib/utils";
@@ -269,51 +270,80 @@ export default function Bookings() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDownloadIcal(booking.id)}
-                          style={{
-                            color: organization.primaryColor,
-                            borderColor: organization.primaryColor,
-                          }}
-                          className="hover:text-white"
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.primaryColor}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          style={{
-                            color: organization.accentColor,
-                            borderColor: organization.accentColor,
-                          }}
-                          className="hover:text-white"
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.accentColor}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </Button>
-                        {user?.role === 'organization_admin' && getAvailableClasses(booking).length > 0 && (
-                          <Dialog>
-                            <DialogTrigger asChild>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDownloadIcal(booking.id)}
+                                style={{
+                                  color: organization.primaryColor,
+                                  borderColor: organization.primaryColor,
+                                }}
+                                className="hover:text-white"
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.primaryColor}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Download Calendar Event</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 style={{
-                                  color: organization.secondaryColor,
-                                  borderColor: organization.secondaryColor,
+                                  color: organization.accentColor,
+                                  borderColor: organization.accentColor,
                                 }}
                                 className="hover:text-white"
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.secondaryColor}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.accentColor}
                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                onClick={() => setSelectedBooking(booking)}
                               >
-                                <ArrowRight className="h-4 w-4" />
+                                <Calendar className="h-4 w-4" />
                               </Button>
-                            </DialogTrigger>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Reschedule Booking</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        {user?.role === 'organization_admin' && getAvailableClasses(booking).length > 0 && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  style={{
+                                    color: organization.secondaryColor,
+                                    borderColor: organization.secondaryColor,
+                                  }}
+                                  className="hover:text-white"
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.secondaryColor}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                  onClick={() => setSelectedBooking(booking)}
+                                >
+                                  <ArrowRight className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Move Booking</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                        
+                        {/* Move Booking Dialog */}
+                        {selectedBooking?.id === booking.id && (
+                          <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
                             <DialogContent 
                               className="sm:max-w-[425px]"
                               style={{ borderColor: organization.secondaryColor }}
@@ -456,7 +486,14 @@ export default function Bookings() {
                                 </div>
                               </div>
                             </DialogContent>
-                          </Dialog>
+                                  </Dialog>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Move Booking</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
                       </div>
                     </TableCell>
