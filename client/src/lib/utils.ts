@@ -45,11 +45,11 @@ export function getTimeAgo(date: Date | string): string {
   const past = new Date(date);
   const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
-  if (diffInSeconds < 60) {
-    return `${diffInSeconds} seconds ago`;
-  }
-
   const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 1) {
+    return 'Just now';
+  }
+  
   if (diffInMinutes < 60) {
     return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
   }
