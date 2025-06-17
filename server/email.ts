@@ -177,7 +177,7 @@ Expires: 7 days from now
   try {
     const emailSent = await sendEmail({
       to: coachEmail,
-      from: 'test@example.com',
+      from: 'info@itshappening.africa',
       subject,
       text: textContent,
       html: htmlContent,
