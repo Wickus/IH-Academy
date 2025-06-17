@@ -66,16 +66,65 @@ export default function CoachAvailability() {
     enabled: !!coachId && !!organization?.id,
   });
 
-  // Mock availability data for now - can be replaced with real API later
+  // Fetch real availability data from the server
+  const { data: availabilityData = [] } = useQuery({
+    queryKey: ['/api/coach-availability', coachId],
+    queryFn: async () => {
+      const response = await fetch(`/api/coach-availability/${organization?.id || 1}`);
+      if (!response.ok) throw new Error('Failed to fetch availability');
+      return response.json();
+    },
+    enabled: !!organization?.id && !!coachId,
+  });
+
+  // Transform availability data to display format with fallback defaults
   const weeklyAvailability = [
-    { id: 1, day: 'Monday', times: '9:00 AM - 5:00 PM', available: true },
-    { id: 2, day: 'Tuesday', times: '9:00 AM - 5:00 PM', available: true },
-    { id: 3, day: 'Wednesday', times: '9:00 AM - 5:00 PM', available: true },
-    { id: 4, day: 'Thursday', times: '9:00 AM - 5:00 PM', available: true },
-    { id: 5, day: 'Friday', times: '9:00 AM - 5:00 PM', available: true },
-    { id: 6, day: 'Saturday', times: '10:00 AM - 2:00 PM', available: true },
-    { id: 7, day: 'Sunday', times: 'Not Available', available: false },
-  ];
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+  ].map((day, index) => {
+    const dayAvailability = availabilityData.find((a: any) => a.day === day && a.coachId === parseInt(coachId));
+    
+    if (dayAvailability) {
+      const formatTime = (time24: string) => {
+        if (!time24) return '';
+        const [hours, minutes] = time24.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+        return `${displayHour}:${minutes} ${ampm}`;
+      };
+
+      const startTime = formatTime(dayAvailability.startTime);
+      const endTime = formatTime(dayAvailability.endTime);
+      const times = dayAvailability.isAvailable && startTime && endTime 
+        ? `${startTime} - ${endTime}` 
+        : 'Not Available';
+
+      return {
+        id: dayAvailability.id || index + 1,
+        day,
+        times,
+        available: dayAvailability.isAvailable,
+        startTime: dayAvailability.startTime,
+        endTime: dayAvailability.endTime,
+        breakStartTime: dayAvailability.breakStartTime,
+        breakEndTime: dayAvailability.breakEndTime,
+        notes: dayAvailability.notes
+      };
+    }
+    
+    // Default availability for days without specific settings
+    return {
+      id: index + 1,
+      day,
+      times: day === 'Sunday' ? 'Not Available' : '9:00 AM - 5:00 PM',
+      available: day !== 'Sunday',
+      startTime: day !== 'Sunday' ? '09:00' : '',
+      endTime: day !== 'Sunday' ? '17:00' : '',
+      breakStartTime: '',
+      breakEndTime: '',
+      notes: ''
+    };
+  });
 
   // Mutation for deleting/canceling a class
   const deleteClassMutation = useMutation({
