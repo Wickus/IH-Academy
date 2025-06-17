@@ -12,6 +12,11 @@ interface RealTimeAvailabilityProps {
   initialAvailableSpots: number;
   totalSpots: number;
   userId?: number;
+  organization?: {
+    primaryColor: string;
+    secondaryColor: string;
+    accentColor: string;
+  };
 }
 
 export default function RealTimeAvailability({
@@ -19,7 +24,8 @@ export default function RealTimeAvailability({
   className,
   initialAvailableSpots,
   totalSpots,
-  userId
+  userId,
+  organization
 }: RealTimeAvailabilityProps) {
   const [availableSpots, setAvailableSpots] = useState(initialAvailableSpots);
   const [isConnected, setIsConnected] = useState(false);
@@ -139,11 +145,18 @@ export default function RealTimeAvailability({
   const { status, variant, color } = getAvailabilityStatus();
 
   return (
-    <div className="bg-gradient-to-r from-slate-50 to-blue-50 border border-[#278DD4]/20 rounded-lg p-3">
+    <div 
+      className="bg-gradient-to-r from-slate-50 rounded-lg p-3"
+      style={{ 
+        backgroundImage: `linear-gradient(to right, rgb(248 250 252), ${organization?.secondaryColor}20)`,
+        borderColor: `${organization?.secondaryColor}30`,
+        border: '1px solid'
+      }}
+    >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-[#278DD4]" />
-          <span className="text-sm font-medium text-[#20366B]">Live Availability</span>
+          <Users className="h-4 w-4" style={{ color: organization?.secondaryColor || '#278DD4' }} />
+          <span className="text-sm font-medium" style={{ color: organization?.primaryColor || '#20366B' }}>Live Availability</span>
         </div>
         <div className="flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#24D367]' : 'bg-red-500'} animate-pulse`} />
@@ -164,7 +177,7 @@ export default function RealTimeAvailability({
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-slate-600">Available Spots</p>
-            <p className="text-lg font-bold text-[#20366B]">
+            <p className="text-lg font-bold" style={{ color: organization?.primaryColor || '#20366B' }}>
               {availableSpots} / {totalSpots}
             </p>
           </div>
@@ -173,7 +186,19 @@ export default function RealTimeAvailability({
             variant="outline"
             size="sm"
             onClick={toggleSubscription}
-            className="flex items-center gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white text-xs"
+            className="flex items-center gap-1 hover:text-white text-xs"
+            style={{
+              borderColor: organization?.secondaryColor || '#278DD4',
+              color: organization?.secondaryColor || '#278DD4'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = organization?.secondaryColor || '#278DD4';
+              e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = organization?.secondaryColor || '#278DD4';
+            }}
           >
             {isSubscribed ? <BellOff className="h-3 w-3" /> : <Bell className="h-3 w-3" />}
             {isSubscribed ? "Disable" : "Enable"}
@@ -188,8 +213,11 @@ export default function RealTimeAvailability({
           </div>
           <div className="w-full bg-slate-200 rounded-full h-2">
             <div 
-              className="h-2 rounded-full transition-all duration-500 bg-gradient-to-r from-[#24D367] to-[#278DD4]"
-              style={{ width: `${((totalSpots - availableSpots) / totalSpots) * 100}%` }}
+              className="h-2 rounded-full transition-all duration-500"
+              style={{ 
+                width: `${((totalSpots - availableSpots) / totalSpots) * 100}%`,
+                backgroundImage: `linear-gradient(to right, ${organization?.accentColor || '#24D367'}, ${organization?.primaryColor || '#278DD4'})`
+              }}
             />
           </div>
         </div>
@@ -197,7 +225,7 @@ export default function RealTimeAvailability({
         {/* Recent Activity */}
         {recentBookings.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium text-[#20366B]">Recent Activity</p>
+            <p className="text-sm font-medium" style={{ color: organization?.primaryColor || '#20366B' }}>Recent Activity</p>
             <div className="space-y-1">
               {recentBookings.map((booking, index) => (
                 <p key={index} className="text-xs text-slate-600 bg-slate-100 p-2 rounded">
