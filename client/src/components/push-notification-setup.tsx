@@ -20,22 +20,9 @@ export default function PushNotificationSetup({ onComplete, onDismiss }: PushNot
   const { toast } = useToast();
 
   useEffect(() => {
-    // Only check notification support when the component is mounted
-    const initializeNotifications = async () => {
-      setIsLoading(true);
-      
-      const supported = await pushNotificationService.initialize();
-      setIsSupported(supported);
-      
-      if (supported) {
-        setIsSubscribed(pushNotificationService.isSubscribed());
-        setPermission(Notification.permission);
-      }
-      
-      setIsLoading(false);
-    };
-
-    initializeNotifications();
+    // Notifications temporarily disabled
+    setIsLoading(false);
+    setIsSupported(false);
   }, []);
 
 
