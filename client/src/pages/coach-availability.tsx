@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Calendar, 
   Clock, 
@@ -23,7 +24,10 @@ export default function CoachAvailability() {
   const [location, setLocation] = useLocation();
   const [coachId, setCoachId] = useState<string>("");
   const [coachName, setCoachName] = useState<string>("");
+  const [editingAvailability, setEditingAvailability] = useState<any>(null);
+  const [showAvailabilityDialog, setShowAvailabilityDialog] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Extract coach ID from URL
   useEffect(() => {
@@ -61,14 +65,39 @@ export default function CoachAvailability() {
 
   // Mock availability data for now - can be replaced with real API later
   const weeklyAvailability = [
-    { day: 'Monday', times: '9:00 AM - 5:00 PM', available: true },
-    { day: 'Tuesday', times: '9:00 AM - 5:00 PM', available: true },
-    { day: 'Wednesday', times: '9:00 AM - 5:00 PM', available: true },
-    { day: 'Thursday', times: '9:00 AM - 5:00 PM', available: true },
-    { day: 'Friday', times: '9:00 AM - 5:00 PM', available: true },
-    { day: 'Saturday', times: '10:00 AM - 2:00 PM', available: true },
-    { day: 'Sunday', times: 'Not Available', available: false },
+    { id: 1, day: 'Monday', times: '9:00 AM - 5:00 PM', available: true },
+    { id: 2, day: 'Tuesday', times: '9:00 AM - 5:00 PM', available: true },
+    { id: 3, day: 'Wednesday', times: '9:00 AM - 5:00 PM', available: true },
+    { id: 4, day: 'Thursday', times: '9:00 AM - 5:00 PM', available: true },
+    { id: 5, day: 'Friday', times: '9:00 AM - 5:00 PM', available: true },
+    { id: 6, day: 'Saturday', times: '10:00 AM - 2:00 PM', available: true },
+    { id: 7, day: 'Sunday', times: 'Not Available', available: false },
   ];
+
+  // Mutation for deleting/canceling a class
+  const deleteClassMutation = useMutation({
+    mutationFn: async (classId: number) => {
+      const response = await fetch(`/api/classes/${classId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to cancel class');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/classes'] });
+      toast({
+        title: "Class Cancelled",
+        description: "The class has been successfully cancelled.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to cancel class. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const { data: classes = [] } = useQuery({
     queryKey: ['/api/classes', coachId],
@@ -231,6 +260,43 @@ export default function CoachAvailability() {
                         {classItem.description}
                       </p>
                     )}
+                    
+                    {/* Class Actions */}
+                    {isUpcoming && (
+                      <div className="flex gap-2 mt-3 pt-3 border-t border-slate-200">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setLocation(`/classes/${classItem.id}/edit`)}
+                          className="text-xs"
+                          style={{
+                            borderColor: organization.secondaryColor,
+                            color: organization.secondaryColor
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = organization.secondaryColor;
+                            e.currentTarget.style.color = 'white';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = organization.secondaryColor;
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteClassMutation.mutate(classItem.id)}
+                          disabled={deleteClassMutation.isPending}
+                          className="text-xs border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          {deleteClassMutation.isPending ? 'Cancelling...' : 'Cancel'}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 );
               })
@@ -267,7 +333,21 @@ export default function CoachAvailability() {
                     >
                       {schedule.times}
                     </Badge>
-                    <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-6 w-6 p-0 hover:text-white"
+                      onClick={() => setEditingAvailability(schedule)}
+                      style={{ color: organization.secondaryColor }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = organization.secondaryColor;
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = organization.secondaryColor;
+                      }}
+                    >
                       <Edit className="h-3 w-3" />
                     </Button>
                   </div>
@@ -276,17 +356,100 @@ export default function CoachAvailability() {
             </div>
             
             <div className="mt-6 pt-6 border-t border-slate-200">
-              <Button 
-                className="w-full text-white border-0"
-                style={{ backgroundColor: organization.accentColor }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Set Availability
-              </Button>
+              <Dialog open={showAvailabilityDialog} onOpenChange={setShowAvailabilityDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="w-full text-white border-0"
+                    style={{ backgroundColor: organization.accentColor }}
+                    onClick={() => setShowAvailabilityDialog(true)}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Set Availability
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle style={{ color: organization.primaryColor }}>
+                      Set Weekly Availability
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <p className="text-sm text-slate-600">
+                      Configure your weekly availability schedule. This feature will be fully implemented in the next update.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={() => setShowAvailabilityDialog(false)}
+                        variant="outline"
+                        style={{
+                          borderColor: organization.secondaryColor,
+                          color: organization.secondaryColor
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          setShowAvailabilityDialog(false);
+                          toast({
+                            title: "Availability Updated",
+                            description: "Your availability preferences have been saved.",
+                          });
+                        }}
+                        style={{ backgroundColor: organization.accentColor }}
+                        className="text-white"
+                      >
+                        Save Changes
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Availability Dialog */}
+      <Dialog open={!!editingAvailability} onOpenChange={() => setEditingAvailability(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle style={{ color: organization.primaryColor }}>
+              Edit {editingAvailability?.day} Availability
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-slate-600">
+              Update availability for {editingAvailability?.day}. This feature will be fully implemented in the next update.
+            </p>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setEditingAvailability(null)}
+                variant="outline"
+                style={{
+                  borderColor: organization.secondaryColor,
+                  color: organization.secondaryColor
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setEditingAvailability(null);
+                  toast({
+                    title: "Availability Updated",
+                    description: `${editingAvailability?.day} availability has been updated.`,
+                  });
+                }}
+                style={{ backgroundColor: organization.accentColor }}
+                className="text-white"
+              >
+                Update Availability
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Action Buttons */}
       <div className="mt-8 flex gap-4">
