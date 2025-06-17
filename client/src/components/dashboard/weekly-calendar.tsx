@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "@/lib/api";
 import { formatTime, getSportColor } from "@/lib/utils";
+import { useOrganization } from "@/contexts/organization-context";
 import { useState } from "react";
 
 export default function WeeklyCalendar() {
+  const { organization } = useOrganization();
   const [currentDate, setCurrentDate] = useState(new Date());
+  
+  if (!organization) return null;
 
   const { data: allClasses = [] } = useQuery({
     queryKey: ["/api/classes"],
@@ -74,7 +78,21 @@ export default function WeeklyCalendar() {
               variant="ghost" 
               size="sm" 
               onClick={() => navigateWeek('prev')}
-              className="hover:bg-[#278DD4]/10 hover:text-[#278DD4] focus:bg-[#278DD4]/10 focus:text-[#278DD4] focus:outline-none"
+              className="focus:outline-none"
+              style={{
+                '--hover-bg': `${organization.secondaryColor}10`,
+                '--hover-color': organization.secondaryColor,
+                '--focus-bg': `${organization.secondaryColor}10`,
+                '--focus-color': organization.secondaryColor
+              } as React.CSSProperties}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = `${organization.secondaryColor}10`;
+                e.currentTarget.style.color = organization.secondaryColor;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '';
+                e.currentTarget.style.color = '';
+              }}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -85,7 +103,21 @@ export default function WeeklyCalendar() {
               variant="ghost" 
               size="sm" 
               onClick={() => navigateWeek('next')}
-              className="hover:bg-[#278DD4]/10 hover:text-[#278DD4] focus:bg-[#278DD4]/10 focus:text-[#278DD4] focus:outline-none"
+              className="focus:outline-none"
+              style={{
+                '--hover-bg': `${organization.secondaryColor}10`,
+                '--hover-color': organization.secondaryColor,
+                '--focus-bg': `${organization.secondaryColor}10`,
+                '--focus-color': organization.secondaryColor
+              } as React.CSSProperties}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = `${organization.secondaryColor}10`;
+                e.currentTarget.style.color = organization.secondaryColor;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '';
+                e.currentTarget.style.color = '';
+              }}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -101,11 +133,24 @@ export default function WeeklyCalendar() {
             const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             
             return (
-              <div key={index} className={`text-center ${isToday ? 'bg-[#278DD4]/10 rounded-lg p-2 border border-[#278DD4]/20' : ''}`}>
-                <p className={`text-sm font-medium mb-2 ${isToday ? 'text-[#20366B] font-semibold' : 'text-slate-600'}`}>
+              <div 
+                key={index} 
+                className={`text-center ${isToday ? 'rounded-lg p-2 border' : ''}`}
+                style={isToday ? { 
+                  backgroundColor: `${organization.secondaryColor}10`, 
+                  borderColor: `${organization.secondaryColor}20` 
+                } : {}}
+              >
+                <p 
+                  className={`text-sm font-medium mb-2 ${isToday ? 'font-semibold' : 'text-slate-600'}`}
+                  style={isToday ? { color: organization.primaryColor } : {}}
+                >
                   {dayNames[index]}
                 </p>
-                <p className={`text-lg font-bold ${isToday ? 'text-[#278DD4]' : 'text-slate-800'}`}>
+                <p 
+                  className={`text-lg font-bold ${isToday ? '' : 'text-slate-800'}`}
+                  style={isToday ? { color: organization.secondaryColor } : {}}
+                >
                   {day.getDate()}
                 </p>
               </div>
@@ -128,9 +173,13 @@ export default function WeeklyCalendar() {
               return (
                 <div
                   key={classItem.id}
-                  className="flex items-center space-x-4 p-4 bg-slate-50 rounded-lg border-l-4 border-[#278DD4]"
+                  className="flex items-center space-x-4 p-4 bg-slate-50 rounded-lg border-l-4"
+                  style={{ borderLeftColor: organization.secondaryColor }}
                 >
-                  <div className="w-3 h-3 bg-[#278DD4] rounded-full"></div>
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: organization.secondaryColor }}
+                  ></div>
                   <div className="flex-1">
                     <p className="font-medium text-slate-800">{classItem.name}</p>
                     <div className="flex items-center space-x-4 text-sm text-slate-600">
