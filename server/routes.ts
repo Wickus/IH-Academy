@@ -855,6 +855,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bookings routes
+  app.get("/api/coaches", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      let coaches = [];
+      
+      if (user.role === 'global_admin') {
+        // Global admin can see all coaches
+        coaches = await storage.getAllCoaches();
+      } else if (user.role === 'organization_admin') {
+        // Organization admin can see coaches from their organizations
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        for (const userOrg of userOrgs) {
+          const orgCoaches = await storage.getCoachesByOrganization(userOrg.organizationId);
+          coaches.push(...orgCoaches);
+        }
+      } else if (user.role === 'coach') {
+        // Coach can see all coaches (for filtering classes and coordination)
+        coaches = await storage.getAllCoaches();
+      } else {
+        // Members and others can see coaches from organizations they're part of
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        for (const userOrg of userOrgs) {
+          const orgCoaches = await storage.getCoachesByOrganization(userOrg.organizationId);
+          coaches.push(...orgCoaches);
+        }
+      }
+
+      res.json(coaches);
+    } catch (error) {
+      console.error("Error fetching coaches:", error);
+      res.status(500).json({ message: "Failed to fetch coaches" });
+    }
+  });
+
   app.get("/api/bookings", async (req: Request, res: Response) => {
     try {
       const { email, classId, recent, organizationId } = req.query;

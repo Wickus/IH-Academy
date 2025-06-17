@@ -64,6 +64,7 @@ export interface IStorage {
 
   // Coaches
   getCoach(id: number): Promise<Coach | undefined>;
+  getAllCoaches(): Promise<any[]>;
   getCoachesByOrganization(organizationId: number): Promise<Coach[]>;
   createCoach(coach: InsertCoach): Promise<Coach>;
   updateCoach(id: number, coach: Partial<InsertCoach>): Promise<Coach | undefined>;
@@ -391,6 +392,26 @@ export class DatabaseStorage implements IStorage {
   async getCoach(id: number): Promise<Coach | undefined> {
     const [coach] = await db.select().from(coaches).where(eq(coaches.id, id));
     return coach || undefined;
+  }
+
+  async getAllCoaches(): Promise<any[]> {
+    const coachList = await db.select().from(coaches);
+    
+    // Enrich with user data and apply organization-specific overrides
+    const enrichedCoaches = await Promise.all(coachList.map(async (coach) => {
+      const user = await this.getUser(coach.userId);
+      return {
+        ...coach,
+        user: {
+          ...user,
+          // Use organization-specific data if available, otherwise fall back to user data
+          name: coach.displayName || user?.name,
+          email: coach.contactEmail || user?.email
+        },
+      };
+    }));
+
+    return enrichedCoaches;
   }
 
   async getCoachesByOrganization(organizationId: number): Promise<any[]> {
