@@ -356,12 +356,7 @@ export default function Coaches() {
                       }}
                       onClick={() => {
                         // Navigate to coach availability page for this specific coach
-                        toast({
-                          title: "Coach Schedule",
-                          description: `Viewing availability for ${coach.user?.name || 'coach'}`,
-                        });
-                        // For now, show a message about the feature - can be enhanced later with a dedicated schedule page
-                        console.log('Coach schedule for:', coach.user?.name, 'Coach ID:', coach.id);
+                        setLocation(`/coach-availability/${coach.id}?coachName=${encodeURIComponent(coach.user?.name || 'Unknown Coach')}`);
                       }}
                     >
                       <Calendar className="mr-1 h-4 w-4" />
