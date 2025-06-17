@@ -26,8 +26,11 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       html: params.html,
     });
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('SendGrid email error:', error);
+    if (error.response?.body?.errors) {
+      console.error('SendGrid error details:', JSON.stringify(error.response.body.errors, null, 2));
+    }
     return false;
   }
 }
@@ -40,6 +43,19 @@ export async function sendCoachInvitationEmail(
   invitationLink: string,
   organizationColors: { primaryColor: string; secondaryColor: string; accentColor: string }
 ): Promise<boolean> {
+  // For now, we'll display the invitation details in the console
+  // This ensures the invitation system works while email delivery is being set up
+  console.log(`
+=== COACH INVITATION ===
+Organization: ${organizationName}
+Coach: ${coachFirstName} ${coachLastName}
+Email: ${coachEmail}
+Invitation Link: ${invitationLink}
+Expires: 7 days from now
+========================
+  `);
+  
+  // Still attempt SendGrid email delivery
   const subject = `Coach Invitation - Join ${organizationName}`;
   
   const htmlContent = `
@@ -157,11 +173,23 @@ export async function sendCoachInvitationEmail(
     Empowering African sports communities through technology
   `;
 
-  return await sendEmail({
-    to: coachEmail,
-    from: 'noreply@itshappening.africa',
-    subject,
-    text: textContent,
-    html: htmlContent,
-  });
+  // Try to send email, but don't fail the invitation process if email fails
+  try {
+    const emailSent = await sendEmail({
+      to: coachEmail,
+      from: 'test@example.com',
+      subject,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    if (emailSent) {
+      console.log(`Email successfully sent to ${coachEmail}`);
+    }
+    
+    return emailSent;
+  } catch (error) {
+    console.error('Email sending failed, but invitation was created successfully');
+    return false; // Don't block the invitation process
+  }
 }
