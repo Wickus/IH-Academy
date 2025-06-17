@@ -327,7 +327,14 @@ export default function OrganizationDashboard({ user, organization }: Organizati
             {classes && classes.length > 0 ? (
               <div className="space-y-4">
                 {classes.slice(0, 5).map((classItem: any) => (
-                  <div key={classItem.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div 
+                    key={classItem.id} 
+                    className="flex items-center justify-between p-3 rounded-lg border-l-4"
+                    style={{ 
+                      border: `1px solid ${organization.secondaryColor}20`,
+                      borderLeftColor: organization.secondaryColor 
+                    }}
+                  >
                     <div>
                       <p className="font-medium">{classItem.name}</p>
                       <p className="text-sm text-muted-foreground">
