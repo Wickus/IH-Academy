@@ -12,34 +12,20 @@ export default function CoachAvailabilityGeneral() {
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['/api/auth/me'],
     queryFn: () => api.getCurrentUser(),
-    retry: false,
-    staleTime: 5 * 60 * 1000 // 5 minutes
-  });
-
-  const { data: coaches = [], isLoading: coachesLoading } = useQuery({
-    queryKey: ['/api/coaches'],
-    queryFn: () => api.getCoaches(),
-    enabled: !!user?.id,
-    staleTime: 2 * 60 * 1000 // 2 minutes
+    retry: false
   });
 
   const { data: userOrganizations = [], isLoading: organizationsLoading } = useQuery({
     queryKey: ["/api/organizations/my"],
-    queryFn: api.getUserOrganizations,
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000 // 2 minutes
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user
   });
-
-  // Find the coach record for the current user
-  const coachRecord = coaches.find(c => c.userId === user?.id);
 
   const daysOfWeek = [
     'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
   ];
 
-  const isLoading = userLoading || coachesLoading || organizationsLoading;
-
-  if (isLoading) {
+  if (userLoading || organizationsLoading) {
     return (
       <div className="p-6 lg:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
         <div className="flex flex-col space-y-2">
