@@ -115,7 +115,7 @@ export default function Bookings() {
     if (selectedBooking && selectedClass && moveReason) {
       const finalReason = moveReason === 'other' ? customReason : 
                          moveReason === 'inappropriate' ? `Class not appropriate for ${selectedBooking.participantName}` :
-                         'Make Up Class';
+                         moveReason === 'makeup' ? 'Make Up Class' : moveReason;
       
       moveBookingMutation.mutate({
         bookingId: selectedBooking.id,

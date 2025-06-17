@@ -6,7 +6,7 @@ import { payfastService, type PayFastPaymentData } from "./payfast";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { sendCoachInvitationEmail, sendCoachAssignmentEmail } from "./email";
+import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail } from "./email";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -2235,6 +2235,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Class not found" });
       }
       
+      // Get organization details
+      const organization = await storage.getOrganization(oldClass.organizationId);
+      
       // Update booking
       const updatedBooking = await storage.updateBooking(bookingId, { classId });
       if (!updatedBooking) {
@@ -2257,7 +2260,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             location: newClass.location
           },
           reason: reason,
-          organizationName: oldClass.organization?.name || 'Sports Academy'
+          organizationName: organization?.name || 'Sports Academy'
         });
       } catch (emailError) {
         console.error("Error sending booking move email:", emailError);
