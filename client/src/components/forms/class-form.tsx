@@ -216,12 +216,21 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                       <SelectItem 
                         key={sport.id} 
                         value={sport.id.toString()} 
-                        className="text-slate-900"
+                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                        style={{
+                          backgroundColor: 'transparent'
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                         }}
                       >
                         <div className="flex items-center space-x-2">
@@ -285,12 +294,21 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                       <SelectItem 
                         key={coach.id} 
                         value={coach.id.toString()} 
-                        className="text-slate-900"
+                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                        style={{
+                          backgroundColor: 'transparent'
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                         }}
                       >
                         {coach.user?.name || `Coach ${coach.id}`}
@@ -483,48 +501,84 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     <SelectContent className="bg-white border-slate-300">
                       <SelectItem 
                         value="daily" 
-                        className="text-slate-900"
+                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                        style={{
+                          backgroundColor: 'transparent'
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                         }}
                       >
                         Daily
                       </SelectItem>
                       <SelectItem 
                         value="weekly" 
-                        className="text-slate-900"
+                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                        style={{
+                          backgroundColor: 'transparent'
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                         }}
                       >
                         Weekly
                       </SelectItem>
                       <SelectItem 
                         value="biweekly" 
-                        className="text-slate-900"
+                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                        style={{
+                          backgroundColor: 'transparent'
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                         }}
                       >
                         Bi-weekly
                       </SelectItem>
                       <SelectItem 
                         value="monthly" 
-                        className="text-slate-900"
+                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                        style={{
+                          backgroundColor: 'transparent'
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                         }}
                       >
                         Monthly
