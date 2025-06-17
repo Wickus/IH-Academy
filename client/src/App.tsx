@@ -41,6 +41,7 @@ import PaymentSuccess from "@/pages/payment-success";
 import PaymentCancelled from "@/pages/payment-cancelled";
 import CoachRegister from "@/pages/coach-register";
 import CoachAvailability from "@/pages/coach-availability";
+import CoachProfile from "@/pages/coach-profile";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -121,6 +122,11 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/coach-availability/:id" component={() => (
           <AppLayout>
             <CoachAvailability />
+          </AppLayout>
+        )} />
+        <Route path="/coach-profile/:organizationId" component={() => (
+          <AppLayout>
+            <CoachProfile />
           </AppLayout>
         )} />
         <Route path="/memberships" component={() => (
