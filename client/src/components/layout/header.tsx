@@ -155,25 +155,27 @@ export default function Header() {
                   )}
                 </Button>
               </div>
-              <Button 
-                className="text-white shadow-md"
-                style={{ 
-                  backgroundColor: isCoach ? '#24D367' : (organization?.accentColor || '#24D367'),
-                  '--hover-bg': (isCoach ? '#24D367' : (organization?.accentColor || '#24D367')) + '90'
-                } as React.CSSProperties}
-                onMouseEnter={(e) => {
-                  const color = isCoach ? '#24D367' : (organization?.accentColor || '#24D367');
-                  e.currentTarget.style.backgroundColor = color + 'E6';
-                }}
-                onMouseLeave={(e) => {
-                  const color = isCoach ? '#24D367' : (organization?.accentColor || '#24D367');
-                  e.currentTarget.style.backgroundColor = color;
-                }}
-                onClick={handleNewClassClick}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">New Class</span>
-              </Button>
+              {user?.role === 'organization_admin' && (
+                <Button 
+                  className="text-white shadow-md"
+                  style={{ 
+                    backgroundColor: organization?.accentColor || '#24D367',
+                    '--hover-bg': (organization?.accentColor || '#24D367') + '90'
+                  } as React.CSSProperties}
+                  onMouseEnter={(e) => {
+                    const color = organization?.accentColor || '#24D367';
+                    e.currentTarget.style.backgroundColor = color + 'E6';
+                  }}
+                  onMouseLeave={(e) => {
+                    const color = organization?.accentColor || '#24D367';
+                    e.currentTarget.style.backgroundColor = color;
+                  }}
+                  onClick={handleNewClassClick}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">New Class</span>
+                </Button>
+              )}
             </>
           )}
           
