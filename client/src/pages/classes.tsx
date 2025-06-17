@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Users, Clock, MapPin } from "lucide-react";
+import { Plus, Users, Clock, MapPin, Filter, X } from "lucide-react";
 import { formatTime, formatDate, formatCurrency, getSportColor } from "@/lib/utils";
 import ClassForm from "@/components/forms/class-form";
 import RealTimeAvailability from "@/components/real-time-availability";

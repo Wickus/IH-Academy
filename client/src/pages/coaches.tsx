@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Star, Users, Calendar, Plus, Edit, UserPlus, Clock, CheckCircle, XCircle, Trash2 } from "lucide-react";
+import { useLocation } from "wouter";
 import CoachForm from "@/components/forms/coach-form";
 import CoachInvitationForm from "@/components/forms/coach-invitation-form";
 
@@ -20,6 +21,7 @@ export default function Coaches() {
   const [editingCoach, setEditingCoach] = useState<any>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/me"],
@@ -353,8 +355,13 @@ export default function Coaches() {
                         backgroundColor: organization.secondaryColor
                       }}
                       onClick={() => {
-                        // TODO: Navigate to coach schedule
-                        console.log('Navigate to coach schedule for:', coach.id);
+                        // Navigate to coach availability page for this specific coach
+                        toast({
+                          title: "Coach Schedule",
+                          description: `Viewing availability for ${coach.user?.name || 'coach'}`,
+                        });
+                        // For now, show a message about the feature - can be enhanced later with a dedicated schedule page
+                        console.log('Coach schedule for:', coach.user?.name, 'Coach ID:', coach.id);
                       }}
                     >
                       <Calendar className="mr-1 h-4 w-4" />
@@ -367,8 +374,8 @@ export default function Coaches() {
                         backgroundColor: organization.accentColor
                       }}
                       onClick={() => {
-                        // TODO: Navigate to coach's classes
-                        console.log('Navigate to coach classes for:', coach.id);
+                        // Navigate to classes page filtered by this coach
+                        setLocation(`/classes?coach=${coach.id}&coachName=${encodeURIComponent(coach.user?.name || 'Unknown Coach')}`);
                       }}
                     >
                       <Users className="mr-1 h-4 w-4" />

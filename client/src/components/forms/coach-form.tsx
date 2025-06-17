@@ -283,13 +283,13 @@ export default function CoachForm({ onSuccess, initialData, isEdit = false, edit
           </Button>
           <Button 
             type="submit" 
-            disabled={isSubmitting || createCoachMutation.isPending}
+            disabled={isSubmitting || createCoachMutation.isPending || updateCoachMutation.isPending}
             className="text-white border-0 shadow-lg"
             style={{ backgroundColor: organization?.accentColor || '#24D367' }}
           >
-            {isSubmitting || createCoachMutation.isPending 
-              ? "Creating..." 
-              : "Create Coach"
+            {isSubmitting || createCoachMutation.isPending || updateCoachMutation.isPending
+              ? (isEdit ? "Updating..." : "Creating...") 
+              : (isEdit ? "Update Coach" : "Create Coach")
             }
           </Button>
         </div>
