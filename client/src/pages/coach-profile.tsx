@@ -156,10 +156,10 @@ export default function CoachProfile() {
                 className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
               >
-                {user?.name?.charAt(0) || 'C'}
+                {user?.firstName?.charAt(0) || 'C'}
               </div>
               <div>
-                <CardTitle className="text-2xl">{coach.displayName || user?.name}</CardTitle>
+                <CardTitle className="text-2xl">{coach.displayName || `${user?.firstName} ${user?.lastName}`}</CardTitle>
                 <p className="text-white/90">Coach at {organization.name}</p>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function CoachProfile() {
                   className="text-white border-white/30 hover:bg-white/10"
                   onClick={() => {
                     setProfileData({
-                      displayName: coach.displayName || user?.name || "",
+                      displayName: coach.displayName || `${user?.firstName} ${user?.lastName}` || "",
                       bio: coach.bio || "",
                       specializations: coach.specializations || "",
                       experience: coach.experience || "",
@@ -328,10 +328,16 @@ export default function CoachProfile() {
             </CardHeader>
             <CardContent className="p-6">
               <AvailabilityForm 
-                organizationId={Number(organizationId)} 
-                coachId={coach.id}
+                coachId={coach.id.toString()}
                 organization={organization}
-                existingAvailability={coachAvailability}
+                onSuccess={() => {
+                  queryClient.invalidateQueries({ queryKey: ['/api/coach-availability', organizationId] });
+                  toast({
+                    title: "Availability Updated",
+                    description: "Your availability has been updated successfully.",
+                  });
+                }}
+                initialData={coachAvailability}
               />
             </CardContent>
           </Card>
@@ -383,7 +389,7 @@ export default function CoachProfile() {
                             <div className="text-sm">
                               <div>{formatDateTime(classItem.startTime)}</div>
                               <div className="text-slate-500">
-                                {classItem.duration} minutes
+                                Class scheduled
                               </div>
                             </div>
                           </TableCell>
