@@ -486,6 +486,22 @@ export default function CoachAvailability() {
           View {coachName}'s Classes
         </Button>
       </div>
+
+      {/* Edit Class Modal */}
+      <Dialog open={!!editingClass} onOpenChange={() => setEditingClass(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle style={{ color: organization.primaryColor }}>Edit Class</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[75vh] overflow-y-auto pr-2">
+            <ClassForm 
+              sports={sports}
+              initialData={editingClass} 
+              onSuccess={() => setEditingClass(null)} 
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

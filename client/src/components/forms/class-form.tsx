@@ -42,9 +42,24 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { data: organizations = [] } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: async () => {
+      const response = await fetch('/api/organizations/my');
+      if (!response.ok) throw new Error('Failed to fetch organizations');
+      return response.json();
+    }
+  });
+
+  const organization = organizations[0] || {
+    primaryColor: '#20366B',
+    secondaryColor: '#278DD4', 
+    accentColor: '#fbbf24'
+  };
+
   const { data: coaches = [] } = useQuery({
     queryKey: ["/api/coaches"],
-    queryFn: () => api.getCoaches(1), // Default academy
+    queryFn: () => api.getCoaches(organization?.id || 1),
   });
 
   const form = useForm<ClassFormData>({
@@ -153,12 +168,23 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[#20366B] font-medium">Class Name *</FormLabel>
+                <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Class Name *</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="e.g., Youth Basketball Training" 
                     {...field} 
-                    className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                    className="border-slate-300"
+                    style={{
+                      '--tw-ring-color': organization.secondaryColor,
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = organization.secondaryColor;
+                      e.target.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgb(203 213 225)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -171,7 +197,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
             name="sportId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[#20366B] font-medium">Sport *</FormLabel>
+                <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Sport *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
