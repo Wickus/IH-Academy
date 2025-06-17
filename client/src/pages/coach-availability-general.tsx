@@ -9,22 +9,25 @@ import { useLocation } from "wouter";
 export default function CoachAvailabilityGeneral() {
   const [, setLocation] = useLocation();
 
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['/api/auth/me'],
     queryFn: () => api.getCurrentUser(),
-    retry: false
+    retry: false,
+    staleTime: 5 * 60 * 1000 // 5 minutes
   });
 
-  const { data: coaches = [] } = useQuery({
+  const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ['/api/coaches'],
     queryFn: () => api.getCoaches(),
     enabled: !!user?.id,
+    staleTime: 2 * 60 * 1000 // 2 minutes
   });
 
-  const { data: userOrganizations = [] } = useQuery({
+  const { data: userOrganizations = [], isLoading: organizationsLoading } = useQuery({
     queryKey: ["/api/organizations/my"],
     queryFn: api.getUserOrganizations,
     enabled: !!user,
+    staleTime: 2 * 60 * 1000 // 2 minutes
   });
 
   // Find the coach record for the current user
@@ -33,6 +36,26 @@ export default function CoachAvailabilityGeneral() {
   const daysOfWeek = [
     'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
   ];
+
+  const isLoading = userLoading || coachesLoading || organizationsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="p-6 lg:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold text-[#20366B]">Availability Management</h1>
+          <p className="text-slate-600">Manage your availability across all organizations you coach for.</p>
+        </div>
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-12 text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#278DD4] mx-auto mb-4"></div>
+            <h3 className="text-xl font-semibold text-slate-600 mb-2">Loading your availability settings...</h3>
+            <p className="text-slate-500">Please wait while we fetch your coach information.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
