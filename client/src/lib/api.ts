@@ -101,13 +101,21 @@ export interface Booking {
 }
 
 export interface AttendanceRecord {
-  booking: Booking;
-  attendance: {
-    id?: number;
-    status: 'present' | 'absent' | 'pending';
-    markedAt?: string;
-    markedBy?: number;
-  };
+  id: number;
+  classId: number;
+  bookingId?: number;
+  status: 'present' | 'absent' | 'pending';
+  markedAt?: string;
+  markedBy?: number;
+  participantName?: string;
+  participantEmail?: string;
+  participantPhone?: string;
+  participantUserId?: number;
+  isWalkIn?: boolean;
+  paymentMethod?: string;
+  amountPaid?: string;
+  notes?: string;
+  booking?: Booking;
 }
 
 // API functions
@@ -270,9 +278,16 @@ export const api = {
 
   markAttendance: async (attendanceData: {
     classId: number;
-    bookingId: number;
+    bookingId?: number;
     status: 'present' | 'absent';
     markedBy: number;
+    walkInData?: {
+      name: string;
+      email: string;
+      phone?: string;
+      paymentMethod: string;
+      amountPaid: number;
+    };
   }): Promise<any> => {
     const response = await apiRequest('POST', '/api/attendance', attendanceData);
     return response.json();

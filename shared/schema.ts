@@ -155,10 +155,18 @@ export const bookings = pgTable("bookings", {
 export const attendance = pgTable("attendance", {
   id: serial("id").primaryKey(),
   classId: integer("class_id").notNull(),
-  bookingId: integer("booking_id").notNull(),
+  bookingId: integer("booking_id"), // nullable for walk-in clients
   status: text("status").notNull().default("pending"), // present, absent, pending
   markedAt: timestamp("marked_at"),
   markedBy: integer("marked_by"), // coach id
+  participantName: text("participant_name"), // for walk-in clients
+  participantEmail: text("participant_email"), // for walk-in clients
+  participantPhone: text("participant_phone"), // for walk-in clients
+  participantUserId: integer("participant_user_id"), // if walk-in becomes user
+  isWalkIn: boolean("is_walk_in").default(false),
+  paymentMethod: text("payment_method", { enum: ["cash", "card", "transfer"] }),
+  amountPaid: decimal("amount_paid", { precision: 10, scale: 2 }),
+  notes: text("notes"),
 });
 
 export const payments = pgTable("payments", {
