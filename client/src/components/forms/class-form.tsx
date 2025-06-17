@@ -441,15 +441,14 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     className="border-slate-300"
-                    style={{
-                      '--checkbox-checked-bg': organization.secondaryColor,
-                      '--checkbox-checked-border': organization.secondaryColor
-                    } as React.CSSProperties}
-                    data-state={field.value ? 'checked' : 'unchecked'}
+                    style={field.value ? {
+                      backgroundColor: organization.secondaryColor,
+                      borderColor: organization.secondaryColor
+                    } : {}}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel className="text-[#20366B] font-medium">Recurring Class</FormLabel>
+                  <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Recurring Class</FormLabel>
                   <p className="text-sm text-slate-600">
                     This class will repeat according to the schedule pattern
                   </p>
@@ -464,18 +463,72 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
               name="recurrencePattern"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[#20366B] font-medium">Recurrence Pattern</FormLabel>
+                  <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Recurrence Pattern</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
+                      <SelectTrigger 
+                        className="border-slate-300 text-slate-900"
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = organization.secondaryColor;
+                          e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = 'rgb(203 213 225)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      >
                         <SelectValue placeholder="Select recurrence pattern" className="text-slate-900" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-white border-slate-300">
-                      <SelectItem value="daily" className="text-slate-900 hover:bg-slate-100">Daily</SelectItem>
-                      <SelectItem value="weekly" className="text-slate-900 hover:bg-slate-100">Weekly</SelectItem>
-                      <SelectItem value="biweekly" className="text-slate-900 hover:bg-slate-100">Bi-weekly</SelectItem>
-                      <SelectItem value="monthly" className="text-slate-900 hover:bg-slate-100">Monthly</SelectItem>
+                      <SelectItem 
+                        value="daily" 
+                        className="text-slate-900"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        Daily
+                      </SelectItem>
+                      <SelectItem 
+                        value="weekly" 
+                        className="text-slate-900"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        Weekly
+                      </SelectItem>
+                      <SelectItem 
+                        value="biweekly" 
+                        className="text-slate-900"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        Bi-weekly
+                      </SelectItem>
+                      <SelectItem 
+                        value="monthly" 
+                        className="text-slate-900"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        Monthly
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
