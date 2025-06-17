@@ -366,14 +366,14 @@ export default function Coaches() {
           ) : (
             <div className="space-y-4">
               {invitations.map((invitation: any) => (
-                <Card key={invitation.id} className="border-l-4" style={{ borderLeftColor: 
-                  invitation.status === 'pending' ? '#F59E0B' : 
-                  invitation.status === 'accepted' ? '#10B981' : '#EF4444' 
+                <Card key={invitation.id} className="bg-white border-l-4 shadow-sm" style={{ borderLeftColor: 
+                  invitation.status === 'pending' ? organization.secondaryColor : 
+                  invitation.status === 'accepted' ? organization.accentColor : '#EF4444' 
                 }}>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{invitation.firstName} {invitation.lastName}</h3>
+                        <h3 className="font-semibold text-lg text-slate-800">{invitation.firstName} {invitation.lastName}</h3>
                         <p className="text-slate-600">{invitation.email}</p>
                         {invitation.phone && (
                           <p className="text-slate-500 text-sm">{invitation.phone}</p>
@@ -381,7 +381,11 @@ export default function Coaches() {
                         {invitation.specializations && invitation.specializations.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {invitation.specializations.map((spec: string, index: number) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
+                              <Badge 
+                                key={index} 
+                                className="text-xs text-white border-0" 
+                                style={{ backgroundColor: organization.accentColor }}
+                              >
                                 {spec}
                               </Badge>
                             ))}
@@ -392,8 +396,11 @@ export default function Coaches() {
                         <div className="flex items-center gap-2 mb-2">
                           {invitation.status === 'pending' && (
                             <>
-                              <Clock className="h-4 w-4 text-amber-500" />
-                              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                              <Clock className="h-4 w-4" style={{ color: organization.secondaryColor }} />
+                              <Badge 
+                                className="text-white border-0" 
+                                style={{ backgroundColor: organization.secondaryColor }}
+                              >
                                 Pending
                               </Badge>
                               <Button
@@ -409,8 +416,11 @@ export default function Coaches() {
                           )}
                           {invitation.status === 'accepted' && (
                             <>
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              <CheckCircle className="h-4 w-4" style={{ color: organization.accentColor }} />
+                              <Badge 
+                                className="text-white border-0" 
+                                style={{ backgroundColor: organization.accentColor }}
+                              >
                                 Accepted
                               </Badge>
                             </>
