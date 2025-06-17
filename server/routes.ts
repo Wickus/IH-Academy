@@ -1534,7 +1534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: status || 'present',
         markedBy: user.id,
         markedAt: new Date(),
-        notes
+        notes: notes || null
       };
       
       if (bookingId) {
