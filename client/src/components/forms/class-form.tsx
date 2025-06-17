@@ -213,7 +213,17 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                   </FormControl>
                   <SelectContent className="bg-white border-slate-300">
                     {sports.map((sport) => (
-                      <SelectItem key={sport.id} value={sport.id.toString()} className="text-slate-900 hover:bg-slate-100">
+                      <SelectItem 
+                        key={sport.id} 
+                        value={sport.id.toString()} 
+                        className="text-slate-900"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
                         <div className="flex items-center space-x-2">
                           <i className={`${sport.icon} text-sm`} style={{ color: sport.color }}></i>
                           <span>{sport.name}</span>
@@ -253,16 +263,36 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
             name="coachId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[#20366B] font-medium">Coach *</FormLabel>
+                <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Coach *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] text-slate-900">
+                    <SelectTrigger 
+                      className="border-slate-300 text-slate-900"
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = organization.secondaryColor;
+                        e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgb(203 213 225)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
                       <SelectValue placeholder="Select a coach" className="text-slate-900" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white border-slate-300">
                     {coaches.map((coach) => (
-                      <SelectItem key={coach.id} value={coach.id.toString()} className="text-slate-900 hover:bg-slate-100">
+                      <SelectItem 
+                        key={coach.id} 
+                        value={coach.id.toString()} 
+                        className="text-slate-900"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = `${organization.secondaryColor}20`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
                         {coach.user?.name || `Coach ${coach.id}`}
                       </SelectItem>
                     ))}
@@ -378,12 +408,20 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           name="requirements"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#20366B] font-medium">Requirements & Equipment</FormLabel>
+              <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Requirements & Equipment</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="List any equipment, skill level, or preparation requirements..."
                   {...field} 
-                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px] text-slate-900 placeholder:text-slate-500"
+                  className="border-slate-300 min-h-[60px] text-slate-900 placeholder:text-slate-500"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = organization.secondaryColor;
+                    e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgb(203 213 225)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -402,7 +440,12 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    className="border-slate-300 data-[state=checked]:bg-[#278DD4] data-[state=checked]:border-[#278DD4]"
+                    className="border-slate-300"
+                    style={{
+                      '--checkbox-checked-bg': organization.secondaryColor,
+                      '--checkbox-checked-border': organization.secondaryColor
+                    } as React.CSSProperties}
+                    data-state={field.value ? 'checked' : 'unchecked'}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
