@@ -76,9 +76,9 @@ export const coaches = pgTable("coaches", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
   organizationId: integer("organization_id").notNull(),
-  name: text("name"), // Coach-specific name for this organization (overrides user name)
-  email: text("email"), // Coach-specific email for this organization (overrides user email)
-  phone: text("phone"), // Coach-specific phone for this organization
+  displayName: text("display_name"), // Organization-specific display name (overrides user name if set)
+  contactEmail: text("contact_email"), // Organization-specific contact email (overrides user email if set)
+  phone: text("phone"),
   specializations: text("specializations").array(),
   bio: text("bio"),
   hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),

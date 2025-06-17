@@ -990,16 +990,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Coach not found" });
       }
 
-      // Update user data if provided
-      if (userData && existingCoach.userId) {
-        await storage.updateUser(existingCoach.userId, {
-          name: userData.name,
-          email: userData.email,
-        });
-      }
-
-      // Update coach data
+      // Update coach data with organization-specific overrides
+      // Store name and email as coach-specific data instead of updating shared user record
       const coachUpdateData = {
+        displayName: userData?.name || null, // Organization-specific display name
+        contactEmail: userData?.email || null, // Organization-specific contact email
         bio: coachData.bio,
         specializations: coachData.specializations,
         hourlyRate: coachData.hourlyRate,
@@ -1013,11 +1008,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Coach not found" });
       }
 
-      // Get updated user data and return enriched coach
+      // Get user data and return enriched coach with organization-specific overrides
       const user = await storage.getUser(updatedCoach.userId);
       res.json({
         ...updatedCoach,
-        user
+        user: {
+          ...user,
+          // Override user data with coach-specific data for this organization
+          name: updatedCoach.displayName || user?.name,
+          email: updatedCoach.contactEmail || user?.email
+        }
       });
     } catch (error) {
       console.error("Error updating coach:", error);
