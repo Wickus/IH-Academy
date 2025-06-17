@@ -68,7 +68,7 @@ export default function Bookings() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ newClassId }),
+        body: JSON.stringify({ classId: newClassId }),
       });
       if (!response.ok) throw new Error('Failed to move booking');
       return response.json();
@@ -311,9 +311,11 @@ export default function Bookings() {
                                   <Select value={selectedClass} onValueChange={setSelectedClass}>
                                     <SelectTrigger 
                                       style={{ 
-                                        borderColor: organization.secondaryColor,
-                                        '&:focus': { borderColor: organization.primaryColor }
+                                        borderColor: organization.secondaryColor
                                       }}
+                                      className="focus:border-opacity-100"
+                                      onFocus={(e) => e.currentTarget.style.borderColor = organization.primaryColor}
+                                      onBlur={(e) => e.currentTarget.style.borderColor = organization.secondaryColor}
                                     >
                                       <SelectValue placeholder="Select a new class..." />
                                     </SelectTrigger>
@@ -322,9 +324,9 @@ export default function Bookings() {
                                         <SelectItem 
                                           key={cls.id} 
                                           value={cls.id.toString()}
-                                          style={{
-                                            '&:hover': { backgroundColor: `${organization.secondaryColor}15` }
-                                          }}
+                                          className="hover:bg-opacity-10"
+                                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = `${organization.secondaryColor}15`}
+                                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                         >
                                           {cls.name} - {formatDateTime(cls.startTime)} - {formatCurrency(Number(cls.price))}
                                         </SelectItem>
