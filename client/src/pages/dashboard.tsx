@@ -19,7 +19,7 @@ export default function Dashboard() {
   const { data: userOrganisations } = useQuery({
     queryKey: ["/api/organizations/my"],
     queryFn: api.getUserOrganizations,
-    enabled: currentUser?.role === 'organization_admin',
+    enabled: currentUser?.role === 'organization_admin' || currentUser?.role === 'coach',
   });
 
   const organizationId = userOrganisations?.[0]?.id;
@@ -80,6 +80,77 @@ export default function Dashboard() {
   if (currentUser?.role === 'organization_admin' && userOrganisations && userOrganisations.length > 0) {
     const organization = userOrganisations[0];
     return <OrganizationDashboard user={currentUser} organization={organization} />;
+  }
+
+  // If user is a coach, show coach-specific dashboard
+  if (currentUser?.role === 'coach') {
+    return (
+      <div className="p-6 lg:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold text-[#20366B]">Coach Dashboard</h1>
+          <p className="text-slate-600">Welcome back, {currentUser.firstName}! Select an organization to manage your coaching profile.</p>
+        </div>
+        
+        {/* Organization Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {userOrganisations?.map((org) => (
+            <div
+              key={org.id}
+              className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              onClick={() => setLocation(`/coach-profile/${org.id}`)}
+              style={{
+                background: `linear-gradient(135deg, ${org.primaryColor} 0%, ${org.secondaryColor} 100%)`
+              }}
+            >
+              <div className="p-6 text-white">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold">{org.name}</h3>
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                  >
+                    {org.name.charAt(0)}
+                  </div>
+                </div>
+                <p className="text-white/90 text-sm mb-4">
+                  {org.description || 'Manage your coaching profile and availability'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-white/75 uppercase tracking-wide">
+                    {org.businessModel} model
+                  </span>
+                  <div
+                    className="px-3 py-1 rounded-full text-xs font-medium"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                  >
+                    Coach Profile
+                  </div>
+                </div>
+              </div>
+              <div
+                className="absolute bottom-0 left-0 right-0 h-1"
+                style={{ backgroundColor: org.accentColor }}
+              ></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty state if no organizations */}
+        {(!userOrganisations || userOrganisations.length === 0) && (
+          <div className="text-center py-12">
+            <div className="mb-4 text-slate-400">
+              <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a2 2 0 012-2h2a2 2 0 012 2v12" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-slate-600 mb-2">No Organizations</h3>
+            <p className="text-slate-500">
+              You haven't been assigned to any organizations yet. Contact an admin to get started.
+            </p>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
