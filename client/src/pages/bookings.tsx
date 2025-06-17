@@ -53,12 +53,28 @@ export default function Bookings() {
 
   // Get available classes for move booking - only classes with same cost
   const getAvailableClasses = (currentBooking: any) => {
-    if (!currentBooking || !classes) return [];
-    return classes.filter(c => 
-      c.id !== currentBooking.classId && 
-      Number(c.price) === Number(currentBooking.amount) &&
-      new Date(c.startTime) > new Date() // Only future classes
-    );
+    if (!currentBooking || !classes) {
+      console.log('Missing data - currentBooking:', currentBooking, 'classes:', classes);
+      return [];
+    }
+    
+    const availableClasses = classes.filter(c => {
+      const sameId = c.id !== currentBooking.classId;
+      const samePrice = Number(c.price) === Number(currentBooking.amount);
+      const isFuture = new Date(c.startTime) > new Date();
+      
+      console.log(`Class ${c.name} (ID: ${c.id}):`, {
+        sameId, 
+        samePrice: `${c.price} === ${currentBooking.amount} = ${samePrice}`,
+        isFuture: `${c.startTime} > now = ${isFuture}`,
+        included: sameId && samePrice && isFuture
+      });
+      
+      return sameId && samePrice && isFuture;
+    });
+    
+    console.log('Final available classes:', availableClasses);
+    return availableClasses;
   };
 
   const moveBookingMutation = useMutation({
