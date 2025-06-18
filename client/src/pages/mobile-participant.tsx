@@ -611,9 +611,24 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             size="sm" 
                             className="w-full"
                             style={{ backgroundColor: org.primaryColor }}
-                            onClick={() => {
+                            onClick={async () => {
                               console.log('DEBUG: View Classes clicked for org:', org.id, org.name);
-                              window.location.href = `/organizations/${org.id}/classes`;
+                              try {
+                                // Send debug log to server
+                                await fetch('/api/debug-log', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ 
+                                    action: 'view_classes_clicked', 
+                                    orgId: org.id, 
+                                    orgName: org.name,
+                                    timestamp: new Date().toISOString()
+                                  })
+                                });
+                                window.location.href = `/organizations/${org.id}/classes`;
+                              } catch (error) {
+                                console.error('Navigation error:', error);
+                              }
                             }}
                           >
                             View Classes
@@ -722,9 +737,21 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={() => {
+                onClick={async () => {
                   console.log('DEBUG: Edit Profile clicked');
-                  window.location.href = '/edit-profile';
+                  try {
+                    await fetch('/api/debug-log', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        action: 'edit_profile_clicked',
+                        timestamp: new Date().toISOString()
+                      })
+                    });
+                    window.location.href = '/edit-profile';
+                  } catch (error) {
+                    console.error('Navigation error:', error);
+                  }
                 }}
               >
                 <User className="h-5 w-5 mr-3 text-[#278DD4]" />
@@ -734,9 +761,21 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={() => {
+                onClick={async () => {
                   console.log('DEBUG: Payment Methods clicked');
-                  window.location.href = '/payment-methods';
+                  try {
+                    await fetch('/api/debug-log', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        action: 'payment_methods_clicked',
+                        timestamp: new Date().toISOString()
+                      })
+                    });
+                    window.location.href = '/payment-methods';
+                  } catch (error) {
+                    console.error('Navigation error:', error);
+                  }
                 }}
               >
                 <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
@@ -746,9 +785,21 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={() => {
+                onClick={async () => {
                   console.log('DEBUG: Favourite Organizations clicked');
-                  window.location.href = '/favourite-organizations';
+                  try {
+                    await fetch('/api/debug-log', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        action: 'favourite_organizations_clicked',
+                        timestamp: new Date().toISOString()
+                      })
+                    });
+                    window.location.href = '/favourite-organizations';
+                  } catch (error) {
+                    console.error('Navigation error:', error);
+                  }
                 }}
               >
                 <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
