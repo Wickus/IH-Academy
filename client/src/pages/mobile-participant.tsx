@@ -246,6 +246,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
         showNotifications={false}
         showMenu={false}
         showProfile={true}
+        onProfileClick={() => {
+          // Clear any URL parameters and navigate to profile
+          window.location.assign('/edit-profile');
+        }}
       />
 
       {/* Bottom Navigation */}
@@ -732,9 +736,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <div 
                 className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer"
                 onTouchStart={() => {
+                  // Clear any URL parameters when navigating to edit profile
                   window.location.assign('/edit-profile');
                 }}
                 onClick={() => {
+                  // Clear any URL parameters when navigating to edit profile
                   window.location.assign('/edit-profile');
                 }}
               >
@@ -780,7 +786,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                         title: "Signed Out",
                         description: "You have been successfully signed out",
                       });
-                      // Force reload to clear all state
+                      // Clear URL parameters and redirect to login
                       window.location.href = '/';
                     } catch (error) {
                       toast({
