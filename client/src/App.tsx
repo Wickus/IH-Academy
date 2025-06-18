@@ -94,6 +94,9 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/organizations/:id" component={PublicBooking} />
         <Route path="/organizations/:id/classes" component={OrganizationClasses} />
         <Route path="/achievements" component={Achievements} />
+        <Route path="/edit-profile" component={EditProfile} />
+        <Route path="/payment-methods" component={PaymentMethods} />
+        <Route path="/favourite-organizations" component={FavouriteOrganizations} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -243,6 +246,19 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   }
 
 
+
+  // Global routes that work for all authenticated users
+  return (
+    <Switch>
+      <Route path="/edit-profile" component={EditProfile} />
+      <Route path="/payment-methods" component={PaymentMethods} />
+      <Route path="/favourite-organizations" component={FavouriteOrganizations} />
+      <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+      <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/payment-cancelled" component={PaymentCancelled} />
+      <Route component={NotFound} />
+    </Switch>
+  );
 
   // Fallback for any other authenticated user
   if (user) {
