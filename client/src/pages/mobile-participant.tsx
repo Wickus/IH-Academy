@@ -30,7 +30,8 @@ import {
   ChevronRight,
   Play,
   Baby,
-  Plus
+  Plus,
+  LogOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
@@ -606,20 +607,8 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             className="w-full"
                             style={{ backgroundColor: org.primaryColor }}
                             onClick={() => {
-                              // Show classes for this organization in an organized view
-                              const orgClasses = classes?.filter(cls => cls.organizationId === org.id) || [];
-                              if (orgClasses.length > 0) {
-                                toast({
-                                  title: `${org.name} Classes`,
-                                  description: `Found ${orgClasses.length} classes available`,
-                                });
-                              } else {
-                                toast({
-                                  title: "No Classes",
-                                  description: `${org.name} has no classes scheduled yet`,
-                                  variant: "destructive",
-                                });
-                              }
+                              // Navigate to organization classes page
+                              window.location.href = `/organizations/${org.id}/classes`;
                             }}
                           >
                             View Classes
