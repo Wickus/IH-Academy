@@ -34,6 +34,7 @@ import OrganizationDashboard from "@/pages/organization-dashboard";
 
 export default function UserDashboard() {
   const [, setLocation] = useLocation();
+  const [inviteCode, setInviteCode] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { organization, isLoading: orgLoading, hasOrganization } = useOrganization();
@@ -239,6 +240,33 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Invite Code Section */}
+        <Card className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+          <CardContent className="p-6">
+            <h3 className="text-xl font-semibold mb-2">Have an invite code?</h3>
+            <p className="text-white/80 mb-4">Join an organization instantly with their invite code</p>
+            <div className="flex gap-3">
+              <Input
+                placeholder="Enter invite code (e.g., ORG00259360B7)"
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60"
+              />
+              <Button
+                onClick={handleJoinWithCode}
+                disabled={!inviteCode.trim() || joinMutation.isPending}
+                className="bg-white text-blue-600 hover:bg-white/90 px-8"
+              >
+                {joinMutation.isPending ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                ) : (
+                  "Join"
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-4 mb-8">
