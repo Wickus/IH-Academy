@@ -40,6 +40,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
       setShowOnboarding(true);
     }
   }, [organization]);
+
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: [`/api/stats/organization/${organization.id}`],
     queryFn: () => api.getOrganizationStats(organization.id),
@@ -91,7 +92,28 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 {stats?.totalMembers || 0} members • {stats?.activeClasses || 0} active classes
               </span>
             </div>
-
+          </div>
+          <div className="flex gap-3">
+            <Button 
+              variant="secondary" 
+              className="gap-2 text-white"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+              onClick={() => setLocation('/settings')}
+            >
+              <Settings className="h-4 w-4" />
+              Settings
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="gap-2 text-white"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+              onClick={() => setLocation('/classes')}
+            >
+              <Plus className="h-4 w-4" />
+              New Class
+            </Button>
+          </div>
+        </div>
         
         {/* Invite Code Section */}
         {organization.inviteCode && (
@@ -226,7 +248,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalMembers || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Following your organization
+              Registered members
             </p>
           </CardContent>
         </Card>
@@ -234,16 +256,16 @@ export default function OrganizationDashboard({ user, organization }: Organizati
         <Card 
           className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
           style={{ borderLeftColor: organization.accentColor }}
-          onClick={() => setLocation('/revenue-dashboard')}
+          onClick={() => setLocation('/payments')}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(stats?.totalRevenue || 0)}</div>
+            <div className="text-2xl font-bold">R{formatCurrency(stats?.totalRevenue || 0)}</div>
             <p className="text-xs text-muted-foreground">
-              Total earnings this month
+              From bookings
             </p>
           </CardContent>
         </Card>
@@ -251,240 +273,153 @@ export default function OrganizationDashboard({ user, organization }: Organizati
         <Card 
           className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
           style={{ borderLeftColor: organization.primaryColor }}
-          onClick={() => setLocation('/classes-management')}
+          onClick={() => setLocation('/classes')}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Classes</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.upcomingClasses || 0}</div>
+            <div className="text-2xl font-bold">{stats?.activeClasses || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Scheduled for this week
+              Scheduled classes
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>
-            Common tasks for managing your {organization.name}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            {organization.businessModel === 'membership' ? (
+      {/* Dashboard Overview */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="lg:col-span-4">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Recent Bookings</CardTitle>
               <Button 
-                className="h-24 flex-col gap-2 text-white border-0 shadow-lg"
+                variant="outline" 
+                size="sm"
                 style={{ 
-                  backgroundColor: organization.accentColor,
-                  '--hover-bg': organization.accentColor + 'CC'
-                } as React.CSSProperties}
-                onClick={() => setLocation('/daily-schedules')}
+                  borderColor: organization.secondaryColor,
+                  color: organization.primaryColor 
+                }}
+                onClick={() => setLocation('/bookings-management')}
               >
-                <Calendar className="h-6 w-6" />
-                <span>Daily Schedule Management</span>
+                View All
               </Button>
-            ) : (
-              <Button 
-                className="h-24 flex-col gap-2 text-white border-0 shadow-lg"
-                style={{ 
-                  backgroundColor: organization.accentColor,
-                  '--hover-bg': organization.accentColor + 'CC'
-                } as React.CSSProperties}
-                onClick={() => setLocation('/classes')}
-              >
-                <Plus className="h-6 w-6" />
-                <span>Create New Class</span>
-              </Button>
-            )}
-            <Button 
-              variant="outline" 
-              className="h-24 flex-col gap-2 hover:text-white"
-              style={{
-                borderColor: organization.secondaryColor,
-                color: organization.secondaryColor
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = organization.secondaryColor;
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = organization.secondaryColor;
-              }}
-              onClick={() => setLocation('/coaches')}
-            >
-              <UserPlus className="h-6 w-6" />
-              <span>Invite Coach</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-24 flex-col gap-2 hover:text-white"
-              style={{
-                borderColor: organization.primaryColor,
-                color: organization.primaryColor
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = organization.primaryColor;
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = organization.primaryColor;
-              }}
-              onClick={() => setLocation('/reports')}
-            >
-              <BarChart3 className="h-6 w-6" />
-              <span>View Analytics</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Dashboard Widgets */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-0 shadow-md bg-white">
-          <CardHeader 
-            className="text-white"
-            style={{
-              background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})`
-            }}
-          >
-            <CardTitle className="text-xl font-bold">Recent Bookings</CardTitle>
-            <CardDescription className="text-white/80">
-              Latest bookings for your classes
-            </CardDescription>
+            </div>
           </CardHeader>
-          <CardContent className="p-6">
-            {recentBookings && recentBookings.length > 0 ? (
-              <div className="space-y-4">
-                {recentBookings.slice(0, 5).map((booking: any) => (
-                  <div key={booking.id} className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors">
-                    <div>
-                      <p 
-                        className="font-semibold"
-                        style={{ color: organization.primaryColor }}
-                      >
-                        {booking.participantName}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {booking.class?.name} • {formatCurrency(booking.amount)}
-                      </p>
+          <CardContent>
+            <div className="space-y-4">
+              {recentBookings && recentBookings.length > 0 ? (
+                recentBookings.slice(0, 5).map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div className="flex items-center space-x-3">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{booking.participantName}</p>
+                        <p className="text-xs text-muted-foreground">{booking.participantEmail}</p>
+                      </div>
                     </div>
-                    <Badge 
-                      variant="outline"
-                      className="text-white border-white/40"
-                      style={
-                        booking.paymentStatus === 'confirmed' 
-                          ? { backgroundColor: organization.accentColor, color: '#000', borderColor: organization.accentColor }
-                          : booking.paymentStatus === 'pending'
-                          ? { backgroundColor: organization.secondaryColor, color: '#000', borderColor: organization.secondaryColor }
-                          : { backgroundColor: '#ef4444', color: '#fff', borderColor: '#ef4444' }
-                      }
-                    >
-                      {booking.paymentStatus}
-                    </Badge>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{booking.class?.name}</p>
+                      <Badge 
+                        variant={booking.paymentStatus === 'confirmed' ? 'default' : 'secondary'}
+                        style={{ 
+                          backgroundColor: booking.paymentStatus === 'confirmed' ? organization.accentColor : undefined,
+                          borderColor: booking.paymentStatus === 'pending' ? organization.secondaryColor : undefined
+                        }}
+                      >
+                        {booking.paymentStatus}
+                      </Badge>
+                    </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-slate-600">No recent bookings</p>
-                <p className="text-sm text-slate-500 mt-1">Bookings will appear here once participants register</p>
-              </div>
-            )}
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No recent bookings</p>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Upcoming Classes</CardTitle>
-            <CardDescription>
-              Your scheduled classes this week
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            {classes && classes.length > 0 ? (
-              <div className="space-y-4">
-                {classes.slice(0, 5).map((classItem: any) => (
-                  <div 
-                    key={classItem.id} 
-                    className="flex items-center justify-between p-3 rounded-lg border-l-4"
-                    style={{ 
-                      border: `1px solid ${organization.secondaryColor}20`,
-                      borderLeftColor: organization.secondaryColor 
-                    }}
-                  >
-                    <div>
-                      <p className="font-medium">{classItem.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(classItem.startTime).toLocaleDateString()} • {classItem.availableSpots} spots left
+            <div className="space-y-4">
+              {classes && classes.length > 0 ? (
+                classes.slice(0, 3).map((classItem) => (
+                  <div key={classItem.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">{classItem.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(classItem.startTime).toLocaleDateString()} at{' '}
+                        {new Date(classItem.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
-                    <Badge 
-                      variant="outline"
-                      style={{ borderColor: organization.primaryColor, color: organization.primaryColor }}
-                    >
-                      {classItem.sport?.name}
-                    </Badge>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{classItem.availableSpots}/{classItem.capacity} spots</p>
+                      <Badge 
+                        variant="outline"
+                        style={{ 
+                          borderColor: organization.primaryColor,
+                          color: organization.primaryColor 
+                        }}
+                      >
+                        {classItem.sport?.name}
+                      </Badge>
+                    </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No upcoming classes</p>
-            )}
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No upcoming classes</p>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Plan Usage */}
-      <Card>
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle>Plan Usage</CardTitle>
-          <CardDescription>
-            Your current usage against your {organization.planType} plan limits
-          </CardDescription>
+          <CardDescription>Monitor your plan limits and usage</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Classes</span>
+                <span>Classes Used</span>
                 <span>{stats?.activeClasses || 0} / {organization.maxClasses}</span>
               </div>
-              <div 
-                className="w-full rounded-full h-2"
-                style={{ backgroundColor: `${organization.primaryColor}20` }}
-              >
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
-                    backgroundColor: organization.primaryColor,
-                    width: `${Math.min(100, ((stats?.activeClasses || 0) / organization.maxClasses) * 100)}%`
+                    width: `${Math.min(((stats?.activeClasses || 0) / organization.maxClasses) * 100, 100)}%`,
+                    backgroundColor: organization.secondaryColor
                   }}
-                />
+                ></div>
               </div>
             </div>
+            
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Members</span>
                 <span>{stats?.totalMembers || 0} / {organization.maxMembers}</span>
               </div>
-              <div 
-                className="w-full rounded-full h-2"
-                style={{ backgroundColor: `${organization.secondaryColor}20` }}
-              >
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
-                    backgroundColor: organization.secondaryColor,
-                    width: `${Math.min(100, ((stats?.totalMembers || 0) / organization.maxMembers) * 100)}%`
+                    width: `${Math.min(((stats?.totalMembers || 0) / organization.maxMembers) * 100, 100)}%`,
+                    backgroundColor: organization.secondaryColor
                   }}
-                />
+                ></div>
               </div>
             </div>
           </div>
