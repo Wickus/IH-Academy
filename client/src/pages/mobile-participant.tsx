@@ -685,7 +685,16 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 {children && children.length > 0 ? (
                   <div className="space-y-3">
                     {children.map((child: any) => (
-                      <div key={child.id} className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                      <div 
+                        key={child.id} 
+                        className="p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100"
+                        onTouchStart={() => {
+                          window.location.assign(`/edit-profile?childId=${child.id}`);
+                        }}
+                        onClick={() => {
+                          window.location.assign(`/edit-profile?childId=${child.id}`);
+                        }}
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <div className="p-2 bg-[#278DD4]/10 rounded-lg">
@@ -696,7 +705,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               <p className="text-sm text-slate-600">Age {child.age}</p>
                             </div>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-slate-400" />
+                          <ChevronRight className="h-4 w-4 text-[#278DD4]" />
                         </div>
                       </div>
                     ))}
