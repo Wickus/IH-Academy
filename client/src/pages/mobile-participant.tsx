@@ -725,22 +725,74 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
             {/* Profile Actions */}
             <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                onClick={() => {
+                  toast({
+                    title: "Edit Profile",
+                    description: "Profile editing feature coming soon",
+                  });
+                }}
+              >
                 <User className="h-5 w-5 mr-3 text-[#278DD4]" />
                 <span className="text-[#20366B]">Edit Profile</span>
                 <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                onClick={() => {
+                  toast({
+                    title: "Payment Methods",
+                    description: "Payment management feature coming soon",
+                  });
+                }}
+              >
                 <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
                 <span className="text-[#20366B]">Payment Methods</span>
                 <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                onClick={() => {
+                  toast({
+                    title: "Favourite Organisations",
+                    description: "Organization favorites feature coming soon",
+                  });
+                }}
+              >
                 <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
                 <span className="text-[#20366B]">Favourite Organisations</span>
                 <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50"
+                onClick={() => {
+                  // Clear user data and redirect to login
+                  const logout = async () => {
+                    try {
+                      await api.logout();
+                      toast({
+                        title: "Signed Out",
+                        description: "You have been successfully signed out",
+                      });
+                      // Force reload to clear all state
+                      window.location.href = '/';
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to sign out. Please try again.",
+                        variant: "destructive",
+                      });
+                    }
+                  };
+                  logout();
+                }}
+              >
+                <LogOut className="h-5 w-5 mr-3" />
                 <span>Sign Out</span>
                 <ChevronRight className="h-4 w-4 ml-auto" />
               </Button>

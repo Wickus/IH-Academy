@@ -249,6 +249,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/dashboard" component={UserDashboard} />
         <Route path="/discover" component={PublicDiscovery} />
         <Route path="/book" component={PublicBooking} />
+        <Route path="/organizations/:id/classes" component={OrganizationClasses} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route component={NotFound} />

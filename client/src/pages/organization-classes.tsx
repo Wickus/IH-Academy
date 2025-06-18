@@ -98,12 +98,24 @@ export default function OrganizationClasses() {
       {/* Header Section */}
       <div className="relative py-12 px-6">
         <div className="max-w-4xl mx-auto">
-          <Link href="/discover">
-            <Button variant="ghost" className="text-white hover:bg-white/10 mb-6">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Organizations
-            </Button>
-          </Link>
+          <Button 
+            variant="ghost" 
+            className="text-white hover:bg-white/10 mb-6"
+            onClick={() => {
+              // Check if mobile view by window width or user agent
+              const isMobile = window.innerWidth < 768;
+              if (isMobile) {
+                // Navigate back to mobile participant view
+                window.history.back();
+              } else {
+                // Navigate to discover page for desktop
+                window.location.href = '/discover';
+              }
+            }}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Organizations
+          </Button>
           
           <div className="flex items-center gap-6 mb-6">
             <div 
