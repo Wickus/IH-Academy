@@ -40,6 +40,9 @@ import ClassesManagement from "@/pages/classes-management";
 import PaymentSuccess from "@/pages/payment-success";
 import PaymentCancelled from "@/pages/payment-cancelled";
 import CoachRegister from "@/pages/coach-register";
+import EditProfile from "@/pages/edit-profile";
+import PaymentMethods from "@/pages/payment-methods";
+import FavouriteOrganizations from "@/pages/favourite-organizations";
 
 import CoachProfile from "@/pages/coach-profile";
 import CoachClasses from "@/pages/coach-classes";
@@ -250,9 +253,9 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/discover" component={PublicDiscovery} />
         <Route path="/book" component={PublicBooking} />
         <Route path="/organizations/:id/classes" component={OrganizationClasses} />
-        <Route path="/edit-profile" component={() => import('./pages/edit-profile').then(m => m.default)} />
-        <Route path="/payment-methods" component={() => import('./pages/payment-methods').then(m => m.default)} />
-        <Route path="/favourite-organizations" component={() => import('./pages/favourite-organizations').then(m => m.default)} />
+        <Route path="/edit-profile" component={EditProfile} />
+        <Route path="/payment-methods" component={PaymentMethods} />
+        <Route path="/favourite-organizations" component={FavouriteOrganizations} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route component={NotFound} />
