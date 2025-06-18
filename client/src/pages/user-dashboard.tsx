@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -86,6 +88,33 @@ export default function UserDashboard() {
       });
     },
   });
+
+  // Join organization with invite code
+  const joinMutation = useMutation({
+    mutationFn: (code: string) => api.joinOrganizationByInviteCode(code),
+    onSuccess: (data) => {
+      toast({
+        title: "Success!",
+        description: `You've joined ${data.organization.name}`,
+      });
+      setInviteCode("");
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations/my'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/classes'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to join organization",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleJoinWithCode = () => {
+    if (inviteCode.trim()) {
+      joinMutation.mutate(inviteCode.trim());
+    }
+  };
 
   // Wait for organization data before rendering anything
   if (!currentUser || orgLoading) {

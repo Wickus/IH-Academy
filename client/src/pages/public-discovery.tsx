@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { api, type Organization, type Class } from "@/lib/api";
 import { formatCurrency, formatTime } from "@/lib/utils";
-import { MapPin, Clock, Users, Search, Heart, Calendar, User, LogOut, Settings } from "lucide-react";
+import { MapPin, Clock, Users, Search, Heart, Calendar, User, LogOut, Settings, ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
