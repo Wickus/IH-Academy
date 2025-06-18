@@ -55,6 +55,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   // Notification setup disabled to fix service worker errors
   // const [showNotificationSetup, setShowNotificationSetup] = useState(false);
   const [showAddChild, setShowAddChild] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -182,16 +183,37 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
     });
   };
 
-  const followOrgMutation = useMutation({
-    mutationFn: (organizationId: number) => api.followOrganization(organizationId),
-    onSuccess: () => {
-      toast({ title: "Followed!", description: "You're now following this organization." });
-      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+  const joinOrgMutation = useMutation({
+    mutationFn: (inviteCode: string) => api.joinOrganizationByInviteCode(inviteCode),
+    onSuccess: (data) => {
+      toast({ 
+        title: "Success!", 
+        description: `You've joined ${data.organization.name}!` 
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations/my'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/classes'] });
+      setInviteCode("");
     },
-    onError: () => {
-      toast({ title: "Error", description: "Failed to follow organization.", variant: "destructive" });
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to join organization.", 
+        variant: "destructive" 
+      });
     }
   });
+
+  const handleJoinOrganization = () => {
+    if (!inviteCode.trim()) {
+      toast({
+        title: "Missing Code",
+        description: "Please enter an organization invite code.",
+        variant: "destructive"
+      });
+      return;
+    }
+    joinOrgMutation.mutate(inviteCode.trim());
+  };
 
   // Filter classes based on search and sport (only show future classes)
   const filteredClasses = classes?.filter(cls => {
@@ -516,15 +538,47 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
         <TabsContent value="organizations" className="mt-0 pb-20">
           <div className="p-4">
-            <h2 className="text-lg font-semibold mb-3 text-gray-900">Sports Organizations</h2>
+            <h2 className="text-lg font-semibold mb-3 text-gray-900">Join Organization</h2>
+            
+            {/* Join Organization Section */}
+            <Card className="mb-6">
+              <CardContent className="p-4">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium text-gray-900 mb-2">Organization Invite Code</h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Enter the invite code provided by your organization to join their classes and activities.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter invite code (e.g., ORG001ABC123)"
+                      value={inviteCode}
+                      onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                      className="flex-1"
+                    />
+                    <Button 
+                      onClick={handleJoinOrganization}
+                      disabled={joinOrgMutation.isPending || !inviteCode.trim()}
+                      className="bg-[#278DD4] hover:bg-[#20366B] text-white"
+                    >
+                      {joinOrgMutation.isPending ? "Joining..." : "Join"}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* My Organizations Section */}
+            <h3 className="text-md font-medium mb-3 text-gray-900">My Organizations</h3>
             <div className="space-y-3">
-              {orgsLoading ? (
+              {userOrgsLoading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-2 text-gray-500">Loading organizations...</p>
+                  <p className="mt-2 text-gray-500">Loading your organizations...</p>
                 </div>
-              ) : organizations && organizations.length > 0 ? (
-                organizations.map((org) => (
+              ) : userOrganizations && userOrganizations.length > 0 ? (
+                userOrganizations.map((org) => (
                   <Card key={org.id}>
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
@@ -542,29 +596,27 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               variant="outline"
                               style={{ borderColor: org.secondaryColor, color: org.secondaryColor }}
                             >
+                              Member
+                            </Badge>
+                            <Badge 
+                              variant="outline"
+                              className="bg-green-50 text-green-700 border-green-200"
+                            >
                               {org.planType}
                             </Badge>
-                            <span className="text-xs text-gray-500">
-                              Up to {org.maxClasses} classes
-                            </span>
                           </div>
-                          <div className="flex gap-2">
-                            <Button 
-                              size="sm" 
-                              className="flex-1"
-                              style={{ backgroundColor: org.primaryColor }}
-                            >
-                              View Classes
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => followOrgMutation.mutate(org.id)}
-                              disabled={followOrgMutation.isPending}
-                            >
-                              <Heart className="h-4 w-4" />
-                            </Button>
-                          </div>
+                          <Button 
+                            size="sm" 
+                            className="w-full"
+                            style={{ backgroundColor: org.primaryColor }}
+                            onClick={() => {
+                              // Switch to discover tab to see classes
+                              const discoverTab = document.querySelector('[value="discover"]') as HTMLElement;
+                              discoverTab?.click();
+                            }}
+                          >
+                            View Classes
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -572,9 +624,9 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <Star className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">No organizations yet</p>
-                  <p className="text-sm text-gray-400">Discover organizations in the explore tab</p>
+                  <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No organizations joined yet</p>
+                  <p className="text-sm text-gray-400">Use an invite code above to join your first organization</p>
                 </div>
               )}
             </div>
