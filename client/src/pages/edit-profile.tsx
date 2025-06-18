@@ -69,7 +69,7 @@ export default function EditProfile() {
   });
 
   // Reset child form when child data is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentChild) {
       childForm.reset({
         name: currentChild.name || "",
