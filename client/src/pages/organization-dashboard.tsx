@@ -4,9 +4,11 @@ import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import { api, type OrganizationDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Users, Calendar, TrendingUp, DollarSign, Plus, Settings, UserPlus, BarChart3 } from "lucide-react";
+import { Users, Calendar, TrendingUp, DollarSign, Plus, Settings, UserPlus, BarChart3, Copy, ExternalLink, Share2 } from "lucide-react";
 import StatsCards from "@/components/dashboard/stats-cards";
 import RecentBookings from "@/components/dashboard/recent-bookings";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
@@ -21,6 +23,7 @@ interface OrganizationDashboardProps {
 export default function OrganizationDashboard({ user, organization }: OrganizationDashboardProps) {
   const [, setLocation] = useLocation();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { toast } = useToast();
 
   // Check if organization needs onboarding (new organization with default settings)
   useEffect(() => {
@@ -88,27 +91,108 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 {stats?.totalMembers || 0} members • {stats?.activeClasses || 0} active classes
               </span>
             </div>
+
+        
+        {/* Invite Code Section */}
+        {organization.inviteCode && (
+          <div className="mt-6 p-4 bg-white/10 rounded-lg border border-white/20">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-medium text-white mb-1">
+                  Share Your Organization
+                </h3>
+                <p className="text-white/80 text-sm mb-3">
+                  Invite new members with your branded link or quick code
+                </p>
+                
+                {/* Branded Invite Link */}
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={`${window.location.origin}/invite/${organization.inviteCode}`}
+                      readOnly
+                      className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60 text-sm"
+                      style={{ backdropFilter: 'blur(10px)' }}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/20"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/invite/${organization.inviteCode}`);
+                        toast({
+                          title: "Copied!",
+                          description: "Branded invite link copied to clipboard",
+                        });
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/20"
+                      onClick={() => {
+                        window.open(`/invite/${organization.inviteCode}`, '_blank');
+                      }}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {/* Quick Code */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-white/80 text-sm">Quick code:</span>
+                    <code className="bg-white/20 px-2 py-1 rounded text-white font-mono text-sm">
+                      {organization.inviteCode}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white/80 hover:text-white hover:bg-white/10 p-1"
+                      onClick={() => {
+                        navigator.clipboard.writeText(organization.inviteCode || '');
+                        toast({
+                          title: "Copied!",
+                          description: "Invite code copied to clipboard",
+                        });
+                      }}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="ml-4">
+                <Button
+                  size="sm"
+                  className="gap-2 bg-white text-black hover:bg-white/90"
+                  onClick={() => {
+                    const shareData = {
+                      title: `Join ${organization.name}`,
+                      text: `You're invited to join ${organization.name} for sports activities!`,
+                      url: `${window.location.origin}/invite/${organization.inviteCode}`
+                    };
+                    
+                    if (navigator.share) {
+                      navigator.share(shareData);
+                    } else {
+                      navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                      toast({
+                        title: "Copied!",
+                        description: "Invite message copied to clipboard",
+                      });
+                    }
+                  }}
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Button 
-              variant="secondary" 
-              className="gap-2 text-white"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-              onClick={() => setLocation('/settings')}
-            >
-              <Settings className="h-4 w-4" />
-              Settings
-            </Button>
-            <Button 
-              className="gap-2 bg-white/20 hover:bg-white/30 text-white border-white/30"
-              variant="outline"
-              onClick={() => setLocation('/classes')}
-            >
-              <Plus className="h-4 w-4" />
-              New Class
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Organization-Specific Stats */}
@@ -408,11 +492,13 @@ export default function OrganizationDashboard({ user, organization }: Organizati
       </Card>
 
       {/* Organization Setup Flow */}
-      <OrganizationSetupFlow
-        isOpen={showOnboarding}
-        onComplete={() => setShowOnboarding(false)}
-        organization={organization}
-      />
+      {showOnboarding && (
+        <OrganizationSetupFlow
+          isOpen={showOnboarding}
+          onComplete={() => setShowOnboarding(false)}
+          organization={organization}
+        />
+      )}
     </div>
   );
 }

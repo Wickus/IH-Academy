@@ -55,6 +55,7 @@ export interface Organization {
   planType: 'free' | 'basic' | 'premium';
   maxClasses: number;
   maxMembers: number;
+  inviteCode?: string;
   isActive: boolean;
   isFollowing?: boolean;
 }
