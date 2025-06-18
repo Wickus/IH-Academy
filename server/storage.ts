@@ -297,6 +297,11 @@ export class DatabaseStorage implements IStorage {
     return org || undefined;
   }
 
+  async getOrganizationByInviteCode(inviteCode: string): Promise<Organization | undefined> {
+    const [org] = await db.select().from(organizations).where(eq(organizations.inviteCode, inviteCode));
+    return org || undefined;
+  }
+
   async getAllOrganizations(includeInactive: boolean = false): Promise<Organization[]> {
     if (includeInactive) {
       return await db.select().from(organizations);
