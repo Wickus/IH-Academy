@@ -607,32 +607,17 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               {org.planType}
                             </Badge>
                           </div>
-                          <Button 
-                            size="sm" 
-                            className="w-full"
-                            style={{ backgroundColor: org.primaryColor }}
-                            onClick={async () => {
-                              console.log('DEBUG: View Classes clicked for org:', org.id, org.name);
-                              try {
-                                // Send debug log to server
-                                await fetch('/api/debug-log', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ 
-                                    action: 'view_classes_clicked', 
-                                    orgId: org.id, 
-                                    orgName: org.name,
-                                    timestamp: new Date().toISOString()
-                                  })
-                                });
-                                window.location.href = `/organizations/${org.id}/classes`;
-                              } catch (error) {
-                                console.error('Navigation error:', error);
-                              }
-                            }}
+                          <a 
+                            href={`/organizations/${org.id}/classes`}
+                            className="inline-block w-full"
                           >
-                            View Classes
-                          </Button>
+                            <div 
+                              className="w-full text-center py-2 px-4 text-white text-sm font-medium rounded-md cursor-pointer"
+                              style={{ backgroundColor: org.primaryColor }}
+                            >
+                              View Classes
+                            </div>
+                          </a>
                         </div>
                       </div>
                     </CardContent>
@@ -734,54 +719,26 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
             {/* Profile Actions */}
             <div className="space-y-3">
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={async () => {
-                  console.log('DEBUG: Edit Profile clicked');
-                  try {
-                    await fetch('/api/debug-log', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ 
-                        action: 'edit_profile_clicked',
-                        timestamp: new Date().toISOString()
-                      })
-                    });
-                    window.location.href = '/edit-profile';
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                  }
-                }}
+              <a 
+                href="/edit-profile"
+                className="block w-full"
               >
-                <User className="h-5 w-5 mr-3 text-[#278DD4]" />
-                <span className="text-[#20366B]">Edit Profile</span>
-                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={async () => {
-                  console.log('DEBUG: Payment Methods clicked');
-                  try {
-                    await fetch('/api/debug-log', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ 
-                        action: 'payment_methods_clicked',
-                        timestamp: new Date().toISOString()
-                      })
-                    });
-                    window.location.href = '/payment-methods';
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                  }
-                }}
+                <div className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer">
+                  <User className="h-5 w-5 mr-3 text-[#278DD4]" />
+                  <span className="text-[#20366B] flex-1">Edit Profile</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+                </div>
+              </a>
+              <a 
+                href="/payment-methods"
+                className="block w-full"
               >
-                <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
-                <span className="text-[#20366B]">Payment Methods</span>
-                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-              </Button>
+                <div className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer">
+                  <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
+                  <span className="text-[#20366B] flex-1">Payment Methods</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+                </div>
+              </a>
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
