@@ -61,6 +61,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
+  // Debug logging
+  console.log('DEBUG: MobileParticipant rendered for user:', user?.username);
+  console.log('DEBUG: Current location:', window.location.pathname);
+
   // Mutation for updating payment status
   const updatePaymentMutation = useMutation({
     mutationFn: ({ bookingId, paymentStatus }: { bookingId: number; paymentStatus: string }) =>
@@ -603,15 +607,17 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               {org.planType}
                             </Badge>
                           </div>
-                          <Link href={`/organizations/${org.id}/classes`} className="w-full">
-                            <Button 
-                              size="sm" 
-                              className="w-full"
-                              style={{ backgroundColor: org.primaryColor }}
-                            >
-                              View Classes
-                            </Button>
-                          </Link>
+                          <Button 
+                            size="sm" 
+                            className="w-full"
+                            style={{ backgroundColor: org.primaryColor }}
+                            onClick={() => {
+                              console.log('DEBUG: View Classes clicked for org:', org.id, org.name);
+                              window.location.href = `/organizations/${org.id}/classes`;
+                            }}
+                          >
+                            View Classes
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -713,36 +719,42 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
             {/* Profile Actions */}
             <div className="space-y-3">
-              <Link href="/edit-profile" className="w-full">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                >
-                  <User className="h-5 w-5 mr-3 text-[#278DD4]" />
-                  <span className="text-[#20366B]">Edit Profile</span>
-                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-                </Button>
-              </Link>
-              <Link href="/payment-methods" className="w-full">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                >
-                  <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
-                  <span className="text-[#20366B]">Payment Methods</span>
-                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-                </Button>
-              </Link>
-              <Link href="/favourite-organizations" className="w-full">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                >
-                  <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
-                  <span className="text-[#20366B]">Favourite Organisations</span>
-                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                onClick={() => {
+                  console.log('DEBUG: Edit Profile clicked');
+                  window.location.href = '/edit-profile';
+                }}
+              >
+                <User className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B]">Edit Profile</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                onClick={() => {
+                  console.log('DEBUG: Payment Methods clicked');
+                  window.location.href = '/payment-methods';
+                }}
+              >
+                <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B]">Payment Methods</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                onClick={() => {
+                  console.log('DEBUG: Favourite Organizations clicked');
+                  window.location.href = '/favourite-organizations';
+                }}
+              >
+                <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B]">Favourite Organisations</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+              </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50"
