@@ -1887,7 +1887,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const children = await storage.getUserChildren(currentUser.id);
-      res.json(children);
+      
+      // Calculate ages from birth dates
+      const childrenWithAges = children.map(child => {
+        if (child.dateOfBirth) {
+          const today = new Date();
+          const birth = new Date(child.dateOfBirth);
+          const age = today.getFullYear() - birth.getFullYear();
+          const monthDiff = today.getMonth() - birth.getMonth();
+          
+          let calculatedAge = age;
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            calculatedAge = age - 1;
+          }
+          
+          return { ...child, age: calculatedAge };
+        }
+        return child;
+      });
+      
+      res.json(childrenWithAges);
     } catch (error) {
       console.error("Error fetching children:", error);
       res.status(500).json({ message: "Failed to fetch children" });
@@ -1899,7 +1918,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const children = await storage.getUserChildren(userId);
-      res.json(children);
+      
+      // Calculate ages from birth dates
+      const childrenWithAges = children.map(child => {
+        if (child.dateOfBirth) {
+          const today = new Date();
+          const birth = new Date(child.dateOfBirth);
+          const age = today.getFullYear() - birth.getFullYear();
+          const monthDiff = today.getMonth() - birth.getMonth();
+          
+          let calculatedAge = age;
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            calculatedAge = age - 1;
+          }
+          
+          return { ...child, age: calculatedAge };
+        }
+        return child;
+      });
+      
+      res.json(childrenWithAges);
     } catch (error) {
       console.error("Error fetching children:", error);
       res.status(500).json({ message: "Failed to fetch children" });
