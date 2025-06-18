@@ -174,6 +174,11 @@ export const api = {
     await apiRequest('DELETE', `/api/organizations/${organizationId}/follow`);
   },
 
+  joinOrganizationByInviteCode: async (inviteCode: string): Promise<{ message: string; organization: Organization }> => {
+    const response = await apiRequest('POST', '/api/organizations/join', { inviteCode });
+    return response.json();
+  },
+
   // Dashboard Stats
   getGlobalStats: async (): Promise<GlobalDashboardStats> => {
     const response = await apiRequest('GET', '/api/stats/global');
