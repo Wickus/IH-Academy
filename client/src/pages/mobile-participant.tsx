@@ -245,18 +245,14 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
       {/* Bottom Navigation */}
       <Tabs defaultValue="profile" className="w-full">
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#20366B] to-[#278DD4] border-t border-[#278DD4]/20 z-50">
-          <TabsList className="w-full h-16 bg-transparent rounded-none p-0 grid grid-cols-4">
-            <TabsTrigger value="discover" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
-              <Compass className="h-5 w-5" />
-              <span className="text-xs">Discover</span>
-            </TabsTrigger>
+          <TabsList className="w-full h-16 bg-transparent rounded-none p-0 grid grid-cols-3">
             <TabsTrigger value="bookings" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <BookOpen className="h-5 w-5" />
               <span className="text-xs">Bookings</span>
             </TabsTrigger>
             <TabsTrigger value="organizations" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <Star className="h-5 w-5" />
-              <span className="text-xs">Following</span>
+              <span className="text-xs">Organizations</span>
             </TabsTrigger>
             <TabsTrigger value="profile" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <User className="h-5 w-5" />
@@ -610,9 +606,20 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             className="w-full"
                             style={{ backgroundColor: org.primaryColor }}
                             onClick={() => {
-                              // Switch to discover tab to see classes
-                              const discoverTab = document.querySelector('[value="discover"]') as HTMLElement;
-                              discoverTab?.click();
+                              // Show classes for this organization in an organized view
+                              const orgClasses = classes?.filter(cls => cls.organizationId === org.id) || [];
+                              if (orgClasses.length > 0) {
+                                toast({
+                                  title: `${org.name} Classes`,
+                                  description: `Found ${orgClasses.length} classes available`,
+                                });
+                              } else {
+                                toast({
+                                  title: "No Classes",
+                                  description: `${org.name} has no classes scheduled yet`,
+                                  variant: "destructive",
+                                });
+                              }
                             }}
                           >
                             View Classes
