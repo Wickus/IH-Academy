@@ -192,11 +192,11 @@ export default function EditProfile() {
             <CardTitle className="text-[#20366B]">Personal Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Form {...profileForm}>
+              <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
-                    control={form.control}
+                    control={profileForm.control}
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
@@ -213,7 +213,7 @@ export default function EditProfile() {
                   />
                   
                   <FormField
-                    control={form.control}
+                    control={profileForm.control}
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
@@ -231,7 +231,7 @@ export default function EditProfile() {
                 </div>
 
                 <FormField
-                  control={form.control}
+                  control={profileForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -249,7 +249,7 @@ export default function EditProfile() {
                 />
 
                 <FormField
-                  control={form.control}
+                  control={profileForm.control}
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
