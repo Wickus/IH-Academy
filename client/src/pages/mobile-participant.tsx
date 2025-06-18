@@ -739,30 +739,16 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                   <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
                 </div>
               </a>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={async () => {
-                  console.log('DEBUG: Favourite Organizations clicked');
-                  try {
-                    await fetch('/api/debug-log', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ 
-                        action: 'favourite_organizations_clicked',
-                        timestamp: new Date().toISOString()
-                      })
-                    });
-                    window.location.href = '/favourite-organizations';
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                  }
-                }}
+              <a 
+                href="/favourite-organizations"
+                className="block w-full"
               >
-                <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
-                <span className="text-[#20366B]">Favourite Organisations</span>
-                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-              </Button>
+                <div className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer">
+                  <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
+                  <span className="text-[#20366B] flex-1">Favourite Organisations</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+                </div>
+              </a>
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50"
