@@ -77,9 +77,9 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   // Mobile app routing for coaches and participants - but allow specific routes to use normal routing
   const [location] = useLocation();
   const specialRoutes = ['/edit-profile', '/payment-methods', '/favourite-organizations'];
-  const isSpecialRoute = specialRoutes.includes(location) || location.startsWith('/organizations/') && location.includes('/classes');
+  const isSpecialRoute = specialRoutes.includes(location) || (location.startsWith('/organizations/') && location.includes('/classes'));
   
-  if (isMobile && !isSpecialRoute && location !== '/' && location !== '/dashboard') {
+  if (isMobile && !isSpecialRoute) {
     if (user?.role === 'coach' || user?.role === 'organization_admin') {
       return <MobileCoach user={user} />;
     } else if (user?.role === 'member') {
