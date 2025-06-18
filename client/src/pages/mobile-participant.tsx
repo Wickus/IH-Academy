@@ -59,6 +59,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   const [inviteCode, setInviteCode] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   // Mutation for updating payment status
   const updatePaymentMutation = useMutation({
