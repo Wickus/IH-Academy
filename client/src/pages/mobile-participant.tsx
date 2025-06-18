@@ -34,7 +34,7 @@ import {
   LogOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 // import PushNotificationSetup from "@/components/push-notification-setup"; // Temporarily disabled
 import BrandHeader from "@/components/brand-header";
 
@@ -606,9 +606,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                             size="sm" 
                             className="w-full"
                             style={{ backgroundColor: org.primaryColor }}
-                            onClick={() => {
-                              // Navigate to organization classes page
-                              window.location.href = `/organizations/${org.id}/classes`;
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('View Classes clicked for org:', org.id);
+                              setLocation(`/organizations/${org.id}/classes`);
                             }}
                           >
                             View Classes
@@ -717,8 +719,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={() => {
-                  window.location.href = '/edit-profile';
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Edit Profile clicked');
+                  setLocation('/edit-profile');
                 }}
               >
                 <User className="h-5 w-5 mr-3 text-[#278DD4]" />
@@ -728,8 +733,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={() => {
-                  window.location.href = '/payment-methods';
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Payment Methods clicked');
+                  setLocation('/payment-methods');
                 }}
               >
                 <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
@@ -739,8 +747,11 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={() => {
-                  window.location.href = '/favourite-organizations';
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Favourite Organizations clicked');
+                  setLocation('/favourite-organizations');
                 }}
               >
                 <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
