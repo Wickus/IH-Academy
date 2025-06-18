@@ -49,6 +49,8 @@ export const organizations = pgTable("organizations", {
   payfastSandbox: boolean("payfast_sandbox").default(true),
   // Global pricing configuration (stored in organization ID 20)
   pricingConfig: text("pricing_config"),
+  // Unique invite code for organization joining
+  inviteCode: text("invite_code").unique(),
   // Status
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),

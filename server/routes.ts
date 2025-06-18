@@ -468,6 +468,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const orgData = req.body;
+      
+      // Generate unique invite code if not provided
+      if (!orgData.inviteCode) {
+        const crypto = require('crypto');
+        orgData.inviteCode = 'ORG' + crypto.randomBytes(6).toString('hex').toUpperCase();
+      }
+      
       const organization = await storage.createOrganization(orgData);
       
       // Update the current user's organizationId
@@ -504,6 +511,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating organization:", error);
       res.status(500).json({ message: "Failed to update organization" });
+    }
+  });
+
+  // New endpoint to join organization by invite code
+  app.post("/api/organizations/join", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { inviteCode } = req.body;
+      
+      if (!inviteCode) {
+        return res.status(400).json({ message: "Invite code is required" });
+      }
+
+      // Find organization by invite code
+      const organization = await storage.getOrganizationByInviteCode(inviteCode);
+      if (!organization) {
+        return res.status(404).json({ message: "Invalid invite code" });
+      }
+
+      // Check if user is already a member
+      const existingMembership = await storage.getUserOrganizations(user.id);
+      const alreadyMember = existingMembership.some(uo => uo.organizationId === organization.id);
+      
+      if (alreadyMember) {
+        return res.status(400).json({ message: "You are already a member of this organization" });
+      }
+
+      // Add user to organization
+      await storage.addUserToOrganization({
+        userId: user.id,
+        organizationId: organization.id,
+        role: 'member'
+      });
+
+      res.json({ 
+        message: "Successfully joined organization",
+        organization: organization
+      });
+    } catch (error) {
+      console.error("Error joining organization:", error);
+      res.status(500).json({ message: "Failed to join organization" });
     }
   });
 
