@@ -68,6 +68,16 @@ export default function EditProfile() {
     },
   });
 
+  // Reset child form when child data is loaded
+  React.useEffect(() => {
+    if (currentChild) {
+      childForm.reset({
+        name: currentChild.name || "",
+        age: currentChild.age?.toString() || "",
+      });
+    }
+  }, [currentChild, childForm]);
+
   // Reset forms when data loads
   useEffect(() => {
     if (currentUser && !isEditingChild) {
@@ -179,15 +189,86 @@ export default function EditProfile() {
                 <User className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Edit Profile</h1>
-                <p className="text-white/80">Update your personal information</p>
+                <h1 className="text-2xl font-bold">{isEditingChild ? 'Edit Child' : 'Edit Profile'}</h1>
+                <p className="text-white/80">{isEditingChild ? 'Update child information' : 'Update your personal information'}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Profile Form */}
-        <Card className="border-0 shadow-lg">
+        {isEditingChild ? (
+          /* Child Form */
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-[#20366B]">Child Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Form {...childForm}>
+                <form onSubmit={childForm.handleSubmit(onSubmitChild)} className="space-y-6">
+                  <FormField
+                    control={childForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#20366B]">Child's Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            className="border-[#278DD4]/30 focus:border-[#278DD4]"
+                            placeholder="Enter child's full name"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={childForm.control}
+                    name="age"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#20366B]">Age</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number"
+                            className="border-[#278DD4]/30 focus:border-[#278DD4]"
+                            placeholder="Enter child's age"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => window.history.back()}
+                      className="flex-1 border-[#278DD4]/30 text-[#20366B] hover:bg-[#278DD4]/10"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={updateChildMutation.isPending}
+                      className="flex-1 bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
+                    >
+                      {updateChildMutation.isPending ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      ) : null}
+                      Update Child
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        ) : (
+          /* Profile Form */
+          <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="text-[#20366B]">Personal Information</CardTitle>
           </CardHeader>
@@ -293,6 +374,7 @@ export default function EditProfile() {
             </Form>
           </CardContent>
         </Card>
+        )}
       </div>
     </div>
   );
