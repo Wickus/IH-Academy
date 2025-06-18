@@ -142,8 +142,7 @@ export default function CoachClasses() {
       walkInData: {
         ...walkInData,
         amountPaid: walkInData.amountPaid ? parseFloat(walkInData.amountPaid) : 0
-      },
-      notes: null
+      }
     });
   };
 

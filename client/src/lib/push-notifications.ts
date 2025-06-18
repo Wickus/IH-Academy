@@ -153,7 +153,6 @@ class PushNotificationService {
     await this.registration.showNotification(title, {
       icon: '/icons/icon-192.png',
       badge: '/icons/badge-72.png',
-      vibrate: [200, 100, 200],
       ...options
     });
   }
