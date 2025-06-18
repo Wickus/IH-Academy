@@ -607,17 +607,18 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               {org.planType}
                             </Badge>
                           </div>
-                          <a 
-                            href={`/organizations/${org.id}/classes`}
-                            className="inline-block w-full"
+                          <div 
+                            className="w-full text-center py-2 px-4 text-white text-sm font-medium rounded-md cursor-pointer"
+                            style={{ backgroundColor: org.primaryColor }}
+                            onTouchStart={() => {
+                              window.location.assign(`/organizations/${org.id}/classes`);
+                            }}
+                            onClick={() => {
+                              window.location.assign(`/organizations/${org.id}/classes`);
+                            }}
                           >
-                            <div 
-                              className="w-full text-center py-2 px-4 text-white text-sm font-medium rounded-md cursor-pointer"
-                              style={{ backgroundColor: org.primaryColor }}
-                            >
-                              View Classes
-                            </div>
-                          </a>
+                            View Classes
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -719,36 +720,45 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
             {/* Profile Actions */}
             <div className="space-y-3">
-              <a 
-                href="/edit-profile"
-                className="block w-full"
+              <div 
+                className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer"
+                onTouchStart={() => {
+                  window.location.assign('/edit-profile');
+                }}
+                onClick={() => {
+                  window.location.assign('/edit-profile');
+                }}
               >
-                <div className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer">
-                  <User className="h-5 w-5 mr-3 text-[#278DD4]" />
-                  <span className="text-[#20366B] flex-1">Edit Profile</span>
-                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-                </div>
-              </a>
-              <a 
-                href="/payment-methods"
-                className="block w-full"
+                <User className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B] flex-1">Edit Profile</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+              </div>
+              <div 
+                className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer"
+                onTouchStart={() => {
+                  window.location.assign('/payment-methods');
+                }}
+                onClick={() => {
+                  window.location.assign('/payment-methods');
+                }}
               >
-                <div className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer">
-                  <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
-                  <span className="text-[#20366B] flex-1">Payment Methods</span>
-                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-                </div>
-              </a>
-              <a 
-                href="/favourite-organizations"
-                className="block w-full"
+                <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B] flex-1">Payment Methods</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+              </div>
+              <div 
+                className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer"
+                onTouchStart={() => {
+                  window.location.assign('/favourite-organizations');
+                }}
+                onClick={() => {
+                  window.location.assign('/favourite-organizations');
+                }}
               >
-                <div className="w-full flex items-center justify-start h-12 px-4 border border-[#278DD4]/20 rounded-md bg-white hover:bg-[#278DD4]/10 cursor-pointer">
-                  <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
-                  <span className="text-[#20366B] flex-1">Favourite Organisations</span>
-                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-                </div>
-              </a>
+                <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
+                <span className="text-[#20366B] flex-1">Favourite Organisations</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+              </div>
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50"
