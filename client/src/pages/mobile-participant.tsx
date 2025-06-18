@@ -718,10 +718,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
                 onClick={() => {
-                  toast({
-                    title: "Edit Profile",
-                    description: "Profile editing feature coming soon",
-                  });
+                  window.location.href = '/edit-profile';
                 }}
               >
                 <User className="h-5 w-5 mr-3 text-[#278DD4]" />
@@ -732,10 +729,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
                 onClick={() => {
-                  toast({
-                    title: "Payment Methods",
-                    description: "Payment management feature coming soon",
-                  });
+                  window.location.href = '/payment-methods';
                 }}
               >
                 <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
@@ -746,10 +740,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 variant="outline" 
                 className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
                 onClick={() => {
-                  toast({
-                    title: "Favourite Organisations",
-                    description: "Organization favorites feature coming soon",
-                  });
+                  window.location.href = '/favourite-organizations';
                 }}
               >
                 <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />

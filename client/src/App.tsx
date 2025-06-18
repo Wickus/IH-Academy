@@ -250,6 +250,9 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/discover" component={PublicDiscovery} />
         <Route path="/book" component={PublicBooking} />
         <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+        <Route path="/edit-profile" component={() => import('./pages/edit-profile').then(m => m.default)} />
+        <Route path="/payment-methods" component={() => import('./pages/payment-methods').then(m => m.default)} />
+        <Route path="/favourite-organizations" component={() => import('./pages/favourite-organizations').then(m => m.default)} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route component={NotFound} />
