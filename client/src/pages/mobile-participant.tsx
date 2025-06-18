@@ -88,13 +88,33 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
     },
   });
 
-  // Fetch public classes
-  const { data: classes, isLoading: classesLoading } = useQuery({
-    queryKey: ['/api/classes', { public: true }],
-    queryFn: () => api.getClasses({ public: true }),
+  // Fetch user's organizations
+  const { data: userOrganizations, isLoading: userOrgsLoading } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user,
   });
 
-  // Fetch organizations
+  // Fetch classes only from organizations user belongs to
+  const { data: classes, isLoading: classesLoading } = useQuery({
+    queryKey: ['/api/classes', 'user-organizations', userOrganizations?.map(org => org.id)],
+    queryFn: async () => {
+      if (!userOrganizations || userOrganizations.length === 0) {
+        return [];
+      }
+      
+      // Fetch classes from all user's organizations
+      const allClasses = await Promise.all(
+        userOrganizations.map(org => api.getClasses({ organizationId: org.id }))
+      );
+      
+      // Flatten the array of arrays
+      return allClasses.flat();
+    },
+    enabled: !!userOrganizations && userOrganizations.length > 0,
+  });
+
+  // Fetch all organizations for discovery (following/unfollowing)
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: () => api.getOrganizations(),
@@ -173,12 +193,13 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
     }
   });
 
-  // Filter classes based on search and sport
+  // Filter classes based on search and sport (only show future classes)
   const filteredClasses = classes?.filter(cls => {
     const matchesSearch = cls.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          cls.organization?.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSport = selectedSport === "all" || cls.sport?.name === selectedSport;
-    return matchesSearch && matchesSport;
+    const isFuture = new Date(cls.startTime) > new Date();
+    return matchesSearch && matchesSport && isFuture;
   }) || [];
 
   const upcomingBookings = bookings?.filter(booking => 

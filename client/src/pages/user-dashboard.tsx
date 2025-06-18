@@ -49,6 +49,14 @@ export default function UserDashboard() {
     enabled: !!currentUser,
   });
 
+  // Fetch user's organizations (organizations they belong to)
+  const { data: userOrganizations = [] } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!currentUser,
+  });
+
+  // Fetch all organizations for discovery purposes
   const { data: followedOrganizations = [] } = useQuery({
     queryKey: ["/api/organizations"],
     queryFn: api.getOrganizations,
@@ -208,7 +216,7 @@ export default function UserDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">Organizations</p>
-                  <p className="text-2xl font-bold text-[#20366B]">{followedOrganizations.length}</p>
+                  <p className="text-2xl font-bold text-[#20366B]">{userOrganizations.length}</p>
                 </div>
                 <div className="p-3 bg-[#24D3BF]/10 rounded-lg">
                   <Users className="h-6 w-6 text-[#24D3BF]" />
