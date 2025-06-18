@@ -18,6 +18,22 @@ class PushNotificationService {
     // Temporarily disabled to fix navigation issues on mobile devices
     console.log('Push notifications temporarily disabled');
     return false;
+    
+    /* Original code kept for future re-enabling:
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.log('Push messaging is not supported');
+      return false;
+    }
+
+    try {
+      this.registration = await navigator.serviceWorker.register('/sw.js');
+      console.log('Service worker registered:', this.registration);
+      return true;
+    } catch (error) {
+      console.error('Service worker registration failed:', error);
+      return false;
+    }
+    */
   }
 
   async requestPermission(): Promise<boolean> {

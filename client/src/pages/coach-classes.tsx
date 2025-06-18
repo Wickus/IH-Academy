@@ -137,7 +137,7 @@ export default function CoachClasses() {
     if (!selectedClass) return;
     
     markAttendanceMutation.mutate({
-      classId: selectedClass.id,
+      bookingId: undefined,
       status: 'present',
       walkInData: {
         ...walkInData,
