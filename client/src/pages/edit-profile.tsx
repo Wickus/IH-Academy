@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { api } from "@/lib/api";
-import { ArrowLeft, User, Save } from "lucide-react";
+import { ArrowLeft, User, Save, Baby } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -19,18 +19,38 @@ const profileSchema = z.object({
   phone: z.string().optional(),
 });
 
+const childSchema = z.object({
+  name: z.string().min(1, "Child name is required"),
+  age: z.string().min(1, "Age is required"),
+});
+
 type ProfileFormData = z.infer<typeof profileSchema>;
+type ChildFormData = z.infer<typeof childSchema>;
 
 export default function EditProfile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [location] = useLocation();
+  
+  // Check if we're editing a child
+  const urlParams = new URLSearchParams(window.location.search);
+  const childId = urlParams.get('childId');
+  const isEditingChild = Boolean(childId);
 
   const { data: currentUser, isLoading } = useQuery({
     queryKey: ["/api/auth/me"],
     queryFn: api.getCurrentUser,
   });
 
-  const form = useForm<ProfileFormData>({
+  const { data: children } = useQuery({
+    queryKey: ["/api/children"],
+    queryFn: () => fetch("/api/children").then(res => res.json()),
+    enabled: isEditingChild,
+  });
+
+  const currentChild = children?.find((child: any) => child.id === parseInt(childId || '0'));
+
+  const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       firstName: currentUser?.firstName || "",
@@ -40,17 +60,34 @@ export default function EditProfile() {
     },
   });
 
-  // Reset form when user data loads
-  useState(() => {
-    if (currentUser) {
-      form.reset({
+  const childForm = useForm<ChildFormData>({
+    resolver: zodResolver(childSchema),
+    defaultValues: {
+      name: currentChild?.name || "",
+      age: currentChild?.age?.toString() || "",
+    },
+  });
+
+  // Reset forms when data loads
+  useEffect(() => {
+    if (currentUser && !isEditingChild) {
+      profileForm.reset({
         firstName: currentUser.firstName || "",
         lastName: currentUser.lastName || "",
         email: currentUser.email || "",
         phone: currentUser.phone || "",
       });
     }
-  });
+  }, [currentUser, isEditingChild]);
+
+  useEffect(() => {
+    if (currentChild && isEditingChild) {
+      childForm.reset({
+        name: currentChild.name || "",
+        age: currentChild.age?.toString() || "",
+      });
+    }
+  }, [currentChild, isEditingChild]);
 
   const updateProfileMutation = useMutation({
     mutationFn: (data: ProfileFormData) => {
@@ -73,16 +110,50 @@ export default function EditProfile() {
     },
   });
 
-  const onSubmit = (data: ProfileFormData) => {
+  const updateChildMutation = useMutation({
+    mutationFn: (data: ChildFormData & { id: string }) => {
+      return fetch(`/api/children/${data.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          age: parseInt(data.age),
+        }),
+      }).then(res => res.json());
+    },
+    onSuccess: () => {
+      toast({
+        title: "Child Updated",
+        description: "Child profile has been updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/children"] });
+      window.history.back();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update child profile. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmitProfile = (data: ProfileFormData) => {
     updateProfileMutation.mutate(data);
   };
 
-  if (isLoading) {
+  const onSubmitChild = (data: ChildFormData) => {
+    if (childId) {
+      updateChildMutation.mutate({ ...data, id: childId });
+    }
+  };
+
+  if (isLoading || (isEditingChild && !children)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#278DD4] mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading profile...</p>
+          <p className="text-slate-600">Loading {isEditingChild ? 'child' : 'profile'}...</p>
         </div>
       </div>
     );
