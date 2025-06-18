@@ -603,19 +603,15 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               {org.planType}
                             </Badge>
                           </div>
-                          <Button 
-                            size="sm" 
-                            className="w-full"
-                            style={{ backgroundColor: org.primaryColor }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              console.log('View Classes clicked for org:', org.id);
-                              setLocation(`/organizations/${org.id}/classes`);
-                            }}
-                          >
-                            View Classes
-                          </Button>
+                          <Link href={`/organizations/${org.id}/classes`} className="w-full">
+                            <Button 
+                              size="sm" 
+                              className="w-full"
+                              style={{ backgroundColor: org.primaryColor }}
+                            >
+                              View Classes
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     </CardContent>
@@ -717,48 +713,36 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
 
             {/* Profile Actions */}
             <div className="space-y-3">
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Edit Profile clicked');
-                  setLocation('/edit-profile');
-                }}
-              >
-                <User className="h-5 w-5 mr-3 text-[#278DD4]" />
-                <span className="text-[#20366B]">Edit Profile</span>
-                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Payment Methods clicked');
-                  setLocation('/payment-methods');
-                }}
-              >
-                <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
-                <span className="text-[#20366B]">Payment Methods</span>
-                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Favourite Organizations clicked');
-                  setLocation('/favourite-organizations');
-                }}
-              >
-                <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
-                <span className="text-[#20366B]">Favourite Organisations</span>
-                <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
-              </Button>
+              <Link href="/edit-profile" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                >
+                  <User className="h-5 w-5 mr-3 text-[#278DD4]" />
+                  <span className="text-[#20366B]">Edit Profile</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+                </Button>
+              </Link>
+              <Link href="/payment-methods" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                >
+                  <CreditCard className="h-5 w-5 mr-3 text-[#278DD4]" />
+                  <span className="text-[#20366B]">Payment Methods</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+                </Button>
+              </Link>
+              <Link href="/favourite-organizations" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-12 border-[#278DD4]/20 hover:bg-[#278DD4]/10"
+                >
+                  <Heart className="h-5 w-5 mr-3 text-[#278DD4]" />
+                  <span className="text-[#20366B]">Favourite Organisations</span>
+                  <ChevronRight className="h-4 w-4 ml-auto text-[#278DD4]" />
+                </Button>
+              </Link>
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-12 text-red-600 border-red-200 hover:bg-red-50"
