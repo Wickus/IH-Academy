@@ -200,7 +200,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
       />
 
       {/* Bottom Navigation */}
-      <Tabs defaultValue="discover" className="w-full">
+      <Tabs defaultValue="profile" className="w-full">
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#20366B] to-[#278DD4] border-t border-[#278DD4]/20 z-50">
           <TabsList className="w-full h-16 bg-transparent rounded-none p-0 grid grid-cols-4">
             <TabsTrigger value="discover" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
