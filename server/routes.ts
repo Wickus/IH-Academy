@@ -2719,6 +2719,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cancel booking due to non-payment
+  // Debug logging endpoint for mobile navigation
+  app.post("/api/debug-log", async (req: Request, res: Response) => {
+    try {
+      const { action, orgId, orgName, timestamp } = req.body;
+      console.log(`🔍 MOBILE DEBUG: ${action} at ${timestamp}`);
+      if (orgId && orgName) {
+        console.log(`🔍 Organization: ${orgName} (ID: ${orgId})`);
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Debug log error:', error);
+      res.status(500).json({ error: 'Failed to log debug info' });
+    }
+  });
+
   app.post("/api/bookings/:id/cancel-for-non-payment", async (req: Request, res: Response) => {
     try {
       const bookingId = parseInt(req.params.id);
