@@ -514,6 +514,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public endpoint to get organization info by invite code (for branded invite pages)
+  app.get("/api/organizations/invite/:inviteCode", async (req: Request, res: Response) => {
+    try {
+      const { inviteCode } = req.params;
+      
+      if (!inviteCode) {
+        return res.status(400).json({ message: "Invite code is required" });
+      }
+
+      // Find organization by invite code
+      const organization = await storage.getOrganizationByInviteCode(inviteCode);
+      if (!organization) {
+        return res.status(404).json({ message: "Invalid invite code" });
+      }
+
+      // Return organization info for the branded invite page
+      res.json({ 
+        organization: {
+          id: organization.id,
+          name: organization.name,
+          description: organization.description,
+          primaryColor: organization.primaryColor,
+          secondaryColor: organization.secondaryColor,
+          accentColor: organization.accentColor,
+          logo: organization.logo,
+          planType: organization.planType,
+          maxClasses: organization.maxClasses,
+          inviteCode: organization.inviteCode
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching organization invite info:", error);
+      res.status(500).json({ message: "Failed to fetch organization info" });
+    }
+  });
+
   // New endpoint to join organization by invite code
   app.post("/api/organizations/join", async (req: Request, res: Response) => {
     try {
