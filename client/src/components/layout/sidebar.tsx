@@ -63,7 +63,7 @@ export default function Sidebar() {
           <div className="py-4">
             <div className="flex items-center space-x-2">
               <img 
-                src="https://itshappening.africa/wp-content/uploads/2023/07/IH-logo-white-1.png" 
+                src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
                 alt="IH Academy logo"
                 className="w-8 h-8 rounded-lg object-contain"
                 onError={(e) => {
