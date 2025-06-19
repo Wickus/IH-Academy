@@ -955,6 +955,19 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Message Organization Modal */}
+      {selectedOrganization && (
+        <MessageOrganizationModal
+          isOpen={messageModalOpen}
+          onClose={() => {
+            setMessageModalOpen(false);
+            setSelectedOrganization(null);
+          }}
+          organization={selectedOrganization}
+          currentUser={user}
+        />
+      )}
     </div>
   );
 }
