@@ -48,6 +48,7 @@ import CoachProfile from "@/pages/coach-profile";
 import CoachClasses from "@/pages/coach-classes";
 import CoachSettings from "@/pages/coach-settings";
 import CoachAvailabilityGeneral from "@/pages/coach-availability-general";
+import MobileAdmin from "@/pages/mobile-admin";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -83,8 +84,10 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     const isSpecialRoute = specialRoutes.includes(location) || (location.startsWith('/organizations/') && location.includes('/classes'));
     
     if (!isSpecialRoute) {
-      if (user?.role === 'coach' || user?.role === 'organization_admin') {
+      if (user?.role === 'coach') {
         return <MobileCoach user={user} />;
+      } else if (user?.role === 'organization_admin') {
+        return <MobileAdmin user={user} />;
       } else if (user?.role === 'member') {
         return <MobileParticipant user={user} />;
       }
