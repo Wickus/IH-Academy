@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api, type Organization } from "@/lib/api";
 import { formatTime, formatDate, formatCurrency } from "@/lib/utils";
+import { generateInviteEmailTemplate } from "@/lib/email-templates";
 import { 
   Calendar, 
   Users, 
@@ -27,7 +28,8 @@ import {
   Clock,
   MapPin,
   Building2,
-  Star
+  Star,
+  Mail
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BrandHeader from "@/components/brand-header";
@@ -194,8 +196,19 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
               <Button size="sm" variant="outline" onClick={copyInviteCode}>
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button size="sm" onClick={shareInviteLink} style={{ backgroundColor: organization.primaryColor }}>
-                <Share2 className="h-4 w-4 text-white" />
+              <Button 
+                size="sm" 
+                onClick={() => {
+                  const { subject, body } = generateInviteEmailTemplate(organization);
+                  const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                  window.open(emailUrl, '_blank');
+                }}
+                style={{ backgroundColor: organization.primaryColor }}
+              >
+                <Mail className="h-4 w-4 text-white" />
+              </Button>
+              <Button size="sm" variant="outline" onClick={shareInviteLink}>
+                <Share2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
