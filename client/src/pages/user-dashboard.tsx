@@ -37,10 +37,13 @@ import ChildrenManagement from "@/components/profile/children-management";
 import { useToast } from "@/hooks/use-toast";
 import { useOrganization } from "@/contexts/organization-context";
 import OrganizationDashboard from "@/pages/organization-dashboard";
+import MessageOrganizationModal from "@/components/message-organization-modal";
 
 export default function UserDashboard() {
   const [, setLocation] = useLocation();
   const [inviteCode, setInviteCode] = useState("");
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { organization, isLoading: orgLoading, hasOrganization } = useOrganization();
@@ -323,6 +326,109 @@ export default function UserDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Organizations Section */}
+        {userOrganizations.length > 0 && (
+          <Card id="organizations-section" className="mb-8 shadow-md border-0">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100">
+              <CardTitle className="flex items-center text-[#20366B]">
+                <Building2 className="mr-2 h-5 w-5" />
+                My Organizations ({userOrganizations.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userOrganizations.map((org: any) => (
+                  <Card key={org.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
+                    <CardContent className="p-5">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div 
+                          className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md"
+                          style={{ backgroundColor: org.primaryColor || '#278DD4' }}
+                        >
+                          {org.name.charAt(0)}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-[#20366B] text-lg">{org.name}</h3>
+                          <p className="text-sm text-slate-600 line-clamp-2">{org.description}</p>
+                          <Badge 
+                            variant="outline"
+                            className="mt-1"
+                            style={{ borderColor: org.accentColor, color: org.accentColor }}
+                          >
+                            {org.businessModel === 'membership' ? 'Membership' : 'Pay per Class'}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Button 
+                          size="sm" 
+                          className="w-full"
+                          style={{ backgroundColor: org.primaryColor || '#278DD4' }}
+                          onClick={() => setLocation(`/organizations/${org.id}/classes`)}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          View Classes
+                        </Button>
+                        <div className="grid grid-cols-3 gap-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-xs"
+                            style={{ borderColor: org.secondaryColor, color: org.secondaryColor }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOrganization(org);
+                              setMessageModalOpen(true);
+                            }}
+                            title="Message Organization"
+                          >
+                            <MessageCircle className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-xs"
+                            style={{ borderColor: org.accentColor, color: org.accentColor }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (org.businessModel === 'membership') {
+                                setLocation(`/membership-payment?org=${org.id}`);
+                              } else {
+                                toast({
+                                  title: "Pay per Class",
+                                  description: "Book a class to make payment",
+                                });
+                              }
+                            }}
+                            title={org.businessModel === 'membership' ? 'Pay Membership Fee' : 'Pay per Class'}
+                          >
+                            <DollarSign className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-xs text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (confirm(`Are you sure you want to leave ${org.name}?\n\nThis action cannot be undone and you'll lose access to all classes and benefits.`)) {
+                                leaveMutation.mutate(org.id);
+                              }
+                            }}
+                            disabled={leaveMutation.isPending}
+                            title="Leave Organization"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-4 mb-8">
