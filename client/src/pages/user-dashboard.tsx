@@ -240,7 +240,7 @@ export default function UserDashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/completed-classes')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -270,6 +270,20 @@ export default function UserDashboard() {
                 </div>
                 <div className="p-3 bg-[#278DD4]/10 rounded-lg">
                   <Building2 className="h-6 w-6 text-[#278DD4]" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/messages')}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600">Messages</p>
+                  <p className="text-2xl font-bold text-[#20366B]">0</p>
+                </div>
+                <div className="p-3 bg-[#1c9bfd]/10 rounded-lg">
+                  <MessageCircle className="h-6 w-6 text-[#1c9bfd]" />
                 </div>
               </div>
             </CardContent>
