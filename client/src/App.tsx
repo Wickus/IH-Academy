@@ -53,6 +53,7 @@ import CoachAvailabilityGeneral from "@/pages/coach-availability-general";
 import MobileAdmin from "@/pages/mobile-admin";
 import PaymentRedirect from "@/components/payment-redirect";
 import OrganizationInvite from "@/pages/organization-invite";
+import DebitOrderManagement from "@/pages/debit-order-management";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -186,6 +187,11 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/settings" component={() => (
           <AppLayout>
             <Settings />
+          </AppLayout>
+        )} />
+        <Route path="/debit-order-management" component={() => (
+          <AppLayout>
+            <DebitOrderManagement />
           </AppLayout>
         )} />
         <Route path="/achievements" component={() => (
