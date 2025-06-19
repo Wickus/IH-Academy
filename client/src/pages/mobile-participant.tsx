@@ -41,6 +41,118 @@ import { Link, useLocation } from "wouter";
 import BrandHeader from "@/components/brand-header";
 import MessageOrganizationModal from "@/components/message-organization-modal";
 
+// Messages Center Component for Mobile
+function MessagesCenter({ user }: { user: any }) {
+  const { data: messages, isLoading } = useQuery({
+    queryKey: ['/api/messages'],
+    queryFn: () => api.getMessages(),
+    enabled: !!user,
+  });
+
+  const { data: userOrganizations } = useQuery({
+    queryKey: ['/api/organizations/my'],
+    queryFn: () => api.getUserOrganizations(),
+    enabled: !!user,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#278DD4] mx-auto"></div>
+        <p className="mt-2 text-gray-500">Loading messages...</p>
+      </div>
+    );
+  }
+
+  const sentMessages = messages?.filter(msg => msg.senderId === user.id) || [];
+  const receivedMessages = messages?.filter(msg => msg.recipientId === user.id) || [];
+
+  return (
+    <div className="space-y-4">
+      {/* Received Messages */}
+      <div>
+        <h3 className="text-md font-medium mb-3 text-gray-900 flex items-center">
+          <MessageCircle className="h-4 w-4 mr-2 text-[#278DD4]" />
+          Received Messages ({receivedMessages.length})
+        </h3>
+        <div className="space-y-3">
+          {receivedMessages.length > 0 ? (
+            receivedMessages.map((message) => {
+              const org = userOrganizations?.find(o => o.id === message.recipientId);
+              return (
+                <Card key={message.id} className="border-l-4" style={{ borderLeftColor: org?.primaryColor || '#278DD4' }}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-gray-900">{message.subject}</h4>
+                      <Badge 
+                        variant={message.status === 'read' ? 'outline' : 'default'}
+                        style={{ 
+                          backgroundColor: message.status === 'read' ? 'transparent' : org?.accentColor || '#24D367',
+                          borderColor: org?.secondaryColor || '#f97316'
+                        }}
+                      >
+                        {message.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{message.message}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>From: {message.senderName}</span>
+                      <span>{new Date(message.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <div className="text-center py-6">
+              <MessageCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No messages received yet</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sent Messages */}
+      <div>
+        <h3 className="text-md font-medium mb-3 text-gray-900 flex items-center">
+          <MessageCircle className="h-4 w-4 mr-2 text-[#20366B]" />
+          Sent Messages ({sentMessages.length})
+        </h3>
+        <div className="space-y-3">
+          {sentMessages.length > 0 ? (
+            sentMessages.map((message) => {
+              const org = userOrganizations?.find(o => o.id === message.recipientId);
+              return (
+                <Card key={message.id} className="border-l-4 border-l-gray-400">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-gray-900">{message.subject}</h4>
+                      <Badge variant="outline">
+                        sent
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{message.message}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>To: {org?.name || 'Organization'}</span>
+                      <span>{new Date(message.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <div className="text-center py-6">
+              <MessageCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No messages sent yet</p>
+              <p className="text-xs text-gray-400 mt-1">Use the Message button on organization cards to send your first message</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface MobileParticipantProps {
   user: any;
 }
@@ -260,7 +372,7 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
       {/* Bottom Navigation */}
       <Tabs defaultValue="profile" className="w-full">
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#20366B] to-[#278DD4] border-t border-[#278DD4]/20 z-50">
-          <TabsList className="w-full h-16 bg-transparent rounded-none p-0 grid grid-cols-3">
+          <TabsList className="w-full h-16 bg-transparent rounded-none p-0 grid grid-cols-4">
             <TabsTrigger value="bookings" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <BookOpen className="h-5 w-5" />
               <span className="text-xs">Bookings</span>
@@ -268,6 +380,10 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
             <TabsTrigger value="organizations" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <Star className="h-5 w-5" />
               <span className="text-xs">Organizations</span>
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-xs">Messages</span>
             </TabsTrigger>
             <TabsTrigger value="profile" className="flex-col h-16 rounded-none gap-1 text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10">
               <User className="h-5 w-5" />
@@ -707,6 +823,15 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                 </div>
               )}
             </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="messages" className="mt-0 pb-20">
+          <div className="p-4">
+            <h2 className="text-lg font-semibold mb-3 text-gray-900">Message Center</h2>
+            
+            {/* Fetch and display messages */}
+            <MessagesCenter user={user} />
           </div>
         </TabsContent>
 
