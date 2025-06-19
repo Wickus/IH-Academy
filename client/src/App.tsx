@@ -43,6 +43,7 @@ import CoachRegister from "@/pages/coach-register";
 import EditProfile from "@/pages/edit-profile";
 import PaymentMethods from "@/pages/payment-methods";
 import FavouriteOrganizations from "@/pages/favourite-organizations";
+import CompletedClasses from "@/pages/completed-classes";
 
 import CoachProfile from "@/pages/coach-profile";
 import CoachClasses from "@/pages/coach-classes";
@@ -108,6 +109,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/edit-profile" component={EditProfile} />
         <Route path="/payment-methods" component={PaymentMethods} />
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
+        <Route path="/completed-classes" component={CompletedClasses} />
         <Route component={NotFound} />
       </Switch>
     );
