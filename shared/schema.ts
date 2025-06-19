@@ -392,6 +392,57 @@ export const usersChildrenRelations = relations(users, ({ many }) => ({
   children: many(children),
 }));
 
+// Messages table for user-to-organization communication
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  senderId: integer("sender_id").notNull().references(() => users.id),
+  recipientType: text("recipient_type", { enum: ["organization", "user"] }).notNull(),
+  recipientId: integer("recipient_id").notNull(),
+  subject: text("subject", { length: 200 }).notNull(),
+  message: text("message").notNull(),
+  status: text("status", { enum: ["sent", "delivered", "read"] }).default("sent").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Message replies table
+export const messageReplies = pgTable("message_replies", {
+  id: serial("id").primaryKey(),
+  messageId: integer("message_id").notNull().references(() => messages.id),
+  senderId: integer("sender_id").notNull().references(() => users.id),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Message relations
+export const messageRelations = relations(messages, ({ one, many }) => ({
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+  }),
+  replies: many(messageReplies),
+}));
+
+export const messageReplyRelations = relations(messageReplies, ({ one }) => ({
+  message: one(messages, {
+    fields: [messageReplies.messageId],
+    references: [messages.id],
+  }),
+  sender: one(users, {
+    fields: [messageReplies.senderId],
+    references: [users.id],
+  }),
+}));
+
+// Message schemas
+export const insertMessageSchema = createInsertSchema(messages);
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type Message = typeof messages.$inferSelect;
+
+export const insertMessageReplySchema = createInsertSchema(messageReplies);
+export type InsertMessageReply = z.infer<typeof insertMessageReplySchema>;
+export type MessageReply = typeof messageReplies.$inferSelect;
+
 // Legacy types for backward compatibility (will be removed)
 export type Academy = Organization;
 export type InsertAcademy = InsertOrganization;

@@ -1,6 +1,6 @@
 import {
   users, organizations, userOrganizations, sports, coaches, coachInvitations, coachAvailability, classes, bookings, attendance, payments,
-  achievements, userAchievements, userStats, memberships, children, dailySchedules,
+  achievements, userAchievements, userStats, memberships, children, dailySchedules, messages, messageReplies,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
   type UserOrganization, type InsertUserOrganization,
@@ -17,7 +17,9 @@ import {
   type UserStats, type InsertUserStats,
   type Membership, type InsertMembership,
   type Child, type InsertChild,
-  type DailySchedule, type InsertDailySchedule
+  type DailySchedule, type InsertDailySchedule,
+  type Message, type InsertMessage,
+  type MessageReply, type InsertMessageReply
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, count, sum } from "drizzle-orm";
@@ -145,6 +147,13 @@ export interface IStorage {
     upcomingClasses: number;
     totalMembers: number;
   }>;
+
+  // Messages
+  getUserMessages(userId: number): Promise<any[]>;
+  getMessageWithReplies(messageId: number): Promise<any>;
+  createMessage(message: InsertMessage): Promise<Message>;
+  createMessageReply(reply: InsertMessageReply): Promise<MessageReply>;
+  markMessageAsRead(messageId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
