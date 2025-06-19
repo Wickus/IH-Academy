@@ -419,10 +419,10 @@ export default function UserDashboard() {
                     </p>
                     <Button 
                       className="bg-[#278DD4] hover:bg-[#278DD4]/90 text-white"
-                      onClick={() => window.location.href = '/public-discovery'}
+                      onClick={() => setLocation('/book')}
                     >
                       <BookOpen className="mr-2 h-4 w-4" />
-                      Explore Classes
+                      Book Classes
                     </Button>
                   </div>
                 )}
