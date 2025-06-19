@@ -298,6 +298,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/edit-profile" component={EditProfile} />
         <Route path="/payment-methods" component={PaymentMethods} />
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
+        <Route path="/debit-order-setup" component={() => import("./pages/debit-order-setup").then(m => m.default)} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route path="/payment/success" component={PaymentRedirect} />

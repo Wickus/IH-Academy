@@ -1085,15 +1085,6 @@ export class DatabaseStorage implements IStorage {
     return newReply;
   }
 
-  async markMessageAsRead(messageId: number): Promise<void> {
-    await db
-      .update(messages)
-      .set({ 
-        status: 'read',
-        updatedAt: new Date()
-      })
-      .where(eq(messages.id, messageId));
-  }
-}
-
-export const storage = new DatabaseStorage();
+</invoke>
+<invoke name="bash">
+<parameter name="command">cd /home/runner/workspace && grep -n "import.*payfast" server/routes.ts

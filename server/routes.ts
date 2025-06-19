@@ -3,6 +3,7 @@ import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { payfastService, type PayFastPaymentData } from "./payfast";
+import { debitOrderService } from "./debit-order";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
@@ -2937,6 +2938,212 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error cancelling booking:", error);
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Debit Order endpoints
+  app.get("/api/debit-order/mandates", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const mandates = await storage.getDebitOrderMandatesByUser(user.id);
+      res.json(mandates);
+    } catch (error) {
+      console.error("Error fetching debit order mandates:", error);
+      res.status(500).json({ message: "Failed to fetch mandates" });
+    }
+  });
+
+  app.post("/api/debit-order/mandates", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { organizationId, bankName, accountHolder, accountNumber, branchCode, accountType, maxAmount, frequency, startDate, endDate } = req.body;
+
+      // Validate bank account details
+      const validation = debitOrderService.validateBankAccount(accountNumber, branchCode);
+      if (!validation.valid) {
+        return res.status(400).json({ message: validation.message });
+      }
+
+      const mandate = await storage.createDebitOrderMandate({
+        userId: user.id,
+        organizationId,
+        bankName,
+        accountHolder,
+        accountNumber,
+        branchCode,
+        accountType,
+        maxAmount,
+        frequency,
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : undefined,
+      });
+
+      res.json(mandate);
+    } catch (error) {
+      console.error("Error creating debit order mandate:", error);
+      res.status(500).json({ message: "Failed to create mandate" });
+    }
+  });
+
+  app.get("/api/debit-order/mandates/:id/form", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const mandateId = parseInt(req.params.id);
+      const mandate = await storage.getDebitOrderMandate(mandateId);
+      
+      if (!mandate || mandate.userId !== user.id) {
+        return res.status(404).json({ message: "Mandate not found" });
+      }
+
+      const mandateForm = debitOrderService.generateMandateForm({
+        userId: mandate.userId,
+        organizationId: mandate.organizationId,
+        bankName: mandate.bankName,
+        accountHolder: mandate.accountHolder,
+        accountNumber: mandate.accountNumber,
+        branchCode: mandate.branchCode,
+        accountType: mandate.accountType,
+        maxAmount: mandate.maxAmount,
+        frequency: mandate.frequency,
+        startDate: mandate.startDate.toISOString().split('T')[0],
+        endDate: mandate.endDate?.toISOString().split('T')[0],
+      });
+
+      res.setHeader('Content-Type', 'text/html');
+      res.send(mandateForm);
+    } catch (error) {
+      console.error("Error generating mandate form:", error);
+      res.status(500).json({ message: "Failed to generate form" });
+    }
+  });
+
+  app.post("/api/debit-order/mandates/:id/activate", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const mandateId = parseInt(req.params.id);
+      const mandate = await storage.getDebitOrderMandate(mandateId);
+      
+      if (!mandate || mandate.userId !== user.id) {
+        return res.status(404).json({ message: "Mandate not found" });
+      }
+
+      const activatedMandate = await storage.activateDebitOrderMandate(mandateId);
+      res.json(activatedMandate);
+    } catch (error) {
+      console.error("Error activating mandate:", error);
+      res.status(500).json({ message: "Failed to activate mandate" });
+    }
+  });
+
+  app.post("/api/debit-order/process-payment", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { mandateId, bookingId, amount, transactionType } = req.body;
+
+      // Verify mandate belongs to user
+      const mandate = await storage.getDebitOrderMandate(mandateId);
+      if (!mandate || mandate.userId !== user.id || mandate.status !== 'active') {
+        return res.status(400).json({ message: "Invalid or inactive mandate" });
+      }
+
+      // Check amount against mandate limit
+      if (parseFloat(amount) > parseFloat(mandate.maxAmount)) {
+        return res.status(400).json({ message: "Amount exceeds mandate limit" });
+      }
+
+      // Create transaction record
+      const transaction = await storage.createDebitOrderTransaction({
+        mandateId,
+        bookingId,
+        amount,
+        transactionType,
+        status: 'pending'
+      });
+
+      // Process the debit order
+      const result = await debitOrderService.processDebitOrderTransaction({
+        mandateId,
+        bookingId,
+        amount,
+        transactionType
+      });
+
+      // Update transaction status
+      await storage.updateDebitOrderTransaction(transaction.id, {
+        status: result.success ? 'successful' : 'failed',
+        processedAt: new Date(),
+        failureReason: result.failureReason
+      });
+
+      if (result.success) {
+        // Update booking payment status if this was for a booking
+        if (bookingId) {
+          await storage.updateBooking(bookingId, {
+            paymentStatus: 'confirmed',
+            paymentMethod: 'debit_order'
+          });
+        }
+
+        res.json({ 
+          success: true, 
+          transactionReference: result.transactionReference,
+          message: "Payment processed successfully"
+        });
+      } else {
+        res.status(400).json({ 
+          success: false, 
+          message: result.failureReason || "Payment processing failed"
+        });
+      }
+    } catch (error) {
+      console.error("Error processing debit order payment:", error);
+      res.status(500).json({ message: "Failed to process payment" });
+    }
+  });
+
+  app.get("/api/debit-order/transactions", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Get all mandates for user, then get transactions for each
+      const mandates = await storage.getDebitOrderMandatesByUser(user.id);
+      const allTransactions = [];
+      
+      for (const mandate of mandates) {
+        const transactions = await storage.getDebitOrderTransactionsByMandate(mandate.id);
+        allTransactions.push(...transactions.map(t => ({
+          ...t,
+          mandate: mandate
+        })));
+      }
+
+      res.json(allTransactions);
+    } catch (error) {
+      console.error("Error fetching debit order transactions:", error);
+      res.status(500).json({ message: "Failed to fetch transactions" });
     }
   });
 
