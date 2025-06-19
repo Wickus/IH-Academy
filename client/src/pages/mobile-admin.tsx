@@ -315,7 +315,9 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
                     <div>
                       <h4 className="font-medium text-gray-900">{booking.participantName}</h4>
                       <p className="text-sm text-gray-600">{booking.class?.name}</p>
-                      <p className="text-xs text-gray-500">{formatDate(booking.class?.startTime || '')}</p>
+                      <p className="text-xs text-gray-500">
+                        {booking.class?.startTime ? formatDate(booking.class.startTime) : 'Date TBD'}
+                      </p>
                     </div>
                     <div className="text-right">
                       <div className="font-medium text-red-600">R{formatCurrency(Number(booking.amount))}</div>
@@ -459,7 +461,9 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
                   <div>
                     <h4 className="font-medium text-gray-900">{booking.participantName}</h4>
                     <p className="text-sm text-gray-600">{booking.class?.name}</p>
-                    <p className="text-xs text-gray-500">{formatDate(booking.createdAt)}</p>
+                    <p className="text-xs text-gray-500">
+                      {booking.createdAt ? formatDate(booking.createdAt) : 'Date unknown'}
+                    </p>
                   </div>
                   <div className="text-right">
                     <div className="font-medium">R{formatCurrency(Number(booking.amount))}</div>
