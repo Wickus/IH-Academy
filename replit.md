@@ -169,3 +169,4 @@ Changelog:
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Keep communications on-platform using in-app notifications instead of mailto for organization messaging.
