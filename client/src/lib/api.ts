@@ -459,6 +459,16 @@ export const api = {
     return response.json();
   },
 
+  async markMessageAsRead(messageId: number) {
+    const response = await apiRequest('PUT', `/api/messages/${messageId}/read`);
+    return response.json();
+  },
+
+  async getMessages() {
+    const response = await apiRequest('GET', '/api/messages');
+    return response.json();
+  },
+
   // Organization management
   leaveOrganization: async (orgId: number): Promise<any> => {
     const response = await apiRequest('DELETE', `/api/organizations/${orgId}/leave`);

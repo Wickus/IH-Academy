@@ -72,8 +72,7 @@ export default function MessagesPage() {
   // Mark message as read
   const markAsReadMutation = useMutation({
     mutationFn: async (messageId: number) => {
-      const response = await apiRequest('PUT', `/api/messages/${messageId}/read`);
-      return response.json();
+      return await api.markMessageAsRead(messageId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
