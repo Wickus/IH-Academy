@@ -29,7 +29,8 @@ import {
   ChevronDown,
   Building2,
   DollarSign,
-  X
+  X,
+  MessageCircle
 } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
@@ -108,6 +109,27 @@ export default function UserDashboard() {
       toast({
         title: "Error",
         description: error.message || "Failed to join organization",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Leave organization mutation
+  const leaveMutation = useMutation({
+    mutationFn: (orgId: number) => api.leaveOrganization(orgId),
+    onSuccess: (data, orgId) => {
+      const org = userOrganizations.find(o => o.id === orgId);
+      toast({
+        title: "Left Organization",
+        description: `You have successfully left ${org?.name}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations/my'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/classes'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to leave organization",
         variant: "destructive",
       });
     },
@@ -230,7 +252,13 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => {
+            // Scroll to organizations section
+            const orgSection = document.querySelector('#organizations-section');
+            if (orgSection) {
+              orgSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
