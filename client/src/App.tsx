@@ -294,6 +294,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/discover" component={PublicDiscovery} />
         <Route path="/book" component={PublicBooking} />
         <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+        <Route path="/invite/:inviteCode" component={OrganizationInvite} />
         <Route path="/edit-profile" component={EditProfile} />
         <Route path="/payment-methods" component={PaymentMethods} />
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
