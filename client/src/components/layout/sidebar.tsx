@@ -61,7 +61,21 @@ export default function Sidebar() {
       <div className="p-8 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-center">
           <div className="py-4">
-            <h1 className="text-2xl font-bold" style={{ color: '#20366B' }}>ItsBooked</h1>
+            <div className="flex items-center space-x-2">
+              <img 
+                src="https://itshappening.africa/wp-content/uploads/2023/07/IH-logo-white-1.png" 
+                alt="IH Academy logo"
+                className="w-8 h-8 rounded-lg object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }}
+              />
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg items-center justify-center hidden">
+                <span className="text-white font-bold text-sm">IH</span>
+              </div>
+              <h1 className="text-2xl font-bold" style={{ color: '#20366B' }}>IH Academy</h1>
+            </div>
           </div>
         </div>
       </div>

@@ -169,7 +169,7 @@ export class DatabaseStorage implements IStorage {
       const [globalAdmin] = await db.insert(users).values({
         username: "globaladmin",
         password: "admin123",
-        email: "admin@itsbooked.com",
+        email: "admin@ihacademy.africa",
         firstName: "Global",
         lastName: "Admin",
         role: "global_admin"
