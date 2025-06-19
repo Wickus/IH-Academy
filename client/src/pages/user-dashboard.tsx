@@ -27,7 +27,9 @@ import {
   LogOut,
   Settings,
   ChevronDown,
-  Building2
+  Building2,
+  DollarSign,
+  X
 } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
@@ -213,22 +215,8 @@ export default function UserDashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/book')}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600">Upcoming Classes</p>
-                  <p className="text-2xl font-bold text-[#20366B]">{upcomingBookings.length}</p>
-                </div>
-                <div className="p-3 bg-[#278DD4]/10 rounded-lg">
-                  <Calendar className="h-6 w-6 text-[#278DD4]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/achievements')}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/completed-classes')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -242,15 +230,15 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Organizations</p>
+                  <p className="text-sm font-medium text-slate-600">My Organizations</p>
                   <p className="text-2xl font-bold text-[#20366B]">{userOrganizations.length}</p>
                 </div>
-                <div className="p-3 bg-[#24D3BF]/10 rounded-lg">
-                  <Users className="h-6 w-6 text-[#24D3BF]" />
+                <div className="p-3 bg-[#278DD4]/10 rounded-lg">
+                  <Building2 className="h-6 w-6 text-[#278DD4]" />
                 </div>
               </div>
             </CardContent>
