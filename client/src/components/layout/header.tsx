@@ -121,9 +121,20 @@ export default function Header() {
           <Button variant="ghost" size="sm" className="lg:hidden p-2 hover:bg-white/10 text-white">
             <Menu className="h-5 w-5" />
           </Button>
+          {!isCoach && organization?.logo && (
+            <img 
+              src={organization.logo} 
+              alt={`${organization.name} logo`}
+              className="h-10 w-10 rounded-lg object-contain bg-white/10 p-1"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          )}
           <div>
             <h2 className="text-2xl font-bold text-white">
-              {user?.role === 'global_admin' ? 'Global Admin Dashboard' : 'Dashboard'}
+              {user?.role === 'global_admin' ? 'Global Admin Dashboard' : 
+               (!isCoach && organization?.name ? `${organization.name} Dashboard` : 'Dashboard')}
             </h2>
             <p className="text-sm text-white/80">
               {user?.role === 'global_admin' 

@@ -62,19 +62,47 @@ export default function Sidebar() {
         <div className="flex items-center justify-center">
           <div className="py-4">
             <div className="flex items-center space-x-2">
-              <img 
-                src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
-                alt="IH Academy logo"
-                className="w-8 h-8 rounded-lg object-contain"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
-                }}
-              />
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg items-center justify-center hidden">
-                <span className="text-white font-bold text-sm">IH</span>
-              </div>
-              <h1 className="text-2xl font-bold" style={{ color: '#20366B' }}>IH Academy</h1>
+              {!isCoach && organization?.logo ? (
+                <img 
+                  src={organization.logo} 
+                  alt={`${organization.name} logo`}
+                  className="w-8 h-8 rounded-lg object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+              ) : (
+                <img 
+                  src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
+                  alt="IH Academy logo"
+                  className="w-8 h-8 rounded-lg object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+              )}
+              {(!isCoach && organization?.logo) && (
+                <div 
+                  className="w-8 h-8 rounded-lg items-center justify-center hidden"
+                  style={{ backgroundColor: organization.primaryColor }}
+                >
+                  <span className="text-white font-bold text-sm">
+                    {organization.name?.charAt(0) || 'O'}
+                  </span>
+                </div>
+              )}
+              {(isCoach || !organization?.logo) && (
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg items-center justify-center hidden">
+                  <span className="text-white font-bold text-sm">IH</span>
+                </div>
+              )}
+              <h1 className="text-2xl font-bold" style={{ color: '#20366B' }}>
+                {!isCoach && organization?.name ? organization.name : 'IH Academy'}
+              </h1>
             </div>
           </div>
         </div>
