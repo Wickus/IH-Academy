@@ -185,9 +185,18 @@ export default function Header() {
                 variant="ghost" 
                 size="sm" 
                 className="p-2 text-white border border-white/20"
-                style={{ background: 'transparent' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                style={{ 
+                  background: 'transparent !important',
+                  backgroundColor: 'transparent !important'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
+                  e.currentTarget.style.setProperty('background', 'rgba(255, 255, 255, 0.1)', 'important');
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                  e.currentTarget.style.setProperty('background', 'transparent', 'important');
+                }}
               >
                 <User className="h-5 w-5 mr-2" />
                 <span className="hidden sm:inline">{user?.username || 'User'}</span>
