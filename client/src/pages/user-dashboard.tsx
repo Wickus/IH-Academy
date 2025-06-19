@@ -534,6 +534,19 @@ export default function UserDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Message Organization Modal */}
+        {selectedOrganization && (
+          <MessageOrganizationModal
+            isOpen={messageModalOpen}
+            onClose={() => {
+              setMessageModalOpen(false);
+              setSelectedOrganization(null);
+            }}
+            organization={selectedOrganization}
+            currentUser={currentUser}
+          />
+        )}
       </div>
     </div>
   );
