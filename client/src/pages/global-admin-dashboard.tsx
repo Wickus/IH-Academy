@@ -459,7 +459,7 @@ export default function GlobalAdminDashboard() {
                                 </DialogHeader>
                                 <div className="space-y-4">
                                   <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-[#278DD4] to-[#24D367] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-[#20366B] to-[#278DD4] rounded-full flex items-center justify-center text-white font-bold text-xl">
                                       {user.firstName ? user.firstName.charAt(0) : user.username.charAt(0)}
                                     </div>
                                     <div>
@@ -474,11 +474,11 @@ export default function GlobalAdminDashboard() {
                                   <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                       <div className="flex items-center gap-2">
-                                        <UserCheck className="h-4 w-4 text-slate-500" />
+                                        <UserCheck className="h-4 w-4 text-[#278DD4]" />
                                         <span className="text-sm text-slate-600">Status: {user.isActive ? 'Active' : 'Inactive'}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <Calendar className="h-4 w-4 text-slate-500" />
+                                        <Calendar className="h-4 w-4 text-[#278DD4]" />
                                         <span className="text-sm text-slate-600">
                                           Joined: {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
                                         </span>
@@ -486,7 +486,7 @@ export default function GlobalAdminDashboard() {
                                     </div>
                                     <div className="space-y-2">
                                       <div className="flex items-center gap-2">
-                                        <Mail className="h-4 w-4 text-slate-500" />
+                                        <Mail className="h-4 w-4 text-[#278DD4]" />
                                         <span className="text-sm text-slate-600">{user.email}</span>
                                       </div>
                                     </div>
@@ -495,7 +495,7 @@ export default function GlobalAdminDashboard() {
                                   <div className="flex flex-wrap gap-2 pt-4 border-t">
                                     <Button 
                                       variant="outline" 
-                                      className="gap-1 border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
+                                      className="gap-1 border-[#20366B] text-[#20366B] hover:bg-[#20366B] hover:text-white"
                                       onClick={() => window.open(`mailto:${user.email}`, '_blank')}
                                     >
                                       <Mail className="h-4 w-4 mr-2" />
@@ -503,7 +503,7 @@ export default function GlobalAdminDashboard() {
                                     </Button>
                                     <Button 
                                       variant="outline" 
-                                      className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white"
+                                      className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
                                       onClick={() => toast({
                                         title: "Feature Coming Soon",
                                         description: "User profile editing will be available in a future update",
