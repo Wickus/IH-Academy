@@ -997,6 +997,100 @@ export class DatabaseStorage implements IStorage {
     const [schedule] = await db.select().from(dailySchedules).where(eq(dailySchedules.id, id));
     return schedule || undefined;
   }
+
+  // Messages implementation
+  async getUserMessages(userId: number): Promise<any[]> {
+    const userMessages = await db
+      .select({
+        id: messages.id,
+        senderId: messages.senderId,
+        senderName: users.username,
+        senderEmail: users.email,
+        recipientType: messages.recipientType,
+        recipientId: messages.recipientId,
+        recipientName: organizations.name,
+        subject: messages.subject,
+        message: messages.message,
+        status: messages.status,
+        createdAt: messages.createdAt,
+      })
+      .from(messages)
+      .leftJoin(users, eq(messages.senderId, users.id))
+      .leftJoin(organizations, eq(messages.recipientId, organizations.id))
+      .where(eq(messages.senderId, userId))
+      .orderBy(desc(messages.createdAt));
+
+    return userMessages;
+  }
+
+  async getMessageWithReplies(messageId: number): Promise<any> {
+    const message = await db
+      .select({
+        id: messages.id,
+        senderId: messages.senderId,
+        senderName: users.username,
+        senderEmail: users.email,
+        recipientType: messages.recipientType,
+        recipientId: messages.recipientId,
+        recipientName: organizations.name,
+        subject: messages.subject,
+        message: messages.message,
+        status: messages.status,
+        createdAt: messages.createdAt,
+      })
+      .from(messages)
+      .leftJoin(users, eq(messages.senderId, users.id))
+      .leftJoin(organizations, eq(messages.recipientId, organizations.id))
+      .where(eq(messages.id, messageId))
+      .limit(1);
+
+    if (!message.length) return null;
+
+    const replies = await db
+      .select({
+        id: messageReplies.id,
+        messageId: messageReplies.messageId,
+        senderId: messageReplies.senderId,
+        senderName: users.username,
+        message: messageReplies.message,
+        createdAt: messageReplies.createdAt,
+      })
+      .from(messageReplies)
+      .leftJoin(users, eq(messageReplies.senderId, users.id))
+      .where(eq(messageReplies.messageId, messageId))
+      .orderBy(messageReplies.createdAt);
+
+    return {
+      ...message[0],
+      replies
+    };
+  }
+
+  async createMessage(message: InsertMessage): Promise<Message> {
+    const [newMessage] = await db
+      .insert(messages)
+      .values(message)
+      .returning();
+    return newMessage;
+  }
+
+  async createMessageReply(reply: InsertMessageReply): Promise<MessageReply> {
+    const [newReply] = await db
+      .insert(messageReplies)
+      .values(reply)
+      .returning();
+    return newReply;
+  }
+
+  async markMessageAsRead(messageId: number): Promise<void> {
+    await db
+      .update(messages)
+      .set({ 
+        status: 'read',
+        updatedAt: new Date()
+      })
+      .where(eq(messages.id, messageId));
+  }
 }
 
 export const storage = new DatabaseStorage();
