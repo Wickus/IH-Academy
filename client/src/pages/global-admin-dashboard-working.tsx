@@ -184,35 +184,7 @@ export default function GlobalAdminDashboard() {
     },
   });
 
-  const bulkPurgeMutation = useMutation({
-    mutationFn: async ({ userIds, purgeInactive }: { userIds?: number[]; purgeInactive?: boolean }) => {
-      const response = await fetch('/api/users/bulk-purge', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ userIds, purgeInactive }),
-      });
-      if (!response.ok) throw new Error('Failed to purge users');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      setSelectedUsers([]);
-      toast({
-        title: "Success",
-        description: "Selected users have been permanently removed",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to purge users",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const editForm = useForm<UserEditFormData>({
     resolver: zodResolver(userEditSchema),
