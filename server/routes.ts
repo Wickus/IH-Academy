@@ -2514,13 +2514,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user messages
+  app.get("/api/messages", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const messages = await storage.getUserMessages(user.id);
+      res.json(messages);
+    } catch (error: any) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Send message to organization
   app.post("/api/messages/send", async (req: Request, res: Response) => {
     try {
+      const user = getCurrentUser(req);
       const { recipientType, recipientId, subject, message, senderName, senderEmail } = req.body;
 
-      if (!recipientType || !recipientId || !subject || !message || !senderName) {
+      if (!recipientType || !recipientId || !subject || !message) {
         return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Use authenticated user info if available, otherwise use provided values
+      const finalSenderName = user ? (user.name || user.username) : senderName;
+      const finalSenderEmail = user ? user.email : senderEmail;
+
+      if (!finalSenderName) {
+        return res.status(400).json({ message: "Sender name is required" });
       }
 
       let recipientEmails: string[] = [];
@@ -2544,6 +2569,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Save message to database if user is authenticated
+      let savedMessage = null;
+      if (user) {
+        savedMessage = await storage.createMessage({
+          senderId: user.id,
+          recipientType: recipientType as 'organization' | 'user',
+          recipientId: parseInt(recipientId.toString()),
+          subject: subject,
+          message: message,
+          status: 'sent'
+        });
+      }
+
       if (recipientEmails.length === 0) {
         return res.status(400).json({ message: "No recipient emails found" });
       }
@@ -2553,12 +2591,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sendEmail({
           to: email,
           from: "noreply@itshappening.africa",
-          subject: `Message from ${senderName}: ${subject}`,
+          subject: `Message from ${finalSenderName}: ${subject}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #20366B;">New Message from Member</h2>
               <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #278DD4; margin: 20px 0;">
-                <p><strong>From:</strong> ${senderName} ${senderEmail ? `(${senderEmail})` : ''}</p>
+                <p><strong>From:</strong> ${finalSenderName} ${finalSenderEmail ? `(${finalSenderEmail})` : ''}</p>
                 <p><strong>To:</strong> ${organizationName}</p>
                 <p><strong>Subject:</strong> ${subject}</p>
                 <hr style="border: none; border-top: 1px solid #e9ecef; margin: 15px 0;">
@@ -2582,9 +2620,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const results = await Promise.allSettled(emailPromises);
       const successCount = results.filter(result => result.status === 'fulfilled').length;
 
-      if (successCount > 0) {
+      if (successCount > 0 || savedMessage) {
         res.json({ 
           message: "Message sent successfully",
+          messageId: savedMessage?.id,
           recipientCount: successCount,
           totalRecipients: recipientEmails.length
         });
