@@ -600,7 +600,10 @@ export default function CoachProfile() {
                       {coachClasses.find(c => c.id === selectedClassId)?.name}
                     </h3>
                     <p className="text-sm" style={{ color: organization?.secondaryColor }}>
-                      {formatDateTime(coachClasses.find(c => c.id === selectedClassId)?.startTime || '')}
+                      {(() => {
+                        const classData = coachClasses.find(c => c.id === selectedClassId);
+                        return classData?.startTime ? formatDateTime(classData.startTime) : 'Time TBD';
+                      })()}
                     </p>
                   </div>
                   <div className="text-right">
