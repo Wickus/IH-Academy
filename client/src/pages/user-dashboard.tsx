@@ -214,7 +214,7 @@ export default function UserDashboard() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/discover')}>
+          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/book')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -242,7 +242,7 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/discover')}>
+          <Card className="border-0 shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -310,13 +310,6 @@ export default function UserDashboard() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-4 mb-8">
-          <Button 
-            onClick={() => setLocation('/discover')} 
-            className="bg-[#278DD4] hover:bg-[#20366B] text-white shadow-md px-6 py-3"
-          >
-            <BookOpen className="mr-2 h-4 w-4" />
-            Discover Classes
-          </Button>
           <Button 
             onClick={() => setLocation('/book')} 
             className="bg-[#24D367] hover:bg-[#1FB55A] text-white shadow-md px-6 py-3"

@@ -1,20 +1,43 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { api, type Class } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Users, Star, Calendar } from "lucide-react";
+import { Clock, MapPin, Users, Star, Calendar, ArrowLeft } from "lucide-react";
 import { formatCurrency, formatTime, formatDate } from "@/lib/utils";
 import BookingForm from "@/components/forms/booking-form";
 
 export default function PublicBooking() {
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [, setLocation] = useLocation();
 
+  // Get current user to filter classes by their organizations
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: api.getCurrentUser,
+  });
+
+  // Get user's organizations
+  const { data: userOrganizations = [] } = useQuery({
+    queryKey: ["/api/organizations/my"],
+    queryFn: api.getUserOrganizations,
+    enabled: !!currentUser,
+  });
+
+  // Only fetch classes from organizations the user is a member of
   const { data: classes, isLoading: classesLoading } = useQuery({
-    queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses({}),
+    queryKey: ["/api/classes", userOrganizations.map(org => org.id)],
+    queryFn: async () => {
+      if (userOrganizations.length === 0) return [];
+      const allClasses = await Promise.all(
+        userOrganizations.map(org => api.getClasses({ organizationId: org.id }))
+      );
+      return allClasses.flat();
+    },
+    enabled: userOrganizations.length > 0,
   });
 
   const { data: sports } = useQuery({
@@ -37,17 +60,29 @@ export default function PublicBooking() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367]">
+      {/* Back Navigation */}
+      <div className="p-6">
+        <Button 
+          variant="ghost" 
+          onClick={() => setLocation('/')}
+          className="text-white hover:bg-white/20"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Dashboard
+        </Button>
+      </div>
+
       {/* Header Section */}
-      <div className="relative py-16 px-6 text-center">
+      <div className="relative py-8 px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="w-16 h-16 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <Star className="text-white text-2xl" />
+            <Calendar className="text-white text-2xl" />
           </div>
-          <h1 className="text-5xl font-bold tracking-tight text-white drop-shadow-lg">
-            ItsHappening.Africa
+          <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
+            Book a Class
           </h1>
           <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-            Join our expert-led sports programs and take your fitness journey to the next level.
+            Choose from classes available in your member organizations.
             Book your spot in just a few clicks!
           </p>
         </div>
