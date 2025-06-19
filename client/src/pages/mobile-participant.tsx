@@ -67,6 +67,35 @@ function MessagesCenter({ user }: { user: any }) {
   const sentMessages = messages?.filter(msg => msg.messageType === 'sent') || [];
   const receivedMessages = messages?.filter(msg => msg.messageType === 'received') || [];
 
+  // Mark message as read functionality
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: number) => {
+      const response = await api.markMessageAsRead(messageId);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
+      toast({
+        title: "Message marked as read",
+        description: "The message status has been updated.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to mark message as read.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleMarkAsRead = (messageId: number) => {
+    markAsReadMutation.mutate(messageId);
+  };
+
   return (
     <div className="space-y-4">
       {/* Received Messages */}
@@ -84,15 +113,27 @@ function MessagesCenter({ user }: { user: any }) {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold text-gray-900">{message.subject}</h4>
-                      <Badge 
-                        variant={message.status === 'read' ? 'outline' : 'default'}
-                        style={{ 
-                          backgroundColor: message.status === 'read' ? 'transparent' : org?.accentColor || '#24D367',
-                          borderColor: org?.secondaryColor || '#f97316'
-                        }}
-                      >
-                        {message.status}
-                      </Badge>
+                      <div className="flex gap-2">
+                        <Badge 
+                          variant={message.status === 'read' ? 'outline' : 'default'}
+                          style={{ 
+                            backgroundColor: message.status === 'read' ? 'transparent' : org?.accentColor || '#24D367',
+                            borderColor: org?.secondaryColor || '#f97316'
+                          }}
+                        >
+                          {message.status}
+                        </Badge>
+                        {message.status !== 'read' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-6 px-2"
+                            onClick={() => handleMarkAsRead(message.id)}
+                          >
+                            Mark Read
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">{message.message}</p>
                     <div className="flex items-center justify-between text-xs text-gray-500">

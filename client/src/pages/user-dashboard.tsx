@@ -288,7 +288,7 @@ export default function UserDashboard() {
                 <div>
                   <p className="text-sm font-medium text-slate-600">Messages</p>
                   <p className="text-2xl font-bold text-[#20366B]">
-                    {messages ? messages.length : 0}
+                    {messages ? messages.filter(msg => msg.messageType === 'received' && msg.status !== 'read').length : 0}
                   </p>
                 </div>
                 <div className="p-3 bg-[#1c9bfd]/10 rounded-lg">
