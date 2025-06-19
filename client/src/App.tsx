@@ -44,6 +44,7 @@ import EditProfile from "@/pages/edit-profile";
 import PaymentMethods from "@/pages/payment-methods";
 import FavouriteOrganizations from "@/pages/favourite-organizations";
 import CompletedClasses from "@/pages/completed-classes";
+import Messages from "@/pages/messages";
 
 import CoachProfile from "@/pages/coach-profile";
 import CoachClasses from "@/pages/coach-classes";
@@ -111,6 +112,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/payment-methods" component={PaymentMethods} />
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
         <Route path="/completed-classes" component={CompletedClasses} />
+        <Route path="/messages" component={Messages} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={NotFound} />
