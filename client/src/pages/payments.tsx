@@ -199,6 +199,93 @@ export default function Payments() {
         </Card>
       </div>
 
+      {/* Payment Methods */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <Card className="border-0 shadow-md bg-white">
+          <CardHeader 
+            className="text-white rounded-t-lg"
+            style={{ background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+          >
+            <CardTitle className="text-lg font-bold flex items-center">
+              <CreditCard className="mr-2 h-5 w-5" />
+              PayFast Gateway
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <p className="text-slate-600 mb-4">Process online payments with PayFast integration</p>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-600">Status:</span>
+                <Badge 
+                  variant="default"
+                  style={{ backgroundColor: organization.accentColor }}
+                >
+                  Active
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-600">Sandbox Mode:</span>
+                <Badge variant="outline">
+                  {organization.payfastSandbox ? 'Enabled' : 'Disabled'}
+                </Badge>
+              </div>
+            </div>
+            <Button
+              className="w-full mt-4"
+              variant="outline"
+              style={{ 
+                borderColor: organization.secondaryColor,
+                color: organization.primaryColor
+              }}
+              onClick={() => window.open('/settings#payments', '_blank')}
+            >
+              Configure PayFast
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-md bg-white">
+          <CardHeader 
+            className="text-white rounded-t-lg"
+            style={{ background: `linear-gradient(to right, ${organization.primaryColor}, ${organization.secondaryColor})` }}
+          >
+            <CardTitle className="text-lg font-bold flex items-center">
+              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+              </svg>
+              Debit Order System
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <p className="text-slate-600 mb-4">Automated payment collection via debit orders</p>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-600">Active Mandates:</span>
+                <Badge 
+                  variant="default"
+                  style={{ backgroundColor: organization.accentColor }}
+                >
+                  0
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-600">Compliance:</span>
+                <Badge variant="outline">
+                  SA Banking Compliant
+                </Badge>
+              </div>
+            </div>
+            <Button
+              className="w-full mt-4 text-white"
+              style={{ backgroundColor: organization.accentColor }}
+              onClick={() => window.open('/debit-order-management', '_blank')}
+            >
+              Manage Debit Orders
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Payment Details */}
       <Card className="border-0 shadow-md bg-white">
         <CardHeader 

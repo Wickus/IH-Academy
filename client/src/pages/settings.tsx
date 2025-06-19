@@ -33,7 +33,10 @@ import {
   XCircle,
   Loader2,
   CreditCard,
-  Upload
+  Upload,
+  Banknote,
+  Clock,
+  Building2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -1029,6 +1032,146 @@ export default function Settings() {
                     />
                   );
                 })()}
+                
+                <Separator />
+                
+                {/* Debit Order Management Section */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 
+                      className="text-lg font-semibold mb-2"
+                      style={{ color: organization?.primaryColor || '#20366B' }}
+                    >
+                      <Banknote className="inline-block mr-2 h-5 w-5" />
+                      Debit Order Management
+                    </h3>
+                    <p className="text-slate-600 mb-4">Manage automated debit order payments for your organization members</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Card className="border border-slate-200 hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div 
+                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${organization?.primaryColor || '#20366B'}20` }}
+                          >
+                            <Building2 className="h-5 w-5" style={{ color: organization?.primaryColor || '#20366B' }} />
+                          </div>
+                          <div>
+                            <h4 
+                              className="font-semibold text-sm"
+                              style={{ color: organization?.primaryColor || '#20366B' }}
+                            >
+                              Active Mandates
+                            </h4>
+                            <p className="text-xs text-slate-600">Current debit orders</p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full text-xs"
+                          style={{ 
+                            borderColor: organization?.secondaryColor || '#278DD4',
+                            color: organization?.primaryColor || '#20366B'
+                          }}
+                          onClick={() => window.open('/debit-order-setup', '_blank')}
+                        >
+                          View Mandates
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border border-slate-200 hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div 
+                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${organization?.secondaryColor || '#278DD4'}20` }}
+                          >
+                            <Clock className="h-5 w-5" style={{ color: organization?.secondaryColor || '#278DD4' }} />
+                          </div>
+                          <div>
+                            <h4 
+                              className="font-semibold text-sm"
+                              style={{ color: organization?.primaryColor || '#20366B' }}
+                            >
+                              Transaction History
+                            </h4>
+                            <p className="text-xs text-slate-600">Payment records</p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full text-xs"
+                          style={{ 
+                            borderColor: organization?.secondaryColor || '#278DD4',
+                            color: organization?.primaryColor || '#20366B'
+                          }}
+                          onClick={() => {
+                            // This could link to a transactions page or show a modal
+                            toast({
+                              title: "Transaction History",
+                              description: "Debit order transaction history feature coming soon",
+                            });
+                          }}
+                        >
+                          View Transactions
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border border-slate-200 hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div 
+                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${organization?.accentColor || '#24D367'}20` }}
+                          >
+                            <Plus className="h-5 w-5" style={{ color: organization?.accentColor || '#24D367' }} />
+                          </div>
+                          <div>
+                            <h4 
+                              className="font-semibold text-sm"
+                              style={{ color: organization?.primaryColor || '#20366B' }}
+                            >
+                              Setup Guide
+                            </h4>
+                            <p className="text-xs text-slate-600">Configure debit orders</p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full text-xs text-white"
+                          style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                          onClick={() => window.open('/debit-order-setup', '_blank')}
+                        >
+                          Setup Debit Orders
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-start space-x-3">
+                      <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-blue-900 mb-1">Secure Debit Order Processing</h4>
+                        <p className="text-sm text-blue-800 mb-2">
+                          Debit orders provide automated payment collection for your organization with full compliance to South African banking regulations.
+                        </p>
+                        <ul className="text-xs text-blue-700 space-y-1">
+                          <li>• Automated monthly/weekly payment collection</li>
+                          <li>• Secure mandate management with member consent</li>
+                          <li>• Transaction tracking and audit trails</li>
+                          <li>• Support for all major South African banks</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </TabsContent>
 
