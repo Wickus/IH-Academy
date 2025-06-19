@@ -373,6 +373,20 @@ export class DatabaseStorage implements IStorage {
     return result.map(row => row.user);
   }
 
+  async getOrganizationAdmins(organizationId: number): Promise<User[]> {
+    const result = await db
+      .select({ user: users })
+      .from(userOrganizations)
+      .innerJoin(users, eq(userOrganizations.userId, users.id))
+      .where(and(
+        eq(userOrganizations.organizationId, organizationId),
+        eq(userOrganizations.role, 'organization_admin'),
+        eq(userOrganizations.isActive, true)
+      ));
+    
+    return result.map(row => row.user);
+  }
+
   // Sports methods
   async getAllSports(): Promise<Sport[]> {
     return await db.select().from(sports);

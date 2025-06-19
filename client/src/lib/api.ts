@@ -445,4 +445,23 @@ export const api = {
     const response = await apiRequest('POST', '/api/test-payfast-connection', credentials);
     return response.json();
   },
+
+  // Messaging functionality
+  sendMessage: async (data: {
+    recipientType: string;
+    recipientId: number;
+    subject: string;
+    message: string;
+    senderName: string;
+    senderEmail?: string;
+  }): Promise<any> => {
+    const response = await apiRequest('POST', '/api/messages/send', data);
+    return response.json();
+  },
+
+  // Organization management
+  leaveOrganization: async (orgId: number): Promise<any> => {
+    const response = await apiRequest('DELETE', `/api/organizations/${orgId}/leave`);
+    return response.json();
+  },
 };
