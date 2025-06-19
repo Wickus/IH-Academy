@@ -12,7 +12,15 @@ import { api } from "@/lib/api";
 
 export default function OrganizationInvite() {
   const { inviteCode } = useParams<{ inviteCode: string }>();
+  const [location] = useLocation();
   const [, setLocation] = useLocation();
+  
+  // Extract invite code from URL if not available from params
+  const extractedInviteCode = inviteCode || location.split('/invite/')[1];
+  
+  console.log('Current location:', location);
+  console.log('InviteCode from params:', inviteCode);
+  console.log('Extracted invite code:', extractedInviteCode);
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({
@@ -27,15 +35,19 @@ export default function OrganizationInvite() {
 
   // Fetch organization info by invite code
   const { data: orgData, isLoading: orgLoading, error: orgError } = useQuery({
-    queryKey: ['/api/organizations/invite', inviteCode],
+    queryKey: ['/api/organizations/invite', extractedInviteCode],
     queryFn: async () => {
-      const response = await fetch(`/api/organizations/invite/${inviteCode}`);
+      console.log('Fetching organization with invite code:', extractedInviteCode);
+      const response = await fetch(`/api/organizations/invite/${extractedInviteCode}`);
       if (!response.ok) {
+        console.error('Failed to fetch organization:', response.status, response.statusText);
         throw new Error('Organization not found');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('Organization data received:', data);
+      return data;
     },
-    enabled: !!inviteCode
+    enabled: !!extractedInviteCode
   });
 
   // Check if user is already authenticated
@@ -106,7 +118,7 @@ export default function OrganizationInvite() {
 
   // Join organization mutation
   const joinMutation = useMutation({
-    mutationFn: () => api.joinOrganizationByInviteCode(inviteCode!),
+    mutationFn: () => api.joinOrganizationByInviteCode(extractedInviteCode!),
     onSuccess: (data) => {
       toast({
         title: "Welcome!",
@@ -128,7 +140,11 @@ export default function OrganizationInvite() {
   if (orgLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-blue-600">Loading organization invite...</p>
+          <p className="text-sm text-gray-600 mt-2">Code: {extractedInviteCode}</p>
+        </div>
       </div>
     );
   }

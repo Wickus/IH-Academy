@@ -352,7 +352,11 @@ function Router() {
 
   // Handle invite routes before authentication checks
   if (location.startsWith('/invite/')) {
-    return <OrganizationInvite />;
+    return (
+      <Switch>
+        <Route path="/invite/:inviteCode" component={OrganizationInvite} />
+      </Switch>
+    );
   }
 
   if (isAuthenticated === null) {
