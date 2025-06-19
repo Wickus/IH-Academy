@@ -26,7 +26,8 @@ import {
   MapPin,
   LogOut,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Building2
 } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import ChildrenManagement from "@/components/profile/children-management";
@@ -271,26 +272,36 @@ export default function UserDashboard() {
         </div>
 
         {/* Invite Code Section */}
-        <Card className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+        <Card className="mb-8 bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white shadow-lg">
           <CardContent className="p-6">
-            <h3 className="text-xl font-semibold mb-2">Have an invite code?</h3>
-            <p className="text-white/80 mb-4">Join an organization instantly with their invite code</p>
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold mb-2 flex items-center">
+                  <Users className="mr-2 h-5 w-5" />
+                  Join an Organization
+                </h3>
+                <p className="text-white/80">Enter an invite code to instantly join and access their classes</p>
+              </div>
+              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                <Star className="h-6 w-6" />
+              </div>
+            </div>
             <div className="flex gap-3">
               <Input
                 placeholder="Enter invite code (e.g., ORG00259360B7)"
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60"
+                className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60 focus:bg-white/30 focus:border-white/50"
               />
               <Button
                 onClick={handleJoinWithCode}
                 disabled={!inviteCode.trim() || joinMutation.isPending}
-                className="bg-white text-blue-600 hover:bg-white/90 px-8"
+                className="bg-[#24D367] hover:bg-[#1FB55A] text-white px-8 font-medium"
               >
                 {joinMutation.isPending ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                 ) : (
-                  "Join"
+                  "Join Organization"
                 )}
               </Button>
             </div>
@@ -301,17 +312,25 @@ export default function UserDashboard() {
         <div className="flex flex-wrap gap-4 mb-8">
           <Button 
             onClick={() => setLocation('/discover')} 
-            className="bg-[#278DD4] hover:bg-[#20366B] text-white"
+            className="bg-[#278DD4] hover:bg-[#20366B] text-white shadow-md px-6 py-3"
           >
             <BookOpen className="mr-2 h-4 w-4" />
             Discover Classes
           </Button>
           <Button 
             onClick={() => setLocation('/book')} 
-            className="bg-[#24D367] hover:bg-[#1FB55A] text-white"
+            className="bg-[#24D367] hover:bg-[#1FB55A] text-white shadow-md px-6 py-3"
           >
             <Calendar className="mr-2 h-4 w-4" />
             Book a Class
+          </Button>
+          <Button 
+            onClick={() => setLocation('/achievements')} 
+            variant="outline"
+            className="border-[#20366B] text-[#20366B] hover:bg-[#20366B] hover:text-white shadow-md px-6 py-3"
+          >
+            <Trophy className="mr-2 h-4 w-4" />
+            View Achievements
           </Button>
         </div>
 
