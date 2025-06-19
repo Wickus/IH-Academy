@@ -1235,6 +1235,39 @@ export class DatabaseStorage implements IStorage {
       .from(debitOrderTransactions)
       .where(eq(debitOrderTransactions.status, 'pending'));
   }
+
+  // Delete organization and all related data
+  async deleteOrganization(id: number): Promise<void> {
+    // Delete in correct order to handle foreign key constraints
+    
+    // 1. Delete debit order transactions
+    await db.delete(debitOrderTransactions).where(eq(debitOrderTransactions.organizationId, id));
+    
+    // 2. Delete debit order mandates
+    await db.delete(debitOrderMandates).where(eq(debitOrderMandates.organizationId, id));
+    
+    // 3. Delete messages related to organization
+    await db.delete(messages).where(eq(messages.recipientId, id));
+    
+    // 4. Delete bookings for classes in this organization
+    const orgClasses = await db.select({ id: classes.id }).from(classes).where(eq(classes.organizationId, id));
+    const classIds = orgClasses.map(c => c.id);
+    if (classIds.length > 0) {
+      await db.delete(bookings).where(inArray(bookings.classId, classIds));
+    }
+    
+    // 5. Delete daily schedules
+    await db.delete(dailySchedules).where(eq(dailySchedules.organizationId, id));
+    
+    // 6. Delete classes
+    await db.delete(classes).where(eq(classes.organizationId, id));
+    
+    // 7. Delete user organization relationships
+    await db.delete(userOrganizations).where(eq(userOrganizations.organizationId, id));
+    
+    // 8. Finally delete the organization itself
+    await db.delete(organizations).where(eq(organizations.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();

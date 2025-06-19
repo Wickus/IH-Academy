@@ -158,6 +158,32 @@ export default function GlobalAdminDashboard() {
     },
   });
 
+  const deleteOrganizationMutation = useMutation({
+    mutationFn: async (organizationId: number) => {
+      const response = await fetch(`/api/organizations/${organizationId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!response.ok) throw new Error('Failed to delete organization');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({
+        title: "Success",
+        description: "Organization permanently deleted",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete organization",
+        variant: "destructive",
+      });
+    },
+  });
+
   const editForm = useForm<UserEditFormData>({
     resolver: zodResolver(userEditSchema),
     defaultValues: {
@@ -503,6 +529,32 @@ export default function GlobalAdminDashboard() {
       toast({
         title: "Error",
         description: error.message || "Failed to update organisation status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteOrganizationMutation = useMutation({
+    mutationFn: async (organizationId: number) => {
+      const response = await fetch(`/api/organizations/${organizationId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!response.ok) throw new Error('Failed to delete organization');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({
+        title: "Success",
+        description: "Organization permanently deleted",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete organization",
         variant: "destructive",
       });
     },
@@ -1117,6 +1169,26 @@ export default function GlobalAdminDashboard() {
                       >
                         <UserCheck className="h-3 w-3" />
                         {org.isActive ? 'Deactivate' : 'Activate'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to permanently delete "${org.name}"? This action cannot be undone and will remove all associated data including classes, bookings, and members.`)) {
+                            deleteOrganizationMutation.mutate(org.id);
+                          }
+                        }}
+                        disabled={deleteOrganizationMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        {deleteOrganizationMutation.isPending ? 'Deleting...' : 'Delete'}
+                      </Button>
+                        }}
+                        disabled={deleteOrganizationMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        {deleteOrganizationMutation.isPending ? 'Deleting...' : 'Delete'}
                       </Button>
                     </div>
                   </div>
