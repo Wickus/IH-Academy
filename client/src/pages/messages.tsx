@@ -69,6 +69,32 @@ export default function MessagesPage() {
   const [message, setMessage] = useState("");
   const [selectedOrganization, setSelectedOrganization] = useState("");
 
+  // Mark message as read
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: number) => {
+      const response = await apiRequest('PUT', `/api/messages/${messageId}/read`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
+      toast({
+        title: "Message marked as read",
+        description: "The message status has been updated.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to mark message as read.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleViewMessage = (messageId: number) => {
+    markAsReadMutation.mutate(messageId);
+  };
+
   // Fetch user's messages
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['/api/messages'],
