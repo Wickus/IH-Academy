@@ -145,7 +145,7 @@ export const bookings = pgTable("bookings", {
   participantAge: integer("participant_age"),
   bookingDate: timestamp("booking_date").notNull(),
   paymentStatus: text("payment_status").notNull().default("pending"), // pending, confirmed, failed, refunded
-  paymentMethod: text("payment_method", { enum: ["payfast", "cash", "card"] }).default("payfast"),
+  paymentMethod: text("payment_method", { enum: ["payfast", "cash", "card", "debit_order"] }).default("payfast"),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   payfastPaymentId: text("payfast_payment_id"),
   notes: text("notes"),
@@ -166,7 +166,7 @@ export const attendance = pgTable("attendance", {
   participantPhone: text("participant_phone"), // for walk-in clients
   participantUserId: integer("participant_user_id"), // if walk-in becomes user
   isWalkIn: boolean("is_walk_in").default(false),
-  paymentMethod: text("payment_method", { enum: ["cash", "card", "transfer"] }),
+  paymentMethod: text("payment_method", { enum: ["cash", "card", "transfer", "debit_order"] }),
   amountPaid: decimal("amount_paid", { precision: 10, scale: 2 }),
   notes: text("notes"),
 });
@@ -179,7 +179,48 @@ export const payments = pgTable("payments", {
   status: text("status").notNull().default("pending"),
   payfastPaymentId: text("payfast_payment_id"),
   payfastData: json("payfast_data"),
+  debitOrderData: json("debit_order_data"),
   processedAt: timestamp("processed_at"),
+});
+
+// Debit order mandates for recurring payments
+export const debitOrderMandates = pgTable("debit_order_mandates", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  organizationId: integer("organization_id").notNull(),
+  bankName: text("bank_name").notNull(),
+  accountHolder: text("account_holder").notNull(),
+  accountNumber: text("account_number").notNull(),
+  branchCode: text("branch_code").notNull(),
+  accountType: text("account_type", { enum: ["current", "savings", "transmission"] }).notNull(),
+  maxAmount: decimal("max_amount", { precision: 10, scale: 2 }).notNull(),
+  frequency: text("frequency", { enum: ["monthly", "weekly", "bi-weekly"] }).default("monthly"),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date"),
+  status: text("status", { enum: ["pending", "active", "suspended", "cancelled"] }).default("pending"),
+  mandateReference: text("mandate_reference").unique(),
+  signedAt: timestamp("signed_at"),
+  lastProcessedAt: timestamp("last_processed_at"),
+  nextProcessDate: date("next_process_date"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Debit order transactions
+export const debitOrderTransactions = pgTable("debit_order_transactions", {
+  id: serial("id").primaryKey(),
+  mandateId: integer("mandate_id").notNull(),
+  bookingId: integer("booking_id"), // nullable for membership payments
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  transactionType: text("transaction_type", { enum: ["class_payment", "membership_payment", "late_fee"] }).notNull(),
+  status: text("status", { enum: ["pending", "processing", "successful", "failed", "disputed"] }).default("pending"),
+  transactionReference: text("transaction_reference").unique(),
+  processedAt: timestamp("processed_at"),
+  failureReason: text("failure_reason"),
+  retryCount: integer("retry_count").default(0),
+  nextRetryDate: date("next_retry_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Insert schemas
@@ -269,6 +310,12 @@ export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;
 
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+
+export type DebitOrderMandate = typeof debitOrderMandates.$inferSelect;
+export type InsertDebitOrderMandate = z.infer<typeof insertDebitOrderMandateSchema>;
+
+export type DebitOrderTransaction = typeof debitOrderTransactions.$inferSelect;
+export type InsertDebitOrderTransaction = z.infer<typeof insertDebitOrderTransactionSchema>;
 
 // Achievement definitions
 export const achievements = pgTable("achievements", {
