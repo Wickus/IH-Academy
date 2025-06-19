@@ -2514,20 +2514,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Send message to members
+  // Send message to organization
   app.post("/api/messages/send", async (req: Request, res: Response) => {
     try {
-      const { organizationId, memberIds, message, type } = req.body;
-      
-      // Send push notifications to selected members
-      for (const memberId of memberIds) {
-        console.log(`Sending notification to member ${memberId}:`, message);
+      const { recipientType, recipientId, subject, message, senderName, senderEmail } = req.body;
+
+      if (!recipientType || !recipientId || !subject || !message || !senderName) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
-      
-      res.json({ success: true, sentTo: memberIds.length });
-    } catch (error) {
-      console.error("Error sending messages:", error);
-      res.status(500).json({ message: "Failed to send messages" });
+
+      let recipientEmails: string[] = [];
+      let organizationName = "";
+
+      if (recipientType === 'organization') {
+        // Get organization details and admin emails
+        const organization = await storage.getOrganization(recipientId);
+        if (!organization) {
+          return res.status(404).json({ message: "Organization not found" });
+        }
+        organizationName = organization.name;
+
+        // Get organization admins
+        const admins = await storage.getOrganizationAdmins(recipientId);
+        recipientEmails = admins.map(admin => admin.email).filter(email => email);
+
+        // Also include organization email if available
+        if (organization.email) {
+          recipientEmails.push(organization.email);
+        }
+      }
+
+      if (recipientEmails.length === 0) {
+        return res.status(400).json({ message: "No recipient emails found" });
+      }
+
+      // Send email to all recipients
+      const emailPromises = recipientEmails.map(email => 
+        sendEmail({
+          to: email,
+          from: "noreply@itshappening.africa",
+          subject: `Message from ${senderName}: ${subject}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #20366B;">New Message from Member</h2>
+              <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #278DD4; margin: 20px 0;">
+                <p><strong>From:</strong> ${senderName} ${senderEmail ? `(${senderEmail})` : ''}</p>
+                <p><strong>To:</strong> ${organizationName}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <hr style="border: none; border-top: 1px solid #e9ecef; margin: 15px 0;">
+                <p><strong>Message:</strong></p>
+                <p style="white-space: pre-line; line-height: 1.6;">${message}</p>
+              </div>
+              <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; color: #1976d2; font-size: 14px;">
+                  💡 <strong>Tip:</strong> You can respond to this member by logging into your ItsHappening.Africa dashboard and accessing your messaging center.
+                </p>
+              </div>
+              <hr style="border: none; border-top: 1px solid #e9ecef; margin: 30px 0;">
+              <p style="color: #6c757d; font-size: 14px;">
+                This message was sent through the ItsHappening.Africa platform. Please do not reply directly to this email.
+              </p>
+            </div>
+          `
+        })
+      );
+
+      const results = await Promise.allSettled(emailPromises);
+      const successCount = results.filter(result => result.status === 'fulfilled').length;
+
+      if (successCount > 0) {
+        res.json({ 
+          message: "Message sent successfully",
+          recipientCount: successCount,
+          totalRecipients: recipientEmails.length
+        });
+      } else {
+        res.status(500).json({ message: "Failed to send message to any recipients" });
+      }
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ message: error.message });
     }
   });
 

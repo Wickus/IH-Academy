@@ -125,14 +125,17 @@ export default function MessageOrganizationModal({
             />
           </div>
 
-          <div className="flex items-center space-x-2 p-3 bg-slate-50 rounded-lg">
+          <div 
+            className="flex items-center space-x-2 p-3 rounded-lg"
+            style={{ backgroundColor: `${organization.primaryColor}10` }}
+          >
             <div 
               className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs"
-              style={{ backgroundColor: organization.accentColor || '#24D367' }}
+              style={{ backgroundColor: organization.primaryColor || '#1c9bfd' }}
             >
               {(currentUser.firstName || currentUser.username).charAt(0).toUpperCase()}
             </div>
-            <div className="text-sm text-slate-600">
+            <div className="text-sm" style={{ color: organization.primaryColor || '#1c9bfd' }}>
               Sending as: {currentUser.firstName || currentUser.username} ({currentUser.email})
             </div>
           </div>
