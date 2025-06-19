@@ -50,6 +50,7 @@ import CoachClasses from "@/pages/coach-classes";
 import CoachSettings from "@/pages/coach-settings";
 import CoachAvailabilityGeneral from "@/pages/coach-availability-general";
 import MobileAdmin from "@/pages/mobile-admin";
+import PaymentRedirect from "@/components/payment-redirect";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -110,6 +111,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/payment-methods" component={PaymentMethods} />
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
         <Route path="/completed-classes" component={CompletedClasses} />
+        <Route path="/payment/success" component={PaymentRedirect} />
+        <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -212,6 +215,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
             <ClassesManagement />
           </AppLayout>
         )} />
+        <Route path="/payment/success" component={PaymentRedirect} />
+        <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -253,6 +258,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         )} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
+        <Route path="/payment/success" component={PaymentRedirect} />
+        <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -269,6 +276,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
       <Route path="/organizations/:id/classes" component={OrganizationClasses} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancelled" component={PaymentCancelled} />
+      <Route path="/payment/success" component={PaymentRedirect} />
+      <Route path="/payment/cancelled" component={PaymentRedirect} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -287,6 +296,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
+        <Route path="/payment/success" component={PaymentRedirect} />
+        <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -306,6 +317,8 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
       <Route path="/organization-payment" component={OrganizationPayment} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancelled" component={PaymentCancelled} />
+      <Route path="/payment/success" component={PaymentRedirect} />
+      <Route path="/payment/cancelled" component={PaymentRedirect} />
       <Route path="/coach-register/:token" component={CoachRegister} />
       <Route component={NotFound} />
     </Switch>
