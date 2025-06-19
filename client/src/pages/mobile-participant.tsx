@@ -31,12 +31,15 @@ import {
   Play,
   Baby,
   Plus,
-  LogOut
+  LogOut,
+  MessageCircle,
+  DollarSign
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
 // import PushNotificationSetup from "@/components/push-notification-setup"; // Temporarily disabled
 import BrandHeader from "@/components/brand-header";
+import MessageOrganizationModal from "@/components/message-organization-modal";
 
 interface MobileParticipantProps {
   user: any;
@@ -57,6 +60,8 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
   // const [showNotificationSetup, setShowNotificationSetup] = useState(false);
   const [showAddChild, setShowAddChild] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -623,17 +628,71 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                               {org.planType}
                             </Badge>
                           </div>
-                          <div 
-                            className="w-full text-center py-2 px-4 text-white text-sm font-medium rounded-md cursor-pointer"
-                            style={{ backgroundColor: org.primaryColor }}
-                            onTouchStart={() => {
-                              window.location.assign(`/organizations/${org.id}/classes`);
-                            }}
-                            onClick={() => {
-                              window.location.assign(`/organizations/${org.id}/classes`);
-                            }}
-                          >
-                            View Classes
+                          <div className="space-y-2">
+                            <div 
+                              className="w-full text-center py-2 px-4 text-white text-sm font-medium rounded-md cursor-pointer"
+                              style={{ backgroundColor: org.primaryColor }}
+                              onTouchStart={() => {
+                                window.location.assign(`/organizations/${org.id}/classes`);
+                              }}
+                              onClick={() => {
+                                window.location.assign(`/organizations/${org.id}/classes`);
+                              }}
+                            >
+                              View Classes
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div 
+                                className="text-center py-2 px-3 text-sm font-medium rounded-md cursor-pointer border-2"
+                                style={{ 
+                                  borderColor: org.secondaryColor, 
+                                  color: org.secondaryColor,
+                                  backgroundColor: 'transparent'
+                                }}
+                                onTouchStart={(e) => {
+                                  e.currentTarget.style.backgroundColor = org.secondaryColor + '20';
+                                }}
+                                onTouchEnd={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedOrganization(org);
+                                  setMessageModalOpen(true);
+                                }}
+                              >
+                                <MessageCircle className="h-4 w-4 mx-auto mb-1" />
+                                Message
+                              </div>
+                              <div 
+                                className="text-center py-2 px-3 text-sm font-medium rounded-md cursor-pointer border-2"
+                                style={{ 
+                                  borderColor: org.accentColor, 
+                                  color: org.accentColor,
+                                  backgroundColor: 'transparent'
+                                }}
+                                onTouchStart={(e) => {
+                                  e.currentTarget.style.backgroundColor = org.accentColor + '20';
+                                }}
+                                onTouchEnd={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (org.businessModel === 'membership') {
+                                    setLocation(`/membership-payment?org=${org.id}`);
+                                  } else {
+                                    toast({
+                                      title: "Pay per Class",
+                                      description: "Book a class to make payment",
+                                    });
+                                  }
+                                }}
+                              >
+                                <DollarSign className="h-4 w-4 mx-auto mb-1" />
+                                Pay
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
