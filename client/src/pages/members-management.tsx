@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Search, Users, Download, Mail, MessageSquare, Eye, Filter, FileText, Send } from 'lucide-react';
+import { ArrowLeft, Search, Users, Download, Mail, MessageSquare, Eye, Filter, FileText, Send, CreditCard, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { User, Organization, Booking } from '@shared/schema';
 
@@ -56,6 +56,19 @@ export default function MembersManagement() {
       return response.json();
     },
     enabled: !!selectedMember,
+  });
+
+  // Fetch debit order mandates for all members
+  const { data: debitOrderMandates = [] } = useQuery({
+    queryKey: ['/api/debit-order/mandates'],
+    queryFn: async () => {
+      const response = await fetch('/api/debit-order/mandates', {
+        credentials: 'include'
+      });
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!organization,
   });
 
   // Send message mutation
@@ -407,6 +420,7 @@ export default function MembersManagement() {
                       <TableHead>Member</TableHead>
                       <TableHead>Join Date</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Debit Order</TableHead>
                       <TableHead>Total Bookings</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -444,6 +458,36 @@ export default function MembersManagement() {
                           </Badge>
                         </TableCell>
                         <TableCell>
+                          {(() => {
+                            const userMandate = debitOrderMandates.find(mandate => mandate.userId === member.id && mandate.organizationId === organization?.id);
+                            if (!userMandate) {
+                              return (
+                                <div className="flex items-center gap-1 text-muted-foreground">
+                                  <XCircle className="h-4 w-4" />
+                                  <span className="text-sm">No mandate</span>
+                                </div>
+                              );
+                            }
+                            
+                            const statusConfig = {
+                              'active': { icon: CheckCircle, text: 'Active', color: organization.primaryColor },
+                              'pending': { icon: Clock, text: 'Pending', color: organization.accentColor },
+                              'expired': { icon: XCircle, text: 'Expired', color: '#ef4444' },
+                              'cancelled': { icon: XCircle, text: 'Cancelled', color: '#6b7280' }
+                            };
+                            
+                            const config = statusConfig[userMandate.status as keyof typeof statusConfig] || statusConfig.pending;
+                            const IconComponent = config.icon;
+                            
+                            return (
+                              <div className="flex items-center gap-1" style={{ color: config.color }}>
+                                <IconComponent className="h-4 w-4" />
+                                <span className="text-sm font-medium">{config.text}</span>
+                              </div>
+                            );
+                          })()}
+                        </TableCell>
+                        <TableCell>
                           <div className="flex items-center gap-1">
                             <FileText className="h-4 w-4" />
                             {member.totalBookings || 0}
@@ -467,41 +511,176 @@ export default function MembersManagement() {
                             </DialogTrigger>
                             <DialogContent className="max-w-2xl">
                               <DialogHeader>
-                                <DialogTitle>Member Details</DialogTitle>
+                                <DialogTitle style={{ color: organization.primaryColor }}>
+                                  Member Details
+                                </DialogTitle>
                               </DialogHeader>
-                              <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="text-sm font-medium">Name</label>
-                                    <p className="text-sm text-muted-foreground">{selectedMember?.username}</p>
+                              <div className="space-y-6">
+                                {/* Member Profile Header */}
+                                <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: `${organization.secondaryColor}10` }}>
+                                  <div 
+                                    className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl"
+                                    style={{ 
+                                      background: `linear-gradient(135deg, ${organization.primaryColor}, ${organization.secondaryColor})` 
+                                    }}
+                                  >
+                                    {selectedMember?.firstName ? selectedMember.firstName.charAt(0) : selectedMember?.username.charAt(0)}
                                   </div>
                                   <div>
-                                    <label className="text-sm font-medium">Email</label>
-                                    <p className="text-sm text-muted-foreground">{selectedMember?.email}</p>
+                                    <h3 className="text-xl font-bold" style={{ color: organization.primaryColor }}>
+                                      {selectedMember?.firstName && selectedMember?.lastName 
+                                        ? `${selectedMember.firstName} ${selectedMember.lastName}` 
+                                        : selectedMember?.username}
+                                    </h3>
+                                    <p className="text-muted-foreground">{selectedMember?.email}</p>
+                                    <div className="mt-1">
+                                      <Badge 
+                                        variant={selectedMember?.isActive ? "default" : "secondary"}
+                                        style={{ 
+                                          backgroundColor: selectedMember?.isActive ? `${organization.primaryColor}20` : '#6b728020',
+                                          color: selectedMember?.isActive ? organization.primaryColor : '#6b7280',
+                                          borderColor: selectedMember?.isActive ? organization.primaryColor : '#6b7280',
+                                        }}
+                                      >
+                                        {selectedMember?.isActive ? 'Active Member' : 'Inactive Member'}
+                                      </Badge>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Join Date</label>
+                                </div>
+
+                                {/* Member Information Grid */}
+                                <div className="grid grid-cols-2 gap-6">
+                                  <div className="space-y-1">
+                                    <label className="text-sm font-medium" style={{ color: organization.primaryColor }}>
+                                      Join Date
+                                    </label>
                                     <p className="text-sm text-muted-foreground">
                                       {new Date(selectedMember?.createdAt || '').toLocaleDateString()}
                                     </p>
                                   </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Status</label>
+                                  <div className="space-y-1">
+                                    <label className="text-sm font-medium" style={{ color: organization.primaryColor }}>
+                                      Total Bookings
+                                    </label>
                                     <p className="text-sm text-muted-foreground">
-                                      {selectedMember?.isActive ? 'Active' : 'Inactive'}
+                                      {selectedMember?.totalBookings || 0} classes
                                     </p>
                                   </div>
                                 </div>
+
+                                {/* Debit Order Status */}
+                                <div className="p-4 rounded-lg border" style={{ borderColor: `${organization.secondaryColor}40` }}>
+                                  <h4 className="text-sm font-medium mb-3" style={{ color: organization.primaryColor }}>
+                                    <CreditCard className="inline h-4 w-4 mr-2" />
+                                    Debit Order Status
+                                  </h4>
+                                  {(() => {
+                                    const userMandate = debitOrderMandates.find(mandate => 
+                                      mandate.userId === selectedMember?.id && mandate.organizationId === organization?.id
+                                    );
+                                    
+                                    if (!userMandate) {
+                                      return (
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                          <XCircle className="h-5 w-5" />
+                                          <div>
+                                            <p className="text-sm font-medium">No Debit Order Mandate</p>
+                                            <p className="text-xs">Member has not set up automated payments</p>
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+                                    
+                                    const statusConfig = {
+                                      'active': { 
+                                        icon: CheckCircle, 
+                                        text: 'Active Mandate', 
+                                        color: organization.primaryColor,
+                                        description: 'Automated payments are active'
+                                      },
+                                      'pending': { 
+                                        icon: Clock, 
+                                        text: 'Pending Activation', 
+                                        color: organization.accentColor,
+                                        description: 'Waiting for bank approval'
+                                      },
+                                      'expired': { 
+                                        icon: XCircle, 
+                                        text: 'Expired Mandate', 
+                                        color: '#ef4444',
+                                        description: 'Mandate has expired and needs renewal'
+                                      },
+                                      'cancelled': { 
+                                        icon: XCircle, 
+                                        text: 'Cancelled Mandate', 
+                                        color: '#6b7280',
+                                        description: 'Mandate was cancelled by user or bank'
+                                      }
+                                    };
+                                    
+                                    const config = statusConfig[userMandate.status as keyof typeof statusConfig] || statusConfig.pending;
+                                    const IconComponent = config.icon;
+                                    
+                                    return (
+                                      <div className="space-y-3">
+                                        <div className="flex items-center gap-2" style={{ color: config.color }}>
+                                          <IconComponent className="h-5 w-5" />
+                                          <div>
+                                            <p className="text-sm font-medium">{config.text}</p>
+                                            <p className="text-xs text-muted-foreground">{config.description}</p>
+                                          </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 text-xs">
+                                          <div>
+                                            <span className="font-medium">Bank:</span> {userMandate.bankName}
+                                          </div>
+                                          <div>
+                                            <span className="font-medium">Max Amount:</span> R{userMandate.maxAmount}
+                                          </div>
+                                          <div>
+                                            <span className="font-medium">Frequency:</span> {userMandate.frequency}
+                                          </div>
+                                          <div>
+                                            <span className="font-medium">Created:</span> {new Date(userMandate.createdAt).toLocaleDateString()}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
+                                {/* Recent Bookings */}
                                 <div>
-                                  <label className="text-sm font-medium">Recent Bookings</label>
-                                  <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
+                                  <h4 className="text-sm font-medium mb-3" style={{ color: organization.primaryColor }}>
+                                    <FileText className="inline h-4 w-4 mr-2" />
+                                    Recent Bookings
+                                  </h4>
+                                  <div className="space-y-2 max-h-40 overflow-y-auto">
                                     {memberBookings.length === 0 ? (
-                                      <p className="text-sm text-muted-foreground">No bookings found</p>
+                                      <div className="text-center py-4 text-muted-foreground">
+                                        <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                        <p className="text-sm">No bookings found</p>
+                                      </div>
                                     ) : (
-                                      memberBookings.map((booking: any, index: number) => (
-                                        <div key={index} className="flex justify-between items-center p-2 bg-muted rounded">
-                                          <span className="text-sm">{booking.className}</span>
-                                          <Badge variant="outline">
+                                      memberBookings.slice(0, 5).map((booking: any, index: number) => (
+                                        <div 
+                                          key={index} 
+                                          className="flex justify-between items-center p-3 rounded-lg border"
+                                          style={{ borderColor: `${organization.secondaryColor}20` }}
+                                        >
+                                          <div className="flex-1">
+                                            <span className="text-sm font-medium">{booking.className}</span>
+                                            <p className="text-xs text-muted-foreground">
+                                              {new Date(booking.createdAt).toLocaleDateString()}
+                                            </p>
+                                          </div>
+                                          <Badge 
+                                            variant="outline"
+                                            style={{
+                                              borderColor: organization.secondaryColor,
+                                              color: organization.secondaryColor,
+                                              backgroundColor: `${organization.secondaryColor}10`
+                                            }}
+                                          >
                                             {booking.status}
                                           </Badge>
                                         </div>
