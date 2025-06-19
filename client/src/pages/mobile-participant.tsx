@@ -64,8 +64,8 @@ function MessagesCenter({ user }: { user: any }) {
     );
   }
 
-  const sentMessages = messages?.filter(msg => msg.senderId === user.id) || [];
-  const receivedMessages = messages?.filter(msg => msg.recipientId === user.id) || [];
+  const sentMessages = messages?.filter(msg => msg.messageType === 'sent') || [];
+  const receivedMessages = messages?.filter(msg => msg.messageType === 'received') || [];
 
   return (
     <div className="space-y-4">

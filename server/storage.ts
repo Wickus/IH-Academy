@@ -1003,7 +1003,8 @@ export class DatabaseStorage implements IStorage {
 
   // Messages implementation
   async getUserMessages(userId: number): Promise<any[]> {
-    const userMessages = await db
+    // Get messages sent by the user
+    const sentMessages = await db
       .select({
         id: messages.id,
         senderId: messages.senderId,
@@ -1016,6 +1017,7 @@ export class DatabaseStorage implements IStorage {
         message: messages.message,
         status: messages.status,
         createdAt: messages.createdAt,
+        messageType: sql<string>`'sent'`.as('messageType'),
       })
       .from(messages)
       .leftJoin(users, eq(messages.senderId, users.id))
@@ -1023,7 +1025,42 @@ export class DatabaseStorage implements IStorage {
       .where(eq(messages.senderId, userId))
       .orderBy(desc(messages.createdAt));
 
-    return userMessages;
+    // Get messages sent to organizations where the user is an admin/member
+    const userOrgs = await db
+      .select({ organizationId: userOrganizations.organizationId })
+      .from(userOrganizations)
+      .where(eq(userOrganizations.userId, userId));
+
+    const orgIds = userOrgs.map(org => org.organizationId);
+    
+    let receivedMessages: any[] = [];
+    if (orgIds.length > 0) {
+      receivedMessages = await db
+        .select({
+          id: messages.id,
+          senderId: messages.senderId,
+          senderName: users.username,
+          senderEmail: users.email,
+          recipientType: messages.recipientType,
+          recipientId: messages.recipientId,
+          recipientName: organizations.name,
+          subject: messages.subject,
+          message: messages.message,
+          status: messages.status,
+          createdAt: messages.createdAt,
+          messageType: sql<string>`'received'`.as('messageType'),
+        })
+        .from(messages)
+        .leftJoin(users, eq(messages.senderId, users.id))
+        .leftJoin(organizations, eq(messages.recipientId, organizations.id))
+        .where(inArray(messages.recipientId, orgIds))
+        .orderBy(desc(messages.createdAt));
+    }
+
+    // Combine and return all messages
+    return [...sentMessages, ...receivedMessages].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }
 
   async getMessageWithReplies(messageId: number): Promise<any> {

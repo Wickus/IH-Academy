@@ -72,6 +72,13 @@ export default function UserDashboard() {
     queryFn: api.getOrganizations,
   });
 
+  // Fetch messages for count display
+  const { data: messages } = useQuery({
+    queryKey: ['/api/messages'],
+    queryFn: () => api.getMessages(),
+    enabled: !!currentUser,
+  });
+
   const logoutMutation = useMutation({
     mutationFn: api.logout,
     onSuccess: () => {
@@ -280,7 +287,9 @@ export default function UserDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">Messages</p>
-                  <p className="text-2xl font-bold text-[#20366B]">0</p>
+                  <p className="text-2xl font-bold text-[#20366B]">
+                    {messages ? messages.length : 0}
+                  </p>
                 </div>
                 <div className="p-3 bg-[#1c9bfd]/10 rounded-lg">
                   <MessageCircle className="h-6 w-6 text-[#1c9bfd]" />
