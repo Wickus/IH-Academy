@@ -17,7 +17,7 @@
   --primary-foreground: 255 255 255; /* #FFFFFF */
   --secondary: 248 250 252; /* #F8FAFC - Light Gray */
   --secondary-foreground: 32 54 107; /* #20366B */
-  --accent: 248 250 252; /* #F8FAFC */
+  --accent: 255 255 255; /* #FFFFFF - White for transparency */
   --accent-foreground: 32 54 107; /* #20366B */
   --muted: 248 250 252; /* #F8FAFC */
   --muted-foreground: 75 85 99; /* #4B5563 - Darker gray for better readability */
@@ -208,18 +208,37 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold !important;
 }
 
-/* Override all yellow hover states with proper theming */
-.hover\\:bg-accent:hover,
-.hover\\:bg-yellow-50:hover,
-button[class*="yellow"]:hover,
-[class*="bg-yellow"]:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+/* Complete yellow override - aggressive approach */
+* {
+  --tw-bg-opacity: 1 !important;
 }
 
-/* Account button specific override */
+/* Kill all yellow hover states */
+.hover\\:bg-accent:hover,
+.hover\\:bg-yellow-50:hover,
+.hover\\:bg-yellow-100:hover,
+.hover\\:bg-yellow-200:hover,
+.hover\\:bg-yellow-300:hover,
+.hover\\:bg-yellow-400:hover,
+.hover\\:bg-yellow-500:hover,
+button[class*="yellow"]:hover,
+[class*="bg-yellow"]:hover,
+[class*="hover:bg-yellow"]:hover,
+button[variant="ghost"]:hover,
 [data-radix-collection-item]:hover,
-button[variant="ghost"]:hover {
+.bg-accent:hover,
+button.bg-accent:hover,
+div.bg-accent:hover {
   background-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Header account button specific targeting */
+header button:hover,
+header [role="button"]:hover,
+.header button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Table styling improvements */

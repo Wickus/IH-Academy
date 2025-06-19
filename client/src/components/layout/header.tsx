@@ -184,10 +184,18 @@ export default function Header() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-2 text-white border border-white/20"
+                className="p-2 text-white border border-white/20 hover:!bg-white/10"
                 style={{ 
-                  background: 'transparent',
-                  backgroundColor: 'transparent'
+                  background: 'transparent !important',
+                  backgroundColor: 'transparent !important'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
+                  e.currentTarget.style.setProperty('background', 'rgba(255, 255, 255, 0.1)', 'important');
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                  e.currentTarget.style.setProperty('background', 'transparent', 'important');
                 }}
               >
                 <User className="h-5 w-5 mr-2" />
