@@ -52,6 +52,7 @@ import CoachSettings from "@/pages/coach-settings";
 import CoachAvailabilityGeneral from "@/pages/coach-availability-general";
 import MobileAdmin from "@/pages/mobile-admin";
 import PaymentRedirect from "@/components/payment-redirect";
+import OrganizationInvite from "@/pages/organization-invite";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
@@ -313,6 +314,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
       <Route path="/book" component={PublicBooking} />
       <Route path="/organizations/:id" component={PublicBooking} />
       <Route path="/organizations/:id/classes" component={OrganizationClasses} />
+      <Route path="/invite/:inviteCode" component={OrganizationInvite} />
       <Route path="/membership-payment/:organizationId" component={MembershipPayment} />
       <Route path="/membership-success" component={MembershipSuccess} />
       <Route path="/organization-setup" component={OrganizationSetup} />
