@@ -271,10 +271,28 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 
 export const insertAttendanceSchema = createInsertSchema(attendance).omit({
   id: true,
+  markedAt: true,
 });
 
 export const insertPaymentSchema = createInsertSchema(payments).omit({
   id: true,
+  processedAt: true,
+});
+
+export const insertDebitOrderMandateSchema = createInsertSchema(debitOrderMandates).omit({
+  id: true,
+  mandateReference: true,
+  signedAt: true,
+  lastProcessedAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDebitOrderTransactionSchema = createInsertSchema(debitOrderTransactions).omit({
+  id: true,
+  transactionReference: true,
+  processedAt: true,
+  createdAt: true,
 });
 
 // Types
