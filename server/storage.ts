@@ -1085,6 +1085,109 @@ export class DatabaseStorage implements IStorage {
     return newReply;
   }
 
-</invoke>
-<invoke name="bash">
-<parameter name="command">cd /home/runner/workspace && grep -n "import.*payfast" server/routes.ts
+  async markMessageAsRead(messageId: number): Promise<void> {
+    await db
+      .update(messages)
+      .set({ 
+        status: 'read',
+        updatedAt: new Date()
+      })
+      .where(eq(messages.id, messageId));
+  }
+
+  // Debit Order Mandate methods
+  async createDebitOrderMandate(mandateData: InsertDebitOrderMandate): Promise<DebitOrderMandate> {
+    const mandateReference = `DO${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    const [newMandate] = await db
+      .insert(debitOrderMandates)
+      .values({
+        ...mandateData,
+        mandateReference,
+      })
+      .returning();
+    return newMandate;
+  }
+
+  async getDebitOrderMandatesByUser(userId: number): Promise<DebitOrderMandate[]> {
+    return await db.select().from(debitOrderMandates).where(eq(debitOrderMandates.userId, userId));
+  }
+
+  async getDebitOrderMandate(id: number): Promise<DebitOrderMandate | undefined> {
+    const [mandate] = await db.select().from(debitOrderMandates).where(eq(debitOrderMandates.id, id));
+    return mandate || undefined;
+  }
+
+  async updateDebitOrderMandate(id: number, mandateData: Partial<InsertDebitOrderMandate>): Promise<DebitOrderMandate | undefined> {
+    const [updatedMandate] = await db
+      .update(debitOrderMandates)
+      .set({ ...mandateData, updatedAt: new Date() })
+      .where(eq(debitOrderMandates.id, id))
+      .returning();
+    return updatedMandate || undefined;
+  }
+
+  async activateDebitOrderMandate(id: number): Promise<DebitOrderMandate | undefined> {
+    const [activatedMandate] = await db
+      .update(debitOrderMandates)
+      .set({ 
+        status: 'active', 
+        signedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(debitOrderMandates.id, id))
+      .returning();
+    return activatedMandate || undefined;
+  }
+
+  // Debit Order Transaction methods
+  async createDebitOrderTransaction(transactionData: InsertDebitOrderTransaction): Promise<DebitOrderTransaction> {
+    const transactionReference = `TX${Date.now()}${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+    const [newTransaction] = await db
+      .insert(debitOrderTransactions)
+      .values({
+        ...transactionData,
+        transactionReference,
+      })
+      .returning();
+    return newTransaction;
+  }
+
+  async getDebitOrderTransactionsByMandate(mandateId: number): Promise<DebitOrderTransaction[]> {
+    return await db.select().from(debitOrderTransactions).where(eq(debitOrderTransactions.mandateId, mandateId));
+  }
+
+  async getDebitOrderTransaction(id: number): Promise<DebitOrderTransaction | undefined> {
+    const [transaction] = await db.select().from(debitOrderTransactions).where(eq(debitOrderTransactions.id, id));
+    return transaction || undefined;
+  }
+
+  async updateDebitOrderTransaction(id: number, transactionData: Partial<InsertDebitOrderTransaction>): Promise<DebitOrderTransaction | undefined> {
+    const [updatedTransaction] = await db
+      .update(debitOrderTransactions)
+      .set(transactionData)
+      .where(eq(debitOrderTransactions.id, id))
+      .returning();
+    return updatedTransaction || undefined;
+  }
+
+  async getActiveDebitOrderMandates(): Promise<DebitOrderMandate[]> {
+    return await db
+      .select()
+      .from(debitOrderMandates)
+      .where(
+        and(
+          eq(debitOrderMandates.status, 'active'),
+          eq(debitOrderMandates.isActive, true)
+        )
+      );
+  }
+
+  async getPendingDebitOrderTransactions(): Promise<DebitOrderTransaction[]> {
+    return await db
+      .select()
+      .from(debitOrderTransactions)
+      .where(eq(debitOrderTransactions.status, 'pending'));
+  }
+}
+
+export const storage = new DatabaseStorage();
