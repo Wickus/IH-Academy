@@ -2658,6 +2658,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete organization (Global Admin only)
+  app.delete("/api/organizations/:id", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin required." });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      if (isNaN(organizationId)) {
+        return res.status(400).json({ message: "Invalid organization ID" });
+      }
+
+      // Check if organization exists
+      const organization = await storage.getOrganization(organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      await storage.deleteOrganization(organizationId);
+      
+      res.json({ 
+        success: true, 
+        message: `Organization "${organization.name}" has been permanently deleted` 
+      });
+    } catch (error: any) {
+      console.error("Error deleting organization:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Send email to members
   app.post("/api/emails/send", async (req: Request, res: Response) => {
     try {
