@@ -69,6 +69,8 @@ export default function Settings() {
   const [showSportForm, setShowSportForm] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const { data: currentUser } = useQuery({
@@ -286,6 +288,39 @@ export default function Settings() {
     if (confirmed) {
       deleteSportMutation.mutate(sportId);
     }
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoUpdate = () => {
+    if (!logoFile || !organization?.id) {
+      toast({
+        title: "Error",
+        description: "Please select a logo file first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Convert file to base64 for storage
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const logoData = e.target?.result as string;
+      updateOrganizationMutation.mutate({ logo: logoData });
+      setLogoFile(null);
+      setLogoPreview(null);
+    };
+    reader.readAsDataURL(logoFile);
   };
 
   // Debug user authentication and organization data
@@ -1158,40 +1193,82 @@ export default function Settings() {
                           </h4>
                           <p className="text-sm text-slate-600 mb-4">Upload your organization's logo</p>
                           
-                          {organization?.logo && (
+                          {/* Current Logo Display */}
+                          {(organization?.logo || logoPreview) && (
                             <div className="mb-4">
                               <div className="flex items-center space-x-4">
                                 <img 
-                                  src={organization.logo} 
+                                  src={logoPreview || organization.logo} 
                                   alt={`${organization.name} logo`}
                                   className="w-16 h-16 rounded-lg border-2 border-slate-300 object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
                                 />
                                 <div>
-                                  <p className="text-sm font-medium text-slate-800">Current Logo</p>
-                                  <p className="text-xs text-slate-600">Click below to upload a new logo</p>
+                                  <p className="text-sm font-medium text-slate-800">
+                                    {logoPreview ? 'New Logo Preview' : 'Current Logo'}
+                                  </p>
+                                  <p className="text-xs text-slate-600">
+                                    {logoPreview ? 'Click Update to save changes' : 'Select a new logo to replace'}
+                                  </p>
                                 </div>
                               </div>
                             </div>
                           )}
                           
-                          <Button 
-                            variant="outline" 
-                            className="hover:text-white"
-                            style={{
-                              borderColor: organization?.secondaryColor || '#278DD4',
-                              color: organization?.secondaryColor || '#278DD4'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = organization?.secondaryColor || '#278DD4';
-                              e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                              e.currentTarget.style.color = organization?.secondaryColor || '#278DD4';
-                            }}
-                          >
-                            {organization?.logo ? 'Update Logo' : 'Upload Logo'}
-                          </Button>
+                          {/* File Upload Section */}
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-center w-full">
+                              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 border-gray-300 hover:border-gray-400">
+                                <div className="flex flex-col items-center justify-center pt-2 pb-3">
+                                  <Upload className="w-6 h-6 mb-1 text-gray-400" />
+                                  <p className="text-sm text-gray-500">
+                                    {logoFile ? logoFile.name : 'Click to select logo'}
+                                  </p>
+                                  <p className="text-xs text-gray-400">PNG, JPG up to 2MB</p>
+                                </div>
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept="image/*" 
+                                  onChange={handleLogoUpload}
+                                />
+                              </label>
+                            </div>
+                            
+                            {logoFile && (
+                              <div className="flex gap-2">
+                                <Button 
+                                  onClick={handleLogoUpdate}
+                                  disabled={updateOrganizationMutation.isPending}
+                                  className="text-white border-0"
+                                  style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                                >
+                                  {updateOrganizationMutation.isPending ? (
+                                    <>
+                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                      Updating...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Upload className="mr-2 h-4 w-4" />
+                                      Update Logo
+                                    </>
+                                  )}
+                                </Button>
+                                <Button 
+                                  variant="outline"
+                                  onClick={() => {
+                                    setLogoFile(null);
+                                    setLogoPreview(null);
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

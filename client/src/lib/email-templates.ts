@@ -8,7 +8,7 @@ export function generateInviteEmailTemplate(organization: Organization): {
   
   const subject = `You're invited to join ${organization.name}!`;
   
-  const body = `Dear Friend,
+  const body = `Howzit!
 
 I'm excited to invite you to join ${organization.name} on ItsHappening.Africa!
 
@@ -86,7 +86,7 @@ export function generateInviteEmailHTML(organization: Organization): {
                     Welcome to Our Sports Community!
                 </h2>
                 <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                    We're excited to invite you to join our vibrant sports community where fitness meets fun.
+                    Howzit! We're excited to invite you to join our vibrant sports community where fitness meets fun.
                 </p>
             </div>
 
