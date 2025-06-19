@@ -381,6 +381,8 @@ export default function UserDashboard() {
                               setSelectedOrganization(org);
                               setMessageModalOpen(true);
                             }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = org.secondaryColor + '20'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                             title="Message Organization"
                           >
                             <MessageCircle className="h-3 w-3" />
@@ -401,6 +403,8 @@ export default function UserDashboard() {
                                 });
                               }
                             }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = org.accentColor + '20'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                             title={org.businessModel === 'membership' ? 'Pay Membership Fee' : 'Pay per Class'}
                           >
                             <DollarSign className="h-3 w-3" />

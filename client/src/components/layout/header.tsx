@@ -181,7 +181,14 @@ export default function Header() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-2 hover:bg-white/10 text-white border border-white/20">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-2 text-white border border-white/20"
+                style={{ background: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
                 <User className="h-5 w-5 mr-2" />
                 <span className="hidden sm:inline">{user?.username || 'User'}</span>
               </Button>
