@@ -461,8 +461,19 @@ export default function GlobalAdminDashboard() {
               {organizations?.map((org) => (
                 <div key={org.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                   <div className="flex items-center space-x-4">
+                    {org.logo ? (
+                      <img 
+                        src={org.logo} 
+                        alt={`${org.name} logo`}
+                        className="w-12 h-12 rounded-lg object-cover border-2 border-white/20 shadow-lg"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
                     <div 
-                      className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shadow-lg"
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shadow-lg ${org.logo ? 'hidden' : ''}`}
                       style={{ backgroundColor: org.primaryColor }}
                     >
                       {org.name.charAt(0)}

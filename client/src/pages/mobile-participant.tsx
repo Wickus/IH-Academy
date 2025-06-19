@@ -588,8 +588,20 @@ export default function MobileParticipant({ user }: MobileParticipantProps) {
                   <Card key={org.id}>
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
+                        {org.logo ? (
+                          <img 
+                            src={org.logo} 
+                            alt={`${org.name} logo`}
+                            className="w-12 h-12 rounded-lg object-cover border-2"
+                            style={{ borderColor: org.secondaryColor + '40' }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
                         <div 
-                          className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl"
+                          className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl ${org.logo ? 'hidden' : ''}`}
                           style={{ backgroundColor: org.primaryColor }}
                         >
                           {org.name.charAt(0)}

@@ -278,8 +278,20 @@ export default function CoachAvailabilityGeneral() {
                   key={org.id}
                   className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg"
                 >
+                  {org.logo ? (
+                    <img 
+                      src={org.logo} 
+                      alt={`${org.name} logo`}
+                      className="w-10 h-10 rounded-full object-cover border-2"
+                      style={{ borderColor: org.secondaryColor + '40' }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${org.logo ? 'hidden' : ''}`}
                     style={{ backgroundColor: org.primaryColor }}
                   >
                     {org.name.charAt(0)}

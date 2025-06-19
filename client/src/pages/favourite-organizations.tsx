@@ -75,11 +75,23 @@ export default function FavouriteOrganizations() {
                       <Heart className="h-5 w-5 text-white" />
                     </Button>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg">{org.name}</h3>
-                    <div className="flex items-center mt-1">
-                      <Star className="h-4 w-4 mr-1" />
-                      <span className="text-sm">Member</span>
+                  <div className="flex items-center gap-3">
+                    {org.logo ? (
+                      <img 
+                        src={org.logo} 
+                        alt={`${org.name} logo`}
+                        className="w-8 h-8 rounded object-cover border border-white/20"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : null}
+                    <div>
+                      <h3 className="font-bold text-lg">{org.name}</h3>
+                      <div className="flex items-center mt-1">
+                        <Star className="h-4 w-4 mr-1" />
+                        <span className="text-sm">Member</span>
+                      </div>
                     </div>
                   </div>
                 </div>

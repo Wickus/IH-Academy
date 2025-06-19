@@ -90,9 +90,16 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
   const pendingBookings = bookings.filter(booking => booking.paymentStatus === 'pending');
   const todaysRevenue = bookings
     .filter(booking => {
-      const bookingDate = new Date(booking.createdAt || '');
-      const today = new Date();
-      return bookingDate.toDateString() === today.toDateString() && booking.paymentStatus === 'confirmed';
+      if (!booking.createdAt) return false;
+      try {
+        const bookingDate = new Date(booking.createdAt);
+        if (isNaN(bookingDate.getTime())) return false;
+        const today = new Date();
+        return bookingDate.toDateString() === today.toDateString() && booking.paymentStatus === 'confirmed';
+      } catch (error) {
+        console.warn('Invalid date in booking:', booking.createdAt);
+        return false;
+      }
     })
     .reduce((sum, booking) => sum + Number(booking.amount), 0);
 
@@ -148,8 +155,19 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
+              {organization.logo ? (
+                <img 
+                  src={organization.logo} 
+                  alt={`${organization.name} logo`}
+                  className="w-10 h-10 rounded-lg object-cover border-2 border-white/20"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
               <div 
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg ${organization.logo ? 'hidden' : ''}`}
                 style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
               >
                 {organization.name.charAt(0)}
