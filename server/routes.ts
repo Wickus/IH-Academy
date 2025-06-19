@@ -2283,8 +2283,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentData: PayFastPaymentData = {
         merchant_id: organization.payfastMerchantId,
         merchant_key: organization.payfastMerchantKey,
-        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking=${bookingId}`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking=${bookingId}`,
+        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking_id=${bookingId}&org_id=${organization.id}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
         name_first: firstName,
         name_last: lastName,
@@ -2719,8 +2719,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentData: PayFastPaymentData = {
         merchant_id: organization.payfastMerchantId || '',
         merchant_key: organization.payfastMerchantKey || '',
-        return_url: `${req.protocol}://${req.get('host')}/payment-success`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled`,
+        return_url: `${req.protocol}://${req.get('host')}/payment-success?org_id=${organization.id}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?org_id=${organization.id}`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
         name_first: booking.participantName.split(' ')[0] || booking.participantName,
         name_last: booking.participantName.split(' ').slice(1).join(' ') || '',
