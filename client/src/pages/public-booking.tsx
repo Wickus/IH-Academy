@@ -45,12 +45,47 @@ export default function PublicBooking() {
     queryFn: () => api.getSports(),
   });
 
-  if (classesLoading) {
+  if (classesLoading || !currentUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto"></div>
-          <p className="mt-4 text-white">Loading sports organizations...</p>
+          <p className="mt-4 text-white">Loading your classes...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if user has no organizations
+  if (userOrganizations.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367]">
+        {/* Back Navigation */}
+        <div className="p-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => setLocation('/')}
+            className="text-white hover:bg-white/20"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center text-white p-8">
+            <Calendar className="h-16 w-16 mx-auto mb-4 opacity-80" />
+            <h2 className="text-2xl font-bold mb-4">No Organizations Found</h2>
+            <p className="text-lg opacity-90 mb-6 max-w-md">
+              You need to join an organization first to book classes. Use an invite code to get started!
+            </p>
+            <Button 
+              onClick={() => setLocation('/')}
+              className="bg-white text-[#20366B] hover:bg-white/90"
+            >
+              Return to Dashboard
+            </Button>
+          </div>
         </div>
       </div>
     );
