@@ -1025,7 +1025,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(messages.senderId, userId))
       .orderBy(desc(messages.createdAt));
 
-    // Get messages sent to organizations where the user is an admin/member
+    // Get messages sent to organizations where the user is an admin/member (but NOT sent by the user)
     const userOrgs = await db
       .select({ organizationId: userOrganizations.organizationId })
       .from(userOrganizations)
@@ -1053,7 +1053,12 @@ export class DatabaseStorage implements IStorage {
         .from(messages)
         .leftJoin(users, eq(messages.senderId, users.id))
         .leftJoin(organizations, eq(messages.recipientId, organizations.id))
-        .where(inArray(messages.recipientId, orgIds))
+        .where(
+          and(
+            inArray(messages.recipientId, orgIds),
+            ne(messages.senderId, userId) // Exclude messages sent by the current user
+          )
+        )
         .orderBy(desc(messages.createdAt));
     }
 
