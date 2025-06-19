@@ -290,19 +290,134 @@ export default function Settings() {
     }
   };
 
+  const validateLogoFile = (file: File): { isValid: boolean; error?: string } => {
+    // Allowed file types
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/svg+xml'
+    ];
+    
+    // File size constraints
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const minSize = 1024; // 1KB minimum
+    
+    // Validate file type
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      return {
+        isValid: false,
+        error: `Invalid file type: ${file.type}. Allowed types: JPEG, PNG, GIF, WebP, SVG`
+      };
+    }
+    
+    // Validate file size
+    if (file.size > maxSize) {
+      const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1);
+      return {
+        isValid: false,
+        error: `File size too large: ${(file.size / (1024 * 1024)).toFixed(1)}MB. Maximum allowed: ${maxSizeMB}MB`
+      };
+    }
+    
+    if (file.size < minSize) {
+      return {
+        isValid: false,
+        error: `File size too small: ${file.size} bytes. Minimum required: 1KB`
+      };
+    }
+    
+    // Validate file name
+    const invalidChars = /[<>:"/\\|?*]/;
+    if (invalidChars.test(file.name)) {
+      return {
+        isValid: false,
+        error: 'File name contains invalid characters'
+      };
+    }
+    
+    // Check for potential security issues
+    const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.vbs', '.js'];
+    const hasDoubleExtension = suspiciousExtensions.some(ext => 
+      file.name.toLowerCase().includes(ext)
+    );
+    
+    if (hasDoubleExtension) {
+      return {
+        isValid: false,
+        error: 'File appears to have suspicious content'
+      };
+    }
+    
+    return { isValid: true };
+  };
+
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setLogoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setLogoPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    console.log('File selected:', file);
+    
+    if (!file) {
+      console.log('No file selected');
+      return;
     }
+
+    // Comprehensive file validation
+    const validation = validateLogoFile(file);
+    if (!validation.isValid) {
+      toast({
+        title: "Invalid File",
+        description: validation.error,
+        variant: "destructive",
+      });
+      // Clear the input
+      event.target.value = '';
+      return;
+    }
+
+    console.log('File validation passed, reading file...');
+    setLogoFile(file);
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      console.log('File read successfully, preview length:', result?.length);
+      
+      // Additional validation on the actual file content
+      if (result.length > 10 * 1024 * 1024) { // 10MB base64 limit
+        toast({
+          title: "Error",
+          description: "Processed file is too large for storage",
+          variant: "destructive",
+        });
+        setLogoFile(null);
+        return;
+      }
+      
+      setLogoPreview(result);
+      
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast({
+        title: "File Loaded Successfully",
+        description: `${file.name} (${fileSizeMB}MB) ready for upload. Click 'Update Logo' to save.`,
+      });
+    };
+    reader.onerror = (e) => {
+      console.error('Error reading file:', e);
+      toast({
+        title: "File Processing Error",
+        description: "Failed to process the selected file. Please try a different image.",
+        variant: "destructive",
+      });
+      setLogoFile(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleLogoUpdate = () => {
+    console.log('Update logo clicked, logoFile:', logoFile, 'organization:', organization?.id);
+    
     if (!logoFile || !organization?.id) {
       toast({
         title: "Error",
@@ -312,13 +427,44 @@ export default function Settings() {
       return;
     }
 
+    // Re-validate file before upload
+    const validation = validateLogoFile(logoFile);
+    if (!validation.isValid) {
+      toast({
+        title: "Upload Failed",
+        description: validation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Convert file to base64 for storage
     const reader = new FileReader();
     reader.onload = (e) => {
       const logoData = e.target?.result as string;
+      
+      // Final size check on processed data
+      if (logoData.length > 10 * 1024 * 1024) {
+        toast({
+          title: "Upload Failed",
+          description: "Processed file exceeds storage limits. Please use a smaller image.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      console.log('Updating organization with logo data');
       updateOrganizationMutation.mutate({ logo: logoData });
       setLogoFile(null);
       setLogoPreview(null);
+    };
+    reader.onerror = (e) => {
+      console.error('Error reading file for update:', e);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to process the logo file. Please try again or use a different image.",
+        variant: "destructive",
+      });
     };
     reader.readAsDataURL(logoFile);
   };
@@ -1191,7 +1337,11 @@ export default function Settings() {
                           <h4 className="font-medium mb-2" style={{ color: organization?.primaryColor || '#20366B' }}>
                             Organization Logo
                           </h4>
-                          <p className="text-sm text-slate-600 mb-4">Upload your organization's logo</p>
+                          <p className="text-sm text-slate-600 mb-4">
+                            Upload your organization's logo. Supported formats: JPEG, PNG, GIF, WebP, SVG. 
+                            <br />
+                            <span className="text-xs text-slate-500">Recommended: Square format, minimum 100x100px, maximum 5MB</span>
+                          </p>
                           
                           {/* Current Logo Display */}
                           {(organization?.logo || logoPreview) && (
@@ -1224,15 +1374,16 @@ export default function Settings() {
                                 <div className="flex flex-col items-center justify-center pt-2 pb-3">
                                   <Upload className="w-6 h-6 mb-1 text-gray-400" />
                                   <p className="text-sm text-gray-500">
-                                    {logoFile ? logoFile.name : 'Click to select logo'}
+                                    {logoFile ? `Selected: ${logoFile.name}` : 'Click to select logo'}
                                   </p>
-                                  <p className="text-xs text-gray-400">PNG, JPG up to 2MB</p>
+                                  <p className="text-xs text-gray-400">JPEG, PNG, GIF, WebP, SVG up to 5MB</p>
                                 </div>
                                 <input 
                                   type="file" 
                                   className="hidden" 
-                                  accept="image/*" 
+                                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml" 
                                   onChange={handleLogoUpload}
+                                  value=""
                                 />
                               </label>
                             </div>
