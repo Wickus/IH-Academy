@@ -1025,16 +1025,21 @@ export class DatabaseStorage implements IStorage {
       .where(eq(messages.senderId, userId))
       .orderBy(desc(messages.createdAt));
 
-    // Get messages sent to organizations where the user is an admin/member (but NOT sent by the user)
-    const userOrgs = await db
+    // Get messages sent to organizations where the user is an ADMIN (not just a member)
+    const userAdminOrgs = await db
       .select({ organizationId: userOrganizations.organizationId })
       .from(userOrganizations)
-      .where(eq(userOrganizations.userId, userId));
+      .where(
+        and(
+          eq(userOrganizations.userId, userId),
+          eq(userOrganizations.role, 'admin') // Only organization admins can receive messages
+        )
+      );
 
-    const orgIds = userOrgs.map(org => org.organizationId);
+    const adminOrgIds = userAdminOrgs.map(org => org.organizationId);
     
     let receivedMessages: any[] = [];
-    if (orgIds.length > 0) {
+    if (adminOrgIds.length > 0) {
       receivedMessages = await db
         .select({
           id: messages.id,
@@ -1055,7 +1060,7 @@ export class DatabaseStorage implements IStorage {
         .leftJoin(organizations, eq(messages.recipientId, organizations.id))
         .where(
           and(
-            inArray(messages.recipientId, orgIds),
+            inArray(messages.recipientId, adminOrgIds),
             ne(messages.senderId, userId) // Exclude messages sent by the current user
           )
         )
