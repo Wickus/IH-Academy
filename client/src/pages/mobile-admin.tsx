@@ -81,9 +81,15 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
   });
 
   const todaysClasses = classes.filter(cls => {
-    const classDate = new Date(cls.startTime);
-    const today = new Date();
-    return classDate.toDateString() === today.toDateString();
+    try {
+      if (!cls.startTime) return false;
+      const classDate = new Date(cls.startTime);
+      const today = new Date();
+      if (isNaN(classDate.getTime()) || isNaN(today.getTime())) return false;
+      return classDate.toDateString() === today.toDateString();
+    } catch {
+      return false;
+    }
   });
 
   const upcomingClasses = classes.filter(cls => {
