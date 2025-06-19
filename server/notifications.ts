@@ -8,7 +8,7 @@ const vapidKeys = {
 
 // Set VAPID details
 webpush.setVapidDetails(
-  'mailto:admin@itsbooked.app',
+  'mailto:admin@ihacademy.africa',
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );

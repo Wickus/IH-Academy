@@ -86,7 +86,13 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
     return classDate.toDateString() === today.toDateString();
   });
 
-  const upcomingClasses = classes.filter(cls => new Date(cls.startTime) > new Date()).slice(0, 5);
+  const upcomingClasses = classes.filter(cls => {
+    try {
+      return new Date(cls.startTime) > new Date();
+    } catch {
+      return false;
+    }
+  }).slice(0, 5);
   const pendingBookings = bookings.filter(booking => booking.paymentStatus === 'pending');
   const todaysRevenue = bookings
     .filter(booking => {
@@ -447,7 +453,7 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
                   <div>
                     <h4 className="font-medium text-gray-900">{booking.participantName}</h4>
                     <p className="text-sm text-gray-600">{booking.class?.name}</p>
-                    <p className="text-xs text-gray-500">{formatDate(booking.createdAt || '')}</p>
+                    <p className="text-xs text-gray-500">{formatDate(booking.createdAt)}</p>
                   </div>
                   <div className="text-right">
                     <div className="font-medium">R{formatCurrency(Number(booking.amount))}</div>
