@@ -18,9 +18,7 @@ export default function OrganizationInvite() {
   // Extract invite code from URL if not available from params
   const extractedInviteCode = inviteCode || location.split('/invite/')[1];
   
-  console.log('Current location:', location);
-  console.log('InviteCode from params:', inviteCode);
-  console.log('Extracted invite code:', extractedInviteCode);
+
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({
@@ -37,15 +35,11 @@ export default function OrganizationInvite() {
   const { data: orgData, isLoading: orgLoading, error: orgError } = useQuery({
     queryKey: ['/api/organizations/invite', extractedInviteCode],
     queryFn: async () => {
-      console.log('Fetching organization with invite code:', extractedInviteCode);
       const response = await fetch(`/api/organizations/invite/${extractedInviteCode}`);
       if (!response.ok) {
-        console.error('Failed to fetch organization:', response.status, response.statusText);
         throw new Error('Organization not found');
       }
-      const data = await response.json();
-      console.log('Organization data received:', data);
-      return data;
+      return response.json();
     },
     enabled: !!extractedInviteCode
   });
