@@ -333,6 +333,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
 function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [location] = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -348,6 +349,11 @@ function Router() {
 
     checkAuth();
   }, []);
+
+  // Handle invite routes before authentication checks
+  if (location.startsWith('/invite/')) {
+    return <OrganizationInvite />;
+  }
 
   if (isAuthenticated === null) {
     return (
