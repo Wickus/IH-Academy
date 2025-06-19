@@ -208,9 +208,19 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold !important;
 }
 
-/* Removed yellow border override */
+/* Override all yellow hover states with proper theming */
+.hover\\:bg-accent:hover,
+.hover\\:bg-yellow-50:hover,
+button[class*="yellow"]:hover,
+[class*="bg-yellow"]:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
 
-/* Removed all yellow color overrides - using dynamic organization colors instead */
+/* Account button specific override */
+[data-radix-collection-item]:hover,
+button[variant="ghost"]:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
 
 /* Table styling improvements */
 table th {

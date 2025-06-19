@@ -186,16 +186,8 @@ export default function Header() {
                 size="sm" 
                 className="p-2 text-white border border-white/20"
                 style={{ 
-                  background: 'transparent !important',
-                  backgroundColor: 'transparent !important'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.setProperty('background-color', 'rgba(255, 255, 255, 0.1)', 'important');
-                  e.currentTarget.style.setProperty('background', 'rgba(255, 255, 255, 0.1)', 'important');
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                  e.currentTarget.style.setProperty('background', 'transparent', 'important');
+                  background: 'transparent',
+                  backgroundColor: 'transparent'
                 }}
               >
                 <User className="h-5 w-5 mr-2" />
