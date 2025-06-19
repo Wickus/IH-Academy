@@ -146,14 +146,23 @@ export default function MessageOrganizationModal({
               variant="outline" 
               onClick={onClose}
               disabled={sendMessageMutation.isPending}
+              style={{ 
+                borderColor: organization.secondaryColor || '#e5e7eb',
+                color: organization.secondaryColor || '#6b7280'
+              }}
             >
               Cancel
             </Button>
             <Button 
               type="submit"
               disabled={sendMessageMutation.isPending}
-              style={{ backgroundColor: organization.primaryColor || '#278DD4' }}
-              className="text-white hover:opacity-90"
+              className="text-white"
+              style={{ 
+                backgroundColor: organization.primaryColor || '#1c9bfd',
+                borderColor: organization.primaryColor || '#1c9bfd'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = organization.accentColor || '#0247e8'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = organization.primaryColor || '#1c9bfd'}
             >
               {sendMessageMutation.isPending ? (
                 <div className="flex items-center space-x-2">
