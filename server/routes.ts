@@ -2637,6 +2637,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mark message as read
+  app.put("/api/messages/:messageId/read", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const messageId = parseInt(req.params.messageId);
+      if (isNaN(messageId)) {
+        return res.status(400).json({ message: "Invalid message ID" });
+      }
+
+      await storage.markMessageAsRead(messageId);
+      res.json({ success: true, message: "Message marked as read" });
+    } catch (error: any) {
+      console.error("Error marking message as read:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Send email to members
   app.post("/api/emails/send", async (req: Request, res: Response) => {
     try {
