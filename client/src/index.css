@@ -208,43 +208,9 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold !important;
 }
 
-.border-yellow-400 {
-  border-color: #E2E8F0 !important;
-}
+/* Removed yellow border override */
 
-/* Fix all yellow highlights and borders */
-.bg-yellow-50,
-.hover\\:bg-yellow-50:hover,
-.focus\\:bg-yellow-50:focus {
-  background-color: #EBF4FF !important;
-}
-
-.border-yellow-200,
-.border-yellow-300,
-.border-yellow-400,
-.border-yellow-500 {
-  border-color: #278DD4 !important;
-}
-
-.text-yellow-600,
-.text-yellow-700,
-.text-yellow-800 {
-  color: #20366B !important;
-}
-
-/* Button styling fixes */
-button[class*="yellow"],
-[class*="bg-yellow"] {
-  background-color: #278DD4 !important;
-  color: white !important;
-  border-color: #278DD4 !important;
-}
-
-button[class*="yellow"]:hover,
-[class*="bg-yellow"]:hover {
-  background-color: #20366B !important;
-  border-color: #20366B !important;
-}
+/* Removed all yellow color overrides - using dynamic organization colors instead */
 
 /* Table styling improvements */
 table th {
