@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { api, type OrganizationDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
-import { Users, Calendar, TrendingUp, DollarSign, Plus, Settings, UserPlus, BarChart3, Copy, ExternalLink, Share2 } from "lucide-react";
+import { generateInviteEmailTemplate } from "@/lib/email-templates";
+import { Users, Calendar, TrendingUp, DollarSign, Plus, Settings, UserPlus, BarChart3, Copy, ExternalLink, Share2, Mail } from "lucide-react";
 import StatsCards from "@/components/dashboard/stats-cards";
 import RecentBookings from "@/components/dashboard/recent-bookings";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
@@ -186,10 +187,23 @@ export default function OrganizationDashboard({ user, organization }: Organizati
                 </div>
               </div>
               
-              <div className="ml-4">
+              <div className="ml-4 flex gap-2">
                 <Button
                   size="sm"
                   className="gap-2 bg-white text-black hover:bg-white/90"
+                  onClick={() => {
+                    const { subject, body } = generateInviteEmailTemplate(organization);
+                    const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    window.open(emailUrl, '_blank');
+                  }}
+                >
+                  <Mail className="h-4 w-4" />
+                  Email
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20"
                   onClick={() => {
                     const shareData = {
                       title: `Join ${organization.name}`,
