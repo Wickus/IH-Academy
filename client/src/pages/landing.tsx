@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Calendar, 
   Users, 
@@ -25,6 +26,18 @@ import ItsHappening_Africa_Logo_Picture_Mark_small from "@assets/ItsHappening.Af
 
 export default function LandingPage() {
   const [showDemoModal, setShowDemoModal] = useState(false);
+
+  // Fetch real pricing data from the API
+  const { data: pricingData, isLoading: pricingLoading } = useQuery({
+    queryKey: ['/api/pricing'],
+    queryFn: async () => {
+      const response = await fetch('/api/pricing');
+      if (!response.ok) {
+        throw new Error('Failed to fetch pricing');
+      }
+      return response.json();
+    },
+  });
 
   return (
     <div className="min-h-screen bg-white">
@@ -386,121 +399,130 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="border-2 border-gray-200 hover:border-[#278DD4] transition-colors">
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-[#20366B] text-xl">Starter</CardTitle>
-                <div className="text-3xl font-bold text-[#278DD4] mt-4">
-                  R299<span className="text-base font-normal text-gray-600">/month</span>
-                </div>
-                <CardDescription>Perfect for small academies</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Up to 100 members
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Unlimited classes
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    PayFast integration
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Mobile app access
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Email support
-                  </li>
-                </ul>
-                <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white mt-6">
-                  Start Free Trial
-                </Button>
-              </CardContent>
-            </Card>
+          {pricingLoading ? (
+            <div className="flex justify-center">
+              <div className="animate-spin w-8 h-8 border-4 border-[#278DD4] border-t-transparent rounded-full"></div>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {/* Free Plan */}
+              <Card className="border-2 border-gray-200 hover:border-[#278DD4] transition-colors">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-[#20366B] text-xl">Free</CardTitle>
+                  <div className="text-3xl font-bold text-[#278DD4] mt-4">
+                    R{pricingData?.membership?.free?.price || '0'}<span className="text-base font-normal text-gray-600">/month</span>
+                  </div>
+                  <CardDescription>Perfect for getting started</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Up to {pricingData?.membership?.free?.maxMembers || '25'} members
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Up to {pricingData?.membership?.free?.maxClasses || '5'} classes
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      {pricingData?.membership?.free?.storage || '1'}GB storage
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      PayFast integration
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Email support
+                    </li>
+                  </ul>
+                  <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white mt-6">
+                    Start Free
+                  </Button>
+                </CardContent>
+              </Card>
 
-            <Card className="border-2 border-[#24D367] relative hover:shadow-xl transition-shadow">
-              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#24D367] text-white">
-                Most Popular
-              </Badge>
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-[#20366B] text-xl">Professional</CardTitle>
-                <div className="text-3xl font-bold text-[#278DD4] mt-4">
-                  R599<span className="text-base font-normal text-gray-600">/month</span>
-                </div>
-                <CardDescription>Ideal for growing academies</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Up to 500 members
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Advanced analytics
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Debit order automation
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Custom branding
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Priority support
-                  </li>
-                </ul>
-                <Button className="w-full bg-[#24D367] hover:bg-green-600 text-white mt-6">
-                  Start Free Trial
-                </Button>
-              </CardContent>
-            </Card>
+              {/* Basic Plan */}
+              <Card className="border-2 border-[#24D367] relative hover:shadow-xl transition-shadow">
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#24D367] text-white">
+                  Most Popular
+                </Badge>
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-[#20366B] text-xl">Basic</CardTitle>
+                  <div className="text-3xl font-bold text-[#278DD4] mt-4">
+                    R{pricingData?.membership?.basic?.price || '299'}<span className="text-base font-normal text-gray-600">/month</span>
+                  </div>
+                  <CardDescription>Ideal for growing academies</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Up to {pricingData?.membership?.basic?.maxMembers || '100'} members
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Up to {pricingData?.membership?.basic?.maxClasses || '25'} classes
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      {pricingData?.membership?.basic?.storage || '10'}GB storage
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Advanced analytics
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Priority support
+                    </li>
+                  </ul>
+                  <Button className="w-full bg-[#24D367] hover:bg-green-600 text-white mt-6">
+                    Start Free Trial
+                  </Button>
+                </CardContent>
+              </Card>
 
-            <Card className="border-2 border-gray-200 hover:border-[#278DD4] transition-colors">
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-[#20366B] text-xl">Enterprise</CardTitle>
-                <div className="text-3xl font-bold text-[#278DD4] mt-4">
-                  R1299<span className="text-base font-normal text-gray-600">/month</span>
-                </div>
-                <CardDescription>For large organizations</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Unlimited members
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    API access
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    White-label solution
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Dedicated support
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
-                    Custom integrations
-                  </li>
-                </ul>
-                <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white mt-6">
-                  Contact Sales
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+              {/* Premium Plan */}
+              <Card className="border-2 border-gray-200 hover:border-[#278DD4] transition-colors">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-[#20366B] text-xl">Premium</CardTitle>
+                  <div className="text-3xl font-bold text-[#278DD4] mt-4">
+                    R{pricingData?.membership?.premium?.price || '599'}<span className="text-base font-normal text-gray-600">/month</span>
+                  </div>
+                  <CardDescription>For large organizations</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      {pricingData?.membership?.premium?.maxMembers || 'Unlimited'} members
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      {pricingData?.membership?.premium?.maxClasses || 'Unlimited'} classes
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      {pricingData?.membership?.premium?.storage || '100'}GB storage
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Custom branding
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-[#24D367] mr-3" />
+                      Dedicated support
+                    </li>
+                  </ul>
+                  <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white mt-6">
+                    Contact Sales
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </section>
       {/* CTA Section */}
