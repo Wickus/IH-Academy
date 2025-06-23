@@ -408,7 +408,7 @@ export default function LandingPage() {
               {/* Free Plan */}
               <Card className="border-2 border-gray-200 hover:border-[#278DD4] transition-colors">
                 <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-[#20366B] text-xl">Free</CardTitle>
+                  <CardTitle className="text-[#20366B] text-xl">{pricingData?.membership?.free?.name || 'Starter'}</CardTitle>
                   <div className="text-3xl font-bold text-[#278DD4] mt-4">
                     R{pricingData?.membership?.free?.price || '0'}<span className="text-base font-normal text-gray-600">/month</span>
                   </div>
@@ -449,7 +449,7 @@ export default function LandingPage() {
                   Most Popular
                 </Badge>
                 <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-[#20366B] text-xl">Basic</CardTitle>
+                  <CardTitle className="text-[#20366B] text-xl">{pricingData?.membership?.basic?.name || 'Professional'}</CardTitle>
                   <div className="text-3xl font-bold text-[#278DD4] mt-4">
                     R{pricingData?.membership?.basic?.price || '299'}<span className="text-base font-normal text-gray-600">/month</span>
                   </div>
@@ -487,7 +487,7 @@ export default function LandingPage() {
               {/* Premium Plan */}
               <Card className="border-2 border-gray-200 hover:border-[#278DD4] transition-colors">
                 <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-[#20366B] text-xl">Premium</CardTitle>
+                  <CardTitle className="text-[#20366B] text-xl">{pricingData?.membership?.premium?.name || 'Enterprise'}</CardTitle>
                   <div className="text-3xl font-bold text-[#278DD4] mt-4">
                     R{pricingData?.membership?.premium?.price || '599'}<span className="text-base font-normal text-gray-600">/month</span>
                   </div>

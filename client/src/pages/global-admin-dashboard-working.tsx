@@ -74,14 +74,47 @@ export default function GlobalAdminDashboard() {
   // Pricing configuration state
   const [pricingConfig, setPricingConfig] = useState({
     membership: {
-      free: { price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
-      basic: { price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
-      premium: { price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+      free: { 
+        name: "Starter",
+        price: "0", 
+        maxMembers: "25", 
+        maxClasses: "5", 
+        storage: "1" 
+      },
+      basic: { 
+        name: "Professional",
+        price: "299", 
+        maxMembers: "100", 
+        maxClasses: "25", 
+        storage: "10" 
+      },
+      premium: { 
+        name: "Enterprise",
+        price: "599", 
+        maxMembers: "Unlimited", 
+        maxClasses: "Unlimited", 
+        storage: "100" 
+      }
     },
     payPerClass: {
-      free: { commission: "5", maxBookings: "50", storage: "1" },
-      basic: { commission: "3", maxBookings: "200", storage: "10" },
-      premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
+      free: { 
+        name: "Starter",
+        commission: "5", 
+        maxBookings: "50", 
+        storage: "1" 
+      },
+      basic: { 
+        name: "Professional",
+        commission: "3", 
+        maxBookings: "200", 
+        storage: "10" 
+      },
+      premium: { 
+        name: "Enterprise",
+        commission: "2", 
+        maxBookings: "Unlimited", 
+        storage: "100" 
+      }
     }
   });
 
@@ -1588,14 +1621,14 @@ export default function GlobalAdminDashboard() {
                   onClick={() => {
                     setPricingConfig({
                       membership: {
-                        free: { price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
-                        basic: { price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
-                        premium: { price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
+                        free: { name: "Starter", price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
+                        basic: { name: "Professional", price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
+                        premium: { name: "Enterprise", price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
                       },
                       payPerClass: {
-                        free: { commission: "5", maxBookings: "50", storage: "1" },
-                        basic: { commission: "3", maxBookings: "200", storage: "10" },
-                        premium: { commission: "2", maxBookings: "Unlimited", storage: "100" }
+                        free: { name: "Starter", commission: "5", maxBookings: "50", storage: "1" },
+                        basic: { name: "Professional", commission: "3", maxBookings: "200", storage: "10" },
+                        premium: { name: "Enterprise", commission: "2", maxBookings: "Unlimited", storage: "100" }
                       }
                     });
                   }}
