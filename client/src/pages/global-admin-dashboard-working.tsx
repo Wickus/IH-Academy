@@ -46,6 +46,7 @@ type OrgEditFormData = z.infer<typeof orgEditSchema>;
 type PayfastSettingsData = z.infer<typeof payfastSettingsSchema>;
 
 export default function GlobalAdminDashboard() {
+  console.log('GlobalAdminDashboard component rendering');
   const [showUsers, setShowUsers] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);

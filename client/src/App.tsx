@@ -125,9 +125,11 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
 
   // Global Admin Interface
   if (user?.role === 'global_admin') {
+    console.log('Global admin user detected, routing to dashboard');
     return (
       <Switch>
         <Route path="/" component={GlobalAdminDashboard} />
+        <Route path="/dashboard" component={GlobalAdminDashboard} />
         <Route path="/organizations" component={GlobalAdminDashboard} />
         <Route component={NotFound} />
       </Switch>
