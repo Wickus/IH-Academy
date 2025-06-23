@@ -637,6 +637,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trial management endpoints
+  app.get("/api/organizations/:id/trial-status", async (req: Request, res: Response) => {
+    try {
+      const organizationId = parseInt(req.params.id);
+      const trialStatus = await storage.checkTrialStatus(organizationId);
+      res.json(trialStatus);
+    } catch (error) {
+      console.error("Error checking trial status:", error);
+      res.status(500).json({ message: "Failed to check trial status" });
+    }
+  });
+
+  app.post("/api/organizations/:id/upgrade", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      const { planType } = req.body;
+
+      // Verify user is admin of the organization
+      const userOrgs = await storage.getUserOrganizations(currentUser.id);
+      const isAdmin = userOrgs.some(uo => uo.organizationId === organizationId && uo.role === 'admin');
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Only organization admins can upgrade plans" });
+      }
+
+      const updatedOrg = await storage.updateOrganization(organizationId, {
+        planType,
+        subscriptionStatus: 'active'
+      });
+
+      res.json(updatedOrg);
+    } catch (error) {
+      console.error("Error upgrading organization:", error);
+      res.status(500).json({ message: "Failed to upgrade organization" });
+    }
+  });
+
   // Statistics routes
   app.get("/api/stats/global", async (req: Request, res: Response) => {
     try {

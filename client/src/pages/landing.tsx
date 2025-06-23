@@ -99,7 +99,7 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <a href="/register">
+              <a href="/free-trial">
                 <Button size="lg" className="bg-[#24D367] hover:bg-green-500 text-white px-8 py-4 text-lg">
                   Start Free Trial
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -479,9 +479,11 @@ export default function LandingPage() {
                       Priority support
                     </li>
                   </ul>
-                  <Button className="w-full bg-[#24D367] hover:bg-green-600 text-white mt-6">
-                    Start Free Trial
-                  </Button>
+                  <a href="/free-trial" className="w-full">
+                    <Button className="w-full bg-[#24D367] hover:bg-green-600 text-white mt-6">
+                      Start Free Trial
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
 
@@ -536,7 +538,7 @@ export default function LandingPage() {
             Join hundreds of South African sports academies already using IH Academy to streamline their operations and grow their business.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
+            <Link href="/free-trial">
               <Button size="lg" className="bg-[#24D367] hover:bg-green-500 text-white px-8 py-4 text-lg">
                 Start Your Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -581,7 +583,7 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#features" className="text-gray-600 hover:text-[#278DD4] transition-colors">Features</a></li>
                 <li><a href="#pricing" className="text-gray-600 hover:text-[#278DD4] transition-colors">Pricing</a></li>
-                <li><a href="/register" className="text-gray-600 hover:text-[#278DD4] transition-colors">Free Trial</a></li>
+                <li><a href="/free-trial" className="text-gray-600 hover:text-[#278DD4] transition-colors">Free Trial</a></li>
                 <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">Mobile App</a></li>
               </ul>
             </div>
@@ -681,7 +683,7 @@ export default function LandingPage() {
                   See how easy it is to transform your sports academy with professional management tools.
                 </p>
                 <div className="space-y-3">
-                  <a href="/register" className="w-full">
+                  <a href="/free-trial" className="w-full">
                     <Button className="w-full bg-[#24D367] hover:bg-green-500 text-white">
                       Start Your Free Trial
                       <ArrowRight className="ml-2 h-4 w-4" />
