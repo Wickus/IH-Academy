@@ -378,6 +378,12 @@ function Router() {
     );
   }
 
+  // Show landing page for unauthenticated users at root
+  if (!isAuthenticated && location === "/") {
+    return <LandingPage />;
+  }
+
+  // Show auth page for login/register or other routes when not authenticated
   if (!isAuthenticated || !user) {
     return <Auth onAuthSuccess={(authenticatedUser) => {
       setUser(authenticatedUser);
