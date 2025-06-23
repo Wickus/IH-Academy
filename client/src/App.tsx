@@ -21,7 +21,7 @@ import Notifications from "@/pages/notifications";
 import Memberships from "@/pages/memberships";
 import DailySchedules from "@/pages/daily-schedules";
 import PublicBooking from "@/pages/public-booking";
-import GlobalAdminDashboard from "@/pages/global-admin-test";
+import GlobalAdminDashboard from "@/pages/global-admin-dashboard-simple";
 import PublicDiscovery from "@/pages/public-discovery";
 import OrganizationDashboard from "@/pages/organization-dashboard";
 import OrganizationClasses from "@/pages/organization-classes";
@@ -81,6 +81,19 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
 }) {
   const { isMobile } = useMobileDetection();
 
+  // Global Admin Interface - Handle FIRST before any mobile detection
+  if (user?.role === 'global_admin') {
+    console.log('Global admin user detected, routing to dashboard');
+    return (
+      <Switch>
+        <Route path="/" component={GlobalAdminDashboard} />
+        <Route path="/dashboard" component={GlobalAdminDashboard} />
+        <Route path="/organizations" component={GlobalAdminDashboard} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   // Mobile app routing for coaches and participants - but allow specific routes to use normal routing
   const [location] = useLocation();
   
@@ -123,18 +136,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     );
   }
 
-  // Global Admin Interface
-  if (user?.role === 'global_admin') {
-    console.log('Global admin user detected, routing to dashboard');
-    return (
-      <Switch>
-        <Route path="/" component={GlobalAdminDashboard} />
-        <Route path="/dashboard" component={GlobalAdminDashboard} />
-        <Route path="/organizations" component={GlobalAdminDashboard} />
-        <Route component={NotFound} />
-      </Switch>
-    );
-  }
+  // This global admin check is now moved above mobile detection
 
   // Organization Admin Interface  
   if (user?.role === 'organization_admin') {
