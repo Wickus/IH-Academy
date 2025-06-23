@@ -257,7 +257,9 @@ export default function GlobalAdminDashboard() {
                 <TrendingUp className="h-4 w-4 text-[#278DD4]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#20366B]">R0</div>
+                <div className="text-2xl font-bold text-[#20366B]">
+                  R{statsLoading ? "..." : globalStats?.totalRevenue || "0"}
+                </div>
                 <p className="text-xs text-slate-600">Platform-wide revenue</p>
               </CardContent>
             </Card>
@@ -271,11 +273,85 @@ export default function GlobalAdminDashboard() {
               <CardDescription>Manage all sports organizations on the platform</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <Building2 className="h-16 w-16 mx-auto mb-4 text-slate-300" />
-                <h3 className="text-lg font-semibold text-slate-600 mb-2">No Organizations Found</h3>
-                <p className="text-slate-500">Organizations will appear here once they register.</p>
-              </div>
+              {orgLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#278DD4] mx-auto mb-4"></div>
+                  <p className="text-slate-600">Loading organizations...</p>
+                </div>
+              ) : organizations.length === 0 ? (
+                <div className="text-center py-8">
+                  <Building2 className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+                  <h3 className="text-lg font-semibold text-slate-600 mb-2">No Organizations Found</h3>
+                  <p className="text-slate-500">Organizations will appear here once they register.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {organizations.map((org: any) => (
+                    <div key={org.id} className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          {org.logoUrl ? (
+                            <img 
+                              src={org.logoUrl} 
+                              alt={org.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-semibold ${!org.logoUrl ? '' : 'hidden'}`}
+                               style={{ backgroundColor: org.primaryColor || '#278DD4' }}>
+                            {org.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-[#20366B]">{org.name}</h3>
+                            <p className="text-sm text-slate-600">{org.email}</p>
+                            <div className="flex items-center space-x-4 mt-1">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                org.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' :
+                                org.subscriptionStatus === 'trial' ? 'bg-blue-100 text-blue-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {org.subscriptionStatus || 'Unknown'}
+                              </span>
+                              <span className="text-xs text-slate-500">
+                                Plan: {org.planType || 'Free'}
+                              </span>
+                              {org.trialEndDate && org.subscriptionStatus === 'trial' && (
+                                <span className="text-xs text-slate-500">
+                                  Trial ends: {new Date(org.trialEndDate).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to permanently delete ${org.name}? This action cannot be undone.`)) {
+                                // Delete organization logic here
+                                toast({
+                                  title: "Organization Deleted",
+                                  description: `${org.name} has been permanently deleted.`,
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
