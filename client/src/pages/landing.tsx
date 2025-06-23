@@ -20,6 +20,8 @@ import {
   Zap
 } from "lucide-react";
 
+import ItsHappening_Africa_Logo_Picture_Mark_small from "@assets/ItsHappening.Africa Logo_Picture Mark_small.png";
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -29,7 +31,7 @@ export default function LandingPage() {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
               <img 
-                src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
+                src={ItsHappening_Africa_Logo_Picture_Mark_small} 
                 alt="ItsHappening.Africa" 
                 className="h-10 w-auto"
               />
@@ -61,7 +63,6 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#20366B] via-[#278DD4] to-[#24D367] text-white py-20 lg:py-32">
         <div className="absolute inset-0 bg-black/10"></div>
@@ -112,7 +113,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Welcome Overview Section */}
       <section className="py-16 bg-white border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -250,7 +250,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Quick Benefits Bar */}
       <section className="py-8 bg-[#20366B]/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -278,7 +277,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Features Section */}
       <section id="features" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -366,7 +364,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Stats Section */}
       <section className="py-16 bg-[#20366B] text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -390,7 +387,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Testimonials */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -472,7 +468,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Pricing Section */}
       <section id="pricing" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -602,7 +597,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#20366B] to-[#278DD4] text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -628,7 +622,6 @@ export default function LandingPage() {
           </p>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
