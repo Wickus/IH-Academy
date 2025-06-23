@@ -29,7 +29,10 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
 
   if (!trialStatus) return null;
 
-  const { isExpired, daysRemaining } = trialStatus;
+  const { isExpired, daysRemaining, subscriptionStatus } = trialStatus;
+  
+  // Only show banner for trial organizations
+  if (subscriptionStatus !== 'trial') return null;
   const colors = organizationColors || {
     primaryColor: "#20366B",
     secondaryColor: "#278DD4", 
@@ -84,5 +87,28 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
     );
   }
 
-  return null;
+  // Show active trial status for all trial organizations
+  return (
+    <Alert className="bg-blue-50 border-blue-200 mb-6">
+      <Calendar className="h-4 w-4 text-blue-600" />
+      <AlertDescription className="flex items-center justify-between w-full">
+        <span className="text-blue-800">
+          <strong>Free Trial Active:</strong> {daysRemaining} day{daysRemaining !== 1 ? 's' : ''} remaining. Enjoying full access to all features!
+        </span>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setLocation('/organization-payment')}
+          style={{ 
+            borderColor: colors.accentColor,
+            color: colors.primaryColor
+          }}
+          className="hover:opacity-90"
+        >
+          <CreditCard className="mr-2 h-4 w-4" />
+          Upgrade Early
+        </Button>
+      </AlertDescription>
+    </Alert>
+  );
 }
