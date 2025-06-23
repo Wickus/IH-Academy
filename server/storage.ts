@@ -362,10 +362,23 @@ export class DatabaseStorage implements IStorage {
     return updatedOrg || undefined;
   }
 
-  async checkTrialStatus(organizationId: number): Promise<{ isExpired: boolean; daysRemaining: number }> {
+  async checkTrialStatus(organizationId: number): Promise<{
+    isExpired: boolean;
+    daysRemaining: number;
+    subscriptionStatus: string;
+  }> {
     const org = await this.getOrganization(organizationId);
-    if (!org || !org.trialEndDate) {
-      return { isExpired: false, daysRemaining: 0 };
+    if (!org) {
+      return { isExpired: false, daysRemaining: 0, subscriptionStatus: 'unknown' };
+    }
+
+    // Only show trial status for trial organizations
+    if (org.subscriptionStatus !== 'trial') {
+      return { isExpired: false, daysRemaining: 0, subscriptionStatus: org.subscriptionStatus || 'active' };
+    }
+
+    if (!org.trialEndDate) {
+      return { isExpired: false, daysRemaining: 14, subscriptionStatus: 'trial' };
     }
 
     const now = new Date();
@@ -375,7 +388,8 @@ export class DatabaseStorage implements IStorage {
 
     return {
       isExpired: daysRemaining <= 0,
-      daysRemaining: Math.max(0, daysRemaining)
+      daysRemaining: Math.max(0, daysRemaining),
+      subscriptionStatus: 'trial'
     };
   }
 
