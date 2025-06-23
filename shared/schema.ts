@@ -51,6 +51,11 @@ export const organizations = pgTable("organizations", {
   pricingConfig: text("pricing_config"),
   // Unique invite code for organization joining
   inviteCode: text("invite_code").unique(),
+  // Trial and subscription management
+  planType: text("plan_type", { enum: ["free", "basic", "premium"] }).default("free"),
+  trialStartDate: timestamp("trial_start_date"),
+  trialEndDate: timestamp("trial_end_date"),
+  subscriptionStatus: text("subscription_status", { enum: ["trial", "active", "expired", "cancelled"] }).default("trial"),
   // Status
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
