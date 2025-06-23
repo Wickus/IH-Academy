@@ -344,6 +344,53 @@ export class DatabaseStorage implements IStorage {
     return updatedOrg || undefined;
   }
 
+  async startTrialPeriod(organizationId: number): Promise<Organization | undefined> {
+    const trialStartDate = new Date();
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + 14); // 14-day trial
+
+    const [updatedOrg] = await db.update(organizations)
+      .set({
+        trialStartDate,
+        trialEndDate,
+        subscriptionStatus: 'trial',
+        planType: 'basic' // Give them basic features during trial
+      })
+      .where(eq(organizations.id, organizationId))
+      .returning();
+    
+    return updatedOrg || undefined;
+  }
+
+  async checkTrialStatus(organizationId: number): Promise<{ isExpired: boolean; daysRemaining: number }> {
+    const org = await this.getOrganization(organizationId);
+    if (!org || !org.trialEndDate) {
+      return { isExpired: false, daysRemaining: 0 };
+    }
+
+    const now = new Date();
+    const trialEndDate = new Date(org.trialEndDate);
+    const timeDiff = trialEndDate.getTime() - now.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    return {
+      isExpired: daysRemaining <= 0,
+      daysRemaining: Math.max(0, daysRemaining)
+    };
+  }
+
+  async getExpiredTrialOrganizations(): Promise<Organization[]> {
+    const now = new Date();
+    return await db.select()
+      .from(organizations)
+      .where(
+        and(
+          eq(organizations.subscriptionStatus, 'trial'),
+          lte(organizations.trialEndDate, now)
+        )
+      );
+  }
+
   // User-Organization relationship methods
   async getUserOrganizations(userId: number): Promise<UserOrganization[]> {
     return await db.select().from(userOrganizations).where(eq(userOrganizations.userId, userId));
