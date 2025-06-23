@@ -106,15 +106,16 @@ export default function LandingPage() {
                 </Button>
               </a>
               
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg"
-                onClick={() => setShowDemoModal(true)}
-              >
-                <PlayCircle className="mr-2 h-5 w-5" />
-                Watch Demo
-              </Button>
+              <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg"
+                >
+                  <PlayCircle className="mr-2 h-5 w-5" />
+                  Schedule Demo
+                </Button>
+              </a>
             </div>
 
             <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-blue-100">
@@ -541,9 +542,11 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg">
-              Schedule a Demo
-            </Button>
+            <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg">
+                Schedule a Demo
+              </Button>
+            </a>
           </div>
           <p className="text-sm text-blue-200 mt-4">
             No credit card required • 30-day free trial • Cancel anytime
@@ -684,7 +687,7 @@ export default function LandingPage() {
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </a>
-                  <a href="https://itshappening.africa/contact" className="w-full">
+                  <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer" className="w-full">
                     <Button variant="outline" className="w-full border-[#20366B] text-[#20366B] hover:bg-[#20366B] hover:text-white">
                       Schedule Personal Demo
                     </Button>
