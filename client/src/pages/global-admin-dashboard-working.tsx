@@ -47,8 +47,6 @@ type PayfastSettingsData = z.infer<typeof payfastSettingsSchema>;
 
 export default function GlobalAdminDashboard() {
   console.log('GlobalAdminDashboard component rendering');
-  const [showUsers, setShowUsers] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [showPurgeDialog, setShowPurgeDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
