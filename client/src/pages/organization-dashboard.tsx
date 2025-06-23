@@ -15,6 +15,7 @@ import RecentBookings from "@/components/dashboard/recent-bookings";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
 import CoachAttendance from "@/components/dashboard/coach-attendance";
 import OrganizationSetupFlow from "@/components/onboarding/organization-setup-flow";
+import { TrialBanner } from "@/components/trial-banner";
 
 interface OrganizationDashboardProps {
   user: User;
@@ -70,6 +71,18 @@ export default function OrganizationDashboard({ user, organization }: Organizati
 
   return (
     <div className="space-y-6 p-6">
+      {/* Trial Banner */}
+      {organization.subscriptionStatus === 'trial' && (
+        <TrialBanner 
+          organizationId={organization.id} 
+          organizationColors={{
+            primaryColor: organization.primaryColor,
+            secondaryColor: organization.secondaryColor,
+            accentColor: organization.accentColor
+          }}
+        />
+      )}
+
       {/* Custom Header with Organization Branding */}
       <div 
         className="rounded-lg p-6 text-white"
@@ -87,7 +100,7 @@ export default function OrganizationDashboard({ user, organization }: Organizati
               <Badge 
                 className="bg-white/20 text-white border-white/30"
               >
-                {organization.planType} Plan
+                {organization.subscriptionStatus === 'trial' ? 'Free Trial' : `${organization.planType} Plan`}
               </Badge>
               <span className="text-white/80 text-sm">
                 {stats?.totalMembers || 0} members • {stats?.activeClasses || 0} active classes

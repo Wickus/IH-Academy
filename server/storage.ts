@@ -54,7 +54,7 @@ export interface IStorage {
   createOrganization(organization: InsertOrganization): Promise<Organization>;
   updateOrganization(id: number, organization: Partial<InsertOrganization>): Promise<Organization | undefined>;
   startTrialPeriod(organizationId: number): Promise<Organization | undefined>;
-  checkTrialStatus(organizationId: number): Promise<{ isExpired: boolean; daysRemaining: number }>;
+  checkTrialStatus(organizationId: number): Promise<{ isExpired: boolean; daysRemaining: number; subscriptionStatus: string }>;
   getExpiredTrialOrganizations(): Promise<Organization[]>;
 
   // User-Organization relationships
