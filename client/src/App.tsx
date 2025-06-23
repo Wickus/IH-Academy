@@ -378,13 +378,32 @@ function Router() {
     );
   }
 
+  // If authenticated user but they're at root, redirect to dashboard
+  if (isAuthenticated && user && location === "/") {
+    window.location.href = "/dashboard";
+    return null;
+  }
+
   // Show landing page for unauthenticated users at root
   if (!isAuthenticated && location === "/") {
     return <LandingPage />;
   }
 
-  // Show auth page for login/register or other routes when not authenticated
-  if (!isAuthenticated || !user) {
+  // Show auth page for login/register routes
+  if (!isAuthenticated && (location === "/login" || location === "/register")) {
+    return <Auth onAuthSuccess={(authenticatedUser) => {
+      setUser(authenticatedUser);
+      setIsAuthenticated(true);
+    }} />;
+  }
+
+  // Redirect other routes to landing page when not authenticated
+  if (!isAuthenticated) {
+    return <LandingPage />;
+  }
+
+  // User is authenticated but no user object
+  if (!user) {
     return <Auth onAuthSuccess={(authenticatedUser) => {
       setUser(authenticatedUser);
       setIsAuthenticated(true);
