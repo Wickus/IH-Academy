@@ -408,6 +408,11 @@ function Router() {
     }} />;
   }
 
+  // Show free trial signup page
+  if (!isAuthenticated && location === "/free-trial") {
+    return <FreeTrialSignup />;
+  }
+
   // Redirect other routes to landing page when not authenticated
   if (!isAuthenticated) {
     return <LandingPage />;
