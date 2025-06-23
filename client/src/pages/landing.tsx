@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Calendar, 
   Users, 
@@ -17,12 +18,15 @@ import {
   PlayCircle,
   Trophy,
   Target,
-  Zap
+  Zap,
+  X
 } from "lucide-react";
 
 import ItsHappening_Africa_Logo_Picture_Mark_small from "@assets/ItsHappening.Africa Logo_Picture Mark_small.png";
 
 export default function LandingPage() {
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -90,7 +94,12 @@ export default function LandingPage() {
                 </Button>
               </a>
               
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg"
+                onClick={() => setShowDemoModal(true)}
+              >
                 <PlayCircle className="mr-2 h-5 w-5" />
                 Watch Demo
               </Button>
@@ -687,6 +696,88 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Demo Video Modal */}
+      <Dialog open={showDemoModal} onOpenChange={setShowDemoModal}>
+        <DialogContent className="max-w-4xl w-full max-h-[90vh] p-0">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-2xl font-bold text-[#20366B] flex items-center justify-between">
+              IH Academy Platform Demo
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDemoModal(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="p-6 pt-4">
+            <div className="aspect-video bg-gradient-to-br from-[#20366B] to-[#278DD4] rounded-lg overflow-hidden">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&modestbranding=1"
+                title="IH Academy Platform Demo"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="rounded-lg"
+              ></iframe>
+            </div>
+            
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold text-[#20366B] mb-3">What You'll See in This Demo</h3>
+                <ul className="space-y-2 text-gray-600">
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-2" />
+                    Complete academy setup in minutes
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-2" />
+                    Class scheduling and management
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-2" />
+                    Member booking and payment flow
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-2" />
+                    Coach attendance tracking
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-[#24D367] mr-2" />
+                    PayFast payment integration
+                  </li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold text-[#20366B] mb-3">Ready to Get Started?</h3>
+                <p className="text-gray-600 mb-4">
+                  See how easy it is to transform your sports academy with professional management tools.
+                </p>
+                <div className="space-y-3">
+                  <a href="/register" className="w-full">
+                    <Button className="w-full bg-[#24D367] hover:bg-green-500 text-white">
+                      Start Your Free Trial
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                  <a href="https://itshappening.africa/contact" className="w-full">
+                    <Button variant="outline" className="w-full border-[#20366B] text-[#20366B] hover:bg-[#20366B] hover:text-white">
+                      Schedule Personal Demo
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
