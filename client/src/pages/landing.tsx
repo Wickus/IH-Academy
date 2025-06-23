@@ -551,7 +551,7 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-16">
+      <footer className="bg-gray-50 text-gray-800 py-16">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
@@ -561,54 +561,54 @@ export default function LandingPage() {
                   className="h-8 w-auto"
                 />
                 <div>
-                  <div className="font-bold text-white">IH Academy</div>
-                  <div className="text-sm text-gray-300">by ItsHappening.Africa</div>
+                  <div className="font-bold text-[#20366B]">IH Academy</div>
+                  <div className="text-sm text-gray-600">by ItsHappening.Africa</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-300 mb-4">
+              <p className="text-sm text-gray-600 mb-4">
                 Professional sports academy management software designed for South African organizations.
               </p>
-              <div className="text-sm text-gray-300">
+              <div className="text-sm text-gray-600">
                 Part of the ItsHappening.Africa ecosystem
               </div>
             </div>
 
             <div>
-              <h3 className="font-semibold text-white mb-4">Product</h3>
+              <h3 className="font-semibold text-[#20366B] mb-4">Product</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="/register" className="hover:text-white transition-colors">Free Trial</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Mobile App</a></li>
+                <li><a href="#features" className="text-gray-600 hover:text-[#278DD4] transition-colors">Features</a></li>
+                <li><a href="#pricing" className="text-gray-600 hover:text-[#278DD4] transition-colors">Pricing</a></li>
+                <li><a href="/register" className="text-gray-600 hover:text-[#278DD4] transition-colors">Free Trial</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">Mobile App</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold text-white mb-4">Support</h3>
+              <h3 className="font-semibold text-[#20366B] mb-4">Support</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="https://itshappening.africa/contact" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Docs</a></li>
+                <li><a href="https://itshappening.africa/contact" className="text-gray-600 hover:text-[#278DD4] transition-colors">Contact Us</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">Help Center</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">System Status</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">API Docs</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold text-white mb-4">Company</h3>
+              <h3 className="font-semibold text-[#20366B] mb-4">Company</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="https://itshappening.africa/about" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="https://itshappening.africa" className="hover:text-white transition-colors">ItsHappening.Africa</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="https://itshappening.africa/about" className="text-gray-600 hover:text-[#278DD4] transition-colors">About</a></li>
+                <li><a href="https://itshappening.africa" className="text-gray-600 hover:text-[#278DD4] transition-colors">ItsHappening.Africa</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-[#278DD4] transition-colors">Terms of Service</a></li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-gray-600 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <div className="text-sm text-gray-200">
+          <div className="border-t border-gray-300 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="text-sm text-gray-600">
               © 2025 ItsHappening.Africa. All rights reserved.
             </div>
-            <div className="text-sm text-gray-200 mt-4 md:mt-0">
+            <div className="text-sm text-gray-600 mt-4 md:mt-0">
               Made with ❤️ in South Africa
             </div>
           </div>
