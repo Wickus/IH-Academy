@@ -123,15 +123,21 @@ export default function GlobalAdminDashboard() {
   const { data: savedPricingConfig, isLoading: loadingPricingConfig } = useQuery({
     queryKey: ['/api/admin/pricing-config'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/pricing-config', {
-        credentials: 'include',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to load pricing configuration');
+      try {
+        const response = await fetch('/api/admin/pricing-config', {
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          console.warn('Failed to load pricing configuration:', response.status);
+          return null;
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.warn('Error loading pricing configuration:', error);
+        return null;
       }
-      
-      return response.json();
     },
   });
 
@@ -246,23 +252,45 @@ export default function GlobalAdminDashboard() {
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/stats/global'],
-    queryFn: () => api.getGlobalStats(),
+    queryFn: async () => {
+      try {
+        return await api.getGlobalStats();
+      } catch (error) {
+        console.warn('Failed to load global stats:', error);
+        return { totalOrganizations: 0, totalUsers: 0, totalRevenue: 0, totalBookings: 0 };
+      }
+    },
   });
 
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: async () => {
-      const response = await fetch('/api/organizations?includeInactive=true', {
-        credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch organizations');
-      return response.json();
+      try {
+        const response = await fetch('/api/organizations?includeInactive=true', {
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          console.warn('Failed to fetch organizations:', response.status);
+          return [];
+        }
+        return response.json();
+      } catch (error) {
+        console.warn('Error fetching organizations:', error);
+        return [];
+      }
     },
   });
 
   const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ['/api/users'],
-    queryFn: () => api.getUsers(),
+    queryFn: async () => {
+      try {
+        return await api.getUsers();
+      } catch (error) {
+        console.warn('Failed to load users:', error);
+        return [];
+      }
+    },
     enabled: showUsers,
   });
 
@@ -270,11 +298,15 @@ export default function GlobalAdminDashboard() {
   const { data: userOrganizations = [] } = useQuery({
     queryKey: ['/api/user-organizations'],
     queryFn: async () => {
-      const response = await fetch('/api/user-organizations', {
-        credentials: 'include',
-      });
-      if (!response.ok) return [];
-      return response.json();
+      try {
+        const response = await fetch('/api/user-organizations', {
+          credentials: 'include',
+        });
+        if (!response.ok) return [];
+        return response.json();
+      } catch (error) {
+        return [];
+      }
     },
     enabled: showUsers && !!users,
   });
@@ -282,9 +314,13 @@ export default function GlobalAdminDashboard() {
   const { data: allBookings = [] } = useQuery({
     queryKey: ['/api/bookings'],
     queryFn: async () => {
-      const response = await fetch('/api/bookings', { credentials: 'include' });
-      if (!response.ok) return [];
-      return response.json();
+      try {
+        const response = await fetch('/api/bookings', { credentials: 'include' });
+        if (!response.ok) return [];
+        return response.json();
+      } catch (error) {
+        return [];
+      }
     },
   });
 
@@ -292,44 +328,17 @@ export default function GlobalAdminDashboard() {
   const { data: payfastStatus, refetch: refetchPayfastStatus, isLoading: isCheckingPayfast } = useQuery({
     queryKey: ['/api/test-payfast-connection'],
     queryFn: async () => {
-      // First get the organization data to get PayFast credentials
-      const orgResponse = await fetch('/api/organizations/20', {
-        credentials: 'include',
-      });
-      
-      if (!orgResponse.ok) {
-        return { connected: false, message: 'Failed to fetch organization data' };
+      try {
+        const response = await fetch('/api/test-payfast-connection', {
+          credentials: 'include',
+        });
+        if (!response.ok) return { success: false, message: 'Connection failed' };
+        return response.json();
+      } catch (error) {
+        return { success: false, message: 'Connection failed' };
       }
-      
-      const organization = await orgResponse.json();
-      
-      if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
-        return { connected: false, message: 'PayFast credentials not configured' };
-      }
-
-      // Now test the connection with the organization's credentials
-      const response = await fetch('/api/test-payfast-connection', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          merchantId: organization.payfastMerchantId,
-          merchantKey: organization.payfastMerchantKey,
-          passphrase: organization.payfastPassphrase || "",
-          sandbox: organization.payfastSandbox ?? true,
-        }),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        return { connected: false, message: error.message || 'Failed to test connection' };
-      }
-      
-      return response.json();
     },
-    enabled: false, // Only run when manually triggered
+    enabled: false,
   });
 
   const updateUserStatusMutation = useMutation({
