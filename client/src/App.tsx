@@ -413,6 +413,11 @@ function Router() {
     return <FreeTrialSignup />;
   }
 
+  // Allow organization setup for authenticated users
+  if (isAuthenticated && user && location.startsWith("/organization-setup")) {
+    return <OrganizationSetup />;
+  }
+
   // Redirect other routes to landing page when not authenticated
   if (!isAuthenticated) {
     return <LandingPage />;

@@ -99,7 +99,8 @@ export default function FreeTrialSignup() {
         title: "Welcome to IH Academy!",
         description: "Your 14-day free trial has started. Explore all features with no limitations.",
       });
-      setLocation("/dashboard");
+      // Redirect to organization setup page with the new organization ID
+      setLocation(`/organization-setup?orgId=${organization.id}`);
     },
     onError: (error: any) => {
       toast({
