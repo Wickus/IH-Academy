@@ -76,10 +76,11 @@ export default function OrganizationSetup() {
     onSuccess: () => {
       toast({
         title: "Organisation Setup Complete",
-        description: "Please complete payment to access your dashboard.",
+        description: "Welcome to your organization dashboard! Your 14-day trial is active.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
-      setLocation(`/organization-payment?orgId=${orgId}&businessModel=${businessModel}`);
+      // Redirect to dashboard instead of payment for trial organizations
+      setLocation("/dashboard");
     },
     onError: (error: any) => {
       toast({
