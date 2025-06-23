@@ -47,7 +47,10 @@ interface AuthProps {
 }
 
 export default function Auth({ onAuthSuccess }: AuthProps) {
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [location] = useLocation();
+  const [activeTab, setActiveTab] = useState<"login" | "register">(
+    location === "/register" ? "register" : "login"
+  );
   const [registrationType, setRegistrationType] = useState<"user" | "organization" | null>(null);
   const [showOrgSetup, setShowOrgSetup] = useState(false);
   const [loginData, setLoginData] = useState<LoginFormData>({ username: "", password: "" });
