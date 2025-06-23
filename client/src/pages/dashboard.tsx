@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useEffect, useCallback } from "react";
 import { api } from "@/lib/api";
-import { TrialBanner } from "@/components/trial-banner";
 import StatsCards from "@/components/dashboard/stats-cards";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
 import RecentBookings from "@/components/dashboard/recent-bookings";
@@ -80,22 +79,7 @@ export default function Dashboard() {
   // If user is an organization admin and has organizations, show OrganizationDashboard
   if (currentUser?.role === 'organization_admin' && userOrganisations && userOrganisations.length > 0) {
     const organization = userOrganisations[0];
-    return (
-      <div>
-        {/* Trial Banner for organization admins */}
-        {organization.subscriptionStatus === 'trial' && (
-          <TrialBanner 
-            organizationId={organization.id} 
-            organizationColors={{
-              primaryColor: organization.primaryColor,
-              secondaryColor: organization.secondaryColor,
-              accentColor: organization.accentColor
-            }}
-          />
-        )}
-        <OrganizationDashboard user={currentUser} organization={organization} />
-      </div>
-    );
+    return <OrganizationDashboard user={currentUser} organization={organization} />;
   }
 
   // If user is a coach, show coach-specific dashboard
