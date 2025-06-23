@@ -113,6 +113,172 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Welcome Overview Section */}
+      <section className="py-16 bg-white border-b">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-[#20366B] mb-4">
+                Welcome to the Future of Academy Management
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                From grassroots clubs to professional academies, IH Academy streamlines every aspect of your operations 
+                with tools designed specifically for South African sports organizations.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Key Features Grid */}
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-[#278DD4]/10 rounded-lg flex items-center justify-center">
+                    <Zap className="h-6 w-6 text-[#278DD4]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#20366B] mb-2">Quick Setup in Minutes</h3>
+                    <p className="text-gray-600">
+                      Get your academy online in under 10 minutes. No technical knowledge required - 
+                      our guided setup walks you through every step.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-[#24D367]/10 rounded-lg flex items-center justify-center">
+                    <Smartphone className="h-6 w-6 text-[#24D367]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#20366B] mb-2">Mobile-First Design</h3>
+                    <p className="text-gray-600">
+                      Coaches mark attendance on their phones, parents book classes on the go, 
+                      and admins manage everything from any device.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-[#278DD4]/10 rounded-lg flex items-center justify-center">
+                    <Shield className="h-6 w-6 text-[#278DD4]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#20366B] mb-2">Bank-Level Security</h3>
+                    <p className="text-gray-600">
+                      Your data is protected with enterprise-grade security, automatic backups, 
+                      and compliance with South African data protection laws.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-[#24D367]/10 rounded-lg flex items-center justify-center">
+                    <Target className="h-6 w-6 text-[#24D367]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#20366B] mb-2">Built for South Africa</h3>
+                    <p className="text-gray-600">
+                      PayFast integration, South African banking support, local currency, 
+                      and features designed for how local academies operate.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visual Dashboard Preview */}
+              <div className="lg:pl-8">
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 shadow-2xl">
+                    <div className="bg-white rounded-xl p-6 shadow-lg">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h3 className="text-lg font-semibold text-[#20366B]">Academy Dashboard</h3>
+                          <p className="text-sm text-gray-500">Real-time overview</p>
+                        </div>
+                        <div className="w-3 h-3 bg-[#24D367] rounded-full animate-pulse"></div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-gradient-to-r from-[#278DD4] to-[#20366B] rounded-lg p-4 text-white">
+                          <div className="text-2xl font-bold">247</div>
+                          <div className="text-sm opacity-90">Active Members</div>
+                        </div>
+                        <div className="bg-gradient-to-r from-[#24D367] to-green-500 rounded-lg p-4 text-white">
+                          <div className="text-2xl font-bold">R45,680</div>
+                          <div className="text-sm opacity-90">Monthly Revenue</div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-[#278DD4] rounded-full flex items-center justify-center">
+                              <Calendar className="h-4 w-4 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-sm">Swimming Lessons</div>
+                              <div className="text-xs text-gray-500">Today 15:00</div>
+                            </div>
+                          </div>
+                          <Badge className="bg-[#24D367] text-white text-xs">12/15</Badge>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-[#24D367] rounded-full flex items-center justify-center">
+                              <Trophy className="h-4 w-4 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-sm">Tennis Coaching</div>
+                              <div className="text-xs text-gray-500">Tomorrow 09:00</div>
+                            </div>
+                          </div>
+                          <Badge className="bg-yellow-500 text-white text-xs">8/10</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating Feature Badges */}
+                  <div className="absolute -top-4 -right-4 bg-[#24D367] text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                    Live Updates
+                  </div>
+                  <div className="absolute -bottom-4 -left-4 bg-[#278DD4] text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                    Mobile Ready
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Benefits Bar */}
+      <section className="py-8 bg-[#20366B]/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center items-center gap-8 text-sm">
+            <div className="flex items-center text-[#20366B]">
+              <Clock className="h-4 w-4 mr-2 text-[#278DD4]" />
+              <span className="font-medium">Setup in 10 minutes</span>
+            </div>
+            <div className="flex items-center text-[#20366B]">
+              <Shield className="h-4 w-4 mr-2 text-[#24D367]" />
+              <span className="font-medium">Bank-grade security</span>
+            </div>
+            <div className="flex items-center text-[#20366B]">
+              <Users className="h-4 w-4 mr-2 text-[#278DD4]" />
+              <span className="font-medium">Unlimited members</span>
+            </div>
+            <div className="flex items-center text-[#20366B]">
+              <CreditCard className="h-4 w-4 mr-2 text-[#24D367]" />
+              <span className="font-medium">PayFast included</span>
+            </div>
+            <div className="flex items-center text-[#20366B]">
+              <Smartphone className="h-4 w-4 mr-2 text-[#278DD4]" />
+              <span className="font-medium">Mobile optimized</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
