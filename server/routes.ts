@@ -472,14 +472,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate unique invite code if not provided
       if (!orgData.inviteCode) {
-        const crypto = require('crypto');
-        orgData.inviteCode = 'ORG' + crypto.randomBytes(6).toString('hex').toUpperCase();
+        orgData.inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       }
       
-      const organization = await storage.createOrganization(orgData);
+      // Start trial period automatically
+      orgData.subscriptionStatus = 'trial';
+      orgData.trialStartDate = new Date();
+      orgData.trialEndDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days from now
       
-      // Update the current user's organizationId
-      await storage.updateUser(user.id, { organizationId: organization.id });
+      const organization = await storage.createOrganization(orgData);
       
       // Automatically add the current user as the admin of this organisation
       await storage.addUserToOrganization({

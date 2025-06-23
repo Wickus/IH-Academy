@@ -6,13 +6,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Users, CreditCard, TrendingUp, Settings } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2 } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function GlobalAdminDashboard() {
   console.log('GlobalAdminDashboard component rendering');
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Fetch organizations data
+  const { data: organizations = [], isLoading: orgLoading } = useQuery({
+    queryKey: ['/api/organizations'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/organizations?includeInactive=true");
+      return response.json();
+    },
+  });
+
+  // Fetch global stats
+  const { data: globalStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['/api/stats/global'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/stats/global");
+      return response.json();
+    },
+  });
   
   // Pricing configuration state
   const [pricingConfig, setPricingConfig] = useState({
@@ -199,7 +218,9 @@ export default function GlobalAdminDashboard() {
                 <Building2 className="h-4 w-4 text-[#278DD4]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#20366B]">0</div>
+                <div className="text-2xl font-bold text-[#20366B]">
+                  {statsLoading ? "..." : globalStats?.totalOrganizations || organizations.length}
+                </div>
                 <p className="text-xs text-slate-600">Active sports organizations</p>
               </CardContent>
             </Card>
@@ -210,7 +231,9 @@ export default function GlobalAdminDashboard() {
                 <Users className="h-4 w-4 text-[#24D367]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#20366B]">0</div>
+                <div className="text-2xl font-bold text-[#20366B]">
+                  {statsLoading ? "..." : globalStats?.totalUsers || "0"}
+                </div>
                 <p className="text-xs text-slate-600">Platform members</p>
               </CardContent>
             </Card>
@@ -221,7 +244,9 @@ export default function GlobalAdminDashboard() {
                 <CreditCard className="h-4 w-4 text-[#24D3BF]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#20366B]">0</div>
+                <div className="text-2xl font-bold text-[#20366B]">
+                  {statsLoading ? "..." : globalStats?.totalBookings || "0"}
+                </div>
                 <p className="text-xs text-slate-600">Across all organizations</p>
               </CardContent>
             </Card>
