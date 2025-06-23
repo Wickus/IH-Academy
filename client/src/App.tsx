@@ -80,22 +80,25 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   setIsAuthenticated: (auth: boolean) => void;
 }) {
   const { isMobile } = useMobileDetection();
+  const [location] = useLocation(); // Move useLocation to the top
 
   // Global Admin Interface - Handle FIRST before any mobile detection
   if (user?.role === 'global_admin') {
-    console.log('Global admin user detected, routing to dashboard');
+    console.log('Global admin user detected, routing to dashboard. Current location:', location);
     return (
       <Switch>
         <Route path="/" component={GlobalAdminDashboard} />
         <Route path="/dashboard" component={GlobalAdminDashboard} />
         <Route path="/organizations" component={GlobalAdminDashboard} />
-        <Route component={NotFound} />
+        <Route component={() => {
+          console.log('Global admin fallback route triggered for:', location);
+          return <GlobalAdminDashboard />;
+        }} />
       </Switch>
     );
   }
 
   // Mobile app routing for coaches and participants - but allow specific routes to use normal routing
-  const [location] = useLocation();
   
   if (isMobile) {
     // Only use desktop routing for these specific pages
@@ -350,10 +353,13 @@ function Router() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('Checking authentication status...');
         const currentUser = await api.getCurrentUser();
+        console.log('User authenticated:', currentUser);
         setUser(currentUser);
         setIsAuthenticated(true);
       } catch (error) {
+        console.log('Authentication failed:', error);
         setUser(null);
         setIsAuthenticated(false);
       }
