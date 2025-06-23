@@ -231,7 +231,11 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         )} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
-        <Route component={NotFound} />
+        <Route component={() => (
+          <AppLayout>
+            <Dashboard />
+          </AppLayout>
+        )} />
       </Switch>
     );
   }
@@ -274,12 +278,14 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
-        <Route component={NotFound} />
+        <Route component={() => (
+          <AppLayout>
+            <Dashboard />
+          </AppLayout>
+        )} />
       </Switch>
     );
   }
-
-
 
   // Global routes that work for all authenticated users
   return (
@@ -292,7 +298,11 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
       <Route path="/payment-cancelled" component={PaymentCancelled} />
       <Route path="/payment/success" component={PaymentRedirect} />
       <Route path="/payment/cancelled" component={PaymentRedirect} />
-      <Route component={NotFound} />
+      <Route component={() => (
+        <AppLayout>
+          <Dashboard />
+        </AppLayout>
+      )} />
     </Switch>
   );
 
