@@ -85,16 +85,12 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
 
   // Global Admin Interface - Handle FIRST before any mobile detection
   if (user?.role === 'global_admin') {
-    console.log('Global admin user detected, routing to dashboard. Current location:', location);
     return (
       <Switch>
         <Route path="/" component={GlobalAdminDashboard} />
         <Route path="/dashboard" component={GlobalAdminDashboard} />
         <Route path="/organizations" component={GlobalAdminDashboard} />
-        <Route component={() => {
-          console.log('Global admin fallback route triggered for:', location);
-          return <GlobalAdminDashboard />;
-        }} />
+        <Route component={GlobalAdminDashboard} />
       </Switch>
     );
   }
@@ -391,8 +387,11 @@ function Router() {
 
   // If authenticated user but they're at root, redirect to dashboard
   if (isAuthenticated && user && location === "/") {
-    window.location.href = "/dashboard";
-    return null;
+    return (
+      <OrganizationProvider user={user}>
+        <RoleBasedRouter user={user} setUser={setUser} setIsAuthenticated={setIsAuthenticated} />
+      </OrganizationProvider>
+    );
   }
 
   // Show landing page for unauthenticated users at root
