@@ -110,14 +110,8 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       if (onAuthSuccess) {
         onAuthSuccess(user);
       } else {
-        // Redirect based on user role
-        if (user.role === 'global_admin') {
-          setLocation("/dashboard");
-        } else if (user.role === 'organization_admin' || user.role === 'coach') {
-          setLocation("/dashboard");
-        } else {
-          setLocation("/dashboard");
-        }
+        // Simple redirect to root, let the router handle role-based routing
+        setLocation("/");
       }
     },
     onError: (error: any) => {
