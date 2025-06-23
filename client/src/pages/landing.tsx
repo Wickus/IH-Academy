@@ -552,7 +552,6 @@ export default function LandingPage() {
       </section>
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
@@ -613,7 +612,6 @@ export default function LandingPage() {
               Made with ❤️ in South Africa
             </div>
           </div>
-        </div>
       </footer>
 
       {/* Demo Video Modal */}
