@@ -55,6 +55,7 @@ import PaymentRedirect from "@/components/payment-redirect";
 import OrganizationInvite from "@/pages/organization-invite";
 import LandingPage from "@/pages/landing";
 import DebitOrderManagement from "@/pages/debit-order-management";
+import FreeTrialSignup from "@/pages/free-trial-signup";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
