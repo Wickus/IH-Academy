@@ -563,13 +563,13 @@ export default function LandingPage() {
                 />
                 <div>
                   <div className="font-bold text-white">IH Academy</div>
-                  <div className="text-sm text-gray-400">by ItsHappening.Africa</div>
+                  <div className="text-sm text-gray-300">by ItsHappening.Africa</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-400 mb-4">
+              <p className="text-sm text-gray-300 mb-4">
                 Professional sports academy management software designed for South African organizations.
               </p>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-gray-300">
                 Part of the ItsHappening.Africa ecosystem
               </div>
             </div>
@@ -605,11 +605,11 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <div className="text-sm text-gray-400">
+          <div className="border-t border-gray-600 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="text-sm text-gray-200">
               © 2025 ItsHappening.Africa. All rights reserved.
             </div>
-            <div className="text-sm text-gray-400 mt-4 md:mt-0">
+            <div className="text-sm text-gray-200 mt-4 md:mt-0">
               Made with ❤️ in South Africa
             </div>
           </div>
