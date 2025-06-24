@@ -318,10 +318,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllOrganizations(includeInactive: boolean = false): Promise<Organization[]> {
+    const allOrgs = await db.select().from(organizations);
+    console.log(`Found ${allOrgs.length} total organizations in database`);
+    
     if (includeInactive) {
-      return await db.select().from(organizations);
+      return allOrgs;
     }
-    return await db.select().from(organizations).where(eq(organizations.isActive, true));
+    
+    // Filter by isActive = true OR isActive IS NULL (treating NULL as active)
+    const activeOrgs = allOrgs.filter(org => org.isActive === true || org.isActive === null);
+    console.log(`Returning ${activeOrgs.length} active organizations`);
+    return activeOrgs;
   }
 
   async getOrganizationsByUser(userId: number): Promise<Organization[]> {
