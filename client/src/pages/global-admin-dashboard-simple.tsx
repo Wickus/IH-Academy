@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2 } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2, Eye, Power } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function GlobalAdminDashboard() {
@@ -14,6 +14,59 @@ export default function GlobalAdminDashboard() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Delete organization mutation
+  const deleteOrganizationMutation = useMutation({
+    mutationFn: async (organizationId: number) => {
+      const response = await apiRequest("DELETE", `/api/organizations/${organizationId}`);
+      if (!response.ok) {
+        throw new Error("Failed to delete organization");
+      }
+      return response.json();
+    },
+    onSuccess: (data, organizationId) => {
+      toast({
+        title: "Organization Deleted",
+        description: data.message || "Organization has been permanently deleted.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete organization.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Toggle organization status mutation
+  const toggleOrganizationMutation = useMutation({
+    mutationFn: async ({ organizationId, isActive }: { organizationId: number; isActive: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/organizations/${organizationId}`, {
+        isActive: !isActive
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update organization status");
+      }
+      return response.json();
+    },
+    onSuccess: (data, variables) => {
+      toast({
+        title: "Organization Updated",
+        description: `Organization has been ${variables.isActive ? 'deactivated' : 'activated'}.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update organization.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Fetch organizations data
   const { data: organizations = [], isLoading: orgLoading } = useQuery({
@@ -219,9 +272,13 @@ export default function GlobalAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#20366B]">
-                  {statsLoading ? "..." : globalStats?.totalOrganizations || organizations.length}
+                  {statsLoading ? "..." : organizations.length}
                 </div>
-                <p className="text-xs text-slate-600">Active sports organizations</p>
+                <div className="flex gap-2 text-xs text-slate-600 mt-1">
+                  <span>Active: {organizations.filter(org => org.subscriptionStatus === 'active').length}</span>
+                  <span>•</span>
+                  <span>Trial: {organizations.filter(org => org.subscriptionStatus === 'trial').length}</span>
+                </div>
               </CardContent>
             </Card>
 
@@ -332,19 +389,43 @@ export default function GlobalAdminDashboard() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
                             onClick={() => {
-                              if (confirm(`Are you sure you want to permanently delete ${org.name}? This action cannot be undone.`)) {
-                                // Delete organization logic here
-                                toast({
-                                  title: "Organization Deleted",
-                                  description: `${org.name} has been permanently deleted.`,
-                                });
-                              }
+                              // View organization logic - could open a detailed modal
+                              toast({
+                                title: "View Organization",
+                                description: `Viewing details for ${org.name}`,
+                              });
                             }}
                           >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={`${org.isActive ? 'text-orange-600 border-orange-200 hover:bg-orange-50' : 'text-green-600 border-green-200 hover:bg-green-50'}`}
+                            onClick={() => {
+                              toggleOrganizationMutation.mutate({ organizationId: org.id, isActive: org.isActive });
+                            }}
+                            disabled={toggleOrganizationMutation.isPending}
+                          >
+                            <Power className="h-4 w-4 mr-1" />
+                            {org.isActive ? 'Deactivate' : 'Activate'}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to permanently delete ${org.name}? This action cannot be undone and will remove all associated data including classes, bookings, and members.`)) {
+                                deleteOrganizationMutation.mutate(org.id);
+                              }
+                            }}
+                            disabled={deleteOrganizationMutation.isPending}
+                          >
                             <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
+                            {deleteOrganizationMutation.isPending ? 'Deleting...' : 'Delete'}
                           </Button>
                         </div>
                       </div>
