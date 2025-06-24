@@ -2789,9 +2789,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       await storage.deleteOrganization(organizationId);
       
+      console.log(`Organization ${organizationId} deletion completed successfully`);
+      
       res.json({ 
         success: true, 
-        message: `Organization "${organization.name}" has been permanently deleted` 
+        message: `Organization "${organization.name}" has been permanently deleted`,
+        deletedId: organizationId
       });
     } catch (error: any) {
       console.error("Error deleting organization:", error);
