@@ -373,7 +373,7 @@ function Router() {
     };
 
     checkAuth();
-  }, []);
+  }, [location]); // Re-check auth when location changes
 
   // Handle invite routes before authentication checks
   if (location.startsWith('/invite/')) {

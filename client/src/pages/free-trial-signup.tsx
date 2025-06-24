@@ -99,8 +99,10 @@ export default function FreeTrialSignup() {
         title: "Welcome to IH Academy!",
         description: "Your 21-day free trial has started. Explore all features with no limitations.",
       });
-      // Redirect to dashboard - user is now logged in and organization is created
-      setLocation("/");
+      // Force a small delay to ensure authentication state is set, then redirect
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
     },
     onError: (error: any) => {
       toast({
