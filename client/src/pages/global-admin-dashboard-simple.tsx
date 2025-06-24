@@ -35,19 +35,23 @@ export default function GlobalAdminDashboard() {
         title: "Organization Deleted",
         description: data.message || "Organization has been permanently deleted.",
       });
-      // Force immediate cache invalidation and refetch
-      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
-      queryClient.refetchQueries({ queryKey: ['/api/organizations'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
-      queryClient.refetchQueries({ queryKey: ['/api/stats/global'] });
-      
-      // Additional safety: remove from cache immediately
+      // Immediately remove from cache to prevent re-appearance
       queryClient.setQueryData(['/api/organizations'], (oldData: any[]) => {
         if (oldData) {
           return oldData.filter(org => org.id !== organizationId);
         }
-        return oldData;
+        return [];
       });
+      
+      // Clear all cache and force fresh fetch
+      queryClient.removeQueries({ queryKey: ['/api/organizations'] });
+      queryClient.removeQueries({ queryKey: ['/api/stats/global'] });
+      
+      // Force immediate refetch
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/organizations'] });
+        queryClient.refetchQueries({ queryKey: ['/api/stats/global'] });
+      }, 100);
     },
     onError: (error: any) => {
       toast({
@@ -89,9 +93,14 @@ export default function GlobalAdminDashboard() {
   const { data: organizations = [], isLoading: orgLoading } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/organizations?includeInactive=true");
+      const response = await apiRequest("GET", "/api/organizations");
       return response.json();
     },
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
   });
 
   // Fetch global stats
