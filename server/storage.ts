@@ -1304,6 +1304,13 @@ export class DatabaseStorage implements IStorage {
   async deleteOrganization(id: number): Promise<void> {
     console.log(`Starting deletion of organization ID: ${id}`);
     
+    // Get organization info before deletion for logging
+    const orgToDelete = await this.getOrganization(id);
+    if (!orgToDelete) {
+      throw new Error(`Organization with ID ${id} not found`);
+    }
+    console.log(`Deleting organization: ${orgToDelete.name} (ID: ${id})`);
+    
     try {
       // Delete in correct order to handle foreign key constraints
       
