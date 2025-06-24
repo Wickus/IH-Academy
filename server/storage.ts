@@ -321,11 +321,13 @@ export class DatabaseStorage implements IStorage {
     const allOrgs = await db.select().from(organizations);
     console.log(`Found ${allOrgs.length} total organizations in database`);
     
+    // For global admin or when explicitly requested, return all organizations
     if (includeInactive) {
+      console.log(`Returning all ${allOrgs.length} organizations (includeInactive=true)`);
       return allOrgs;
     }
     
-    // Filter by isActive = true OR isActive IS NULL (treating NULL as active)
+    // For regular users, filter by isActive
     const activeOrgs = allOrgs.filter(org => org.isActive === true || org.isActive === null);
     console.log(`Returning ${activeOrgs.length} active organizations`);
     return activeOrgs;

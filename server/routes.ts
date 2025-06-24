@@ -386,8 +386,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/organizations", async (req: Request, res: Response) => {
     try {
       const user = getCurrentUser(req);
-      const includeInactive = req.query.includeInactive === 'true' && user?.role === 'global_admin';
+      
+      // For global admin, always include all organizations
+      const includeInactive = user?.role === 'global_admin';
       const organizations = await storage.getAllOrganizations(includeInactive);
+      
+      console.log(`Global admin request: returning ${organizations.length} organizations`);
       
       // Add follow status for authenticated users
       if (user) {
