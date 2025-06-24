@@ -22,30 +22,65 @@ interface OrganizationDashboardProps {
   organization: Organization;
 }
 
-export default function OrganizationDashboard({ user, organization }: OrganizationDashboardProps) {
+export default function OrganizationDashboard({ user: propUser, organization: propOrganization }: OrganizationDashboardProps = {}) {
   const [, setLocation] = useLocation();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { toast } = useToast();
 
+  // Get current user if not provided via props
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/me"],
+    enabled: !propUser,
+  });
+
+  const user = propUser || currentUser;
+
+  // Get search params to handle global admin access
+  const searchParams = new URLSearchParams(window.location.search);
+  const globalAdminAccess = searchParams.get('globalAdminAccess') === 'true';
+  const orgIdFromParams = searchParams.get('orgId');
+
+  // Determine which organization to show
+  let targetOrganizationId = null;
+  
+  if (user?.role === 'global_admin' && globalAdminAccess && orgIdFromParams) {
+    // Global admin accessing specific organization
+    targetOrganizationId = parseInt(orgIdFromParams);
+  } else if (propOrganization) {
+    // Organization provided via props
+    targetOrganizationId = propOrganization.id;
+  }
+
+  // Fetch organization data if needed
+  const { data: fetchedOrganization } = useQuery({
+    queryKey: [`/api/organizations/${targetOrganizationId}`],
+    enabled: !!targetOrganizationId && !propOrganization,
+  });
+
+  const organization = propOrganization || fetchedOrganization;
+
   // Check if organization needs onboarding (new organization with default settings)
   useEffect(() => {
-    const needsOnboarding = (
-      organization.planType === 'free' &&
-      organization.primaryColor === '#20366B' &&
-      organization.secondaryColor === '#278DD4' &&
-      organization.accentColor === '#24D367' &&
-      !organization.logo &&
-      (!organization.membershipPrice || organization.membershipPrice === '299.00')
-    );
-    
-    if (needsOnboarding) {
-      setShowOnboarding(true);
+    if (organization) {
+      const needsOnboarding = (
+        organization.planType === 'free' &&
+        organization.primaryColor === '#20366B' &&
+        organization.secondaryColor === '#278DD4' &&
+        organization.accentColor === '#24D367' &&
+        !organization.logo &&
+        (!organization.membershipPrice || organization.membershipPrice === '299.00')
+      );
+      
+      if (needsOnboarding) {
+        setShowOnboarding(true);
+      }
     }
   }, [organization]);
 
   const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: [`/api/stats/organization/${organization.id}`],
+    queryKey: [`/api/stats/organization/${organization?.id}`],
     queryFn: () => api.getOrganizationStats(organization.id),
+    enabled: !!organization?.id,
   });
 
   const { data: classes, isLoading: classesLoading } = useQuery({

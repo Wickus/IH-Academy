@@ -732,14 +732,8 @@ export default function GlobalAdminDashboard() {
                     color: selectedOrganization?.primaryColor || '#278DD4'
                   }}
                   onClick={() => {
-                    // Create a new session for the organization admin access
-                    const adminUrl = `${window.location.origin}`;
-                    const params = new URLSearchParams({
-                      globalAdminAccess: 'true',
-                      organizationId: selectedOrganization?.id.toString(),
-                      returnTo: window.location.href
-                    });
-                    window.open(`${adminUrl}?${params.toString()}`, '_blank');
+                    localStorage.setItem('globalAdminOrgAccess', selectedOrganization?.id.toString());
+                    window.location.href = `/organization-dashboard?orgId=${selectedOrganization?.id}&globalAdminAccess=true`;
                   }}
                 >
                   Access Dashboard

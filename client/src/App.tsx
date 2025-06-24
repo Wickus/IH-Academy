@@ -85,8 +85,23 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
 
   // Global Admin Interface - Handle FIRST before any mobile detection
   if (user?.role === 'global_admin') {
+    // Check if accessing specific organization dashboard
+    const searchParams = new URLSearchParams(window.location.search);
+    if (location.pathname === '/organization-dashboard' && searchParams.get('globalAdminAccess') === 'true') {
+      return (
+        <AppLayout>
+          <OrganizationDashboard />
+        </AppLayout>
+      );
+    }
+    
     return (
       <Switch>
+        <Route path="/organization-dashboard" component={() => (
+          <AppLayout>
+            <OrganizationDashboard />
+          </AppLayout>
+        )} />
         <Route path="/" component={GlobalAdminDashboard} />
         <Route path="/dashboard" component={GlobalAdminDashboard} />
         <Route path="/organizations" component={GlobalAdminDashboard} />
