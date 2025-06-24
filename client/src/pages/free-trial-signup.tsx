@@ -143,7 +143,7 @@ export default function FreeTrialSignup() {
             />
             <div>
               <h1 className="text-3xl font-bold text-white">Start Your Free Trial</h1>
-              <p className="text-blue-100">14 days of full access, no credit card required</p>
+              <p className="text-blue-100">21 days of full access, no credit card required</p>
             </div>
           </div>
           
