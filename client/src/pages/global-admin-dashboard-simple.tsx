@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2, Eye, Power } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2, Eye, Power, Mail, Phone, MapPin, Calendar, Globe } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function GlobalAdminDashboard() {
@@ -14,6 +16,8 @@ export default function GlobalAdminDashboard() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   // Delete organization mutation
   const deleteOrganizationMutation = useMutation({
@@ -391,11 +395,8 @@ export default function GlobalAdminDashboard() {
                             size="sm"
                             className="text-blue-600 border-blue-200 hover:bg-blue-50"
                             onClick={() => {
-                              // View organization logic - could open a detailed modal
-                              toast({
-                                title: "View Organization",
-                                description: `Viewing details for ${org.name}`,
-                              });
+                              setSelectedOrganization(org);
+                              setShowViewModal(true);
                             }}
                           >
                             <Eye className="h-4 w-4 mr-1" />
@@ -556,6 +557,255 @@ export default function GlobalAdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* View Organization Modal */}
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-[#20366B]">
+              <div className="flex items-center gap-3">
+                {selectedOrganization?.logo ? (
+                  <img 
+                    src={selectedOrganization.logo} 
+                    alt={selectedOrganization.name}
+                    className="w-12 h-12 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-semibold"
+                    style={{ backgroundColor: selectedOrganization?.primaryColor || '#278DD4' }}
+                  >
+                    {selectedOrganization?.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <h2 className="text-2xl font-bold">{selectedOrganization?.name}</h2>
+                  <Badge 
+                    className={`mt-1 ${
+                      selectedOrganization?.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' :
+                      selectedOrganization?.subscriptionStatus === 'trial' ? 'bg-blue-100 text-blue-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    {selectedOrganization?.subscriptionStatus || 'Unknown'}
+                  </Badge>
+                </div>
+              </div>
+            </DialogTitle>
+            <DialogDescription>
+              Complete organization details and management information
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedOrganization && (
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[#20366B] flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Organization Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Organization Name</Label>
+                      <p className="text-[#20366B] font-semibold">{selectedOrganization.name}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Description</Label>
+                      <p className="text-gray-800">{selectedOrganization.description || 'No description provided'}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Business Model</Label>
+                      <Badge variant="outline" className="ml-0">
+                        {selectedOrganization.businessModel === 'membership' ? 'Membership' : 'Pay per Class'}
+                      </Badge>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Plan Type</Label>
+                      <Badge variant="outline" className="ml-0 capitalize">
+                        {selectedOrganization.planType || 'Free'}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                        <Mail className="h-4 w-4" />
+                        Email
+                      </Label>
+                      <p className="text-gray-800">{selectedOrganization.email}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                        <Phone className="h-4 w-4" />
+                        Phone
+                      </Label>
+                      <p className="text-gray-800">{selectedOrganization.phone || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        Address
+                      </Label>
+                      <p className="text-gray-800">{selectedOrganization.address || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                        <Globe className="h-4 w-4" />
+                        Website
+                      </Label>
+                      <p className="text-gray-800">{selectedOrganization.website || 'Not provided'}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Subscription Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[#20366B] flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Subscription & Billing
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Subscription Status</Label>
+                      <Badge 
+                        className={`ml-0 ${
+                          selectedOrganization.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' :
+                          selectedOrganization.subscriptionStatus === 'trial' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {selectedOrganization.subscriptionStatus || 'Unknown'}
+                      </Badge>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Membership Price</Label>
+                      <p className="text-[#20366B] font-semibold">R{selectedOrganization.membershipPrice}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Billing Cycle</Label>
+                      <p className="text-gray-800 capitalize">{selectedOrganization.membershipBillingCycle || 'Monthly'}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {selectedOrganization.trialStartDate && (
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          Trial Start Date
+                        </Label>
+                        <p className="text-gray-800">{new Date(selectedOrganization.trialStartDate).toLocaleDateString()}</p>
+                      </div>
+                    )}
+                    {selectedOrganization.trialEndDate && (
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          Trial End Date
+                        </Label>
+                        <p className="text-gray-800">{new Date(selectedOrganization.trialEndDate).toLocaleDateString()}</p>
+                      </div>
+                    )}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Status</Label>
+                      <Badge variant={selectedOrganization.isActive ? "default" : "secondary"}>
+                        {selectedOrganization.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Branding Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[#20366B] flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    Branding & Configuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-600">Primary Color</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div 
+                        className="w-6 h-6 rounded border"
+                        style={{ backgroundColor: selectedOrganization.primaryColor || '#278DD4' }}
+                      ></div>
+                      <p className="text-gray-800 font-mono text-sm">{selectedOrganization.primaryColor || '#278DD4'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-600">Secondary Color</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div 
+                        className="w-6 h-6 rounded border"
+                        style={{ backgroundColor: selectedOrganization.secondaryColor || '#24D367' }}
+                      ></div>
+                      <p className="text-gray-800 font-mono text-sm">{selectedOrganization.secondaryColor || '#24D367'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-600">Accent Color</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div 
+                        className="w-6 h-6 rounded border"
+                        style={{ backgroundColor: selectedOrganization.accentColor || '#F97316' }}
+                      ></div>
+                      <p className="text-gray-800 font-mono text-sm">{selectedOrganization.accentColor || '#F97316'}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowViewModal(false)}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`${selectedOrganization.isActive ? 'text-orange-600 border-orange-200 hover:bg-orange-50' : 'text-green-600 border-green-200 hover:bg-green-50'}`}
+                  onClick={() => {
+                    toggleOrganizationMutation.mutate({ 
+                      organizationId: selectedOrganization.id, 
+                      isActive: selectedOrganization.isActive 
+                    });
+                    setShowViewModal(false);
+                  }}
+                  disabled={toggleOrganizationMutation.isPending}
+                >
+                  <Power className="h-4 w-4 mr-1" />
+                  {selectedOrganization.isActive ? 'Deactivate' : 'Activate'}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    if (confirm(`Are you sure you want to permanently delete ${selectedOrganization.name}? This action cannot be undone and will remove all associated data including classes, bookings, and members.`)) {
+                      deleteOrganizationMutation.mutate(selectedOrganization.id);
+                      setShowViewModal(false);
+                    }
+                  }}
+                  disabled={deleteOrganizationMutation.isPending}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  {deleteOrganizationMutation.isPending ? 'Deleting...' : 'Delete Organization'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
