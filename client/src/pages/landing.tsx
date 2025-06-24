@@ -121,7 +121,7 @@ export default function LandingPage() {
             <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-blue-100">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 mr-2 text-[#24D367]" />
-                No Setup Fees
+                R4000 Activation Fee (includes setup & first month)
               </div>
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 mr-2 text-[#24D367]" />
@@ -438,9 +438,16 @@ export default function LandingPage() {
                       Email support
                     </li>
                   </ul>
-                  <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white mt-6">
-                    Start Free
-                  </Button>
+                  <div className="space-y-3 mt-6">
+                    <p className="text-xs text-gray-600 text-center">
+                      R4000 activation fee applies (includes setup & first month)
+                    </p>
+                    <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer" className="w-full">
+                      <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white">
+                        Book Setup Call
+                      </Button>
+                    </a>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -479,11 +486,21 @@ export default function LandingPage() {
                       Priority support
                     </li>
                   </ul>
-                  <a href="/free-trial" className="w-full">
-                    <Button className="w-full bg-[#24D367] hover:bg-green-600 text-white mt-6">
-                      Start Free Trial
-                    </Button>
-                  </a>
+                  <div className="space-y-3 mt-6">
+                    <p className="text-xs text-gray-600 text-center">
+                      R4000 activation fee applies (includes setup & first month)
+                    </p>
+                    <a href="/free-trial" className="w-full">
+                      <Button className="w-full bg-[#24D367] hover:bg-green-600 text-white">
+                        Start Free Trial
+                      </Button>
+                    </a>
+                    <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer" className="w-full">
+                      <Button variant="outline" className="w-full border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                        Book Setup Call
+                      </Button>
+                    </a>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -519,9 +536,16 @@ export default function LandingPage() {
                       Dedicated support
                     </li>
                   </ul>
-                  <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white mt-6">
-                    Contact Sales
-                  </Button>
+                  <div className="space-y-3 mt-6">
+                    <p className="text-xs text-gray-600 text-center">
+                      R4000 activation fee applies (includes setup & first month)
+                    </p>
+                    <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer" className="w-full">
+                      <Button className="w-full bg-[#278DD4] hover:bg-[#20366B] text-white">
+                        Book Setup Call
+                      </Button>
+                    </a>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -546,12 +570,12 @@ export default function LandingPage() {
             </Link>
             <a href="https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30" target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-[#20366B] px-8 py-4 text-lg">
-                Schedule a Demo
+                Book Setup Call
               </Button>
             </a>
           </div>
           <p className="text-sm text-blue-200 mt-4">
-            No credit card required • 21-day free trial • Cancel anytime
+            21-day free trial • R4000 activation fee after trial • Monthly debit orders from month 2
           </p>
         </div>
       </section>

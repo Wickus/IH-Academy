@@ -287,7 +287,7 @@ export default function OrganizationPayment() {
               Need more time to decide?
             </h3>
             <p className="text-gray-600 mb-4">
-              Start with a 21-day free trial. You can upgrade anytime.
+              Start with a 21-day free trial. After trial, R4000 activation fee applies (includes setup & first month).
             </p>
             <Button
               onClick={skipPayment}
@@ -296,6 +296,9 @@ export default function OrganizationPayment() {
             >
               Start 21-Day Free Trial
             </Button>
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              Monthly debit orders begin from month 2
+            </p>
           </CardContent>
         </Card>
       </div>
