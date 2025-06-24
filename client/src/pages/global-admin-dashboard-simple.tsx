@@ -438,6 +438,108 @@ export default function GlobalAdminDashboard() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="debit-orders" className="space-y-8">
+          <Card className="bg-white shadow-lg border-0">
+            <CardHeader>
+              <CardTitle className="text-[#20366B]">Global Debit Order Management</CardTitle>
+              <CardDescription>Manage debit order collections across all organizations</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Summary Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="border-l-4 border-l-[#278DD4]">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Total Active Mandates</p>
+                        <p className="text-2xl font-bold text-[#20366B]">247</p>
+                      </div>
+                      <CreditCard className="h-8 w-8 text-[#278DD4]" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-l-4 border-l-[#24D367]">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Monthly Collection</p>
+                        <p className="text-2xl font-bold text-[#20366B]">R73,410</p>
+                      </div>
+                      <TrendingUp className="h-8 w-8 text-[#24D367]" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-l-4 border-l-[#F97316]">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Failed Collections</p>
+                        <p className="text-2xl font-bold text-[#20366B]">12</p>
+                      </div>
+                      <Building2 className="h-8 w-8 text-[#F97316]" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-l-4 border-l-[#278DD4]">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Success Rate</p>
+                        <p className="text-2xl font-bold text-[#20366B]">95.1%</p>
+                      </div>
+                      <CreditCard className="h-8 w-8 text-[#278DD4]" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4">
+                <Button className="bg-[#278DD4] hover:bg-[#1e6ba8] text-white">
+                  Process All Collections
+                </Button>
+                <Button variant="outline" className="border-[#24D367] text-[#24D367] hover:bg-[#24D367] hover:text-white">
+                  Download Collection Report
+                </Button>
+                <Button variant="outline" className="border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:text-white">
+                  View Failed Collections
+                </Button>
+              </div>
+
+              {/* Organizations with Debit Orders */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-[#20366B]">Organizations by Collection Amount</h3>
+                {organizations.slice(0, 5).map((org: any) => (
+                  <div key={org.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-semibold"
+                          style={{ backgroundColor: org.primaryColor || '#278DD4' }}
+                        >
+                          {org.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-[#20366B]">{org.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            {Math.floor(Math.random() * 20 + 5)} active mandates
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-[#24D367]">
+                          R{(Math.random() * 15000 + 2000).toFixed(0)}
+                        </p>
+                        <p className="text-sm text-gray-500">monthly collection</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="pricing" className="space-y-8">
           <Card className="bg-white shadow-lg border-0">
             <CardHeader>
@@ -560,9 +662,14 @@ export default function GlobalAdminDashboard() {
 
       {/* View Organization Modal */}
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto" 
+                      style={{ 
+                        background: `linear-gradient(135deg, ${selectedOrganization?.primaryColor || '#20366B'}15, ${selectedOrganization?.secondaryColor || '#278DD4'}10)`,
+                        borderColor: selectedOrganization?.primaryColor || '#278DD4'
+                      }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-[#20366B]">
+            <DialogTitle className="flex items-center gap-3" 
+                        style={{ color: selectedOrganization?.primaryColor || '#20366B' }}>
               <div className="flex items-center gap-3">
                 {selectedOrganization?.logo ? (
                   <img 
@@ -581,15 +688,35 @@ export default function GlobalAdminDashboard() {
                 <div>
                   <h2 className="text-2xl font-bold">{selectedOrganization?.name}</h2>
                   <Badge 
-                    className={`mt-1 ${
-                      selectedOrganization?.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' :
-                      selectedOrganization?.subscriptionStatus === 'trial' ? 'bg-blue-100 text-blue-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}
+                    style={{ 
+                      backgroundColor: selectedOrganization?.subscriptionStatus === 'active' ? selectedOrganization?.accentColor + '20' || '#24D36720' :
+                                       selectedOrganization?.subscriptionStatus === 'trial' ? selectedOrganization?.secondaryColor + '20' || '#278DD420' :
+                                       '#f59e0b20',
+                      color: selectedOrganization?.subscriptionStatus === 'active' ? selectedOrganization?.accentColor || '#24D367' :
+                             selectedOrganization?.subscriptionStatus === 'trial' ? selectedOrganization?.secondaryColor || '#278DD4' :
+                             '#f59e0b'
+                    }}
                   >
                     {selectedOrganization?.subscriptionStatus || 'Unknown'}
                   </Badge>
                 </div>
+              </div>
+              <div className="ml-auto flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  style={{ 
+                    borderColor: selectedOrganization?.primaryColor || '#278DD4',
+                    color: selectedOrganization?.primaryColor || '#278DD4'
+                  }}
+                  onClick={() => {
+                    // Store the organization selection in localStorage for dashboard access
+                    localStorage.setItem('globalAdminSelectedOrg', selectedOrganization?.id.toString());
+                    window.open(`/organization-dashboard?orgId=${selectedOrganization?.id}`, '_blank');
+                  }}
+                >
+                  Access Dashboard
+                </Button>
               </div>
             </DialogTitle>
             <DialogDescription>
@@ -600,9 +727,9 @@ export default function GlobalAdminDashboard() {
           {selectedOrganization && (
             <div className="space-y-6">
               {/* Basic Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-[#20366B] flex items-center gap-2">
+              <Card style={{ borderColor: selectedOrganization?.primaryColor + '30' || '#278DD430' }}>
+                <CardHeader style={{ backgroundColor: selectedOrganization?.primaryColor + '10' || '#278DD410' }}>
+                  <CardTitle style={{ color: selectedOrganization?.primaryColor || '#20366B' }} className="flex items-center gap-2">
                     <Building2 className="h-5 w-5" />
                     Organization Details
                   </CardTitle>
@@ -663,10 +790,70 @@ export default function GlobalAdminDashboard() {
                 </CardContent>
               </Card>
 
+              {/* Fee Management */}
+              <Card style={{ borderColor: selectedOrganization?.accentColor + '30' || '#24D36730' }}>
+                <CardHeader style={{ backgroundColor: selectedOrganization?.accentColor + '10' || '#24D36710' }}>
+                  <CardTitle style={{ color: selectedOrganization?.primaryColor || '#20366B' }} className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Fee Management & Discounts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Custom Monthly Fee (R)</Label>
+                        <Input
+                          type="number"
+                          defaultValue={selectedOrganization?.membershipPrice || '299'}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                          className="focus:ring-2"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Discount Percentage (%)</Label>
+                        <Input
+                          type="number"
+                          defaultValue="0"
+                          max="100"
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                          className="focus:ring-2"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Commission Rate (%)</Label>
+                        <Input
+                          type="number"
+                          defaultValue="5"
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                          className="focus:ring-2"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Special Notes</Label>
+                        <Input
+                          placeholder="Special pricing arrangements..."
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                          className="focus:ring-2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    style={{ backgroundColor: selectedOrganization?.accentColor || '#24D367' }}
+                    className="text-white hover:opacity-90"
+                  >
+                    Apply Fee Changes
+                  </Button>
+                </CardContent>
+              </Card>
+
               {/* Subscription Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-[#20366B] flex items-center gap-2">
+              <Card style={{ borderColor: selectedOrganization?.secondaryColor + '30' || '#278DD430' }}>
+                <CardHeader style={{ backgroundColor: selectedOrganization?.secondaryColor + '10' || '#278DD410' }}>
+                  <CardTitle style={{ color: selectedOrganization?.primaryColor || '#20366B' }} className="flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
                     Subscription & Billing
                   </CardTitle>
@@ -723,10 +910,72 @@ export default function GlobalAdminDashboard() {
                 </CardContent>
               </Card>
 
+              {/* Debit Order Management */}
+              <Card style={{ borderColor: selectedOrganization?.primaryColor + '30' || '#278DD430' }}>
+                <CardHeader style={{ backgroundColor: selectedOrganization?.primaryColor + '10' || '#278DD410' }}>
+                  <CardTitle style={{ color: selectedOrganization?.primaryColor || '#20366B' }} className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Debit Order Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Active Mandates</Label>
+                        <p className="text-2xl font-bold" style={{ color: selectedOrganization?.primaryColor || '#20366B' }}>
+                          12
+                        </p>
+                        <p className="text-sm text-gray-500">Currently active</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Monthly Collection</Label>
+                        <p className="text-2xl font-bold" style={{ color: selectedOrganization?.accentColor || '#24D367' }}>
+                          R3,588
+                        </p>
+                        <p className="text-sm text-gray-500">Next collection: 25th</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        style={{ 
+                          borderColor: selectedOrganization?.primaryColor || '#278DD4',
+                          color: selectedOrganization?.primaryColor || '#278DD4'
+                        }}
+                      >
+                        View All Mandates
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        style={{ 
+                          borderColor: selectedOrganization?.secondaryColor || '#278DD4',
+                          color: selectedOrganization?.secondaryColor || '#278DD4'
+                        }}
+                      >
+                        Process Collection
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        style={{ 
+                          borderColor: selectedOrganization?.accentColor || '#24D367',
+                          color: selectedOrganization?.accentColor || '#24D367'
+                        }}
+                      >
+                        Download Reports
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Branding Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-[#20366B] flex items-center gap-2">
+              <Card style={{ borderColor: selectedOrganization?.accentColor + '30' || '#24D36730' }}>
+                <CardHeader style={{ backgroundColor: selectedOrganization?.accentColor + '10' || '#24D36710' }}>
+                  <CardTitle style={{ color: selectedOrganization?.primaryColor || '#20366B' }} className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
                     Branding & Configuration
                   </CardTitle>
@@ -775,7 +1024,10 @@ export default function GlobalAdminDashboard() {
                 </Button>
                 <Button
                   variant="outline"
-                  className={`${selectedOrganization.isActive ? 'text-orange-600 border-orange-200 hover:bg-orange-50' : 'text-green-600 border-green-200 hover:bg-green-50'}`}
+                  style={{ 
+                    borderColor: selectedOrganization.isActive ? '#f97316' : selectedOrganization?.accentColor || '#24D367',
+                    color: selectedOrganization.isActive ? '#f97316' : selectedOrganization?.accentColor || '#24D367'
+                  }}
                   onClick={() => {
                     toggleOrganizationMutation.mutate({ 
                       organizationId: selectedOrganization.id, 
@@ -789,7 +1041,8 @@ export default function GlobalAdminDashboard() {
                   {selectedOrganization.isActive ? 'Deactivate' : 'Activate'}
                 </Button>
                 <Button
-                  variant="destructive"
+                  style={{ backgroundColor: '#dc2626' }}
+                  className="text-white hover:opacity-90"
                   onClick={() => {
                     if (confirm(`Are you sure you want to permanently delete ${selectedOrganization.name}? This action cannot be undone and will remove all associated data including classes, bookings, and members.`)) {
                       deleteOrganizationMutation.mutate(selectedOrganization.id);
