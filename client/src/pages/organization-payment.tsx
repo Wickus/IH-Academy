@@ -60,9 +60,9 @@ export default function OrganizationPayment() {
   const skipPayment = () => {
     toast({
       title: "Trial Period Started",
-      description: "You have 14 days to complete payment.",
+      description: "You have 21 days to complete payment.",
     });
-    setLocation("/dashboard");
+    setLocation("/");
   };
 
   if (!organization) {

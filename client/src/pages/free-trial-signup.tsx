@@ -97,10 +97,10 @@ export default function FreeTrialSignup() {
     onSuccess: (organization) => {
       toast({
         title: "Welcome to IH Academy!",
-        description: "Your 14-day free trial has started. Explore all features with no limitations.",
+        description: "Your 21-day free trial has started. Explore all features with no limitations.",
       });
-      // Redirect to organization setup page with the new organization ID
-      setLocation(`/organization-setup?orgId=${organization.id}`);
+      // Redirect to dashboard - user is now logged in and organization is created
+      setLocation("/");
     },
     onError: (error: any) => {
       toast({
