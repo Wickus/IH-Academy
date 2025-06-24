@@ -2701,6 +2701,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update organization (Global Admin only)
+  app.patch("/api/organizations/:id", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin required." });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      if (isNaN(organizationId)) {
+        return res.status(400).json({ message: "Invalid organization ID" });
+      }
+
+      const updateData = req.body;
+      const updatedOrganization = await storage.updateOrganization(organizationId, updateData);
+      
+      if (!updatedOrganization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Organization updated successfully",
+        organization: updatedOrganization
+      });
+    } catch (error: any) {
+      console.error("Error updating organization:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Update organization fees (Global Admin only)
+  app.patch("/api/organizations/:id/fees", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin required." });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      if (isNaN(organizationId)) {
+        return res.status(400).json({ message: "Invalid organization ID" });
+      }
+
+      const feeData = req.body;
+      const updatedOrganization = await storage.updateOrganization(organizationId, {
+        membershipPrice: feeData.membershipPrice,
+        customDiscount: feeData.discountPercentage,
+        commissionRate: feeData.commissionRate,
+        specialNotes: feeData.specialNotes
+      });
+      
+      if (!updatedOrganization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Organization fees updated successfully",
+        organization: updatedOrganization
+      });
+    } catch (error: any) {
+      console.error("Error updating organization fees:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Delete organization (Global Admin only)
   app.delete("/api/organizations/:id", async (req: Request, res: Response) => {
     try {
