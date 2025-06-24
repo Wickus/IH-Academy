@@ -93,7 +93,7 @@ export default function LandingPage() {
               <span className="block text-[#24D367]">Professional Management</span>
             </h1>
             
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed text-[#ffffff]">
               Complete academy management system designed for South African sports organizations. 
               Handle bookings, payments, coaching staff, and member communications all in one place.
             </p>
@@ -386,8 +386,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-
       {/* Pricing Section */}
       <section id="pricing" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -642,7 +640,6 @@ export default function LandingPage() {
             </div>
           </div>
       </footer>
-
       {/* Demo Video Modal */}
       <Dialog open={showDemoModal} onOpenChange={setShowDemoModal}>
         <DialogContent className="max-w-4xl w-full max-h-[90vh] p-0">
