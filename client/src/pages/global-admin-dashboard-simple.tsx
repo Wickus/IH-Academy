@@ -18,6 +18,8 @@ export default function GlobalAdminDashboard() {
   const queryClient = useQueryClient();
   const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [editingFields, setEditingFields] = useState<{[key: string]: any}>({});
+  const [isEditing, setIsEditing] = useState<{[key: string]: boolean}>({});
 
   // Delete organization mutation
   const deleteOrganizationMutation = useMutation({
@@ -710,9 +712,14 @@ export default function GlobalAdminDashboard() {
                     color: selectedOrganization?.primaryColor || '#278DD4'
                   }}
                   onClick={() => {
-                    // Store the organization selection in localStorage for dashboard access
-                    localStorage.setItem('globalAdminSelectedOrg', selectedOrganization?.id.toString());
-                    window.open(`/organization-dashboard?orgId=${selectedOrganization?.id}`, '_blank');
+                    // Create a new session for the organization admin access
+                    const adminUrl = `${window.location.origin}`;
+                    const params = new URLSearchParams({
+                      globalAdminAccess: 'true',
+                      organizationId: selectedOrganization?.id.toString(),
+                      returnTo: window.location.href
+                    });
+                    window.open(`${adminUrl}?${params.toString()}`, '_blank');
                   }}
                 >
                   Access Dashboard
@@ -738,11 +745,33 @@ export default function GlobalAdminDashboard() {
                   <div className="space-y-3">
                     <div>
                       <Label className="text-sm font-medium text-gray-600">Organization Name</Label>
-                      <p className="text-[#20366B] font-semibold">{selectedOrganization.name}</p>
+                      {isEditing.name ? (
+                        <Input
+                          value={editingFields.name || selectedOrganization.name}
+                          onChange={(e) => setEditingFields({...editingFields, name: e.target.value})}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                        />
+                      ) : (
+                        <p className="text-[#20366B] font-semibold cursor-pointer hover:underline" 
+                           onClick={() => setIsEditing({...isEditing, name: true})}>
+                          {selectedOrganization.name}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-gray-600">Description</Label>
-                      <p className="text-gray-800">{selectedOrganization.description || 'No description provided'}</p>
+                      {isEditing.description ? (
+                        <Input
+                          value={editingFields.description || selectedOrganization.description || ''}
+                          onChange={(e) => setEditingFields({...editingFields, description: e.target.value})}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                        />
+                      ) : (
+                        <p className="text-gray-800 cursor-pointer hover:underline" 
+                           onClick={() => setIsEditing({...isEditing, description: true})}>
+                          {selectedOrganization.description || 'Click to add description'}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-gray-600">Business Model</Label>
@@ -763,30 +792,114 @@ export default function GlobalAdminDashboard() {
                         <Mail className="h-4 w-4" />
                         Email
                       </Label>
-                      <p className="text-gray-800">{selectedOrganization.email}</p>
+                      {isEditing.email ? (
+                        <Input
+                          value={editingFields.email || selectedOrganization.email}
+                          onChange={(e) => setEditingFields({...editingFields, email: e.target.value})}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                        />
+                      ) : (
+                        <p className="text-gray-800 cursor-pointer hover:underline" 
+                           onClick={() => setIsEditing({...isEditing, email: true})}>
+                          {selectedOrganization.email}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
                         <Phone className="h-4 w-4" />
                         Phone
                       </Label>
-                      <p className="text-gray-800">{selectedOrganization.phone || 'Not provided'}</p>
+                      {isEditing.phone ? (
+                        <Input
+                          value={editingFields.phone || selectedOrganization.phone || ''}
+                          onChange={(e) => setEditingFields({...editingFields, phone: e.target.value})}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                        />
+                      ) : (
+                        <p className="text-gray-800 cursor-pointer hover:underline" 
+                           onClick={() => setIsEditing({...isEditing, phone: true})}>
+                          {selectedOrganization.phone || 'Click to add phone'}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
                         Address
                       </Label>
-                      <p className="text-gray-800">{selectedOrganization.address || 'Not provided'}</p>
+                      {isEditing.address ? (
+                        <Input
+                          value={editingFields.address || selectedOrganization.address || ''}
+                          onChange={(e) => setEditingFields({...editingFields, address: e.target.value})}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                        />
+                      ) : (
+                        <p className="text-gray-800 cursor-pointer hover:underline" 
+                           onClick={() => setIsEditing({...isEditing, address: true})}>
+                          {selectedOrganization.address || 'Click to add address'}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-gray-600 flex items-center gap-1">
                         <Globe className="h-4 w-4" />
                         Website
                       </Label>
-                      <p className="text-gray-800">{selectedOrganization.website || 'Not provided'}</p>
+                      {isEditing.website ? (
+                        <Input
+                          value={editingFields.website || selectedOrganization.website || ''}
+                          onChange={(e) => setEditingFields({...editingFields, website: e.target.value})}
+                          style={{ borderColor: selectedOrganization?.primaryColor + '50' || '#278DD450' }}
+                        />
+                      ) : (
+                        <p className="text-gray-800 cursor-pointer hover:underline" 
+                           onClick={() => setIsEditing({...isEditing, website: true})}>
+                          {selectedOrganization.website || 'Click to add website'}
+                        </p>
+                      )}
                     </div>
                   </div>
+                  {Object.keys(isEditing).length > 0 && (
+                    <div className="col-span-2 flex gap-2 pt-4 border-t">
+                      <Button
+                        style={{ backgroundColor: selectedOrganization?.primaryColor || '#278DD4' }}
+                        className="text-white hover:opacity-90"
+                        onClick={async () => {
+                          try {
+                            const response = await apiRequest("PATCH", `/api/organizations/${selectedOrganization.id}`, editingFields);
+                            if (response.ok) {
+                              toast({
+                                title: "Organization Updated",
+                                description: "Organization details saved successfully.",
+                              });
+                              setSelectedOrganization({...selectedOrganization, ...editingFields});
+                              setIsEditing({});
+                              setEditingFields({});
+                              queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+                            }
+                          } catch (error) {
+                            toast({
+                              title: "Update Failed",
+                              description: "Failed to update organization details.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        Save Changes
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsEditing({});
+                          setEditingFields({});
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -844,6 +957,31 @@ export default function GlobalAdminDashboard() {
                   <Button
                     style={{ backgroundColor: selectedOrganization?.accentColor || '#24D367' }}
                     className="text-white hover:opacity-90"
+                    onClick={async () => {
+                      try {
+                        const feeData = {
+                          membershipPrice: document.querySelector('input[type="number"]')?.value || selectedOrganization?.membershipPrice,
+                          discountPercentage: document.querySelectorAll('input[type="number"]')[1]?.value || 0,
+                          commissionRate: document.querySelectorAll('input[type="number"]')[2]?.value || 5,
+                          specialNotes: document.querySelector('input[placeholder*="Special"]')?.value || ''
+                        };
+                        
+                        const response = await apiRequest("PATCH", `/api/organizations/${selectedOrganization.id}/fees`, feeData);
+                        if (response.ok) {
+                          toast({
+                            title: "Fee Changes Applied",
+                            description: "Custom pricing and discounts have been updated successfully.",
+                          });
+                          queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Fee Update Failed",
+                          description: "Failed to apply fee changes. Please try again.",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
                   >
                     Apply Fee Changes
                   </Button>
@@ -924,16 +1062,23 @@ export default function GlobalAdminDashboard() {
                       <div>
                         <Label className="text-sm font-medium text-gray-600">Active Mandates</Label>
                         <p className="text-2xl font-bold" style={{ color: selectedOrganization?.primaryColor || '#20366B' }}>
-                          12
+                          {selectedOrganization?.debitOrderStats?.activeMandates || 0}
                         </p>
-                        <p className="text-sm text-gray-500">Currently active</p>
+                        <p className="text-sm text-gray-500">Currently active for {selectedOrganization?.name}</p>
                       </div>
                       <div>
                         <Label className="text-sm font-medium text-gray-600">Monthly Collection</Label>
                         <p className="text-2xl font-bold" style={{ color: selectedOrganization?.accentColor || '#24D367' }}>
-                          R3,588
+                          R{selectedOrganization?.debitOrderStats?.monthlyCollection || '0'}
                         </p>
                         <p className="text-sm text-gray-500">Next collection: 25th</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Success Rate</Label>
+                        <p className="text-lg font-semibold" style={{ color: selectedOrganization?.secondaryColor || '#278DD4' }}>
+                          {selectedOrganization?.debitOrderStats?.successRate || '0%'}
+                        </p>
+                        <p className="text-sm text-gray-500">Last 3 months</p>
                       </div>
                     </div>
                     <div className="space-y-3">
@@ -944,8 +1089,14 @@ export default function GlobalAdminDashboard() {
                           borderColor: selectedOrganization?.primaryColor || '#278DD4',
                           color: selectedOrganization?.primaryColor || '#278DD4'
                         }}
+                        onClick={() => {
+                          toast({
+                            title: "Mandate Management",
+                            description: `Opening mandate management for ${selectedOrganization?.name}`,
+                          });
+                        }}
                       >
-                        View All Mandates
+                        View {selectedOrganization?.name} Mandates
                       </Button>
                       <Button
                         variant="outline"
@@ -954,8 +1105,14 @@ export default function GlobalAdminDashboard() {
                           borderColor: selectedOrganization?.secondaryColor || '#278DD4',
                           color: selectedOrganization?.secondaryColor || '#278DD4'
                         }}
+                        onClick={() => {
+                          toast({
+                            title: "Collection Processing",
+                            description: `Processing collections for ${selectedOrganization?.name}`,
+                          });
+                        }}
                       >
-                        Process Collection
+                        Process {selectedOrganization?.name} Collection
                       </Button>
                       <Button
                         variant="outline"
@@ -964,8 +1121,14 @@ export default function GlobalAdminDashboard() {
                           borderColor: selectedOrganization?.accentColor || '#24D367',
                           color: selectedOrganization?.accentColor || '#24D367'
                         }}
+                        onClick={() => {
+                          toast({
+                            title: "Report Generation",
+                            description: `Generating reports for ${selectedOrganization?.name}`,
+                          });
+                        }}
                       >
-                        Download Reports
+                        Download {selectedOrganization?.name} Reports
                       </Button>
                     </div>
                   </div>
@@ -988,7 +1151,19 @@ export default function GlobalAdminDashboard() {
                         className="w-6 h-6 rounded border"
                         style={{ backgroundColor: selectedOrganization.primaryColor || '#278DD4' }}
                       ></div>
-                      <p className="text-gray-800 font-mono text-sm">{selectedOrganization.primaryColor || '#278DD4'}</p>
+                      {isEditing.primaryColor ? (
+                        <Input
+                          type="color"
+                          value={editingFields.primaryColor || selectedOrganization.primaryColor || '#278DD4'}
+                          onChange={(e) => setEditingFields({...editingFields, primaryColor: e.target.value})}
+                          className="w-16 h-8 p-0 border-0"
+                        />
+                      ) : (
+                        <p className="text-gray-800 font-mono text-sm cursor-pointer hover:underline"
+                           onClick={() => setIsEditing({...isEditing, primaryColor: true})}>
+                          {selectedOrganization.primaryColor || '#278DD4'}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -998,7 +1173,19 @@ export default function GlobalAdminDashboard() {
                         className="w-6 h-6 rounded border"
                         style={{ backgroundColor: selectedOrganization.secondaryColor || '#24D367' }}
                       ></div>
-                      <p className="text-gray-800 font-mono text-sm">{selectedOrganization.secondaryColor || '#24D367'}</p>
+                      {isEditing.secondaryColor ? (
+                        <Input
+                          type="color"
+                          value={editingFields.secondaryColor || selectedOrganization.secondaryColor || '#24D367'}
+                          onChange={(e) => setEditingFields({...editingFields, secondaryColor: e.target.value})}
+                          className="w-16 h-8 p-0 border-0"
+                        />
+                      ) : (
+                        <p className="text-gray-800 font-mono text-sm cursor-pointer hover:underline"
+                           onClick={() => setIsEditing({...isEditing, secondaryColor: true})}>
+                          {selectedOrganization.secondaryColor || '#24D367'}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -1008,9 +1195,67 @@ export default function GlobalAdminDashboard() {
                         className="w-6 h-6 rounded border"
                         style={{ backgroundColor: selectedOrganization.accentColor || '#F97316' }}
                       ></div>
-                      <p className="text-gray-800 font-mono text-sm">{selectedOrganization.accentColor || '#F97316'}</p>
+                      {isEditing.accentColor ? (
+                        <Input
+                          type="color"
+                          value={editingFields.accentColor || selectedOrganization.accentColor || '#F97316'}
+                          onChange={(e) => setEditingFields({...editingFields, accentColor: e.target.value})}
+                          className="w-16 h-8 p-0 border-0"
+                        />
+                      ) : (
+                        <p className="text-gray-800 font-mono text-sm cursor-pointer hover:underline"
+                           onClick={() => setIsEditing({...isEditing, accentColor: true})}>
+                          {selectedOrganization.accentColor || '#F97316'}
+                        </p>
+                      )}
                     </div>
                   </div>
+                  {(isEditing.primaryColor || isEditing.secondaryColor || isEditing.accentColor) && (
+                    <div className="col-span-3 flex gap-2 pt-4 border-t">
+                      <Button
+                        style={{ backgroundColor: selectedOrganization?.primaryColor || '#278DD4' }}
+                        className="text-white hover:opacity-90"
+                        onClick={async () => {
+                          try {
+                            const colorData = {
+                              primaryColor: editingFields.primaryColor || selectedOrganization.primaryColor,
+                              secondaryColor: editingFields.secondaryColor || selectedOrganization.secondaryColor,
+                              accentColor: editingFields.accentColor || selectedOrganization.accentColor
+                            };
+                            
+                            const response = await apiRequest("PATCH", `/api/organizations/${selectedOrganization.id}`, colorData);
+                            if (response.ok) {
+                              toast({
+                                title: "Branding Updated",
+                                description: "Organization colors have been updated successfully.",
+                              });
+                              setSelectedOrganization({...selectedOrganization, ...colorData});
+                              setIsEditing({});
+                              setEditingFields({});
+                              queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+                            }
+                          } catch (error) {
+                            toast({
+                              title: "Update Failed",
+                              description: "Failed to update organization branding.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        Save Colors
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsEditing({});
+                          setEditingFields({});
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
