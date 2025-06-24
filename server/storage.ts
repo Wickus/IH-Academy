@@ -347,7 +347,7 @@ export class DatabaseStorage implements IStorage {
   async startTrialPeriod(organizationId: number): Promise<Organization | undefined> {
     const trialStartDate = new Date();
     const trialEndDate = new Date();
-    trialEndDate.setDate(trialEndDate.getDate() + 14); // 14-day trial
+    trialEndDate.setDate(trialEndDate.getDate() + 21); // 21-day trial
 
     const [updatedOrg] = await db.update(organizations)
       .set({
@@ -378,7 +378,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (!org.trialEndDate) {
-      return { isExpired: false, daysRemaining: 14, subscriptionStatus: 'trial' };
+      return { isExpired: false, daysRemaining: 21, subscriptionStatus: 'trial' };
     }
 
     const now = new Date();

@@ -125,7 +125,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 mr-2 text-[#24D367]" />
-                Free 30-Day Trial
+                Free 21-Day Trial
               </div>
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 mr-2 text-[#24D367]" />
@@ -551,7 +551,7 @@ export default function LandingPage() {
             </a>
           </div>
           <p className="text-sm text-blue-200 mt-4">
-            No credit card required • 30-day free trial • Cancel anytime
+            No credit card required • 21-day free trial • Cancel anytime
           </p>
         </div>
       </section>

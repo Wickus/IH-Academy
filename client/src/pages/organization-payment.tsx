@@ -287,14 +287,14 @@ export default function OrganizationPayment() {
               Need more time to decide?
             </h3>
             <p className="text-gray-600 mb-4">
-              Start with a 14-day free trial. You can upgrade anytime.
+              Start with a 21-day free trial. You can upgrade anytime.
             </p>
             <Button
               onClick={skipPayment}
               variant="outline"
               className="border-[#278DD4] text-[#278DD4] hover:bg-[#278DD4] hover:text-white"
             >
-              Start 14-Day Free Trial
+              Start 21-Day Free Trial
             </Button>
           </CardContent>
         </Card>

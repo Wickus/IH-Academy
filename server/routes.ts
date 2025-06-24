@@ -478,7 +478,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Start trial period automatically
       orgData.subscriptionStatus = 'trial';
       orgData.trialStartDate = new Date();
-      orgData.trialEndDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days from now
+      orgData.trialEndDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000); // 21 days from now
       
       const organization = await storage.createOrganization(orgData);
       
