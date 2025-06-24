@@ -88,7 +88,7 @@ export default function LandingPage() {
               Proudly South African 🇿🇦
             </Badge>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-[#ffffff]">
               Transform Your Sports Academy with 
               <span className="block text-[#24D367]">Professional Management</span>
             </h1>
