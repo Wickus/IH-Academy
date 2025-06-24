@@ -35,8 +35,19 @@ export default function GlobalAdminDashboard() {
         title: "Organization Deleted",
         description: data.message || "Organization has been permanently deleted.",
       });
+      // Force immediate cache invalidation and refetch
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      queryClient.refetchQueries({ queryKey: ['/api/organizations'] });
       queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+      queryClient.refetchQueries({ queryKey: ['/api/stats/global'] });
+      
+      // Additional safety: remove from cache immediately
+      queryClient.setQueryData(['/api/organizations'], (oldData: any[]) => {
+        if (oldData) {
+          return oldData.filter(org => org.id !== organizationId);
+        }
+        return oldData;
+      });
     },
     onError: (error: any) => {
       toast({
