@@ -49,12 +49,12 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
           </span>
           <Button
             size="sm"
-            onClick={() => setLocation('/organization-payment')}
+            onClick={() => window.open('https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30', '_blank')}
             style={{ backgroundColor: colors.primaryColor }}
             className="text-white hover:opacity-90"
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Upgrade Now
+            Book Setup Call
           </Button>
         </AlertDescription>
       </Alert>
@@ -72,7 +72,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
           <Button
             size="sm"
             variant="outline"
-            onClick={() => setLocation('/organization-payment')}
+            onClick={() => window.open('https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30', '_blank')}
             style={{ 
               borderColor: colors.secondaryColor,
               color: colors.secondaryColor
@@ -80,7 +80,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
             className="hover:opacity-90"
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Upgrade
+            Book Setup Call
           </Button>
         </AlertDescription>
       </Alert>
@@ -98,7 +98,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
         <Button
           size="sm"
           variant="outline"
-          onClick={() => setLocation('/organization-payment')}
+          onClick={() => window.open('https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30', '_blank')}
           style={{ 
             borderColor: colors.accentColor,
             color: colors.primaryColor
@@ -106,7 +106,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
           className="hover:opacity-90"
         >
           <CreditCard className="mr-2 h-4 w-4" />
-          Upgrade Early
+          Book Setup Call
         </Button>
       </AlertDescription>
     </Alert>

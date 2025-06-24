@@ -197,6 +197,7 @@ Changelog:
 - June 24, 2025. Updated free trial period from 14 days to 21 days across entire system - modified backend trial creation and status checking to use 21-day period, updated all user-facing messaging in signup flow, payment page, and landing page to reflect 21-day trial consistently, aligned trial banner display with new duration for improved customer experience
 - June 24, 2025. Implemented new fee structure with R4000 activation fee - removed "No Setup Fees" reference from landing page, added R4000 activation fee information to all pricing cards (includes setup and first month), updated all pricing plan buttons to "Book Setup Call" linking to IH team booking system, modified CTA section to reflect activation fee and monthly debit order billing from month 2, ensuring clear pricing transparency for potential clients
 - June 24, 2025. Fixed free trial signup routing issue - corrected "Start Free Trial" button to redirect to organization dashboard instead of landing page, updated trial success message to show 21 days instead of 14, ensured smooth onboarding flow from signup completion directly to organization admin dashboard with trial banner displaying
+- June 24, 2025. Resolved trial banner button loop issue - replaced all "Upgrade Early" buttons in trial banner with "Book Setup Call" buttons that open IH team booking system in new tab, eliminated routing loops caused by payment page parameter requirements, aligned trial banner actions with new R4000 activation fee structure requiring setup calls
 
 ## User Preferences
 
