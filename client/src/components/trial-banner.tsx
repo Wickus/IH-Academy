@@ -17,6 +17,7 @@ interface TrialBannerProps {
 
 export function TrialBanner({ organizationId, organizationColors }: TrialBannerProps) {
   const [, setLocation] = useLocation();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
   const { data: trialStatus } = useQuery({
     queryKey: [`/api/organizations/${organizationId}/trial-status`],
@@ -49,12 +50,12 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
           </span>
           <Button
             size="sm"
-            onClick={() => window.open('https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30', '_blank')}
+            onClick={() => setShowUpgradeModal(true)}
             style={{ backgroundColor: colors.primaryColor }}
             className="text-white hover:opacity-90"
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Book Setup Call
+            Upgrade Now
           </Button>
         </AlertDescription>
       </Alert>
@@ -72,7 +73,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
           <Button
             size="sm"
             variant="outline"
-            onClick={() => window.open('https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30', '_blank')}
+            onClick={() => setShowUpgradeModal(true)}
             style={{ 
               borderColor: colors.secondaryColor,
               color: colors.secondaryColor
@@ -80,7 +81,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
             className="hover:opacity-90"
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Book Setup Call
+            Upgrade
           </Button>
         </AlertDescription>
       </Alert>
@@ -88,7 +89,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
   }
 
   // Show active trial status for all trial organizations
-  return (
+  const trialBanner = (
     <Alert className="bg-blue-50 border-blue-200 mb-6">
       <Calendar className="h-4 w-4 text-blue-600" />
       <AlertDescription className="flex items-center justify-between w-full">
@@ -98,7 +99,7 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
         <Button
           size="sm"
           variant="outline"
-          onClick={() => window.open('https://service.itshappening.africa/widget/booking/oZM1qWIoJJlfWxzibL30', '_blank')}
+          onClick={() => setShowUpgradeModal(true)}
           style={{ 
             borderColor: colors.accentColor,
             color: colors.primaryColor
@@ -106,9 +107,22 @@ export function TrialBanner({ organizationId, organizationColors }: TrialBannerP
           className="hover:opacity-90"
         >
           <CreditCard className="mr-2 h-4 w-4" />
-          Book Setup Call
+          Upgrade Early
         </Button>
       </AlertDescription>
     </Alert>
+  );
+
+  // Render the upgrade modal and trial banner
+  return (
+    <>
+      {trialBanner}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        organizationId={organizationId}
+        organizationColors={organizationColors}
+      />
+    </>
   );
 }
