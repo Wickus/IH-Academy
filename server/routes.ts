@@ -3382,6 +3382,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Global admin management endpoints
+  app.get("/api/global-admins", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const admins = await storage.getGlobalAdmins();
+      res.json(admins);
+    } catch (error) {
+      console.error("Error fetching global admins:", error);
+      res.status(500).json({ message: "Failed to fetch global admins" });
+    }
+  });
+
+  app.post("/api/global-admins", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const { email, name } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+
+      // Create new global admin
+      const newAdmin = await storage.createUser({
+        username: email.split('@')[0] + '_admin',
+        email,
+        name,
+        firstName: name.split(' ')[0] || '',
+        lastName: name.split(' ').slice(1).join(' ') || '',
+        role: 'global_admin',
+        password: 'temp123', // Temporary password - admin will need to reset
+        isActive: true,
+        organizationId: null
+      });
+
+      res.json(newAdmin);
+    } catch (error) {
+      console.error("Error creating global admin:", error);
+      res.status(500).json({ message: "Failed to create global admin" });
+    }
+  });
+
+  app.delete("/api/global-admins/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const adminId = parseInt(req.params.id);
+      
+      // Don't allow deleting the last global admin
+      const allAdmins = await storage.getGlobalAdmins();
+      if (allAdmins.length <= 1) {
+        return res.status(400).json({ message: "Cannot delete the last global admin" });
+      }
+
+      await storage.deleteUser(adminId);
+      res.json({ message: "Global admin removed successfully" });
+    } catch (error) {
+      console.error("Error removing global admin:", error);
+      res.status(500).json({ message: "Failed to remove global admin" });
+    }
+  });
+
+  // Global settings endpoints
+  app.get("/api/global-settings", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const settings = await storage.getGlobalSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching global settings:", error);
+      res.status(500).json({ message: "Failed to fetch global settings" });
+    }
+  });
+
+  app.post("/api/global-settings/payfast", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const payfastSettings = req.body;
+      await storage.saveGlobalPayfastSettings(payfastSettings);
+      res.json({ message: "PayFast settings saved successfully" });
+    } catch (error) {
+      console.error("Error saving PayFast settings:", error);
+      res.status(500).json({ message: "Failed to save PayFast settings" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;
