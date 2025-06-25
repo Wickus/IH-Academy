@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, CreditCard, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { UpgradeModal } from "./upgrade-modal";
 
 interface TrialBannerProps {
   organizationId: number;
