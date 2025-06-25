@@ -369,11 +369,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const orgId = parseInt(req.params.id);
       
-      // Soft delete by setting isActive to false
-      const updatedOrg = await storage.updateOrganization(orgId, { isActive: false });
-      if (!updatedOrg) {
-        return res.status(404).json({ message: "Organization not found" });
-      }
+      // Hard delete the organization and all associated data
+      await storage.deleteOrganization(orgId);
       
       res.json({ message: "Organization deleted successfully" });
     } catch (error) {
