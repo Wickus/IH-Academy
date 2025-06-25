@@ -1343,7 +1343,7 @@ export default function GlobalAdminDashboard() {
   );
 }
 
-// Global Admins Tab Component
+// Global Admins Tab Component - shows list of global admins with add/remove functionality
 function GlobalAdminsTab() {
   const { toast } = useToast();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -1352,6 +1352,376 @@ function GlobalAdminsTab() {
 
   // Fetch global admins
   const { data: globalAdmins, isLoading: loadingAdmins, refetch: refetchAdmins } = useQuery({
+    queryKey: ['/api/global-admins'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/global-admins");
+      if (!response.ok) throw new Error("Failed to fetch global admins");
+      return response.json();
+    }
+  });
+
+  // Add global admin mutation
+  const addAdminMutation = useMutation({
+    mutationFn: async (adminData: { email: string; name: string }) => {
+      const response = await apiRequest("POST", "/api/global-admins", adminData);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to add global admin");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Global admin added successfully",
+      });
+      setShowAddModal(false);
+      setNewAdminEmail("");
+      setNewAdminName("");
+      refetchAdmins();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Remove global admin mutation
+  const removeAdminMutation = useMutation({
+    mutationFn: async (adminId: number) => {
+      const response = await apiRequest("DELETE", `/api/global-admins/${adminId}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to remove global admin");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Global admin removed successfully",
+      });
+      refetchAdmins();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAddAdmin = () => {
+    if (!newAdminEmail.trim() || !newAdminName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    addAdminMutation.mutate({
+      email: newAdminEmail.trim(),
+      name: newAdminName.trim()
+    });
+  };
+
+  const handleRemoveAdmin = (adminId: number, adminName: string) => {
+    if (confirm(`Are you sure you want to remove ${adminName} as a global admin?`)) {
+      removeAdminMutation.mutate(adminId);
+    }
+  };
+
+  if (loadingAdmins) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-semibold">Current Global Admins</h3>
+          <p className="text-sm text-gray-600">Users with full administrative access to the platform</p>
+        </div>
+        <Button
+          onClick={() => setShowAddModal(true)}
+          style={{ backgroundColor: '#278DD4' }}
+          className="text-white hover:opacity-90"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Global Admin
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="p-6">
+          {!globalAdmins || globalAdmins.length === 0 ? (
+            <div className="text-center py-8">
+              <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-500">No global admins found</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {globalAdmins.map((admin: any) => (
+                <div key={admin.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center text-white font-semibold">
+                      {admin.name?.charAt(0) || admin.email.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold">{admin.name || admin.username}</p>
+                      <p className="text-sm text-gray-600">{admin.email}</p>
+                      <p className="text-xs text-gray-500">
+                        Added: {new Date(admin.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" style={{ backgroundColor: '#24D367', color: 'white' }}>
+                      Global Admin
+                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRemoveAdmin(admin.id, admin.name || admin.email)}
+                      disabled={removeAdminMutation.isPending}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Add Global Admin Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Global Administrator</DialogTitle>
+            <DialogDescription>
+              Create a new global admin account with full platform access
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="admin-name">Full Name</Label>
+              <Input
+                id="admin-name"
+                placeholder="Enter full name"
+                value={newAdminName}
+                onChange={(e) => setNewAdminName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="admin-email">Email Address</Label>
+              <Input
+                id="admin-email"
+                type="email"
+                placeholder="Enter email address"
+                value={newAdminEmail}
+                onChange={(e) => setNewAdminEmail(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddAdmin}
+              disabled={addAdminMutation.isPending}
+              style={{ backgroundColor: '#278DD4' }}
+              className="text-white hover:opacity-90"
+            >
+              {addAdminMutation.isPending ? "Adding..." : "Add Admin"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// Settings Tab Component - shows global platform settings
+function SettingsTab() {
+  const { toast } = useToast();
+  const [payfastSettings, setPayfastSettings] = useState({
+    merchantId: "",
+    merchantKey: "", 
+    passphrase: "",
+    sandbox: true
+  });
+
+  // Fetch global settings
+  const { data: globalSettings, isLoading: loadingSettings } = useQuery({
+    queryKey: ['/api/global-settings'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/global-settings");
+      if (!response.ok) throw new Error("Failed to fetch global settings");
+      return response.json();
+    }
+  });
+
+  // Update settings when data is loaded
+  useEffect(() => {
+    if (globalSettings?.payfast) {
+      setPayfastSettings(globalSettings.payfast);
+    }
+  }, [globalSettings]);
+
+  // Save PayFast settings mutation
+  const savePayfastMutation = useMutation({
+    mutationFn: async (settings: typeof payfastSettings) => {
+      const response = await apiRequest("POST", "/api/global-settings/payfast", settings);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to save PayFast settings");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "PayFast settings saved successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSavePayfast = () => {
+    if (!payfastSettings.merchantId.trim() || !payfastSettings.merchantKey.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in Merchant ID and Merchant Key",
+        variant: "destructive",
+      });
+      return;
+    }
+    savePayfastMutation.mutate(payfastSettings);
+  };
+
+  if (loadingSettings) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* PayFast Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            PayFast Configuration
+          </CardTitle>
+          <CardDescription>
+            Global PayFast settings used as fallback when organizations don't have their own settings
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="merchant-id">Merchant ID</Label>
+              <Input
+                id="merchant-id"
+                placeholder="Enter Merchant ID"
+                value={payfastSettings.merchantId}
+                onChange={(e) => setPayfastSettings(prev => ({ ...prev, merchantId: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="merchant-key">Merchant Key</Label>
+              <Input
+                id="merchant-key"
+                placeholder="Enter Merchant Key"
+                value={payfastSettings.merchantKey}
+                onChange={(e) => setPayfastSettings(prev => ({ ...prev, merchantKey: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="passphrase">Passphrase (Optional)</Label>
+            <Input
+              id="passphrase"
+              placeholder="Enter Passphrase"
+              value={payfastSettings.passphrase}
+              onChange={(e) => setPayfastSettings(prev => ({ ...prev, passphrase: e.target.value }))}
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="sandbox-mode"
+              checked={payfastSettings.sandbox}
+              onCheckedChange={(checked) => setPayfastSettings(prev => ({ ...prev, sandbox: checked }))}
+            />
+            <Label htmlFor="sandbox-mode">Sandbox Mode</Label>
+          </div>
+          <div className="pt-4">
+            <Button
+              onClick={handleSavePayfast}
+              disabled={savePayfastMutation.isPending}
+              style={{ backgroundColor: '#278DD4' }}
+              className="text-white hover:opacity-90"
+            >
+              {savePayfastMutation.isPending ? "Saving..." : "Save PayFast Settings"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Platform Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Platform Information</CardTitle>
+          <CardDescription>
+            Current platform configuration and status
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-semibold">Platform Version</p>
+              <p className="text-gray-600">IH Academy v2.0</p>
+            </div>
+            <div>
+              <p className="font-semibold">Database</p>
+              <p className="text-gray-600">PostgreSQL (Neon)</p>
+            </div>
+            <div>
+              <p className="font-semibold">Email Service</p>
+              <p className="text-gray-600">SendGrid</p>
+            </div>
+            <div>
+              <p className="font-semibold">Payment Gateway</p>
+              <p className="text-gray-600">PayFast + Debit Orders</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
     queryKey: ['/api/global-admins'],
     queryFn: async () => {
       const response = await apiRequest("GET", "/api/global-admins");
