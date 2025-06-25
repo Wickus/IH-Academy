@@ -1342,22 +1342,6 @@ export default function GlobalAdminDashboard() {
     </div>
   );
 }
-
-// Global Admins Tab Component - shows list of global admins with add/remove functionality
-function GlobalAdminsTab() {
-  const { toast } = useToast();
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newAdminEmail, setNewAdminEmail] = useState("");
-  const [newAdminName, setNewAdminName] = useState("");
-
-  // Fetch global admins
-  const { data: globalAdmins, isLoading: loadingAdmins, refetch: refetchAdmins } = useQuery({
-    queryKey: ['/api/global-admins'],
-    queryFn: async () => {
-      const response = await apiRequest("GET", "/api/global-admins");
-      if (!response.ok) throw new Error("Failed to fetch global admins");
-      return response.json();
-    }
   });
 
   // Add global admin mutation
@@ -1719,6 +1703,28 @@ function SettingsTab() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Global Admins Tab Component  
+function GlobalAdminsTab() {
+  return (
+    <div className="space-y-6">
+      <div className="text-center py-8">
+        <p className="text-gray-500">Global Admins management will be implemented here</p>
+      </div>
+    </div>
+  );
+}
+
+// Settings Tab Component
+function SettingsTab() {
+  return (
+    <div className="space-y-6">
+      <div className="text-center py-8">
+        <p className="text-gray-500">Global Settings will be implemented here</p>
+      </div>
     </div>
   );
 }
