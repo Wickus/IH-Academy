@@ -1399,6 +1399,47 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
+  // Global admin management
+  async getGlobalAdmins(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.role, 'global_admin'));
+  }
+
+  // Global settings management
+  async getGlobalSettings(): Promise<any> {
+    try {
+      // Try to get PayFast settings from global_settings table
+      const result = await db.execute(sql`
+        SELECT value FROM global_settings WHERE key = 'payfast'
+      `);
+      
+      if (result.rows.length > 0) {
+        return { payfast: result.rows[0].value };
+      }
+      
+      // Fallback to empty settings
+      return { payfast: { merchantId: '', merchantKey: '', passphrase: '', sandbox: true } };
+    } catch (error) {
+      console.error('Error fetching global settings:', error);
+      return { payfast: { merchantId: '', merchantKey: '', passphrase: '', sandbox: true } };
+    }
+  }
+
+  async saveGlobalPayfastSettings(settings: any): Promise<void> {
+    try {
+      await db.execute(sql`
+        INSERT INTO global_settings (key, value, updated_at)
+        VALUES ('payfast', ${JSON.stringify(settings)}, CURRENT_TIMESTAMP)
+        ON CONFLICT (key)
+        DO UPDATE SET 
+          value = EXCLUDED.value,
+          updated_at = CURRENT_TIMESTAMP
+      `);
+    } catch (error) {
+      console.error('Error saving global PayFast settings:', error);
+      throw error;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();

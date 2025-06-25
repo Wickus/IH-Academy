@@ -297,8 +297,11 @@ export default function GlobalAdminDashboard() {
           {/* Global Stats */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card 
-              className="bg-white border-l-4 border-l-[#278DD4] shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
-              onClick={() => document.querySelector('[value="organizations"]')?.click()}
+              className="bg-white border-l-4 border-l-[#278DD4] shadow-lg cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105"
+              onClick={() => {
+                const orgTab = document.querySelector('[value="organizations"]') as HTMLElement;
+                if (orgTab) orgTab.click();
+              }}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Organizations</CardTitle>
@@ -316,7 +319,12 @@ export default function GlobalAdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-l-4 border-l-[#24D367] shadow-lg">
+            <Card className="bg-white border-l-4 border-l-[#24D367] shadow-lg cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105"
+              onClick={() => {
+                const adminsTab = document.querySelector('[value="admins"]') as HTMLElement;
+                if (adminsTab) adminsTab.click();
+              }}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Users</CardTitle>
                 <Users className="h-4 w-4 text-[#24D367]" />
@@ -329,7 +337,7 @@ export default function GlobalAdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-l-4 border-l-[#24D3BF] shadow-lg">
+            <Card className="bg-white border-l-4 border-l-[#24D3BF] shadow-lg cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Bookings</CardTitle>
                 <CreditCard className="h-4 w-4 text-[#24D3BF]" />
@@ -342,7 +350,12 @@ export default function GlobalAdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-l-4 border-l-[#278DD4] shadow-lg">
+            <Card className="bg-white border-l-4 border-l-[#278DD4] shadow-lg cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105"
+              onClick={() => {
+                const settingsTab = document.querySelector('[value="settings"]') as HTMLElement;
+                if (settingsTab) settingsTab.click();
+              }}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Revenue</CardTitle>
                 <TrendingUp className="h-4 w-4 text-[#278DD4]" />
