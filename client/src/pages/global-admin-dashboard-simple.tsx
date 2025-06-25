@@ -1342,10 +1342,6 @@ export default function GlobalAdminDashboard() {
     </div>
   );
 }
-  });
-
-  // Add global admin mutation
-  const addAdminMutation = useMutation({
     mutationFn: async (adminData: { email: string; name: string }) => {
       const response = await apiRequest("POST", "/api/global-admins", adminData);
       if (!response.ok) {
