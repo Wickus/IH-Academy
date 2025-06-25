@@ -1311,81 +1311,89 @@ export class DatabaseStorage implements IStorage {
 
   // Delete organization and all related data
   async deleteOrganization(id: number): Promise<void> {
-    console.log(`Starting deletion of organization ID: ${id}`);
+    console.log(`Starting hard deletion of organization ID: ${id}`);
     
     // Get organization info before deletion for logging
     const orgToDelete = await this.getOrganization(id);
     if (!orgToDelete) {
       throw new Error(`Organization with ID ${id} not found`);
     }
-    console.log(`Deleting organization: ${orgToDelete.name} (ID: ${id})`);
+    console.log(`Permanently deleting organization: ${orgToDelete.name} (ID: ${id})`);
     
     try {
       // Delete in correct order to handle foreign key constraints
       
-      // 1. Delete debit order transactions
-      const deletedTransactions = await db.delete(debitOrderTransactions).where(eq(debitOrderTransactions.organizationId, id));
-      console.log(`Deleted debit order transactions for org ${id}`);
+      // 1. Delete debit order transactions first
+      const transactionsResult = await db.delete(debitOrderTransactions).where(eq(debitOrderTransactions.organizationId, id));
+      console.log(`Deleted ${transactionsResult.rowCount || 0} debit order transactions for org ${id}`);
       
       // 2. Delete debit order mandates
-      const deletedMandates = await db.delete(debitOrderMandates).where(eq(debitOrderMandates.organizationId, id));
-      console.log(`Deleted debit order mandates for org ${id}`);
+      const mandatesResult = await db.delete(debitOrderMandates).where(eq(debitOrderMandates.organizationId, id));
+      console.log(`Deleted ${mandatesResult.rowCount || 0} debit order mandates for org ${id}`);
       
       // 3. Delete message replies first, then messages
       const orgMessages = await db.select({ id: messages.id }).from(messages).where(eq(messages.recipientId, id));
       const messageIds = orgMessages.map(m => m.id);
       if (messageIds.length > 0) {
-        await db.delete(messageReplies).where(inArray(messageReplies.messageId, messageIds));
+        const repliesResult = await db.delete(messageReplies).where(inArray(messageReplies.messageId, messageIds));
+        console.log(`Deleted ${repliesResult.rowCount || 0} message replies for org ${id}`);
       }
-      await db.delete(messages).where(eq(messages.recipientId, id));
-      console.log(`Deleted messages for org ${id}`);
+      const messagesResult = await db.delete(messages).where(eq(messages.recipientId, id));
+      console.log(`Deleted ${messagesResult.rowCount || 0} messages for org ${id}`);
       
       // 4. Delete attendance records first, then bookings for classes in this organization
       const orgClasses = await db.select({ id: classes.id }).from(classes).where(eq(classes.organizationId, id));
       const classIds = orgClasses.map(c => c.id);
       if (classIds.length > 0) {
-        await db.delete(attendance).where(inArray(attendance.classId, classIds));
-        await db.delete(bookings).where(inArray(bookings.classId, classIds));
+        const attendanceResult = await db.delete(attendance).where(inArray(attendance.classId, classIds));
+        console.log(`Deleted ${attendanceResult.rowCount || 0} attendance records for org ${id}`);
+        const bookingsResult = await db.delete(bookings).where(inArray(bookings.classId, classIds));
+        console.log(`Deleted ${bookingsResult.rowCount || 0} bookings for org ${id}`);
       }
-      console.log(`Deleted bookings and attendance for org ${id}`);
       
       // 5. Delete payments related to this organization
-      await db.delete(payments).where(eq(payments.organizationId, id));
-      console.log(`Deleted payments for org ${id}`);
+      const paymentsResult = await db.delete(payments).where(eq(payments.organizationId, id));
+      console.log(`Deleted ${paymentsResult.rowCount || 0} payments for org ${id}`);
       
       // 6. Delete memberships
-      await db.delete(memberships).where(eq(memberships.organizationId, id));
-      console.log(`Deleted memberships for org ${id}`);
+      const membershipsResult = await db.delete(memberships).where(eq(memberships.organizationId, id));
+      console.log(`Deleted ${membershipsResult.rowCount || 0} memberships for org ${id}`);
       
       // 7. Delete coach availability and coach invitations
       const orgCoaches = await db.select({ id: coaches.id }).from(coaches).where(eq(coaches.organizationId, id));
       const coachIds = orgCoaches.map(c => c.id);
       if (coachIds.length > 0) {
-        await db.delete(coachAvailability).where(inArray(coachAvailability.coachId, coachIds));
-        await db.delete(coachInvitations).where(inArray(coachInvitations.coachId, coachIds));
+        const availabilityResult = await db.delete(coachAvailability).where(inArray(coachAvailability.coachId, coachIds));
+        console.log(`Deleted ${availabilityResult.rowCount || 0} coach availability records for org ${id}`);
+        const invitationsResult = await db.delete(coachInvitations).where(inArray(coachInvitations.coachId, coachIds));
+        console.log(`Deleted ${invitationsResult.rowCount || 0} coach invitations for org ${id}`);
       }
       
       // 8. Delete coaches
-      await db.delete(coaches).where(eq(coaches.organizationId, id));
-      console.log(`Deleted coaches for org ${id}`);
+      const coachesResult = await db.delete(coaches).where(eq(coaches.organizationId, id));
+      console.log(`Deleted ${coachesResult.rowCount || 0} coaches for org ${id}`);
       
       // 9. Delete daily schedules
-      await db.delete(dailySchedules).where(eq(dailySchedules.organizationId, id));
-      console.log(`Deleted daily schedules for org ${id}`);
+      const schedulesResult = await db.delete(dailySchedules).where(eq(dailySchedules.organizationId, id));
+      console.log(`Deleted ${schedulesResult.rowCount || 0} daily schedules for org ${id}`);
       
       // 10. Delete classes
-      await db.delete(classes).where(eq(classes.organizationId, id));
-      console.log(`Deleted classes for org ${id}`);
+      const classesResult = await db.delete(classes).where(eq(classes.organizationId, id));
+      console.log(`Deleted ${classesResult.rowCount || 0} classes for org ${id}`);
       
       // 11. Delete user organization relationships
-      await db.delete(userOrganizations).where(eq(userOrganizations.organizationId, id));
-      console.log(`Deleted user organization relationships for org ${id}`);
+      const userOrgsResult = await db.delete(userOrganizations).where(eq(userOrganizations.organizationId, id));
+      console.log(`Deleted ${userOrgsResult.rowCount || 0} user organization relationships for org ${id}`);
       
       // 12. Finally delete the organization itself
-      const result = await db.delete(organizations).where(eq(organizations.id, id));
-      console.log(`Deleted organization ${id}, result:`, result);
+      const orgResult = await db.delete(organizations).where(eq(organizations.id, id));
+      console.log(`Deleted organization ${id}, rows affected: ${orgResult.rowCount || 0}`);
       
-      console.log(`Successfully completed deletion of organization ID: ${id}`);
+      if ((orgResult.rowCount || 0) === 0) {
+        throw new Error(`No organization found with ID ${id} to delete`);
+      }
+      
+      console.log(`Successfully completed hard deletion of organization ID: ${id}`);
     } catch (error) {
       console.error(`Error during organization deletion for ID ${id}:`, error);
       throw error;
