@@ -2297,7 +2297,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PayFast payment creation endpoint
+  // PayFast activation fee payment endpoint (GET)
+  app.get("/api/create-payfast-payment", async (req: Request, res: Response) => {
+    try {
+      const { amount, organizationId, description } = req.query;
+      
+      if (!amount || !organizationId) {
+        return res.status(400).json({ message: "Missing required payment parameters" });
+      }
+
+      // Get organization and user data
+      const organization = await storage.getOrganization(parseInt(organizationId as string));
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Check if organization has PayFast credentials
+      if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
+        return res.status(400).json({ message: "PayFast not configured for this organization" });
+      }
+
+      // For activation fee, use organization admin as payer
+      const orgAdmins = await storage.getOrganizationAdmins(organization.id);
+      const primaryAdmin = orgAdmins[0];
+      
+      if (!primaryAdmin) {
+        return res.status(400).json({ message: "No organization admin found" });
+      }
+
+      // Create PayFast payment data for activation fee
+      const paymentData: PayFastPaymentData = {
+        merchant_id: organization.payfastMerchantId,
+        merchant_key: organization.payfastMerchantKey,
+        return_url: `${req.protocol}://${req.get('host')}/payment-success?type=activation&org_id=${organization.id}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?type=activation&org_id=${organization.id}`,
+        notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
+        name_first: primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin',
+        name_last: primaryAdmin.lastName || primaryAdmin.name?.split(' ')[1] || 'User',
+        email_address: primaryAdmin.email,
+        m_payment_id: `activation_${organization.id}_${Date.now()}`,
+        amount: parseFloat(amount as string).toFixed(2),
+        item_name: description as string || 'Activation Fee',
+        item_description: `Activation fee for ${organization.name} - includes setup and first month`,
+        passphrase: organization.payfastPassphrase || undefined,
+      };
+
+      // Generate payment URL and redirect
+      const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox || false);
+      
+      // Redirect to PayFast
+      res.redirect(paymentUrl);
+    } catch (error) {
+      console.error("Error creating activation fee payment:", error);
+      res.status(500).json({ message: "Failed to create payment" });
+    }
+  });
+
+  // PayFast payment creation endpoint (POST for class bookings)
   app.post("/api/create-payfast-payment", async (req: Request, res: Response) => {
     try {
       const { bookingId, classId, amount, participantName, participantEmail } = req.body;
