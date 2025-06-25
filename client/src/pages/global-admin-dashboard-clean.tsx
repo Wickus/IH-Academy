@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -13,7 +13,11 @@ import {
   TrendingUp,
   User,
   Plus,
-  Trash
+  Trash,
+  Eye,
+  Power,
+  DollarSign,
+  Edit
 } from "lucide-react";
 import {
   Dialog,
@@ -26,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function GlobalAdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -51,11 +56,21 @@ export default function GlobalAdminDashboard() {
     }
   });
 
+  // Fetch users data
+  const { data: allUsers = [], isLoading: loadingUsers } = useQuery({
+    queryKey: ['/api/users'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/users");
+      if (!response.ok) throw new Error("Failed to fetch users");
+      return response.json();
+    }
+  });
+
   // Calculate overview stats
   const totalOrgs = organizations.length;
   const activeOrgs = organizations.filter((org: any) => org.status === 'active').length;
   const trialOrgs = organizations.filter((org: any) => org.trialStatus === 'active').length;
-  const totalUsers = globalStats.totalUsers || 0;
+  const totalUsers = allUsers.length;
 
   if (loadingOrgs || loadingStats) {
     return (
@@ -83,11 +98,11 @@ export default function GlobalAdminDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="organizations">Organizations</TabsTrigger>
-          <TabsTrigger value="global-admins">Global Admins</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4" style={{ backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0' }}>
+          <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Overview</TabsTrigger>
+          <TabsTrigger value="organizations" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Organizations</TabsTrigger>
+          <TabsTrigger value="global-admins" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Global Admins</TabsTrigger>
+          <TabsTrigger value="settings" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -111,6 +126,18 @@ export default function GlobalAdminDashboard() {
         <TabsContent value="settings" className="space-y-6">
           <SettingsTab />
         </TabsContent>
+
+        <TabsContent value="users" className="space-y-6">
+          <UsersTab users={users} />
+        </TabsContent>
+
+        <TabsContent value="revenue" className="space-y-6">
+          <RevenueTab />
+        </TabsContent>
+
+        <TabsContent value="pricing" className="space-y-6">
+          <PricingTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -129,81 +156,86 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
       {/* Stats Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card 
-          className="cursor-pointer hover:shadow-md transition-shadow"
+          className="cursor-pointer hover:shadow-md transition-shadow border-none shadow-md"
+          style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}
           onClick={() => onTabChange("organizations")}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Organizations</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
+            <Building2 className="h-4 w-4" style={{ color: '#20366B' }} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: '#20366B' }}>{totalOrgs}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs" style={{ color: '#64748B' }}>
               {activeOrgs} active, {trialOrgs} in trial
             </p>
           </CardContent>
         </Card>
 
         <Card 
-          className="cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => onTabChange("organizations")}
+          className="cursor-pointer hover:shadow-md transition-shadow border-none shadow-md"
+          style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}
+          onClick={() => onTabChange("users")}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Organizations</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Users</CardTitle>
+            <Users className="h-4 w-4" style={{ color: '#278DD4' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>{activeOrgs}</div>
-            <p className="text-xs text-muted-foreground">
-              {Math.round((activeOrgs / totalOrgs) * 100)}% of total
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card 
-          className="cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => onTabChange("organizations")}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Trial Organizations</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>{trialOrgs}</div>
-            <p className="text-xs text-muted-foreground">
-              Evaluating the platform
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card 
-          className="cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => onTabChange("global-admins")}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>{totalUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>{totalUsers}</div>
+            <p className="text-xs" style={{ color: '#64748B' }}>
               Across all organizations
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:shadow-md transition-shadow border-none shadow-md"
+          style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}
+          onClick={() => onTabChange("revenue")}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+            <DollarSign className="h-4 w-4" style={{ color: '#24D367' }} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>R45,230</div>
+            <p className="text-xs" style={{ color: '#64748B' }}>
+              This month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:shadow-md transition-shadow border-none shadow-md"
+          style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}
+          onClick={() => onTabChange("pricing")}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pricing Plans</CardTitle>
+            <Settings className="h-4 w-4" style={{ color: '#20366B' }} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>3</div>
+            <p className="text-xs" style={{ color: '#64748B' }}>
+              Active plans
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common administrative tasks</CardDescription>
+          <CardTitle style={{ color: '#1E293B' }}>Quick Actions</CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>Common administrative tasks</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <Button 
               variant="outline" 
-              className="h-auto p-4 flex flex-col items-center gap-2"
+              className="h-auto p-4 flex flex-col items-center gap-2 border-2 hover:shadow-md transition-all"
+              style={{ borderColor: '#E2E8F0', color: '#475569' }}
               onClick={() => onTabChange("organizations")}
             >
               <Building2 className="h-6 w-6" />
@@ -211,7 +243,8 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
             </Button>
             <Button 
               variant="outline" 
-              className="h-auto p-4 flex flex-col items-center gap-2"
+              className="h-auto p-4 flex flex-col items-center gap-2 border-2 hover:shadow-md transition-all"
+              style={{ borderColor: '#E2E8F0', color: '#475569' }}
               onClick={() => onTabChange("global-admins")}
             >
               <Users className="h-6 w-6" />
@@ -219,7 +252,8 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
             </Button>
             <Button 
               variant="outline" 
-              className="h-auto p-4 flex flex-col items-center gap-2"
+              className="h-auto p-4 flex flex-col items-center gap-2 border-2 hover:shadow-md transition-all"
+              style={{ borderColor: '#E2E8F0', color: '#475569' }}
               onClick={() => onTabChange("settings")}
             >
               <Settings className="h-6 w-6" />
@@ -234,35 +268,124 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
 
 // Organizations Tab Component
 function OrganizationsTab({ organizations }: { organizations: any[] }) {
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'trial' | 'inactive'>('all');
+  const { toast } = useToast();
+
+  // Filter organizations based on status
+  const filteredOrgs = organizations.filter(org => {
+    if (filterStatus === 'all') return true;
+    if (filterStatus === 'active') return org.status === 'active' && org.trialStatus !== 'active';
+    if (filterStatus === 'trial') return org.trialStatus === 'active';
+    if (filterStatus === 'inactive') return org.status === 'inactive';
+    return true;
+  });
+
+  // Toggle organization status mutation
+  const toggleStatusMutation = useMutation({
+    mutationFn: async ({ orgId, newStatus }: { orgId: number; newStatus: string }) => {
+      const response = await apiRequest("PUT", `/api/organizations/${orgId}/status`, { status: newStatus });
+      if (!response.ok) throw new Error("Failed to update organization status");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Organization status updated" });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
+    }
+  });
+
+  // Delete organization mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (orgId: number) => {
+      const response = await apiRequest("DELETE", `/api/organizations/${orgId}`);
+      if (!response.ok) throw new Error("Failed to delete organization");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Organization deleted" });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete organization", variant: "destructive" });
+    }
+  });
+
+  const handleToggleStatus = (org: any) => {
+    const newStatus = org.status === 'active' ? 'inactive' : 'active';
+    toggleStatusMutation.mutate({ orgId: org.id, newStatus });
+  };
+
+  const handleDelete = (org: any) => {
+    if (confirm(`Are you sure you want to delete ${org.name}? This action cannot be undone.`)) {
+      deleteMutation.mutate(org.id);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Organizations</h2>
-          <p className="text-gray-600">Manage all organizations on the platform</p>
+          <p style={{ color: '#64748B' }}>Manage all organizations on the platform</p>
         </div>
       </div>
 
-      <Card>
+      {/* Filter Tabs */}
+      <div className="flex gap-2">
+        <Button
+          variant={filterStatus === 'all' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('all')}
+          style={filterStatus === 'all' ? { backgroundColor: '#20366B', color: 'white' } : { borderColor: '#E2E8F0' }}
+        >
+          All ({organizations.length})
+        </Button>
+        <Button
+          variant={filterStatus === 'active' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('active')}
+          style={filterStatus === 'active' ? { backgroundColor: '#24D367', color: 'white' } : { borderColor: '#E2E8F0' }}
+        >
+          Active ({organizations.filter(org => org.status === 'active' && org.trialStatus !== 'active').length})
+        </Button>
+        <Button
+          variant={filterStatus === 'trial' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('trial')}
+          style={filterStatus === 'trial' ? { backgroundColor: '#278DD4', color: 'white' } : { borderColor: '#E2E8F0' }}
+        >
+          Free Trial ({organizations.filter(org => org.trialStatus === 'active').length})
+        </Button>
+        <Button
+          variant={filterStatus === 'inactive' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('inactive')}
+          style={filterStatus === 'inactive' ? { backgroundColor: '#6B7280', color: 'white' } : { borderColor: '#E2E8F0' }}
+        >
+          Inactive ({organizations.filter(org => org.status === 'inactive').length})
+        </Button>
+      </div>
+
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
             <Building2 className="h-5 w-5" />
-            All Organizations
+            {filterStatus === 'all' ? 'All Organizations' : 
+             filterStatus === 'active' ? 'Active Organizations' :
+             filterStatus === 'trial' ? 'Trial Organizations' : 'Inactive Organizations'}
           </CardTitle>
-          <CardDescription>
-            {organizations.length} organizations registered
+          <CardDescription style={{ color: '#64748B' }}>
+            {filteredOrgs.length} organizations
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {organizations.length === 0 ? (
+          {filteredOrgs.length === 0 ? (
             <div className="text-center py-8">
-              <Building2 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-500">No organizations found</p>
+              <Building2 className="h-12 w-12 mx-auto mb-4" style={{ color: '#CBD5E1' }} />
+              <p style={{ color: '#64748B' }}>No organizations found</p>
             </div>
           ) : (
             <div className="space-y-4">
-              {organizations.map((org: any) => (
-                <div key={org.id} className="flex items-center justify-between p-4 border rounded-lg">
+              {filteredOrgs.map((org: any) => (
+                <div key={org.id} className="flex items-center justify-between p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
                   <div className="flex items-center gap-3">
                     {org.logoUrl ? (
                       <img 
@@ -271,21 +394,21 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-green-500 flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: 'linear-gradient(135deg, #20366B 0%, #278DD4 100%)' }}>
                         {org.name.charAt(0)}
                       </div>
                     )}
                     <div>
-                      <p className="font-semibold">{org.name}</p>
-                      <p className="text-sm text-gray-600">{org.contactEmail}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-semibold" style={{ color: '#1E293B' }}>{org.name}</p>
+                      <p className="text-sm" style={{ color: '#64748B' }}>{org.contactEmail}</p>
+                      <p className="text-xs" style={{ color: '#94A3B8' }}>
                         Created: {new Date(org.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge 
-                      variant={org.status === 'active' ? 'default' : 'secondary'}
+                      variant="secondary"
                       style={{ 
                         backgroundColor: org.status === 'active' ? '#24D367' : '#6B7280',
                         color: 'white' 
@@ -298,6 +421,42 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                         Trial
                       </Badge>
                     )}
+                    <div className="flex gap-1 ml-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        style={{ borderColor: '#E2E8F0' }}
+                        title="View Details"
+                      >
+                        <Eye className="h-4 w-4" style={{ color: '#64748B' }} />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        style={{ borderColor: '#E2E8F0' }}
+                        onClick={() => handleToggleStatus(org)}
+                        disabled={toggleStatusMutation.isPending}
+                        title={org.status === 'active' ? 'Deactivate' : 'Activate'}
+                      >
+                        {org.status === 'active' ? 
+                          <ToggleRight className="h-4 w-4" style={{ color: '#24D367' }} /> :
+                          <ToggleLeft className="h-4 w-4" style={{ color: '#6B7280' }} />
+                        }
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        style={{ borderColor: '#E2E8F0' }}
+                        onClick={() => handleDelete(org)}
+                        disabled={deleteMutation.isPending}
+                        title="Delete"
+                      >
+                        <Trash className="h-4 w-4" style={{ color: '#EF4444' }} />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -311,24 +470,576 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
 
 // Global Admins Tab Component  
 function GlobalAdminsTab() {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminName, setNewAdminName] = useState("");
+  const { toast } = useToast();
+
+  // Fetch global admins
+  const { data: globalAdmins = [], isLoading: loadingAdmins, refetch: refetchAdmins } = useQuery({
+    queryKey: ['/api/global-admins'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/global-admins");
+      if (!response.ok) throw new Error("Failed to fetch global admins");
+      return response.json();
+    }
+  });
+
+  // Add global admin mutation
+  const addAdminMutation = useMutation({
+    mutationFn: async (adminData: { email: string; name: string }) => {
+      const response = await apiRequest("POST", "/api/global-admins", adminData);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to add global admin");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Global admin added successfully" });
+      setShowAddModal(false);
+      setNewAdminEmail("");
+      setNewAdminName("");
+      refetchAdmins();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Remove global admin mutation
+  const removeAdminMutation = useMutation({
+    mutationFn: async (adminId: number) => {
+      const response = await apiRequest("DELETE", `/api/global-admins/${adminId}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to remove global admin");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Global admin removed successfully" });
+      refetchAdmins();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleAddAdmin = () => {
+    if (!newAdminEmail.trim() || !newAdminName.trim()) {
+      toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
+      return;
+    }
+    addAdminMutation.mutate({ email: newAdminEmail.trim(), name: newAdminName.trim() });
+  };
+
+  const handleRemoveAdmin = (adminId: number, adminName: string) => {
+    if (confirm(`Are you sure you want to remove ${adminName} as a global admin?`)) {
+      removeAdminMutation.mutate(adminId);
+    }
+  };
+
+  if (loadingAdmins) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="text-center py-8">
-        <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-        <p className="text-gray-500">Global Admins management will be implemented here</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Global Administrators</h2>
+          <p style={{ color: '#64748B' }}>Manage users with global admin access to the platform</p>
+        </div>
+        <Button
+          onClick={() => setShowAddModal(true)}
+          style={{ backgroundColor: '#278DD4', color: 'white' }}
+          className="hover:opacity-90"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Global Admin
+        </Button>
       </div>
+
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
+            <Users className="h-5 w-5" />
+            Current Global Admins
+          </CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            Users with full administrative access to the platform
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!globalAdmins || globalAdmins.length === 0 ? (
+            <div className="text-center py-8">
+              <User className="h-12 w-12 mx-auto mb-4" style={{ color: '#CBD5E1' }} />
+              <p style={{ color: '#64748B' }}>No global admins found</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {globalAdmins.map((admin: any) => (
+                <div key={admin.id} className="flex items-center justify-between p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: 'linear-gradient(135deg, #20366B 0%, #24D367 100%)' }}>
+                      {admin.name?.charAt(0) || admin.email.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold" style={{ color: '#1E293B' }}>{admin.name || admin.username}</p>
+                      <p className="text-sm" style={{ color: '#64748B' }}>{admin.email}</p>
+                      <p className="text-xs" style={{ color: '#94A3B8' }}>
+                        Added: {new Date(admin.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" style={{ backgroundColor: '#24D367', color: 'white' }}>
+                      Global Admin
+                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRemoveAdmin(admin.id, admin.name || admin.email)}
+                      disabled={removeAdminMutation.isPending}
+                      style={{ borderColor: '#E2E8F0' }}
+                    >
+                      <Trash className="h-4 w-4" style={{ color: '#EF4444' }} />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Add Global Admin Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Global Administrator</DialogTitle>
+            <DialogDescription>
+              Create a new global admin account with full platform access
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="admin-name">Full Name</Label>
+              <Input
+                id="admin-name"
+                placeholder="Enter full name"
+                value={newAdminName}
+                onChange={(e) => setNewAdminName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="admin-email">Email Address</Label>
+              <Input
+                id="admin-email"
+                type="email"
+                placeholder="Enter email address"
+                value={newAdminEmail}
+                onChange={(e) => setNewAdminEmail(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddAdmin}
+              disabled={addAdminMutation.isPending}
+              style={{ backgroundColor: '#278DD4', color: 'white' }}
+              className="hover:opacity-90"
+            >
+              {addAdminMutation.isPending ? "Adding..." : "Add Admin"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
 // Settings Tab Component
 function SettingsTab() {
+  const { toast } = useToast();
+  const [payfastSettings, setPayfastSettings] = useState({
+    merchantId: "",
+    merchantKey: "", 
+    passphrase: "",
+    sandbox: true
+  });
+
+  // Fetch global settings
+  const { data: globalSettings, isLoading: loadingSettings } = useQuery({
+    queryKey: ['/api/global-settings'],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/global-settings");
+      if (!response.ok) throw new Error("Failed to fetch global settings");
+      return response.json();
+    }
+  });
+
+  // Update settings when data is loaded
+  useEffect(() => {
+    if (globalSettings?.payfast) {
+      setPayfastSettings(globalSettings.payfast);
+    }
+  }, [globalSettings]);
+
+  // Save PayFast settings mutation
+  const savePayfastMutation = useMutation({
+    mutationFn: async (settings: typeof payfastSettings) => {
+      const response = await apiRequest("POST", "/api/global-settings/payfast", settings);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to save PayFast settings");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "PayFast settings saved successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleSavePayfast = () => {
+    if (!payfastSettings.merchantId.trim() || !payfastSettings.merchantKey.trim()) {
+      toast({ title: "Error", description: "Please fill in Merchant ID and Merchant Key", variant: "destructive" });
+      return;
+    }
+    savePayfastMutation.mutate(payfastSettings);
+  };
+
+  if (loadingSettings) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="text-center py-8">
-        <Settings className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-        <p className="text-gray-500">Global Settings will be implemented here</p>
+      <div>
+        <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Global Settings</h2>
+        <p style={{ color: '#64748B' }}>Configure platform-wide settings and integrations</p>
       </div>
+
+      {/* PayFast Configuration */}
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
+            <Settings className="h-5 w-5" />
+            PayFast Configuration
+          </CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            Global PayFast settings used as fallback when organizations don't have their own settings
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="merchant-id">Merchant ID</Label>
+              <Input
+                id="merchant-id"
+                placeholder="Enter Merchant ID"
+                value={payfastSettings.merchantId}
+                onChange={(e) => setPayfastSettings(prev => ({ ...prev, merchantId: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="merchant-key">Merchant Key</Label>
+              <Input
+                id="merchant-key"
+                placeholder="Enter Merchant Key"
+                value={payfastSettings.merchantKey}
+                onChange={(e) => setPayfastSettings(prev => ({ ...prev, merchantKey: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="passphrase">Passphrase (Optional)</Label>
+            <Input
+              id="passphrase"
+              placeholder="Enter Passphrase"
+              value={payfastSettings.passphrase}
+              onChange={(e) => setPayfastSettings(prev => ({ ...prev, passphrase: e.target.value }))}
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="sandbox-mode"
+              checked={payfastSettings.sandbox}
+              onCheckedChange={(checked) => setPayfastSettings(prev => ({ ...prev, sandbox: checked }))}
+            />
+            <Label htmlFor="sandbox-mode">Sandbox Mode</Label>
+          </div>
+          <div className="pt-4">
+            <Button
+              onClick={handleSavePayfast}
+              disabled={savePayfastMutation.isPending}
+              style={{ backgroundColor: '#278DD4', color: 'white' }}
+              className="hover:opacity-90"
+            >
+              {savePayfastMutation.isPending ? "Saving..." : "Save PayFast Settings"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Platform Information */}
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle style={{ color: '#1E293B' }}>Platform Information</CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            Current platform configuration and status
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-semibold" style={{ color: '#374151' }}>Platform Version</p>
+              <p style={{ color: '#64748B' }}>IH Academy v2.0</p>
+            </div>
+            <div>
+              <p className="font-semibold" style={{ color: '#374151' }}>Database</p>
+              <p style={{ color: '#64748B' }}>PostgreSQL (Neon)</p>
+            </div>
+            <div>
+              <p className="font-semibold" style={{ color: '#374151' }}>Email Service</p>
+              <p style={{ color: '#64748B' }}>SendGrid</p>
+            </div>
+            <div>
+              <p className="font-semibold" style={{ color: '#374151' }}>Payment Gateway</p>
+              <p style={{ color: '#64748B' }}>PayFast + Debit Orders</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Users Tab Component
+function UsersTab({ users }: { users: any[] }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Users</h2>
+          <p style={{ color: '#64748B' }}>Manage all users across the platform</p>
+        </div>
+      </div>
+
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
+            <Users className="h-5 w-5" />
+            All Users
+          </CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            {users.length} users registered
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {users.length === 0 ? (
+            <div className="text-center py-8">
+              <Users className="h-12 w-12 mx-auto mb-4" style={{ color: '#CBD5E1' }} />
+              <p style={{ color: '#64748B' }}>No users found</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {users.map((user: any) => (
+                <div key={user.id} className="flex items-center justify-between p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: 'linear-gradient(135deg, #278DD4 0%, #24D367 100%)' }}>
+                      {user.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold" style={{ color: '#1E293B' }}>{user.username}</p>
+                      <p className="text-sm" style={{ color: '#64748B' }}>{user.email}</p>
+                      <p className="text-xs" style={{ color: '#94A3B8' }}>
+                        Role: {user.role || 'member'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge 
+                      variant="secondary"
+                      style={{ 
+                        backgroundColor: user.role === 'global_admin' ? '#20366B' : 
+                                       user.role === 'organization_admin' ? '#278DD4' : 
+                                       user.role === 'coach' ? '#24D367' : '#6B7280',
+                        color: 'white' 
+                      }}
+                    >
+                      {user.role || 'member'}
+                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      style={{ borderColor: '#E2E8F0' }}
+                      title="Edit User"
+                    >
+                      <Eye className="h-4 w-4" style={{ color: '#64748B' }} />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Revenue Tab Component
+function RevenueTab() {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Revenue Dashboard</h2>
+          <p style={{ color: '#64748B' }}>Monitor platform revenue and financial metrics</p>
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="border-none shadow-md" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+          <CardHeader>
+            <CardTitle style={{ color: '#1E293B' }}>Monthly Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>R45,230</div>
+            <p className="text-xs" style={{ color: '#64748B' }}>+12% from last month</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-none shadow-md" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+          <CardHeader>
+            <CardTitle style={{ color: '#1E293B' }}>Active Subscriptions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>24</div>
+            <p className="text-xs" style={{ color: '#64748B' }}>Organizations paying</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-none shadow-md" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+          <CardHeader>
+            <CardTitle style={{ color: '#1E293B' }}>Average Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>R1,885</div>
+            <p className="text-xs" style={{ color: '#64748B' }}>Per organization</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle style={{ color: '#1E293B' }}>Revenue Overview</CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            Detailed revenue reporting will be implemented here
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <DollarSign className="h-12 w-12 mx-auto mb-4" style={{ color: '#CBD5E1' }} />
+            <p style={{ color: '#64748B' }}>Revenue charts and analytics coming soon</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Pricing Tab Component
+function PricingTab() {
+  const [pricingData, setPricingData] = useState({
+    membership: {
+      free: { name: "Starter", price: "0", maxMembers: "50" },
+      basic: { name: "Professional", price: "299", maxMembers: "200" },
+      premium: { name: "Enterprise", price: "599", maxMembers: "unlimited" }
+    },
+    payPerClass: {
+      free: { name: "Basic", price: "0", commission: "5" },
+      basic: { name: "Standard", price: "199", commission: "3" },
+      premium: { name: "Premium", price: "399", commission: "1" }
+    }
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Pricing Configuration</h2>
+          <p style={{ color: '#64748B' }}>Manage subscription plans and pricing tiers</p>
+        </div>
+      </div>
+
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle style={{ color: '#1E293B' }}>Membership Plans</CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            Configure pricing for membership-based organizations
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-3">
+            {Object.entries(pricingData.membership).map(([tier, data]) => (
+              <div key={tier} className="p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
+                <h4 className="font-semibold" style={{ color: '#1E293B' }}>{data.name}</h4>
+                <div className="mt-2">
+                  <Label>Price (R)</Label>
+                  <Input value={data.price} readOnly />
+                </div>
+                <div className="mt-2">
+                  <Label>Max Members</Label>
+                  <Input value={data.maxMembers} readOnly />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+        <CardHeader>
+          <CardTitle style={{ color: '#1E293B' }}>Pay-Per-Class Plans</CardTitle>
+          <CardDescription style={{ color: '#64748B' }}>
+            Configure pricing for pay-per-class organizations
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-3">
+            {Object.entries(pricingData.payPerClass).map(([tier, data]) => (
+              <div key={tier} className="p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
+                <h4 className="font-semibold" style={{ color: '#1E293B' }}>{data.name}</h4>
+                <div className="mt-2">
+                  <Label>Monthly Fee (R)</Label>
+                  <Input value={data.price} readOnly />
+                </div>
+                <div className="mt-2">
+                  <Label>Commission (%)</Label>
+                  <Input value={data.commission} readOnly />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
