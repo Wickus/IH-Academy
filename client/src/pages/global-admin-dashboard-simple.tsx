@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2, Eye, Power, Mail, Phone, MapPin, Calendar, Globe } from "lucide-react";
+import { Building2, Users, CreditCard, TrendingUp, Settings, Trash2, Eye, Power, Mail, Phone, MapPin, Calendar, Globe, Plus, Trash, User } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function GlobalAdminDashboard() {
@@ -1331,6 +1332,7 @@ export default function GlobalAdminDashboard() {
 
 // Global Admins Tab Component
 function GlobalAdminsTab() {
+  const { toast } = useToast();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminName, setNewAdminName] = useState("");
@@ -1557,6 +1559,8 @@ function SettingsTab() {
     sandbox: true
   });
 
+  const { toast } = useToast();
+
   // Fetch global settings
   const { data: globalSettings, isLoading: loadingSettings } = useQuery({
     queryKey: ['/api/global-settings'],
@@ -1564,13 +1568,15 @@ function SettingsTab() {
       const response = await apiRequest("GET", "/api/global-settings");
       if (!response.ok) throw new Error("Failed to fetch global settings");
       return response.json();
-    },
-    onSuccess: (data) => {
-      if (data.payfast) {
-        setPayfastSettings(data.payfast);
-      }
     }
   });
+
+  // Update settings when data is loaded
+  useEffect(() => {
+    if (globalSettings?.payfast) {
+      setPayfastSettings(globalSettings.payfast);
+    }
+  }, [globalSettings]);
 
   // Save PayFast settings mutation
   const savePayfastMutation = useMutation({
