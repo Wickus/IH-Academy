@@ -3395,46 +3395,119 @@ async function notifyGlobalAdminsNewOrganization(organization: any, user: any) {
   try {
     const globalAdmins = await storage.getGlobalAdmins();
     
+    // Get business model information
+    const businessModel = organization.businessModel || 'membership';
+    const planType = organization.planType || 'free';
+    
     for (const admin of globalAdmins) {
       await sendEmail({
         to: admin.email,
         from: 'noreply@itshappening.africa',
-        subject: 'New Organization Signup - IH Academy',
+        subject: `New Organization Signup - ${organization.name} (${planType.toUpperCase()} plan)`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 50%, #24D367 100%); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">New Organization Signup</h1>
+              <img src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" alt="IH Academy" style="height: 40px; margin-bottom: 15px;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">🎉 New Organization Signup!</h1>
+              <p style="color: white; margin: 10px 0 0 0; opacity: 0.9;">A new sports academy has joined IH Academy</p>
             </div>
             
             <div style="padding: 30px; background: #f8f9fa;">
-              <h2 style="color: #20366B; margin-bottom: 20px;">Organization Details</h2>
-              
-              <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <p><strong>Organization Name:</strong> ${organization.name}</p>
-                <p><strong>Email:</strong> ${organization.email}</p>
-                <p><strong>Description:</strong> ${organization.description || 'Not provided'}</p>
-                <p><strong>Plan Type:</strong> ${organization.planType}</p>
-                <p><strong>Status:</strong> ${organization.subscriptionStatus}</p>
-                <p><strong>Trial End Date:</strong> ${new Date(organization.trialEndDate).toLocaleDateString()}</p>
+              <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #24D367;">
+                <h2 style="color: #20366B; margin: 0 0 20px 0; font-size: 20px;">🏢 Organization Details</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B; width: 40%;">Organization Name:</td>
+                    <td style="padding: 8px 0; color: #333;">${organization.name}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Email Address:</td>
+                    <td style="padding: 8px 0; color: #333;">${organization.email}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Description:</td>
+                    <td style="padding: 8px 0; color: #333;">${organization.description || 'Not provided'}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Business Model:</td>
+                    <td style="padding: 8px 0;">
+                      <span style="background: ${businessModel === 'membership' ? '#278DD4' : '#F97316'}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+                        ${businessModel === 'membership' ? '📅 MEMBERSHIP' : '💳 PAY-PER-CLASS'}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Plan Type:</td>
+                    <td style="padding: 8px 0;">
+                      <span style="background: ${planType === 'free' ? '#6B7280' : planType === 'basic' ? '#278DD4' : '#24D367'}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+                        ${planType.toUpperCase()} ${planType === 'free' ? '🆓' : planType === 'basic' ? '⭐' : '👑'}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Status:</td>
+                    <td style="padding: 8px 0;">
+                      <span style="background: #F59E0B; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+                        ⏰ ${organization.subscriptionStatus.toUpperCase()}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Trial Period:</td>
+                    <td style="padding: 8px 0; color: #333;">21 days (ends ${new Date(organization.trialEndDate).toLocaleDateString()})</td>
+                  </tr>
+                </table>
               </div>
 
-              <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="color: #20366B; margin-bottom: 15px;">Admin User Details</h3>
-                <p><strong>Name:</strong> ${user.name || user.firstName + ' ' + user.lastName}</p>
-                <p><strong>Email:</strong> ${user.email}</p>
-                <p><strong>Username:</strong> ${user.username}</p>
+              <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #278DD4;">
+                <h3 style="color: #20366B; margin: 0 0 20px 0; font-size: 18px;">👤 Organization Admin Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B; width: 30%;">Name:</td>
+                    <td style="padding: 8px 0; color: #333;">${user.name || (user.firstName + ' ' + user.lastName) || 'Not provided'}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Email:</td>
+                    <td style="padding: 8px 0; color: #333;">${user.email}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Username:</td>
+                    <td style="padding: 8px 0; color: #333;">${user.username}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #20366B;">Created:</td>
+                    <td style="padding: 8px 0; color: #333;">${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</td>
+                  </tr>
+                </table>
               </div>
 
-              <div style="text-align: center; margin-top: 30px;">
-                <a href="https://academy.itshappening.africa" style="background: #278DD4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                  Access Global Admin Dashboard
-                </a>
+              <div style="background: linear-gradient(135deg, #278DD4 0%, #24D367 100%); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                <h3 style="color: white; margin: 0 0 15px 0; font-size: 16px;">Quick Actions</h3>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                  <a href="https://academy.itshappening.africa" style="background: white; color: #278DD4; padding: 12px 20px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold; margin: 5px;">
+                    🔧 Access Global Dashboard
+                  </a>
+                  <a href="mailto:${organization.email}" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 20px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold; margin: 5px;">
+                    ✉️ Contact Organization
+                  </a>
+                </div>
+              </div>
+
+              <div style="background: #F3F4F6; padding: 15px; border-radius: 8px; border-left: 4px solid #6B7280;">
+                <p style="margin: 0; font-size: 14px; color: #6B7280;">
+                  <strong>💡 Next Steps:</strong> The organization admin can now set up their academy, invite coaches, create classes, and start managing their members. Monitor their progress through the Global Admin Dashboard.
+                </p>
               </div>
             </div>
 
-            <div style="background: #20366B; color: white; padding: 20px; text-align: center;">
-              <p style="margin: 0; font-size: 14px;">IH Academy - Sports Academy Management Platform</p>
-              <p style="margin: 5px 0 0 0; font-size: 12px;">This is an automated notification from the ItsHappening.Africa platform</p>
+            <div style="background: #20366B; color: white; padding: 25px; text-align: center;">
+              <p style="margin: 0; font-size: 16px; font-weight: bold;">IH Academy - Sports Academy Management Platform</p>
+              <p style="margin: 8px 0 0 0; font-size: 12px; opacity: 0.8;">This is an automated notification from the ItsHappening.Africa platform</p>
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                <p style="margin: 0; font-size: 11px; opacity: 0.7;">
+                  📧 Sent to: ${admin.email} | 🕒 ${new Date().toLocaleString()}
+                </p>
+              </div>
             </div>
           </div>
         `
