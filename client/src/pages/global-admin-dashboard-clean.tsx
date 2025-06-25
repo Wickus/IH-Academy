@@ -72,7 +72,7 @@ export default function GlobalAdminDashboard() {
   const trialOrgs = organizations.filter((org: any) => org.trialStatus === 'active').length;
   const totalUsers = allUsers.length;
 
-  if (loadingOrgs || loadingStats) {
+  if (loadingOrgs || loadingStats || loadingUsers) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -125,6 +125,18 @@ export default function GlobalAdminDashboard() {
 
         <TabsContent value="settings" className="space-y-6">
           <SettingsTab />
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-6">
+          <UsersTab users={users} />
+        </TabsContent>
+
+        <TabsContent value="revenue" className="space-y-6">
+          <RevenueTab />
+        </TabsContent>
+
+        <TabsContent value="pricing" className="space-y-6">
+          <PricingTab />
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">
