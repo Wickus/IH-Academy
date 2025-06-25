@@ -2312,9 +2312,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Organization not found" });
       }
 
-      // Check if organization has PayFast credentials
-      if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
-        return res.status(400).json({ message: "PayFast not configured for this organization" });
+      // Check if organization has PayFast credentials, fallback to global settings
+      let payfastConfig = {
+        merchantId: organization.payfastMerchantId,
+        merchantKey: organization.payfastMerchantKey,
+        passphrase: organization.payfastPassphrase,
+        sandbox: organization.payfastSandbox
+      };
+
+      // If organization doesn't have PayFast credentials, use global settings
+      if (!payfastConfig.merchantId || !payfastConfig.merchantKey) {
+        const globalSettings = await storage.getGlobalSettings();
+        if (globalSettings.payfast.merchantId && globalSettings.payfast.merchantKey) {
+          payfastConfig = globalSettings.payfast;
+        } else {
+          return res.status(400).json({ message: "PayFast not configured for this organization or globally" });
+        }
       }
 
       // For activation fee, use organization admin as payer
@@ -2327,8 +2340,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create PayFast payment data for activation fee
       const paymentData: PayFastPaymentData = {
-        merchant_id: organization.payfastMerchantId,
-        merchant_key: organization.payfastMerchantKey,
+        merchant_id: payfastConfig.merchantId,
+        merchant_key: payfastConfig.merchantKey,
         return_url: `${req.protocol}://${req.get('host')}/payment-success?type=activation&org_id=${organization.id}`,
         cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?type=activation&org_id=${organization.id}`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
@@ -2339,11 +2352,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         amount: parseFloat(amount as string).toFixed(2),
         item_name: description as string || 'Activation Fee',
         item_description: `Activation fee for ${organization.name} - includes setup and first month`,
-        passphrase: organization.payfastPassphrase || undefined,
+        passphrase: payfastConfig.passphrase || undefined,
       };
 
       // Generate payment URL and redirect
-      const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox || false);
+      const paymentUrl = payfastService.generatePaymentUrl(paymentData, payfastConfig.sandbox || false);
       
       // Redirect to PayFast
       res.redirect(paymentUrl);
@@ -3375,4 +3388,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;
+}
+
+// Helper function to notify global admins about new organization signups
+async function notifyGlobalAdminsNewOrganization(organization: any, user: any) {
+  try {
+    const globalAdmins = await storage.getGlobalAdmins();
+    
+    for (const admin of globalAdmins) {
+      await sendEmail({
+        to: admin.email,
+        from: 'noreply@itshappening.africa',
+        subject: 'New Organization Signup - IH Academy',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 50%, #24D367 100%); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">New Organization Signup</h1>
+            </div>
+            
+            <div style="padding: 30px; background: #f8f9fa;">
+              <h2 style="color: #20366B; margin-bottom: 20px;">Organization Details</h2>
+              
+              <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <p><strong>Organization Name:</strong> ${organization.name}</p>
+                <p><strong>Email:</strong> ${organization.email}</p>
+                <p><strong>Description:</strong> ${organization.description || 'Not provided'}</p>
+                <p><strong>Plan Type:</strong> ${organization.planType}</p>
+                <p><strong>Status:</strong> ${organization.subscriptionStatus}</p>
+                <p><strong>Trial End Date:</strong> ${new Date(organization.trialEndDate).toLocaleDateString()}</p>
+              </div>
+
+              <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #20366B; margin-bottom: 15px;">Admin User Details</h3>
+                <p><strong>Name:</strong> ${user.name || user.firstName + ' ' + user.lastName}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>Username:</strong> ${user.username}</p>
+              </div>
+
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="https://academy.itshappening.africa" style="background: #278DD4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                  Access Global Admin Dashboard
+                </a>
+              </div>
+            </div>
+
+            <div style="background: #20366B; color: white; padding: 20px; text-align: center;">
+              <p style="margin: 0; font-size: 14px;">IH Academy - Sports Academy Management Platform</p>
+              <p style="margin: 5px 0 0 0; font-size: 12px;">This is an automated notification from the ItsHappening.Africa platform</p>
+            </div>
+          </div>
+        `
+      });
+    }
+  } catch (error) {
+    console.error('Failed to notify global admins about new organization:', error);
+  }
+}
+
+// Helper function to notify global admins about new admin addition
+async function notifyGlobalAdminsNewAdmin(newAdmin: any) {
+  try {
+    const globalAdmins = await storage.getGlobalAdmins();
+    
+    for (const admin of globalAdmins) {
+      if (admin.id !== newAdmin.id) { // Don't notify the newly created admin
+        await sendEmail({
+          to: admin.email,
+          from: 'noreply@itshappening.africa',
+          subject: 'New Global Admin Added - IH Academy',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 50%, #24D367 100%); padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">New Global Admin Added</h1>
+              </div>
+              
+              <div style="padding: 30px; background: #f8f9fa;">
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                  <h3 style="color: #20366B; margin-bottom: 15px;">New Admin Details</h3>
+                  <p><strong>Name:</strong> ${newAdmin.name}</p>
+                  <p><strong>Email:</strong> ${newAdmin.email}</p>
+                  <p><strong>Created:</strong> ${new Date().toLocaleDateString()}</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                  <a href="https://academy.itshappening.africa" style="background: #278DD4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Access Global Admin Dashboard
+                  </a>
+                </div>
+              </div>
+
+              <div style="background: #20366B; color: white; padding: 20px; text-align: center;">
+                <p style="margin: 0; font-size: 14px;">IH Academy - Sports Academy Management Platform</p>
+              </div>
+            </div>
+          `
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Failed to notify global admins about new admin:', error);
+  }
 }

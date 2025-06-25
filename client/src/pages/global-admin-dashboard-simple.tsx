@@ -275,23 +275,30 @@ export default function GlobalAdminDashboard() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white border border-slate-200">
+        <TabsList className="grid w-full grid-cols-4 bg-white border border-slate-200">
           <TabsTrigger value="overview" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
             Overview
           </TabsTrigger>
           <TabsTrigger value="organizations" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
             Organizations
           </TabsTrigger>
-          <TabsTrigger value="pricing" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+          <TabsTrigger value="admins" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
+            <Users className="w-4 h-4 mr-2" />
+            Global Admins
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="data-[state=active]:bg-[#278DD4] data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" />
-            Pricing Configuration
+            Settings
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-8">
           {/* Global Stats */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-white border-l-4 border-l-[#278DD4] shadow-lg">
+            <Card 
+              className="bg-white border-l-4 border-l-[#278DD4] shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => document.querySelector('[value="organizations"]')?.click()}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-[#20366B]">Total Organizations</CardTitle>
                 <Building2 className="h-4 w-4 text-[#278DD4]" />
