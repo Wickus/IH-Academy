@@ -87,10 +87,19 @@ function generateSessionId(): string {
 function getCurrentUser(req: any): any {
   const sessionId = req.cookies?.sessionId;
   
-  if (sessionId && sessions.has(sessionId)) {
-    return sessions.get(sessionId);
+  if (!sessionId) {
+    console.log('No sessionId cookie found in request');
+    return null;
   }
-  return null;
+  
+  if (sessions.has(sessionId)) {
+    const user = sessions.get(sessionId);
+    console.log(`Session found for ${user.username} (ID: ${user.id})`);
+    return user;
+  } else {
+    console.log(`Invalid session ID: ${sessionId}, active sessions: ${sessions.size}`);
+    return null;
+  }
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -197,7 +206,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const sessionId = generateSessionId();
       sessions.set(sessionId, user);
-      res.cookie('sessionId', sessionId, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 24 hours
+      
+      // Set cookie with development-friendly settings
+      res.cookie('sessionId', sessionId, { 
+        httpOnly: true, 
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: 'lax',
+        secure: false, // Allow for development over HTTP
+        path: '/' // Ensure cookie is available for all paths
+      });
+      
+      console.log(`Login successful for user: ${user.username} (ID: ${user.id}), session: ${sessionId}`);
       res.json(user);
     } catch (error) {
       console.error("Error logging in:", error);
