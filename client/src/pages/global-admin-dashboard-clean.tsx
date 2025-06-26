@@ -4,7 +4,6 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
   Building2, 
@@ -31,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function GlobalAdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -505,125 +505,313 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
         </CardContent>
       </Card>
 
-      {/* View Organization Modal */}
+      {/* Enhanced Organization Management Modal */}
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle style={{ color: '#20366B' }}>Organization Details</DialogTitle>
+            <DialogTitle style={{ color: '#20366B' }}>Organization Management</DialogTitle>
           </DialogHeader>
           {selectedOrg && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full relative">
-                  {selectedOrg.logo ? (
-                    <img 
-                      src={selectedOrg.logo} 
-                      alt={selectedOrg.name}
-                      className="w-16 h-16 rounded-full object-cover border-2"
-                      style={{ borderColor: selectedOrg.primaryColor || '#E2E8F0' }}
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        const fallback = target.parentElement?.querySelector('.fallback-avatar') as HTMLElement;
-                        if (fallback) {
-                          fallback.style.display = 'flex';
-                        }
-                      }}
-                    />
-                  ) : null}
-                  <div 
-                    className="fallback-avatar w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl absolute top-0 left-0"
-                    style={{ 
-                      background: selectedOrg.primaryColor && selectedOrg.secondaryColor ? 
-                        `linear-gradient(135deg, ${selectedOrg.primaryColor} 0%, ${selectedOrg.secondaryColor} 100%)` :
-                        'linear-gradient(135deg, #20366B 0%, #278DD4 100%)',
-                      display: selectedOrg.logo ? 'none' : 'flex'
-                    }}
-                  >
-                    {selectedOrg.name.charAt(0)}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold" style={{ color: '#1E293B' }}>{selectedOrg.name}</h3>
-                  <p style={{ color: '#64748B' }}>{selectedOrg.description || 'No description available'}</p>
-                </div>
-              </div>
+            <div>
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="fees">Fee Management</TabsTrigger>
+                  <TabsTrigger value="debit-orders">Debit Orders</TabsTrigger>
+                  <TabsTrigger value="actions">Quick Actions</TabsTrigger>
+                </TabsList>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: '#374151' }}>Status</label>
-                  <Badge 
-                    variant="secondary"
-                    style={{ 
-                      backgroundColor: selectedOrg.isActive ? '#24D367' : '#6B7280',
-                      color: 'white' 
-                    }}
-                  >
-                    {selectedOrg.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-                
-                {selectedOrg.trialEndDate && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#374151' }}>Trial Status</label>
-                    <Badge 
-                      variant="outline" 
-                      style={{ 
-                        borderColor: new Date(selectedOrg.trialEndDate) > new Date() ? '#278DD4' : '#6B7280',
-                        color: new Date(selectedOrg.trialEndDate) > new Date() ? '#278DD4' : '#6B7280'
-                      }}
-                    >
-                      {new Date(selectedOrg.trialEndDate) > new Date() ? 'Active Trial' : 'Trial Expired'}
-                    </Badge>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: '#374151' }}>Primary Color</label>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: selectedOrg.primaryColor || '#20366B' }}
-                    />
-                    <span className="text-sm" style={{ color: '#64748B' }}>
-                      {selectedOrg.primaryColor || '#20366B'}
-                    </span>
+              <TabsContent value="overview" className="space-y-6">
+                <div 
+                  className="p-6 rounded-lg border-2"
+                  style={{ 
+                    background: selectedOrg.primaryColor && selectedOrg.secondaryColor ? 
+                      `linear-gradient(135deg, ${selectedOrg.primaryColor}20 0%, ${selectedOrg.secondaryColor}20 100%)` :
+                      'linear-gradient(135deg, #20366B20 0%, #278DD420 100%)',
+                    borderColor: selectedOrg.primaryColor || '#20366B'
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-full relative">
+                      {selectedOrg.logo ? (
+                        <img 
+                          src={selectedOrg.logo} 
+                          alt={selectedOrg.name}
+                          className="w-20 h-20 rounded-full object-cover border-3"
+                          style={{ borderColor: selectedOrg.primaryColor || '#E2E8F0' }}
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = 'none';
+                            const fallback = target.parentElement?.querySelector('.fallback-avatar') as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="fallback-avatar w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl absolute top-0 left-0"
+                        style={{ 
+                          background: selectedOrg.primaryColor && selectedOrg.secondaryColor ? 
+                            `linear-gradient(135deg, ${selectedOrg.primaryColor} 0%, ${selectedOrg.secondaryColor} 100%)` :
+                            'linear-gradient(135deg, #20366B 0%, #278DD4 100%)',
+                          display: selectedOrg.logo ? 'none' : 'flex'
+                        }}
+                      >
+                        {selectedOrg.name.charAt(0)}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-3xl font-bold" style={{ color: '#1E293B' }}>{selectedOrg.name}</h3>
+                      <p className="text-lg" style={{ color: '#64748B' }}>{selectedOrg.description || 'No description available'}</p>
+                      <div className="flex gap-2 mt-2">
+                        <Badge 
+                          variant="secondary"
+                          style={{ 
+                            backgroundColor: selectedOrg.isActive ? '#24D367' : '#6B7280',
+                            color: 'white' 
+                          }}
+                        >
+                          {selectedOrg.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                        {selectedOrg.trialEndDate && new Date(selectedOrg.trialEndDate) > new Date() && (
+                          <Badge variant="outline" style={{ borderColor: '#278DD4', color: '#278DD4' }}>
+                            Trial Active
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: '#374151' }}>Secondary Color</label>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: selectedOrg.secondaryColor || '#278DD4' }}
-                    />
-                    <span className="text-sm" style={{ color: '#64748B' }}>
-                      {selectedOrg.secondaryColor || '#278DD4'}
-                    </span>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Organization Info</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium">ID</Label>
+                        <p className="text-sm text-gray-600">{selectedOrg.id}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Created</Label>
+                        <p className="text-sm text-gray-600">
+                          {selectedOrg.createdAt ? new Date(selectedOrg.createdAt).toLocaleDateString() : 'N/A'}
+                        </p>
+                      </div>
+                      {selectedOrg.inviteCode && (
+                        <div>
+                          <Label className="text-sm font-medium">Invite Code</Label>
+                          <p className="text-sm text-gray-600 font-mono">{selectedOrg.inviteCode}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Branding</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium">Primary Color</Label>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-6 h-6 rounded border"
+                            style={{ backgroundColor: selectedOrg.primaryColor || '#20366B' }}
+                          />
+                          <span className="text-sm text-gray-600">{selectedOrg.primaryColor || '#20366B'}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Secondary Color</Label>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-6 h-6 rounded border"
+                            style={{ backgroundColor: selectedOrg.secondaryColor || '#278DD4' }}
+                          />
+                          <span className="text-sm text-gray-600">{selectedOrg.secondaryColor || '#278DD4'}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Trial Status</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {selectedOrg.trialEndDate ? (
+                        <>
+                          <div>
+                            <Label className="text-sm font-medium">Trial End Date</Label>
+                            <p className="text-sm text-gray-600">
+                              {new Date(selectedOrg.trialEndDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium">Days Remaining</Label>
+                            <p className="text-sm text-gray-600">
+                              {Math.max(0, Math.ceil((new Date(selectedOrg.trialEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-sm text-gray-600">No active trial</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="fees" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Custom Pricing & Discounts</CardTitle>
+                    <CardDescription>Manage organization-specific pricing and discount rates</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Custom Membership Price (R)</Label>
+                        <Input placeholder="299.00" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Discount Percentage (%)</Label>
+                        <Input placeholder="0" type="number" min="0" max="100" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Commission Rate (%)</Label>
+                        <Input placeholder="5" type="number" min="0" max="100" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Payment Terms (Days)</Label>
+                        <Input placeholder="30" type="number" min="1" />
+                      </div>
+                    </div>
+                    <Button style={{ backgroundColor: '#20366B', color: 'white' }}>
+                      Save Pricing Configuration
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="debit-orders" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Active Mandates</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-green-600">0</div>
+                      <p className="text-sm text-gray-600">Current mandates</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Monthly Collection</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-blue-600">R0</div>
+                      <p className="text-sm text-gray-600">This month</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Success Rate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-orange-600">0%</div>
+                      <p className="text-sm text-gray-600">Collection rate</p>
+                    </CardContent>
+                  </Card>
                 </div>
 
-                {selectedOrg.createdAt && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#374151' }}>Created</label>
-                    <p className="text-sm" style={{ color: '#64748B' }}>
-                      {new Date(selectedOrg.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Debit Order Management</CardTitle>
+                    <CardDescription>Monitor and manage automated payment collections</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                      <p className="text-gray-600">No debit order data available</p>
+                      <Button variant="outline" className="mt-4">
+                        Set Up Debit Orders
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                {selectedOrg.trialEndDate && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#374151' }}>Trial End Date</label>
-                    <p className="text-sm" style={{ color: '#64748B' }}>
-                      {new Date(selectedOrg.trialEndDate).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <TabsContent value="actions" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Administrative Actions</CardTitle>
+                      <CardDescription>Quick access to common management tasks</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Button 
+                        className="w-full justify-start" 
+                        variant="outline"
+                        onClick={() => window.open(`/dashboard?org=${selectedOrg.id}`, '_blank')}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Access Organization Dashboard
+                      </Button>
+                      <Button 
+                        className="w-full justify-start" 
+                        variant="outline"
+                        onClick={() => handleToggleStatus(selectedOrg)}
+                        disabled={toggleStatusMutation.isPending}
+                      >
+                        <Power className="h-4 w-4 mr-2" />
+                        {selectedOrg.isActive ? 'Deactivate Organization' : 'Activate Organization'}
+                      </Button>
+                      <Button 
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Organization Details
+                      </Button>
+                    </CardContent>
+                  </Card>
 
-              <div className="flex justify-end gap-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Communication</CardTitle>
+                      <CardDescription>Contact and messaging options</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Button className="w-full justify-start" variant="outline">
+                        <User className="h-4 w-4 mr-2" />
+                        Send Message to Admins
+                      </Button>
+                      <Button className="w-full justify-start" variant="outline">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Generate Support Report
+                      </Button>
+                      <Button 
+                        className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50" 
+                        variant="outline"
+                        onClick={() => handleDelete(selectedOrg)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash className="h-4 w-4 mr-2" />
+                        Delete Organization
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+              </Tabs>
+
+              <DialogFooter className="mt-6">
                 <Button 
                   variant="outline" 
                   onClick={() => setShowViewModal(false)}
@@ -631,20 +819,7 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                 >
                   Close
                 </Button>
-                <Button
-                  onClick={() => {
-                    handleToggleStatus(selectedOrg);
-                    setShowViewModal(false);
-                  }}
-                  disabled={toggleStatusMutation.isPending}
-                  style={{ 
-                    backgroundColor: selectedOrg.isActive ? '#6B7280' : '#24D367',
-                    color: 'white'
-                  }}
-                >
-                  {selectedOrg.isActive ? 'Deactivate' : 'Activate'}
-                </Button>
-              </div>
+              </DialogFooter>
             </div>
           )}
         </DialogContent>
