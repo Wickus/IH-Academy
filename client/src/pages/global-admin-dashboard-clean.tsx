@@ -399,28 +399,34 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
               {filteredOrgs.map((org: any) => (
                 <div key={org.id} className="flex items-center justify-between p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
                   <div className="flex items-center gap-3">
-                    {org.logoUrl ? (
-                      <img 
-                        src={org.logoUrl} 
-                        alt={org.name}
-                        className="w-12 h-12 rounded-full object-cover border-2"
-                        style={{ borderColor: org.primaryColor || '#E2E8F0' }}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                    <div className="w-12 h-12 rounded-full relative">
+                      {org.logoUrl ? (
+                        <img 
+                          src={org.logoUrl} 
+                          alt={org.name}
+                          className="w-12 h-12 rounded-full object-cover border-2"
+                          style={{ borderColor: org.primaryColor || '#E2E8F0' }}
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) {
+                              target.style.display = 'none';
+                              fallback.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg absolute top-0 left-0"
+                        style={{ 
+                          background: org.primaryColor && org.secondaryColor ? 
+                            `linear-gradient(135deg, ${org.primaryColor} 0%, ${org.secondaryColor} 100%)` :
+                            'linear-gradient(135deg, #20366B 0%, #278DD4 100%)',
+                          display: org.logoUrl ? 'none' : 'flex'
                         }}
-                      />
-                    ) : null}
-                    <div 
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg"
-                      style={{ 
-                        background: org.primaryColor && org.secondaryColor ? 
-                          `linear-gradient(135deg, ${org.primaryColor} 0%, ${org.secondaryColor} 100%)` :
-                          'linear-gradient(135deg, #20366B 0%, #278DD4 100%)',
-                        display: org.logoUrl ? 'none' : 'flex'
-                      }}
-                    >
-                      {org.name.charAt(0)}
+                      >
+                        {org.name.charAt(0)}
+                      </div>
                     </div>
                     <div>
                       <p className="font-semibold text-lg" style={{ color: '#1E293B' }}>{org.name}</p>
