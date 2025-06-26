@@ -283,6 +283,12 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'trial' | 'inactive'>('all');
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [pricingData, setPricingData] = useState({
+    membershipPrice: '',
+    discountPercentage: '',
+    commissionRate: '',
+    paymentTerms: ''
+  });
   const { toast } = useToast();
 
   // Filter organizations based on status
@@ -340,6 +346,49 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
   const handleView = (org: any) => {
     setSelectedOrg(org);
     setShowViewModal(true);
+    // Initialize pricing data with organization's current values
+    setPricingData({
+      membershipPrice: org.membershipPrice || '',
+      discountPercentage: org.customDiscount || '',
+      commissionRate: org.commissionRate || '',
+      paymentTerms: org.specialNotes ? org.specialNotes.replace('Payment Terms: ', '').replace(' days', '') : ''
+    });
+  };
+
+  // Save pricing configuration mutation
+  const savePricingMutation = useMutation({
+    mutationFn: async (data: { orgId: number; pricing: any }) => {
+      const response = await apiRequest("PATCH", `/api/organizations/${data.orgId}/fees`, {
+        membershipPrice: data.pricing.membershipPrice,
+        discountPercentage: data.pricing.discountPercentage,
+        commissionRate: data.pricing.commissionRate,
+        specialNotes: `Payment Terms: ${data.pricing.paymentTerms} days`
+      });
+      if (!response.ok) throw new Error("Failed to save pricing configuration");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Pricing configuration saved successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save pricing configuration",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleSavePricing = () => {
+    if (!selectedOrg) return;
+    savePricingMutation.mutate({
+      orgId: selectedOrg.id,
+      pricing: pricingData
+    });
   };
 
   return (
@@ -676,34 +725,100 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
               </TabsContent>
 
               <TabsContent value="fees" className="space-y-6">
+                {/* Current Pricing Display */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Custom Pricing & Discounts</CardTitle>
-                    <CardDescription>Manage organization-specific pricing and discount rates</CardDescription>
+                    <CardTitle>Current Pricing Configuration</CardTitle>
+                    <CardDescription>Active pricing settings for {selectedOrg.name}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="p-4 border rounded-lg bg-gray-50">
+                        <Label className="text-sm font-medium text-gray-600">Membership Price</Label>
+                        <p className="text-2xl font-bold text-gray-900">
+                          R{selectedOrg.membershipPrice || 'Default'}
+                        </p>
+                      </div>
+                      <div className="p-4 border rounded-lg bg-gray-50">
+                        <Label className="text-sm font-medium text-gray-600">Discount Rate</Label>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {selectedOrg.customDiscount || '0'}%
+                        </p>
+                      </div>
+                      <div className="p-4 border rounded-lg bg-gray-50">
+                        <Label className="text-sm font-medium text-gray-600">Commission Rate</Label>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {selectedOrg.commissionRate || '5'}%
+                        </p>
+                      </div>
+                      <div className="p-4 border rounded-lg bg-gray-50">
+                        <Label className="text-sm font-medium text-gray-600">Payment Terms</Label>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {selectedOrg.specialNotes ? selectedOrg.specialNotes.replace('Payment Terms: ', '').replace(' days', '') + ' days' : '30 days'}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Edit Pricing Form */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Update Pricing & Discounts</CardTitle>
+                    <CardDescription>Modify organization-specific pricing and discount rates</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Custom Membership Price (R)</Label>
-                        <Input placeholder="299.00" />
+                        <Input 
+                          placeholder="299.00" 
+                          value={pricingData.membershipPrice}
+                          onChange={(e) => setPricingData(prev => ({ ...prev, membershipPrice: e.target.value }))}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label>Discount Percentage (%)</Label>
-                        <Input placeholder="0" type="number" min="0" max="100" />
+                        <Input 
+                          placeholder="0" 
+                          type="number" 
+                          min="0" 
+                          max="100"
+                          value={pricingData.discountPercentage}
+                          onChange={(e) => setPricingData(prev => ({ ...prev, discountPercentage: e.target.value }))}
+                        />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Commission Rate (%)</Label>
-                        <Input placeholder="5" type="number" min="0" max="100" />
+                        <Input 
+                          placeholder="5" 
+                          type="number" 
+                          min="0" 
+                          max="100"
+                          value={pricingData.commissionRate}
+                          onChange={(e) => setPricingData(prev => ({ ...prev, commissionRate: e.target.value }))}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label>Payment Terms (Days)</Label>
-                        <Input placeholder="30" type="number" min="1" />
+                        <Input 
+                          placeholder="30" 
+                          type="number" 
+                          min="1"
+                          value={pricingData.paymentTerms}
+                          onChange={(e) => setPricingData(prev => ({ ...prev, paymentTerms: e.target.value }))}
+                        />
                       </div>
                     </div>
-                    <Button style={{ backgroundColor: '#20366B', color: 'white' }}>
-                      Save Pricing Configuration
+                    <Button 
+                      onClick={handleSavePricing}
+                      disabled={savePricingMutation.isPending}
+                      className="text-white font-medium"
+                      style={{ backgroundColor: '#20366B', color: 'white' }}
+                    >
+                      {savePricingMutation.isPending ? 'Saving...' : 'Save Pricing Configuration'}
                     </Button>
                   </CardContent>
                 </Card>
