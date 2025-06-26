@@ -8,8 +8,6 @@ import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail, sendWalkInRegistrationEmail, sendEmail } from "./email";
-import fs from 'fs';
-import path from 'path';
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -80,7 +78,8 @@ const sessions = new Map<string, {user: any, expires: number}>();
 // Clean up expired sessions periodically
 setInterval(() => {
   const now = Date.now();
-  for (const [sessionId, session] of sessions.entries()) {
+  const entries = Array.from(sessions.entries());
+  for (const [sessionId, session] of entries) {
     if (now > session.expires) {
       sessions.delete(sessionId);
     }
@@ -104,12 +103,17 @@ function getCurrentUser(req: any): any {
     return null;
   }
   
-  if (sessions.has(sessionId)) {
-    const user = sessions.get(sessionId);
-    console.log(`Session found for ${user.username} (ID: ${user.id})`);
-    return user;
+  const session = sessions.get(sessionId);
+  if (session && Date.now() < session.expires) {
+    console.log(`Valid session found for ${session.user.username} (ID: ${session.user.id})`);
+    return session.user;
   } else {
-    console.log(`Invalid session ID: ${sessionId}, active sessions: ${sessions.size}`);
+    if (session) {
+      console.log(`Expired session for ${session.user.username}, removing`);
+      sessions.delete(sessionId);
+    } else {
+      console.log(`Invalid session ID: ${sessionId}, active sessions: ${sessions.size}`);
+    }
     return null;
   }
 }
@@ -187,8 +191,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const user = await storage.createUser(userData);
       const sessionId = generateSessionId();
-      sessions.set(sessionId, user);
-      saveSessions(); // Persist session to file
+      const expires = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+      sessions.set(sessionId, { user, expires });
       
       res.cookie('sessionId', sessionId, { 
         httpOnly: true, 
@@ -225,8 +229,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const sessionId = generateSessionId();
-      sessions.set(sessionId, user);
-      saveSessions(); // Persist session to file
+      const expires = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+      sessions.set(sessionId, { user, expires });
       
       // Set cookie with development-friendly settings
       res.cookie('sessionId', sessionId, { 
@@ -251,7 +255,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (sessionId) {
         sessions.delete(sessionId);
-        saveSessions(); // Update session file
       }
       
       res.clearCookie('sessionId');
