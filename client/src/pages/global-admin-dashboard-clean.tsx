@@ -279,7 +279,7 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
 }
 
 // Organizations Tab Component
-function OrganizationsTab({ organizations }: { organizations: any[] }) {
+function OrganisationsTab({ organisations }: { organisations: any[] }) {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'trial' | 'inactive'>('all');
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -291,8 +291,8 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
   });
   const { toast } = useToast();
 
-  // Filter organizations based on status
-  const filteredOrgs = organizations.filter(org => {
+  // Filter organisations based on status
+  const filteredOrgs = organisations.filter(org => {
     if (filterStatus === 'all') return true;
     if (filterStatus === 'active') return org.isActive === true && (!org.trialEndDate || new Date(org.trialEndDate) < new Date());
     if (filterStatus === 'trial') return org.trialEndDate && new Date(org.trialEndDate) > new Date();
@@ -300,15 +300,15 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
     return true;
   });
 
-  // Toggle organization status mutation
+  // Toggle organisation status mutation
   const toggleStatusMutation = useMutation({
     mutationFn: async ({ orgId, newStatus }: { orgId: number; newStatus: boolean }) => {
       const response = await apiRequest("PUT", `/api/organizations/${orgId}/status`, { isActive: newStatus });
-      if (!response.ok) throw new Error("Failed to update organization status");
+      if (!response.ok) throw new Error("Failed to update organisation status");
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Success", description: "Organization status updated" });
+      toast({ title: "Success", description: "Organisation status updated" });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
     },
     onError: () => {
@@ -316,19 +316,19 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
     }
   });
 
-  // Delete organization mutation
+  // Delete organisation mutation
   const deleteMutation = useMutation({
     mutationFn: async (orgId: number) => {
       const response = await apiRequest("DELETE", `/api/organizations/${orgId}`);
-      if (!response.ok) throw new Error("Failed to delete organization");
+      if (!response.ok) throw new Error("Failed to delete organisation");
       return response.json();
     },
     onSuccess: () => {
-      toast({ title: "Success", description: "Organization deleted" });
+      toast({ title: "Success", description: "Organisation deleted" });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to delete organization", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to delete organisation", variant: "destructive" });
     }
   });
 
@@ -418,21 +418,21 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
           onClick={() => setFilterStatus('all')}
           style={filterStatus === 'all' ? { backgroundColor: '#20366B', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          All ({organizations.length})
+          All ({organisations.length})
         </Button>
         <Button
           variant={filterStatus === 'active' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('active')}
           style={filterStatus === 'active' ? { backgroundColor: '#24D367', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          Active ({organizations.filter(org => org.isActive === true && (!org.trialEndDate || new Date(org.trialEndDate) < new Date())).length})
+          Active ({organisations.filter(org => org.isActive === true && (!org.trialEndDate || new Date(org.trialEndDate) < new Date())).length})
         </Button>
         <Button
           variant={filterStatus === 'trial' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('trial')}
           style={filterStatus === 'trial' ? { backgroundColor: '#278DD4', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          Free Trial ({organizations.filter(org => org.trialEndDate && new Date(org.trialEndDate) > new Date()).length})
+          Free Trial ({organisations.filter(org => org.trialEndDate && new Date(org.trialEndDate) > new Date()).length})
         </Button>
         <Button
           variant={filterStatus === 'inactive' ? 'default' : 'outline'}
