@@ -36,12 +36,12 @@ export default function GlobalAdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
 
-  // Fetch organizations data
-  const { data: organizations = [], isLoading: loadingOrgs } = useQuery({
+  // Fetch organisations data
+  const { data: organisations = [], isLoading: loadingOrgs } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: async () => {
       const response = await apiRequest("GET", "/api/organizations");
-      if (!response.ok) throw new Error("Failed to fetch organizations");
+      if (!response.ok) throw new Error("Failed to fetch organisations");
       return response.json();
     }
   });
@@ -67,9 +67,9 @@ export default function GlobalAdminDashboard() {
   });
 
   // Calculate overview stats
-  const totalOrgs = organizations.length;
-  const activeOrgs = organizations.filter((org: any) => org.status === 'active').length;
-  const trialOrgs = organizations.filter((org: any) => org.trialStatus === 'active').length;
+  const totalOrgs = organisations.length;
+  const activeOrgs = organisations.filter((org: any) => org.status === 'active').length;
+  const trialOrgs = organisations.filter((org: any) => org.trialStatus === 'active').length;
   const totalUsers = users.length;
 
   if (loadingOrgs || loadingStats || loadingUsers) {
@@ -116,7 +116,7 @@ export default function GlobalAdminDashboard() {
         </TabsContent>
 
         <TabsContent value="organizations" className="space-y-6">
-          <OrganizationsTab organizations={organizations} />
+          <OrganisationsTab organisations={organisations} />
         </TabsContent>
 
         <TabsContent value="global-admins" className="space-y-6">
