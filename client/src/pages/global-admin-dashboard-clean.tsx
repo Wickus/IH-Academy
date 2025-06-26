@@ -57,7 +57,7 @@ export default function GlobalAdminDashboard() {
   });
 
   // Fetch users data
-  const { data: allUsers = [], isLoading: loadingUsers } = useQuery({
+  const { data: users = [], isLoading: loadingUsers } = useQuery({
     queryKey: ['/api/users'],
     queryFn: async () => {
       const response = await apiRequest("GET", "/api/users");
@@ -70,7 +70,7 @@ export default function GlobalAdminDashboard() {
   const totalOrgs = organizations.length;
   const activeOrgs = organizations.filter((org: any) => org.status === 'active').length;
   const trialOrgs = organizations.filter((org: any) => org.trialStatus === 'active').length;
-  const totalUsers = allUsers.length;
+  const totalUsers = users.length;
 
   if (loadingOrgs || loadingStats || loadingUsers) {
     return (
