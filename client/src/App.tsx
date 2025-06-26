@@ -374,8 +374,11 @@ function Router() {
       }
     };
 
-    checkAuth();
-  }, [location]); // Re-check auth when location changes
+    // Only check auth on initial load and when explicitly needed
+    if (isAuthenticated === null) {
+      checkAuth();
+    }
+  }, []); // Remove location dependency to prevent constant re-checking
 
   // Handle invite routes before authentication checks
   if (location.startsWith('/invite/')) {
@@ -416,6 +419,19 @@ function Router() {
     return <Auth onAuthSuccess={(authenticatedUser) => {
       setUser(authenticatedUser);
       setIsAuthenticated(true);
+      // Force a re-check of auth status to ensure routing works
+      setTimeout(() => {
+        const checkAuth = async () => {
+          try {
+            const currentUser = await api.getCurrentUser();
+            setUser(currentUser);
+            setIsAuthenticated(true);
+          } catch (error) {
+            console.log('Re-auth check failed:', error);
+          }
+        };
+        checkAuth();
+      }, 50);
     }} />;
   }
 
