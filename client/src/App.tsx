@@ -355,8 +355,15 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
 }
 
 function Router() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [authState, setAuthState] = useState<{
+    isAuthenticated: boolean | null;
+    user: User | null;
+    isLoading: boolean;
+  }>({
+    isAuthenticated: null,
+    user: null,
+    isLoading: true
+  });
   const [location] = useLocation();
 
   useEffect(() => {
@@ -365,20 +372,28 @@ function Router() {
         console.log('Checking authentication status...');
         const currentUser = await api.getCurrentUser();
         console.log('User authenticated:', currentUser);
-        setUser(currentUser);
-        setIsAuthenticated(true);
+        setAuthState({
+          isAuthenticated: true,
+          user: currentUser,
+          isLoading: false
+        });
       } catch (error) {
         console.log('Authentication failed:', error);
-        setUser(null);
-        setIsAuthenticated(false);
+        setAuthState({
+          isAuthenticated: false,
+          user: null,
+          isLoading: false
+        });
       }
     };
 
-    // Only check auth on initial load and when explicitly needed
-    if (isAuthenticated === null) {
+    // Check auth on initial load only
+    if (authState.isLoading && authState.isAuthenticated === null) {
       checkAuth();
     }
-  }, []); // Remove location dependency to prevent constant re-checking
+  }, [authState.isLoading, authState.isAuthenticated]);
+
+  const { isAuthenticated, user, isLoading } = authState;
 
   // Handle invite routes before authentication checks
   if (location.startsWith('/invite/')) {
@@ -389,7 +404,8 @@ function Router() {
     );
   }
 
-  if (isAuthenticated === null) {
+  // Show loading spinner while checking authentication
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="text-center">
@@ -404,7 +420,7 @@ function Router() {
   if (isAuthenticated && user && location === "/") {
     return (
       <OrganizationProvider user={user}>
-        <RoleBasedRouter user={user} setUser={setUser} setIsAuthenticated={setIsAuthenticated} />
+        <RoleBasedRouter user={user} setUser={(newUser) => setAuthState(prev => ({ ...prev, user: newUser }))} setIsAuthenticated={(auth) => setAuthState(prev => ({ ...prev, isAuthenticated: auth }))} />
       </OrganizationProvider>
     );
   }
@@ -417,21 +433,11 @@ function Router() {
   // Show auth page for login/register routes
   if (!isAuthenticated && (location === "/login" || location === "/register")) {
     return <Auth onAuthSuccess={(authenticatedUser) => {
-      setUser(authenticatedUser);
-      setIsAuthenticated(true);
-      // Force a re-check of auth status to ensure routing works
-      setTimeout(() => {
-        const checkAuth = async () => {
-          try {
-            const currentUser = await api.getCurrentUser();
-            setUser(currentUser);
-            setIsAuthenticated(true);
-          } catch (error) {
-            console.log('Re-auth check failed:', error);
-          }
-        };
-        checkAuth();
-      }, 50);
+      setAuthState({
+        isAuthenticated: true,
+        user: authenticatedUser,
+        isLoading: false
+      });
     }} />;
   }
 
@@ -450,17 +456,20 @@ function Router() {
     return <LandingPage />;
   }
 
-  // User is authenticated but no user object
+  // User is authenticated but no user object (shouldn't happen with new state management)
   if (!user) {
     return <Auth onAuthSuccess={(authenticatedUser) => {
-      setUser(authenticatedUser);
-      setIsAuthenticated(true);
+      setAuthState({
+        isAuthenticated: true,
+        user: authenticatedUser,
+        isLoading: false
+      });
     }} />;
   }
 
   return (
     <OrganizationProvider user={user}>
-      <RoleBasedRouter user={user} setUser={setUser} setIsAuthenticated={setIsAuthenticated} />
+      <RoleBasedRouter user={user} setUser={(newUser) => setAuthState(prev => ({ ...prev, user: newUser }))} setIsAuthenticated={(auth) => setAuthState(prev => ({ ...prev, isAuthenticated: auth }))} />
     </OrganizationProvider>
   );
 }
