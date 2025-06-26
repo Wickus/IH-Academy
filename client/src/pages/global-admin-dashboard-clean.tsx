@@ -452,10 +452,7 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                         disabled={toggleStatusMutation.isPending}
                         title={org.status === 'active' ? 'Deactivate' : 'Activate'}
                       >
-                        {org.status === 'active' ? 
-                          <ToggleRight className="h-4 w-4" style={{ color: '#24D367' }} /> :
-                          <ToggleLeft className="h-4 w-4" style={{ color: '#6B7280' }} />
-                        }
+                        <Power className="h-4 w-4" style={{ color: org.status === 'active' ? '#24D367' : '#6B7280' }} />
                       </Button>
                       <Button
                         variant="outline"
