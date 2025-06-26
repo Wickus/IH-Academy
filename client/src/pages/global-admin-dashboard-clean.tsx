@@ -251,7 +251,7 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
               onClick={() => onTabChange("organizations")}
             >
               <Building2 className="h-6 w-6" />
-              <span>Manage Organizations</span>
+              <span>Manage Organisations</span>
             </Button>
             <Button 
               variant="outline" 
@@ -569,7 +569,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle style={{ color: '#20366B' }}>Organization Management</DialogTitle>
+            <DialogTitle style={{ color: '#20366B' }}>Organisation Management</DialogTitle>
           </DialogHeader>
           {selectedOrg && (
             <div>
@@ -647,7 +647,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Organization Info</CardTitle>
+                      <CardTitle className="text-lg">Organisation Info</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
@@ -776,7 +776,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                 <Card>
                   <CardHeader>
                     <CardTitle>Update Pricing & Discounts</CardTitle>
-                    <CardDescription>Modify organization-specific pricing and discount rates</CardDescription>
+                    <CardDescription>Modify organisation-specific pricing and discount rates</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -897,7 +897,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                         onClick={() => window.open(`/dashboard?org=${selectedOrg.id}`, '_blank')}
                       >
                         <Eye className="h-4 w-4 mr-2" />
-                        Access Organization Dashboard
+                        Access Organisation Dashboard
                       </Button>
                       <Button 
                         className="w-full justify-start" 
@@ -906,14 +906,14 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                         disabled={toggleStatusMutation.isPending}
                       >
                         <Power className="h-4 w-4 mr-2" />
-                        {selectedOrg.isActive ? 'Deactivate Organization' : 'Activate Organization'}
+                        {selectedOrg.isActive ? 'Deactivate Organisation' : 'Activate Organisation'}
                       </Button>
                       <Button 
                         className="w-full justify-start" 
                         variant="outline"
                       >
                         <Edit className="h-4 w-4 mr-2" />
-                        Edit Organization Details
+                        Edit Organisation Details
                       </Button>
                     </CardContent>
                   </Card>
@@ -939,7 +939,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                         disabled={deleteMutation.isPending}
                       >
                         <Trash className="h-4 w-4 mr-2" />
-                        Delete Organization
+                        Delete Organisation
                       </Button>
                     </CardContent>
                   </Card>
@@ -1239,7 +1239,7 @@ function SettingsTab() {
             PayFast Configuration
           </CardTitle>
           <CardDescription style={{ color: '#64748B' }}>
-            Global PayFast settings used as fallback when organizations don't have their own settings
+            Global PayFast settings used as fallback when organisations don't have their own settings
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
