@@ -1428,7 +1428,7 @@ function RevenueTab() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>24</div>
-            <p className="text-xs" style={{ color: '#64748B' }}>Organizations paying</p>
+            <p className="text-xs" style={{ color: '#64748B' }}>Organisations paying</p>
           </CardContent>
         </Card>
         
@@ -1438,7 +1438,7 @@ function RevenueTab() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: '#20366B' }}>R1,885</div>
-            <p className="text-xs" style={{ color: '#64748B' }}>Per organization</p>
+            <p className="text-xs" style={{ color: '#64748B' }}>Per organisation</p>
           </CardContent>
         </Card>
       </div>
@@ -1555,7 +1555,7 @@ function PricingTab() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Pricing Configuration</h2>
-          <p style={{ color: '#64748B' }}>Manage subscription plans and pricing tiers for all organizations</p>
+          <p style={{ color: '#64748B' }}>Manage subscription plans and pricing tiers for all organisations</p>
         </div>
         <Button 
           onClick={handleSave}
@@ -1570,9 +1570,9 @@ function PricingTab() {
       {/* Membership Business Model */}
       <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
         <CardHeader>
-          <CardTitle style={{ color: '#20366B' }}>Membership-Based Organizations</CardTitle>
+          <CardTitle style={{ color: '#20366B' }}>Membership-Based Organisations</CardTitle>
           <CardDescription style={{ color: '#64748B' }}>
-            Monthly subscription pricing for membership organizations
+            Monthly subscription pricing for membership organisations
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -1724,9 +1724,9 @@ function PricingTab() {
       {/* Pay Per Class Business Model */}
       <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
         <CardHeader>
-          <CardTitle style={{ color: '#20366B' }}>Pay-Per-Class Organizations</CardTitle>
+          <CardTitle style={{ color: '#20366B' }}>Pay-Per-Class Organisations</CardTitle>
           <CardDescription style={{ color: '#64748B' }}>
-            Commission-based pricing for pay-per-class organizations
+            Commission-based pricing for pay-per-class organisations
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
