@@ -302,25 +302,6 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     );
   }
 
-  // Global routes that work for all authenticated users
-  return (
-    <Switch>
-      <Route path="/edit-profile" component={EditProfile} />
-      <Route path="/payment-methods" component={PaymentMethods} />
-      <Route path="/favourite-organizations" component={FavouriteOrganizations} />
-      <Route path="/organizations/:id/classes" component={OrganizationClasses} />
-      <Route path="/payment-success" component={PaymentSuccess} />
-      <Route path="/payment-cancelled" component={PaymentCancelled} />
-      <Route path="/payment/success" component={PaymentRedirect} />
-      <Route path="/payment/cancelled" component={PaymentRedirect} />
-      <Route component={() => (
-        <AppLayout>
-          <Dashboard />
-        </AppLayout>
-      )} />
-    </Switch>
-  );
-
   // Fallback for any other authenticated user
   if (user) {
     return (
@@ -334,12 +315,15 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/edit-profile" component={EditProfile} />
         <Route path="/payment-methods" component={PaymentMethods} />
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
+        <Route path="/completed-classes" component={CompletedClasses} />
+        <Route path="/messages" component={Messages} />
+        <Route path="/achievements" component={Achievements} />
         <Route path="/debit-order-setup" component={() => import("./pages/debit-order-setup").then(m => m.default)} />
         <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
-        <Route component={NotFound} />
+        <Route component={UserDashboard} />
       </Switch>
     );
   }
