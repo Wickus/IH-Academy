@@ -1463,76 +1463,393 @@ function RevenueTab() {
 
 // Pricing Tab Component
 function PricingTab() {
-  const [pricingData, setPricingData] = useState({
+  const [pricingConfig, setPricingConfig] = useState({
     membership: {
-      free: { name: "Starter", price: "0", maxMembers: "50" },
-      basic: { name: "Professional", price: "299", maxMembers: "200" },
-      premium: { name: "Enterprise", price: "599", maxMembers: "unlimited" }
+      free: { name: "Starter", price: "0", maxMembers: "25", maxClasses: "5", storage: "1" },
+      basic: { name: "Professional", price: "299", maxMembers: "100", maxClasses: "25", storage: "10" },
+      premium: { name: "Enterprise", price: "599", maxMembers: "Unlimited", maxClasses: "Unlimited", storage: "100" }
     },
     payPerClass: {
-      free: { name: "Basic", price: "0", commission: "5" },
-      basic: { name: "Standard", price: "199", commission: "3" },
-      premium: { name: "Premium", price: "399", commission: "1" }
+      free: { name: "Basic", commission: "5", maxBookings: "50", storage: "1" },
+      basic: { name: "Standard", commission: "3", maxBookings: "200", storage: "10" },
+      premium: { name: "Premium", commission: "2", maxBookings: "Unlimited", storage: "100" }
     }
   });
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Load saved pricing configuration
+  const { data: savedPricingConfig, isLoading: loadingPricingConfig } = useQuery({
+    queryKey: ['/api/admin/pricing-config'],
+    queryFn: async () => {
+      try {
+        const response = await apiRequest("GET", "/api/admin/pricing-config");
+        return response.json();
+      } catch (error) {
+        console.warn('Error loading pricing configuration:', error);
+        return null;
+      }
+    },
+  });
+
+  // Update local state when saved pricing config is loaded
+  useEffect(() => {
+    if (savedPricingConfig) {
+      setPricingConfig(savedPricingConfig);
+    }
+  }, [savedPricingConfig]);
+
+  // Handle pricing configuration changes
+  const updatePricingConfig = (model: 'membership' | 'payPerClass', plan: 'free' | 'basic' | 'premium', field: string, value: string) => {
+    setPricingConfig(prev => ({
+      ...prev,
+      [model]: {
+        ...prev[model],
+        [plan]: {
+          ...prev[model][plan],
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  // Save pricing configuration mutation
+  const savePricingMutation = useMutation({
+    mutationFn: async (config: typeof pricingConfig) => {
+      const response = await apiRequest("POST", "/api/admin/pricing-config", config);
+      if (!response.ok) throw new Error('Failed to save pricing configuration');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Pricing configuration saved successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/pricing-config'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pricing'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save pricing configuration",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSave = () => {
+    savePricingMutation.mutate(pricingConfig);
+  };
+
+  if (loadingPricingConfig) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Pricing Configuration</h2>
-          <p style={{ color: '#64748B' }}>Manage subscription plans and pricing tiers</p>
+          <p style={{ color: '#64748B' }}>Manage subscription plans and pricing tiers for all organizations</p>
         </div>
+        <Button 
+          onClick={handleSave}
+          disabled={savePricingMutation.isPending}
+          className="text-white font-medium"
+          style={{ backgroundColor: '#20366B', color: 'white' }}
+        >
+          {savePricingMutation.isPending ? 'Saving...' : 'Save All Changes'}
+        </Button>
       </div>
 
+      {/* Membership Business Model */}
       <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
         <CardHeader>
-          <CardTitle style={{ color: '#1E293B' }}>Membership Plans</CardTitle>
+          <CardTitle style={{ color: '#20366B' }}>Membership-Based Organizations</CardTitle>
           <CardDescription style={{ color: '#64748B' }}>
-            Configure pricing for membership-based organizations
+            Monthly subscription pricing for membership organizations
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            {Object.entries(pricingData.membership).map(([tier, data]) => (
-              <div key={tier} className="p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
-                <h4 className="font-semibold" style={{ color: '#1E293B' }}>{data.name}</h4>
-                <div className="mt-2">
-                  <Label>Price (R)</Label>
-                  <Input value={data.price} readOnly />
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Free Plan */}
+            <Card className="border-2" style={{ borderColor: '#278DD4' }}>
+              <CardHeader className="text-center pb-4">
+                <div className="space-y-2">
+                  <Input 
+                    value={pricingConfig.membership.free.name}
+                    onChange={(e) => updatePricingConfig('membership', 'free', 'name', e.target.value)}
+                    className="text-center font-bold text-lg border-0 p-0"
+                    style={{ color: '#20366B' }}
+                  />
+                  <div className="text-3xl font-bold" style={{ color: '#278DD4' }}>
+                    R
+                    <Input 
+                      value={pricingConfig.membership.free.price}
+                      onChange={(e) => updatePricingConfig('membership', 'free', 'price', e.target.value)}
+                      className="inline-block w-20 text-center border-0 p-0 text-3xl font-bold"
+                      style={{ color: '#278DD4' }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">per month</p>
                 </div>
-                <div className="mt-2">
-                  <Label>Max Members</Label>
-                  <Input value={data.maxMembers} readOnly />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Members</Label>
+                  <Input 
+                    value={pricingConfig.membership.free.maxMembers}
+                    onChange={(e) => updatePricingConfig('membership', 'free', 'maxMembers', e.target.value)}
+                  />
                 </div>
-              </div>
-            ))}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Classes</Label>
+                  <Input 
+                    value={pricingConfig.membership.free.maxClasses}
+                    onChange={(e) => updatePricingConfig('membership', 'free', 'maxClasses', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Storage (GB)</Label>
+                  <Input 
+                    value={pricingConfig.membership.free.storage}
+                    onChange={(e) => updatePricingConfig('membership', 'free', 'storage', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Basic Plan */}
+            <Card className="border-2" style={{ borderColor: '#24D367' }}>
+              <CardHeader className="text-center pb-4">
+                <div className="space-y-2">
+                  <Input 
+                    value={pricingConfig.membership.basic.name}
+                    onChange={(e) => updatePricingConfig('membership', 'basic', 'name', e.target.value)}
+                    className="text-center font-bold text-lg border-0 p-0"
+                    style={{ color: '#20366B' }}
+                  />
+                  <div className="text-3xl font-bold" style={{ color: '#278DD4' }}>
+                    R
+                    <Input 
+                      value={pricingConfig.membership.basic.price}
+                      onChange={(e) => updatePricingConfig('membership', 'basic', 'price', e.target.value)}
+                      className="inline-block w-20 text-center border-0 p-0 text-3xl font-bold"
+                      style={{ color: '#278DD4' }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">per month</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Members</Label>
+                  <Input 
+                    value={pricingConfig.membership.basic.maxMembers}
+                    onChange={(e) => updatePricingConfig('membership', 'basic', 'maxMembers', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Classes</Label>
+                  <Input 
+                    value={pricingConfig.membership.basic.maxClasses}
+                    onChange={(e) => updatePricingConfig('membership', 'basic', 'maxClasses', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Storage (GB)</Label>
+                  <Input 
+                    value={pricingConfig.membership.basic.storage}
+                    onChange={(e) => updatePricingConfig('membership', 'basic', 'storage', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className="border-2" style={{ borderColor: '#F59E0B' }}>
+              <CardHeader className="text-center pb-4">
+                <div className="space-y-2">
+                  <Input 
+                    value={pricingConfig.membership.premium.name}
+                    onChange={(e) => updatePricingConfig('membership', 'premium', 'name', e.target.value)}
+                    className="text-center font-bold text-lg border-0 p-0"
+                    style={{ color: '#20366B' }}
+                  />
+                  <div className="text-3xl font-bold" style={{ color: '#278DD4' }}>
+                    R
+                    <Input 
+                      value={pricingConfig.membership.premium.price}
+                      onChange={(e) => updatePricingConfig('membership', 'premium', 'price', e.target.value)}
+                      className="inline-block w-20 text-center border-0 p-0 text-3xl font-bold"
+                      style={{ color: '#278DD4' }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">per month</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Members</Label>
+                  <Input 
+                    value={pricingConfig.membership.premium.maxMembers}
+                    onChange={(e) => updatePricingConfig('membership', 'premium', 'maxMembers', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Classes</Label>
+                  <Input 
+                    value={pricingConfig.membership.premium.maxClasses}
+                    onChange={(e) => updatePricingConfig('membership', 'premium', 'maxClasses', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Storage (GB)</Label>
+                  <Input 
+                    value={pricingConfig.membership.premium.storage}
+                    onChange={(e) => updatePricingConfig('membership', 'premium', 'storage', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
 
+      {/* Pay Per Class Business Model */}
       <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
         <CardHeader>
-          <CardTitle style={{ color: '#1E293B' }}>Pay-Per-Class Plans</CardTitle>
+          <CardTitle style={{ color: '#20366B' }}>Pay-Per-Class Organizations</CardTitle>
           <CardDescription style={{ color: '#64748B' }}>
-            Configure pricing for pay-per-class organizations
+            Commission-based pricing for pay-per-class organizations
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            {Object.entries(pricingData.payPerClass).map(([tier, data]) => (
-              <div key={tier} className="p-4 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
-                <h4 className="font-semibold" style={{ color: '#1E293B' }}>{data.name}</h4>
-                <div className="mt-2">
-                  <Label>Monthly Fee (R)</Label>
-                  <Input value={data.price} readOnly />
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Free Plan */}
+            <Card className="border-2" style={{ borderColor: '#278DD4' }}>
+              <CardHeader className="text-center pb-4">
+                <div className="space-y-2">
+                  <Input 
+                    value={pricingConfig.payPerClass.free.name}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'free', 'name', e.target.value)}
+                    className="text-center font-bold text-lg border-0 p-0"
+                    style={{ color: '#20366B' }}
+                  />
+                  <div className="text-3xl font-bold" style={{ color: '#278DD4' }}>
+                    <Input 
+                      value={pricingConfig.payPerClass.free.commission}
+                      onChange={(e) => updatePricingConfig('payPerClass', 'free', 'commission', e.target.value)}
+                      className="inline-block w-16 text-center border-0 p-0 text-3xl font-bold"
+                      style={{ color: '#278DD4' }}
+                    />
+                    %
+                  </div>
+                  <p className="text-sm text-gray-600">commission</p>
                 </div>
-                <div className="mt-2">
-                  <Label>Commission (%)</Label>
-                  <Input value={data.commission} readOnly />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Bookings</Label>
+                  <Input 
+                    value={pricingConfig.payPerClass.free.maxBookings}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'free', 'maxBookings', e.target.value)}
+                  />
                 </div>
-              </div>
-            ))}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Storage (GB)</Label>
+                  <Input 
+                    value={pricingConfig.payPerClass.free.storage}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'free', 'storage', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Basic Plan */}
+            <Card className="border-2" style={{ borderColor: '#24D367' }}>
+              <CardHeader className="text-center pb-4">
+                <div className="space-y-2">
+                  <Input 
+                    value={pricingConfig.payPerClass.basic.name}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'name', e.target.value)}
+                    className="text-center font-bold text-lg border-0 p-0"
+                    style={{ color: '#20366B' }}
+                  />
+                  <div className="text-3xl font-bold" style={{ color: '#278DD4' }}>
+                    <Input 
+                      value={pricingConfig.payPerClass.basic.commission}
+                      onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'commission', e.target.value)}
+                      className="inline-block w-16 text-center border-0 p-0 text-3xl font-bold"
+                      style={{ color: '#278DD4' }}
+                    />
+                    %
+                  </div>
+                  <p className="text-sm text-gray-600">commission</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Bookings</Label>
+                  <Input 
+                    value={pricingConfig.payPerClass.basic.maxBookings}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'maxBookings', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Storage (GB)</Label>
+                  <Input 
+                    value={pricingConfig.payPerClass.basic.storage}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'basic', 'storage', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className="border-2" style={{ borderColor: '#F59E0B' }}>
+              <CardHeader className="text-center pb-4">
+                <div className="space-y-2">
+                  <Input 
+                    value={pricingConfig.payPerClass.premium.name}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'name', e.target.value)}
+                    className="text-center font-bold text-lg border-0 p-0"
+                    style={{ color: '#20366B' }}
+                  />
+                  <div className="text-3xl font-bold" style={{ color: '#278DD4' }}>
+                    <Input 
+                      value={pricingConfig.payPerClass.premium.commission}
+                      onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'commission', e.target.value)}
+                      className="inline-block w-16 text-center border-0 p-0 text-3xl font-bold"
+                      style={{ color: '#278DD4' }}
+                    />
+                    %
+                  </div>
+                  <p className="text-sm text-gray-600">commission</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Max Bookings</Label>
+                  <Input 
+                    value={pricingConfig.payPerClass.premium.maxBookings}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'maxBookings', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Storage (GB)</Label>
+                  <Input 
+                    value={pricingConfig.payPerClass.premium.storage}
+                    onChange={(e) => updatePricingConfig('payPerClass', 'premium', 'storage', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
