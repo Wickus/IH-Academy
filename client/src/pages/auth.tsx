@@ -109,10 +109,11 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       toast({ title: "Welcome back!", description: `Logged in as ${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user as any).name}` });
       if (onAuthSuccess) {
         onAuthSuccess(user);
-      } else {
-        // Simple redirect to root, let the router handle role-based routing
-        setLocation("/");
       }
+      // Always redirect to dashboard after successful login
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 100); // Small delay to ensure state updates propagate
     },
     onError: (error: any) => {
       toast({ title: "Login failed", description: error.message || "Invalid credentials", variant: "destructive" });
