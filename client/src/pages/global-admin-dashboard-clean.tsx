@@ -281,6 +281,8 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
 // Organizations Tab Component
 function OrganizationsTab({ organizations }: { organizations: any[] }) {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'trial' | 'inactive'>('all');
+  const [selectedOrg, setSelectedOrg] = useState<any>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
   const { toast } = useToast();
 
   // Filter organizations based on status
@@ -333,6 +335,11 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
     if (confirm(`Are you sure you want to delete ${org.name}? This action cannot be undone.`)) {
       deleteMutation.mutate(org.id);
     }
+  };
+
+  const handleView = (org: any) => {
+    setSelectedOrg(org);
+    setShowViewModal(true);
   };
 
   return (
@@ -462,6 +469,7 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                         size="sm"
                         className="h-10 w-10 p-0 hover:bg-blue-50"
                         style={{ borderColor: '#E2E8F0' }}
+                        onClick={() => handleView(org)}
                         title="View Details"
                       >
                         <Eye className="h-5 w-5" style={{ color: '#64748B' }} />
