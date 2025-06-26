@@ -634,6 +634,16 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                           <span className="text-sm text-gray-600">{selectedOrg.secondaryColor || '#278DD4'}</span>
                         </div>
                       </div>
+                      <div>
+                        <Label className="text-sm font-medium">Accent Color</Label>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-6 h-6 rounded border"
+                            style={{ backgroundColor: selectedOrg.accentColor || '#24D367' }}
+                          />
+                          <span className="text-sm text-gray-600">{selectedOrg.accentColor || '#24D367'}</span>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
 
