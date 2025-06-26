@@ -110,21 +110,24 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     );
   }
 
-  // Mobile app routing for coaches and participants - but allow specific routes to use normal routing
+  // Mobile app routing for coaches and participants - temporarily disabled for members
   
   if (isMobile) {
     // Only use desktop routing for these specific pages
-    const specialRoutes = ['/edit-profile', '/payment-methods', '/favourite-organizations'];
-    const isSpecialRoute = specialRoutes.includes(location) || (location.startsWith('/organizations/') && location.includes('/classes'));
+    const specialRoutes = ['/edit-profile', '/payment-methods', '/favourite-organizations', '/organizations', '/completed-classes', '/messages', '/achievements'];
+    const isSpecialRoute = specialRoutes.some(route => location.startsWith(route)) || 
+                           (location.startsWith('/organizations/') && location.includes('/classes'));
     
     if (!isSpecialRoute) {
       if (user?.role === 'coach') {
         return <MobileCoach user={user} />;
       } else if (user?.role === 'organization_admin') {
         return <MobileAdmin user={user} />;
-      } else if (user?.role === 'member') {
-        return <MobileParticipant user={user} />;
       }
+      // Temporarily disable mobile routing for members to fix 404 issue
+      // } else if (user?.role === 'member') {
+      //   return <MobileParticipant user={user} />;
+      // }
     }
   }
 
