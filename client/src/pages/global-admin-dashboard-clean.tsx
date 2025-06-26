@@ -367,11 +367,22 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
       if (!response.ok) throw new Error("Failed to save pricing configuration");
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast({
         title: "Success",
         description: "Pricing configuration saved successfully",
       });
+      // Update the selected organization data immediately
+      if (response.organization) {
+        setSelectedOrg(response.organization);
+        // Also update the form data to reflect the saved values
+        setPricingData({
+          membershipPrice: response.organization.membershipPrice || '',
+          discountPercentage: response.organization.customDiscount || '',
+          commissionRate: response.organization.commissionRate || '',
+          paymentTerms: response.organization.specialNotes ? response.organization.specialNotes.replace('Payment Terms: ', '').replace(' days', '') : ''
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
     },
     onError: () => {
