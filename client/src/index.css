@@ -17,13 +17,13 @@
   --primary-foreground: 255 255 255; /* #FFFFFF */
   --secondary: 248 250 252; /* #F8FAFC - Light Gray */
   --secondary-foreground: 32 54 107; /* #20366B */
-  --accent: 255 255 255; /* #FFFFFF - White for transparency */
+  --accent: 235 244 255; /* #EBF4FF - Light blue for accents */
   --accent-foreground: 32 54 107; /* #20366B */
   --muted: 248 250 252; /* #F8FAFC */
   --muted-foreground: 75 85 99; /* #4B5563 - Darker gray for better readability */
   --destructive: 239 68 68; /* #EF4444 */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
-  --border: 226 232 240; /* #E2E8F0 */
+  --border: 39 141 212; /* #278DD4 - ItsHappening blue */
   --input: 226 232 240; /* #E2E8F0 */
   --ring: 32 54 107; /* #20366B */
   --radius: 0.5rem;
@@ -142,6 +142,25 @@ h1, h2, h3, h4, h5, h6 {
 /* Remove yellow from all focus states */
 .focus\\:ring-yellow-500:focus {
   --tw-ring-color: #20366B !important;
+}
+
+/* Fix dialog borders to use ItsHappening colors */
+[data-radix-dialog-content] {
+  border: 2px solid #278DD4 !important;
+  border-radius: 0.75rem !important;
+}
+
+/* Fix modal overlay borders */
+.dialog-content, [role="dialog"] {
+  border: 2px solid #278DD4 !important;
+  border-radius: 0.75rem !important;
+}
+
+/* Fix tab content borders */
+[role="tabpanel"] {
+  border: 1px solid #278DD4 !important;
+  border-top: none !important;
+  border-radius: 0 0 0.5rem 0.5rem !important;
 }
 
 /* Toast Notification Styling - ItsHappening.Africa Brand */
@@ -362,7 +381,7 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus,
 
 /* Remove ALL yellow elements from the app */
 .border-yellow-300, .border-yellow-400, .border-yellow-500, .border-yellow-200 {
-  border-color: #E2E8F0 !important;
+  border-color: #278DD4 !important;
 }
 
 .bg-yellow-50, .bg-yellow-100, .bg-yellow-200 {
@@ -371,6 +390,66 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus,
 
 .text-yellow-600, .text-yellow-700, .text-yellow-800 {
   color: #20366B !important;
+}
+
+/* Override any remaining yellow borders in components */
+* {
+  --tw-border-opacity: 1 !important;
+}
+
+*[class*="border-yellow"] {
+  border-color: rgb(39 141 212 / var(--tw-border-opacity)) !important;
+}
+
+/* Force modal and dialog borders to use brand colors */
+.fixed.inset-0 + div[role="dialog"],
+div[data-state="open"][role="dialog"] {
+  border: 2px solid #278DD4 !important;
+}
+
+/* Tab styling with brand borders */
+[data-orientation="horizontal"][role="tablist"] {
+  border-bottom: 2px solid #278DD4 !important;
+}
+
+/* Comprehensive modal and dialog border fixes */
+.dialog-content,
+[data-radix-dialog-content],
+div[role="dialog"],
+div[data-state="open"][role="dialog"],
+.fixed.z-50.grid {
+  border: 2px solid #278DD4 !important;
+  box-shadow: 0 10px 30px rgba(39, 141, 212, 0.15) !important;
+}
+
+/* Card borders in modals */
+.dialog-content .border,
+[role="dialog"] .border,
+div[data-state="open"] .border {
+  border-color: #278DD4 !important;
+}
+
+/* Tab content borders */
+[role="tabpanel"],
+.tab-content,
+[data-state="active"][role="tabpanel"] {
+  border: 1px solid #278DD4 !important;
+  border-top: none !important;
+  border-radius: 0 0 0.75rem 0.75rem !important;
+  padding: 1.5rem !important;
+}
+
+/* Override any remaining yellow/accent borders */
+.border-accent,
+.border,
+*:not(.border-gray-200):not(.border-gray-300):not(.border-slate-200) {
+  border-color: #E2E8F0 !important;
+}
+
+/* Specific targeting for modal cards */
+[role="dialog"] .space-y-6 .border,
+[role="dialog"] .grid .border {
+  border-color: #E2E8F0 !important;
 }
 
 /* Fix sidebar navigation highlighting */
