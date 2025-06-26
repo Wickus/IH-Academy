@@ -286,16 +286,16 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
   // Filter organizations based on status
   const filteredOrgs = organizations.filter(org => {
     if (filterStatus === 'all') return true;
-    if (filterStatus === 'active') return org.status === 'active' && org.trialStatus !== 'active';
-    if (filterStatus === 'trial') return org.trialStatus === 'active';
-    if (filterStatus === 'inactive') return org.status === 'inactive';
+    if (filterStatus === 'active') return org.isActive === true && (!org.trialEndDate || new Date(org.trialEndDate) < new Date());
+    if (filterStatus === 'trial') return org.trialEndDate && new Date(org.trialEndDate) > new Date();
+    if (filterStatus === 'inactive') return org.isActive === false;
     return true;
   });
 
   // Toggle organization status mutation
   const toggleStatusMutation = useMutation({
-    mutationFn: async ({ orgId, newStatus }: { orgId: number; newStatus: string }) => {
-      const response = await apiRequest("PUT", `/api/organizations/${orgId}/status`, { status: newStatus });
+    mutationFn: async ({ orgId, newStatus }: { orgId: number; newStatus: boolean }) => {
+      const response = await apiRequest("PUT", `/api/organizations/${orgId}/status`, { isActive: newStatus });
       if (!response.ok) throw new Error("Failed to update organization status");
       return response.json();
     },
@@ -325,7 +325,7 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
   });
 
   const handleToggleStatus = (org: any) => {
-    const newStatus = org.status === 'active' ? 'inactive' : 'active';
+    const newStatus = org.isActive ? false : true;
     toggleStatusMutation.mutate({ orgId: org.id, newStatus });
   };
 
@@ -358,21 +358,21 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
           onClick={() => setFilterStatus('active')}
           style={filterStatus === 'active' ? { backgroundColor: '#24D367', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          Active ({organizations.filter(org => org.status === 'active' && org.trialStatus !== 'active').length})
+          Active ({organizations.filter(org => org.isActive === true && (!org.trialEndDate || new Date(org.trialEndDate) < new Date())).length})
         </Button>
         <Button
           variant={filterStatus === 'trial' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('trial')}
           style={filterStatus === 'trial' ? { backgroundColor: '#278DD4', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          Free Trial ({organizations.filter(org => org.trialStatus === 'active').length})
+          Free Trial ({organizations.filter(org => org.trialEndDate && new Date(org.trialEndDate) > new Date()).length})
         </Button>
         <Button
           variant={filterStatus === 'inactive' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('inactive')}
           style={filterStatus === 'inactive' ? { backgroundColor: '#6B7280', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          Inactive ({organizations.filter(org => org.status === 'inactive').length})
+          Inactive ({organizations.filter(org => org.isActive === false).length})
         </Button>
       </div>
 
@@ -403,67 +403,84 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
                       <img 
                         src={org.logoUrl} 
                         alt={org.name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-12 h-12 rounded-full object-cover border-2"
+                        style={{ borderColor: org.primaryColor || '#E2E8F0' }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: 'linear-gradient(135deg, #20366B 0%, #278DD4 100%)' }}>
-                        {org.name.charAt(0)}
-                      </div>
-                    )}
+                    ) : null}
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg"
+                      style={{ 
+                        background: org.primaryColor && org.secondaryColor ? 
+                          `linear-gradient(135deg, ${org.primaryColor} 0%, ${org.secondaryColor} 100%)` :
+                          'linear-gradient(135deg, #20366B 0%, #278DD4 100%)',
+                        display: org.logoUrl ? 'none' : 'flex'
+                      }}
+                    >
+                      {org.name.charAt(0)}
+                    </div>
                     <div>
-                      <p className="font-semibold" style={{ color: '#1E293B' }}>{org.name}</p>
+                      <p className="font-semibold text-lg" style={{ color: '#1E293B' }}>{org.name}</p>
                       <p className="text-sm" style={{ color: '#64748B' }}>{org.contactEmail}</p>
                       <p className="text-xs" style={{ color: '#94A3B8' }}>
-                        Created: {new Date(org.createdAt).toLocaleDateString()}
+                        Created: {org.createdAt && org.createdAt !== '1970-01-01T00:00:00.000Z' ? 
+                          new Date(org.createdAt).toLocaleDateString() : 
+                          'Date not available'}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge 
-                      variant="secondary"
-                      style={{ 
-                        backgroundColor: org.status === 'active' ? '#24D367' : '#6B7280',
-                        color: 'white' 
-                      }}
-                    >
-                      {org.status}
-                    </Badge>
-                    {org.trialStatus === 'active' && (
-                      <Badge variant="outline" style={{ borderColor: '#278DD4', color: '#278DD4' }}>
-                        Trial
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col gap-1">
+                      <Badge 
+                        variant="secondary"
+                        className="text-xs px-2 py-1"
+                        style={{ 
+                          backgroundColor: org.isActive ? '#24D367' : '#6B7280',
+                          color: 'white' 
+                        }}
+                      >
+                        {org.isActive ? 'Active' : 'Inactive'}
                       </Badge>
-                    )}
-                    <div className="flex gap-1 ml-2">
+                      {org.trialEndDate && new Date(org.trialEndDate) > new Date() && (
+                        <Badge variant="outline" className="text-xs px-2 py-1" style={{ borderColor: '#278DD4', color: '#278DD4' }}>
+                          Trial
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className="h-10 w-10 p-0 hover:bg-blue-50"
                         style={{ borderColor: '#E2E8F0' }}
                         title="View Details"
                       >
-                        <Eye className="h-4 w-4" style={{ color: '#64748B' }} />
+                        <Eye className="h-5 w-5" style={{ color: '#64748B' }} />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className="h-10 w-10 p-0 hover:bg-green-50"
                         style={{ borderColor: '#E2E8F0' }}
                         onClick={() => handleToggleStatus(org)}
                         disabled={toggleStatusMutation.isPending}
-                        title={org.status === 'active' ? 'Deactivate' : 'Activate'}
+                        title={org.isActive ? 'Deactivate' : 'Activate'}
                       >
-                        <Power className="h-4 w-4" style={{ color: org.status === 'active' ? '#24D367' : '#6B7280' }} />
+                        <Power className="h-5 w-5" style={{ color: org.isActive ? '#24D367' : '#6B7280' }} />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className="h-10 w-10 p-0 hover:bg-red-50"
                         style={{ borderColor: '#E2E8F0' }}
                         onClick={() => handleDelete(org)}
                         disabled={deleteMutation.isPending}
                         title="Delete"
                       >
-                        <Trash className="h-4 w-4" style={{ color: '#EF4444' }} />
+                        <Trash className="h-5 w-5" style={{ color: '#EF4444' }} />
                       </Button>
                     </div>
                   </div>
