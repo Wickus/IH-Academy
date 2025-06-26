@@ -100,7 +100,7 @@ export default function GlobalAdminDashboard() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4" style={{ backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0' }}>
           <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Overview</TabsTrigger>
-          <TabsTrigger value="organizations" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Organizations</TabsTrigger>
+          <TabsTrigger value="organizations" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Organisations</TabsTrigger>
           <TabsTrigger value="global-admins" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Global Admins</TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Settings</TabsTrigger>
         </TabsList>
@@ -173,7 +173,7 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
           onClick={() => onTabChange("organizations")}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Organizations</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Organisations</CardTitle>
             <Building2 className="h-4 w-4" style={{ color: '#20366B' }} />
           </CardHeader>
           <CardContent>
@@ -196,7 +196,7 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>{totalUsers}</div>
             <p className="text-xs" style={{ color: '#64748B' }}>
-              Across all organizations
+              Across all organisations
             </p>
           </CardContent>
         </Card>
@@ -406,8 +406,8 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Organizations</h2>
-          <p style={{ color: '#64748B' }}>Manage all organizations on the platform</p>
+          <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Organisations</h2>
+          <p style={{ color: '#64748B' }}>Manage all organisations on the platform</p>
         </div>
       </div>
 
@@ -439,7 +439,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
           onClick={() => setFilterStatus('inactive')}
           style={filterStatus === 'inactive' ? { backgroundColor: '#6B7280', color: 'white' } : { borderColor: '#E2E8F0' }}
         >
-          Inactive ({organizations.filter(org => org.isActive === false).length})
+          Inactive ({organisations.filter(org => org.isActive === false).length})
         </Button>
       </div>
 
@@ -447,19 +447,19 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
             <Building2 className="h-5 w-5" />
-            {filterStatus === 'all' ? 'All Organizations' : 
-             filterStatus === 'active' ? 'Active Organizations' :
-             filterStatus === 'trial' ? 'Trial Organizations' : 'Inactive Organizations'}
+            {filterStatus === 'all' ? 'All Organisations' : 
+             filterStatus === 'active' ? 'Active Organisations' :
+             filterStatus === 'trial' ? 'Trial Organisations' : 'Inactive Organisations'}
           </CardTitle>
           <CardDescription style={{ color: '#64748B' }}>
-            {filteredOrgs.length} organizations
+            {filteredOrgs.length} organisations
           </CardDescription>
         </CardHeader>
         <CardContent>
           {filteredOrgs.length === 0 ? (
             <div className="text-center py-8">
               <Building2 className="h-12 w-12 mx-auto mb-4" style={{ color: '#CBD5E1' }} />
-              <p style={{ color: '#64748B' }}>No organizations found</p>
+              <p style={{ color: '#64748B' }}>No organisations found</p>
             </div>
           ) : (
             <div className="space-y-4">
