@@ -504,6 +504,151 @@ function OrganizationsTab({ organizations }: { organizations: any[] }) {
           )}
         </CardContent>
       </Card>
+
+      {/* View Organization Modal */}
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle style={{ color: '#20366B' }}>Organization Details</DialogTitle>
+          </DialogHeader>
+          {selectedOrg && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full relative">
+                  {selectedOrg.logo ? (
+                    <img 
+                      src={selectedOrg.logo} 
+                      alt={selectedOrg.name}
+                      className="w-16 h-16 rounded-full object-cover border-2"
+                      style={{ borderColor: selectedOrg.primaryColor || '#E2E8F0' }}
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        const fallback = target.parentElement?.querySelector('.fallback-avatar') as HTMLElement;
+                        if (fallback) {
+                          fallback.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className="fallback-avatar w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl absolute top-0 left-0"
+                    style={{ 
+                      background: selectedOrg.primaryColor && selectedOrg.secondaryColor ? 
+                        `linear-gradient(135deg, ${selectedOrg.primaryColor} 0%, ${selectedOrg.secondaryColor} 100%)` :
+                        'linear-gradient(135deg, #20366B 0%, #278DD4 100%)',
+                      display: selectedOrg.logo ? 'none' : 'flex'
+                    }}
+                  >
+                    {selectedOrg.name.charAt(0)}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold" style={{ color: '#1E293B' }}>{selectedOrg.name}</h3>
+                  <p style={{ color: '#64748B' }}>{selectedOrg.description || 'No description available'}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" style={{ color: '#374151' }}>Status</label>
+                  <Badge 
+                    variant="secondary"
+                    style={{ 
+                      backgroundColor: selectedOrg.isActive ? '#24D367' : '#6B7280',
+                      color: 'white' 
+                    }}
+                  >
+                    {selectedOrg.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+                
+                {selectedOrg.trialEndDate && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#374151' }}>Trial Status</label>
+                    <Badge 
+                      variant="outline" 
+                      style={{ 
+                        borderColor: new Date(selectedOrg.trialEndDate) > new Date() ? '#278DD4' : '#6B7280',
+                        color: new Date(selectedOrg.trialEndDate) > new Date() ? '#278DD4' : '#6B7280'
+                      }}
+                    >
+                      {new Date(selectedOrg.trialEndDate) > new Date() ? 'Active Trial' : 'Trial Expired'}
+                    </Badge>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" style={{ color: '#374151' }}>Primary Color</label>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-6 h-6 rounded border"
+                      style={{ backgroundColor: selectedOrg.primaryColor || '#20366B' }}
+                    />
+                    <span className="text-sm" style={{ color: '#64748B' }}>
+                      {selectedOrg.primaryColor || '#20366B'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" style={{ color: '#374151' }}>Secondary Color</label>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-6 h-6 rounded border"
+                      style={{ backgroundColor: selectedOrg.secondaryColor || '#278DD4' }}
+                    />
+                    <span className="text-sm" style={{ color: '#64748B' }}>
+                      {selectedOrg.secondaryColor || '#278DD4'}
+                    </span>
+                  </div>
+                </div>
+
+                {selectedOrg.createdAt && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#374151' }}>Created</label>
+                    <p className="text-sm" style={{ color: '#64748B' }}>
+                      {new Date(selectedOrg.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
+
+                {selectedOrg.trialEndDate && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#374151' }}>Trial End Date</label>
+                    <p className="text-sm" style={{ color: '#64748B' }}>
+                      {new Date(selectedOrg.trialEndDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowViewModal(false)}
+                  style={{ borderColor: '#E2E8F0' }}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleToggleStatus(selectedOrg);
+                    setShowViewModal(false);
+                  }}
+                  disabled={toggleStatusMutation.isPending}
+                  style={{ 
+                    backgroundColor: selectedOrg.isActive ? '#6B7280' : '#24D367',
+                    color: 'white'
+                  }}
+                >
+                  {selectedOrg.isActive ? 'Deactivate' : 'Activate'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
