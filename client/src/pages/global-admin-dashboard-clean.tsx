@@ -284,7 +284,10 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
     description: '',
     phone: '',
     address: '',
-    website: ''
+    website: '',
+    primaryColor: '#20366B',
+    secondaryColor: '#278DD4',
+    accentColor: '#24D367'
   });
   const [pricingData, setPricingData] = useState({
     membershipPrice: '',
@@ -437,7 +440,10 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
       description: org.description || '',
       phone: org.phone || '',
       address: org.address || '',
-      website: org.website || ''
+      website: org.website || '',
+      primaryColor: org.primaryColor || '#20366B',
+      secondaryColor: org.secondaryColor || '#278DD4',
+      accentColor: org.accentColor || '#24D367'
     });
     setShowEditModal(true);
   };
@@ -974,7 +980,10 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                       <Button 
                         className="w-full justify-start" 
                         variant="outline"
-                        onClick={() => setShowEditModal(true)}
+                        onClick={() => {
+                          setShowViewModal(false);
+                          handleEditOrg(selectedOrg);
+                        }}
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Organisation Details
@@ -1027,7 +1036,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
 
       {/* Edit Organization Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle style={{ color: '#20366B' }}>Edit Organisation Details</DialogTitle>
             <DialogDescription style={{ color: '#64748B' }}>
@@ -1091,6 +1100,89 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                 onChange={(e) => setEditFormData(prev => ({ ...prev, address: e.target.value }))}
                 placeholder="Enter physical address"
               />
+            </div>
+            
+            {/* Organisation Colors Section */}
+            <div className="space-y-4 pt-4 border-t">
+              <h4 className="font-medium" style={{ color: '#20366B' }}>Organisation Brand Colors</h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Primary Color</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      type="color"
+                      value={editFormData.primaryColor}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, primaryColor: e.target.value }))}
+                      className="w-16 h-10 p-1 border-0"
+                    />
+                    <Input
+                      value={editFormData.primaryColor}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, primaryColor: e.target.value }))}
+                      placeholder="#20366B"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Secondary Color</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      type="color"
+                      value={editFormData.secondaryColor}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                      className="w-16 h-10 p-1 border-0"
+                    />
+                    <Input
+                      value={editFormData.secondaryColor}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                      placeholder="#278DD4"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Accent Color</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      type="color"
+                      value={editFormData.accentColor}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, accentColor: e.target.value }))}
+                      className="w-16 h-10 p-1 border-0"
+                    />
+                    <Input
+                      value={editFormData.accentColor}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, accentColor: e.target.value }))}
+                      placeholder="#24D367"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Color Preview */}
+              <div className="space-y-2">
+                <Label>Color Preview</Label>
+                <div className="flex gap-2 items-center p-3 border rounded-lg">
+                  <div 
+                    className="w-8 h-8 rounded"
+                    style={{ backgroundColor: editFormData.primaryColor }}
+                    title="Primary Color"
+                  />
+                  <div 
+                    className="w-8 h-8 rounded"
+                    style={{ backgroundColor: editFormData.secondaryColor }}
+                    title="Secondary Color"
+                  />
+                  <div 
+                    className="w-8 h-8 rounded"
+                    style={{ backgroundColor: editFormData.accentColor }}
+                    title="Accent Color"
+                  />
+                  <span className="text-sm text-gray-600 ml-2">
+                    These colors will be used throughout the organisation's interface
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
           
