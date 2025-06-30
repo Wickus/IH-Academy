@@ -18,7 +18,8 @@ import {
   DollarSign,
   Edit,
   Calendar,
-  Key
+  Key,
+  LogOut
 } from "lucide-react";
 import {
   Dialog,
@@ -38,6 +39,35 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function GlobalAdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
+
+  // Logout functionality
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/auth/logout");
+      if (!response.ok) throw new Error("Failed to logout");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      // Clear all cached data and redirect to login
+      queryClient.clear();
+      window.location.href = "/auth";
+    },
+    onError: () => {
+      toast({
+        title: "Logout Error",
+        description: "Failed to logout. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   // Fetch organisations data
   const { data: organisations = [], isLoading: loadingOrgs } = useQuery({
@@ -90,13 +120,31 @@ export default function GlobalAdminDashboard() {
           <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#20366B' }}>Global Admin Dashboard</h1>
           <p className="text-sm md:text-base text-gray-600">Manage the IH Academy platform</p>
         </div>
-        <div className="flex items-center gap-2">
-          <img 
-            src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
-            alt="IH Academy"
-            className="h-6 w-6 md:h-8 md:w-8 rounded object-cover"
-          />
-          <span className="text-sm md:text-base font-semibold" style={{ color: '#20366B' }}>IH Academy</span>
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2">
+            <img 
+              src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
+              alt="IH Academy"
+              className="h-6 w-6 md:h-8 md:w-8 rounded object-cover"
+            />
+            <span className="text-sm md:text-base font-semibold" style={{ color: '#20366B' }}>IH Academy</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            className="flex items-center gap-1 md:gap-2 h-8 md:h-9 px-2 md:px-3 text-xs md:text-sm"
+            style={{ 
+              borderColor: '#20366B',
+              color: '#20366B'
+            }}
+          >
+            <LogOut className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">
+              {logoutMutation.isPending ? 'Logging Out...' : 'Logout'}
+            </span>
+          </Button>
         </div>
       </div>
 
