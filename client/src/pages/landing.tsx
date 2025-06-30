@@ -90,7 +90,7 @@ export default function LandingPage() {
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-[#ffffff]">
               Transform Your Sports Academy with 
-              <span className="block text-[#24D367]">Professional Management</span>
+              <span className="block text-[#ffffff]">Professional Management</span>
             </h1>
             
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed text-[#ffffff]">
