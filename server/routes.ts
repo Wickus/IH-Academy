@@ -347,9 +347,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Reset token has expired" });
       }
 
-      // Hash the new password and update user
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await storage.resetUserPassword(tokenData.userId, hashedPassword);
+      // Update user password (using plain text as per current system)
+      await storage.resetUserPassword(tokenData.userId, password);
 
       // Remove the used token
       global.passwordResetTokens.delete(token);
