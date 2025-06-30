@@ -1361,7 +1361,19 @@ function UsersTab({ users }: { users: any[] }) {
     },
     onSuccess: () => {
       toast({ title: "Success", description: "User deleted successfully" });
+      // Invalidate all related queries with aggressive cache clearing
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stats/global'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      // Remove specific user from cache
+      queryClient.removeQueries({ queryKey: ['/api/users', selectedUser?.id] });
+      // Clear all query cache to force fresh data
+      queryClient.clear();
+      // Force immediate refetch
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/users'] });
+        queryClient.refetchQueries({ queryKey: ['/api/stats/global'] });
+      }, 100);
       setShowViewModal(false);
       setSelectedUser(null);
     },
