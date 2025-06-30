@@ -3543,6 +3543,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User management endpoints for global admin
+  app.delete("/api/users/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const userId = parseInt(req.params.id);
+      
+      // Don't allow deleting themselves
+      if (userId === currentUser.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      await storage.deleteUser(userId);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Clean up orphaned users (users not associated with any organization)
+  app.post("/api/users/cleanup-orphaned", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const result = await storage.cleanupOrphanedUsers();
+      res.json({ 
+        message: "Orphaned users cleanup completed",
+        deletedCount: result.deletedCount,
+        deletedUsers: result.deletedUsers
+      });
+    } catch (error) {
+      console.error("Error cleaning up orphaned users:", error);
+      res.status(500).json({ message: "Failed to cleanup orphaned users" });
+    }
+  });
+
+  // Get user details endpoint
+  app.get("/api/users/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUserById(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's organizations
+      const userOrgs = await storage.getUserOrganizations(userId);
+      
+      // Get user's bookings count
+      const bookings = await storage.getUserBookings(userId);
+      
+      res.json({
+        ...user,
+        organizations: userOrgs,
+        bookingCount: bookings.length,
+        recentBookings: bookings.slice(0, 5) // Last 5 bookings
+      });
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      res.status(500).json({ message: "Failed to fetch user details" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;
