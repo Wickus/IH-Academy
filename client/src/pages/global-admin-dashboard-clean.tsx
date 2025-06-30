@@ -277,6 +277,15 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'trial' | 'inactive'>('all');
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    description: '',
+    phone: '',
+    address: '',
+    website: ''
+  });
   const [pricingData, setPricingData] = useState({
     membershipPrice: '',
     discountPercentage: '',
@@ -393,6 +402,51 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
     savePricingMutation.mutate({
       orgId: selectedOrg.id,
       pricing: pricingData
+    });
+  };
+
+  // Update organization mutation
+  const updateOrgMutation = useMutation({
+    mutationFn: async ({ orgId, data }: { orgId: number; data: any }) => {
+      const response = await apiRequest("PATCH", `/api/organizations/${orgId}`, data);
+      if (!response.ok) throw new Error("Failed to update organisation");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Organisation updated successfully",
+      });
+      setShowEditModal(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update organisation",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleEditOrg = (org: any) => {
+    setSelectedOrg(org);
+    setEditFormData({
+      name: org.name || '',
+      email: org.email || '',
+      description: org.description || '',
+      phone: org.phone || '',
+      address: org.address || '',
+      website: org.website || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateOrg = () => {
+    if (!selectedOrg) return;
+    updateOrgMutation.mutate({
+      orgId: selectedOrg.id,
+      data: editFormData
     });
   };
 
@@ -888,7 +942,10 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                       <Button 
                         className="w-full justify-start" 
                         variant="outline"
-                        onClick={() => window.open(`/dashboard?org=${selectedOrg.id}`, '_blank')}
+                        onClick={() => {
+                          // Store admin session and redirect to organization dashboard
+                          window.open(`${window.location.origin}/?adminAccess=${selectedOrg.id}`, '_blank');
+                        }}
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         Access Organisation Dashboard
@@ -905,6 +962,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                       <Button 
                         className="w-full justify-start" 
                         variant="outline"
+                        onClick={() => setShowEditModal(true)}
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Organisation Details
