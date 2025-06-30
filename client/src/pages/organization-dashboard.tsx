@@ -35,17 +35,22 @@ export default function OrganizationDashboard({ user: propUser, organization: pr
 
   const user = propUser || currentUser;
 
-  // Get search params to handle global admin access
+  // Get global admin access info from session storage or search params
+  const globalAdminOrgId = sessionStorage.getItem('globalAdminOrgId');
   const searchParams = new URLSearchParams(window.location.search);
-  const globalAdminAccess = searchParams.get('globalAdminAccess') === 'true';
   const orgIdFromParams = searchParams.get('orgId');
-
+  
   // Determine which organization to show
   let targetOrganizationId = null;
   
-  if (user?.role === 'global_admin' && globalAdminAccess && orgIdFromParams) {
-    // Global admin accessing specific organization
-    targetOrganizationId = parseInt(orgIdFromParams);
+  if (user?.role === 'global_admin') {
+    if (globalAdminOrgId) {
+      // Global admin accessing specific organization via sessionStorage
+      targetOrganizationId = parseInt(globalAdminOrgId);
+    } else if (orgIdFromParams) {
+      // Fallback to URL params
+      targetOrganizationId = parseInt(orgIdFromParams);
+    }
   } else if (propOrganization) {
     // Organization provided via props
     targetOrganizationId = propOrganization.id;
