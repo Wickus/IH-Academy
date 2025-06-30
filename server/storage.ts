@@ -1458,14 +1458,36 @@ export class DatabaseStorage implements IStorage {
 
     for (const user of orphanedUsers) {
       try {
-        // Delete user's bookings first (if any)
-        await db.delete(bookings).where(eq(bookings.userId, user.id));
-        
-        // Delete user's payments (if any)
-        await db.delete(payments).where(eq(payments.userId, user.id));
+        // Delete user's bookings by email (since bookings table uses participantEmail)
+        await db.delete(bookings).where(eq(bookings.participantEmail, user.email));
         
         // Delete user's coach records (if any)
         await db.delete(coaches).where(eq(coaches.userId, user.id));
+        
+        // Delete user's attendance records as coach (if any)
+        await db.delete(attendance).where(eq(attendance.markedBy, user.id));
+        
+        // Delete user's attendance records as participant by email (if any)
+        await db.delete(attendance).where(eq(attendance.participantEmail, user.email));
+        
+        // Delete user's memberships (if any)
+        await db.delete(memberships).where(eq(memberships.userId, user.id));
+        
+        // Delete user's debit order mandates (if any)
+        await db.delete(debitOrderMandates).where(eq(debitOrderMandates.userId, user.id));
+        
+        // Delete user's messages (if any)
+        await db.delete(messages).where(eq(messages.senderId, user.id));
+        await db.delete(messageReplies).where(eq(messageReplies.senderId, user.id));
+        
+        // Delete user's user achievements (if any)
+        await db.delete(userAchievements).where(eq(userAchievements.userId, user.id));
+        
+        // Delete user's user stats (if any)
+        await db.delete(userStats).where(eq(userStats.userId, user.id));
+        
+        // Delete user's children (if any)
+        await db.delete(children).where(eq(children.parentId, user.id));
         
         // Delete the user
         await db.delete(users).where(eq(users.id, user.id));
