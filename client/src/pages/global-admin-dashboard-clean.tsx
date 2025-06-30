@@ -1435,8 +1435,11 @@ function SettingsTab() {
 // Users Tab Component
 function UsersTab({ users }: { users: any[] }) {
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [showUserDetails, setShowUserDetails] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -1495,6 +1498,29 @@ function UsersTab({ users }: { users: any[] }) {
     },
   });
 
+  // Reset user password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (data: { userId: number; newPassword: string }) => {
+      const response = await apiRequest("POST", `/api/users/${data.userId}/reset-password`, {
+        newPassword: data.newPassword
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to reset password");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Password reset successfully" });
+      setShowResetPasswordModal(false);
+      setNewPassword("");
+      setConfirmPassword("");
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
   // Fetch user details
   const { data: userDetails, isLoading: loadingDetails } = useQuery({
     queryKey: ['/api/users', selectedUser?.id],
@@ -1516,6 +1542,23 @@ function UsersTab({ users }: { users: any[] }) {
     if (confirm(`Are you sure you want to delete user "${user.username}"? This action cannot be undone.`)) {
       deleteMutation.mutate(user.id);
     }
+  };
+
+  const handleResetPassword = (user: any) => {
+    setSelectedUser(user);
+    setShowResetPasswordModal(true);
+  };
+
+  const handlePasswordReset = () => {
+    if (newPassword.length < 8) {
+      toast({ title: "Error", description: "Password must be at least 8 characters long", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    resetPasswordMutation.mutate({ userId: selectedUser.id, newPassword });
   };
 
   const handleCleanupOrphaned = () => {
@@ -1594,6 +1637,16 @@ function UsersTab({ users }: { users: any[] }) {
                       title="View User Details"
                     >
                       <Eye className="h-4 w-4" style={{ color: '#64748B' }} />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleResetPassword(user)}
+                      disabled={resetPasswordMutation.isPending}
+                      style={{ borderColor: '#E2E8F0' }}
+                      title="Reset Password"
+                    >
+                      <Key className="h-4 w-4" style={{ color: '#278DD4' }} />
                     </Button>
                     <Button
                       variant="outline"
@@ -1748,6 +1801,69 @@ function UsersTab({ users }: { users: any[] }) {
             >
               <Trash className="h-4 w-4 mr-2" />
               Delete User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Modal */}
+      <Dialog open={showResetPasswordModal} onOpenChange={setShowResetPasswordModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2" style={{ color: '#20366B' }}>
+              <Key className="h-5 w-5" />
+              Reset Password - {selectedUser?.username}
+            </DialogTitle>
+            <DialogDescription style={{ color: '#64748B' }}>
+              Enter a new password for this user
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium" style={{ color: '#374151' }}>New Password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter new password"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium" style={{ color: '#374151' }}>Confirm Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Confirm new password"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowResetPasswordModal(false);
+                setNewPassword("");
+                setConfirmPassword("");
+              }}
+              style={{ borderColor: '#E2E8F0' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePasswordReset}
+              disabled={resetPasswordMutation.isPending || !newPassword || !confirmPassword}
+              style={{ backgroundColor: '#278DD4', color: 'white' }}
+              className="hover:opacity-90"
+            >
+              {resetPasswordMutation.isPending && (
+                <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+              )}
+              Reset Password
             </Button>
           </DialogFooter>
         </DialogContent>
