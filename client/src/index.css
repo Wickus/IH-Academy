@@ -260,6 +260,40 @@ header [role="button"]:hover,
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Force white text on dark blue buttons */
+button[style*="background-color: #20366B"],
+button[style*="backgroundColor: #20366B"],
+[style*="background-color: #20366B"] button,
+[style*="backgroundColor: #20366B"] button {
+  color: white !important;
+}
+
+/* Specific targeting for modal buttons */
+[role="dialog"] button[style*="#20366B"] {
+  color: white !important;
+}
+
+/* Force white text on buttons with the force-white-text class */
+.force-white-text,
+.force-white-text * {
+  color: white !important;
+}
+
+/* Additional targeting for shadcn buttons */
+button.force-white-text {
+  color: white !important;
+}
+
+/* Ultimate override for dark blue buttons - most aggressive approach */
+*[style*="backgroundColor: rgb(32, 54, 107)"] *,
+*[style*="background-color: rgb(32, 54, 107)"] *,
+*[style*="backgroundColor:#20366B"] *,
+*[style*="background-color:#20366B"] *,
+*[style*="backgroundColor: #20366B"] *,
+*[style*="background-color: #20366B"] * {
+  color: white !important;
+}
+
 /* Table styling improvements */
 table th {
   background-color: #F8FAFC !important;

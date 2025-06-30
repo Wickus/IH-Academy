@@ -1199,7 +1199,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
               onClick={handleUpdateOrg}
               disabled={updateOrgMutation.isPending}
               style={{ backgroundColor: '#20366B', color: 'white !important' }}
-              className="text-white"
+              className="text-white !text-white force-white-text"
             >
               {updateOrgMutation.isPending ? 'Updating...' : 'Update Organisation'}
             </Button>
