@@ -306,7 +306,64 @@ export class DatabaseStorage implements IStorage {
 
   async deleteUser(id: number): Promise<boolean> {
     try {
+      // Get the user details first
+      const user = await this.getUser(id);
+      if (!user) {
+        console.log(`User with ID ${id} not found`);
+        return false;
+      }
+
+      console.log(`Starting cascading deletion for user: ${user.email} (ID: ${id})`);
+
+      // Delete user's bookings by email (since bookings table uses participantEmail)
+      await db.delete(bookings).where(eq(bookings.participantEmail, user.email));
+      console.log(`Deleted bookings for user ${user.email}`);
+      
+      // Delete user's coach records (if any)
+      await db.delete(coaches).where(eq(coaches.userId, user.id));
+      console.log(`Deleted coach records for user ${user.email}`);
+      
+      // Delete user's attendance records as coach (if any)
+      await db.delete(attendance).where(eq(attendance.markedBy, user.id));
+      console.log(`Deleted attendance records marked by user ${user.email}`);
+      
+      // Delete user's attendance records as participant by email (if any)
+      await db.delete(attendance).where(eq(attendance.participantEmail, user.email));
+      console.log(`Deleted attendance records for participant ${user.email}`);
+      
+      // Delete user's memberships (if any)
+      await db.delete(memberships).where(eq(memberships.userId, user.id));
+      console.log(`Deleted memberships for user ${user.email}`);
+      
+      // Delete user's debit order mandates (if any)
+      await db.delete(debitOrderMandates).where(eq(debitOrderMandates.userId, user.id));
+      console.log(`Deleted debit order mandates for user ${user.email}`);
+      
+      // Delete user's messages (if any)
+      await db.delete(messages).where(eq(messages.senderId, user.id));
+      await db.delete(messageReplies).where(eq(messageReplies.senderId, user.id));
+      console.log(`Deleted messages for user ${user.email}`);
+      
+      // Delete user's user achievements (if any)
+      await db.delete(userAchievements).where(eq(userAchievements.userId, user.id));
+      console.log(`Deleted achievements for user ${user.email}`);
+      
+      // Delete user's user stats (if any)
+      await db.delete(userStats).where(eq(userStats.userId, user.id));
+      console.log(`Deleted stats for user ${user.email}`);
+      
+      // Delete user's children (if any)
+      await db.delete(children).where(eq(children.parentId, user.id));
+      console.log(`Deleted children records for user ${user.email}`);
+      
+      // Delete user organization relationships
+      await db.delete(userOrganizations).where(eq(userOrganizations.userId, user.id));
+      console.log(`Deleted organization relationships for user ${user.email}`);
+      
+      // Finally, delete the user
       await db.delete(users).where(eq(users.id, id));
+      console.log(`Successfully deleted user: ${user.email} (ID: ${id})`);
+      
       return true;
     } catch (error) {
       console.error("Error permanently deleting user:", error);
