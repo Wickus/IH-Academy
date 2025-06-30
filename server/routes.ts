@@ -3524,6 +3524,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reset user password (for admin management)
+  app.post("/api/users/:userId/reset-password", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const userId = parseInt(req.params.userId);
+      const { newPassword } = req.body;
+
+      if (!newPassword || newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      // Get the user to reset password for
+      const userToReset = await storage.getUserById(userId);
+      if (!userToReset) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Reset the password
+      const success = await storage.resetUserPassword(userId, newPassword);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to reset password" });
+      }
+
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Error resetting user password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   // Global settings endpoints
   app.get("/api/global-settings", async (req: Request, res: Response) => {
     try {
