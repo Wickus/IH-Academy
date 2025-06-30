@@ -16,7 +16,8 @@ import {
   Eye,
   Power,
   DollarSign,
-  Edit
+  Edit,
+  Calendar
 } from "lucide-react";
 import {
   Dialog,
@@ -1320,6 +1321,84 @@ function SettingsTab() {
 
 // Users Tab Component
 function UsersTab({ users }: { users: any[] }) {
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [showUserDetails, setShowUserDetails] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Cleanup orphaned users mutation
+  const cleanupMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/users/cleanup-orphaned");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to cleanup orphaned users");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({ 
+        title: "Cleanup Completed", 
+        description: `Removed ${data.deletedCount} orphaned users: ${data.deletedUsers.join(', ')}` 
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Delete user mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const response = await apiRequest("DELETE", `/api/users/${userId}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete user");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "User deleted successfully" });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setShowViewModal(false);
+      setSelectedUser(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Fetch user details
+  const { data: userDetails, isLoading: loadingDetails } = useQuery({
+    queryKey: ['/api/users', selectedUser?.id],
+    queryFn: async () => {
+      if (!selectedUser?.id) return null;
+      const response = await apiRequest("GET", `/api/users/${selectedUser.id}`);
+      if (!response.ok) throw new Error("Failed to fetch user details");
+      return response.json();
+    },
+    enabled: !!selectedUser?.id
+  });
+
+  const handleViewUser = (user: any) => {
+    setSelectedUser(user);
+    setShowViewModal(true);
+  };
+
+  const handleDeleteUser = (user: any) => {
+    if (confirm(`Are you sure you want to delete user "${user.username}"? This action cannot be undone.`)) {
+      deleteMutation.mutate(user.id);
+    }
+  };
+
+  const handleCleanupOrphaned = () => {
+    if (confirm('Are you sure you want to remove all orphaned users? This will permanently delete users not associated with any organisation.')) {
+      cleanupMutation.mutate();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -1327,6 +1406,15 @@ function UsersTab({ users }: { users: any[] }) {
           <h2 className="text-2xl font-bold" style={{ color: '#20366B' }}>Users</h2>
           <p style={{ color: '#64748B' }}>Manage all users across the platform</p>
         </div>
+        <Button
+          onClick={handleCleanupOrphaned}
+          disabled={cleanupMutation.isPending}
+          style={{ backgroundColor: '#EF4444', color: 'white' }}
+          className="hover:opacity-90"
+        >
+          <Trash className="h-4 w-4 mr-2" />
+          Cleanup Orphaned Users
+        </Button>
       </div>
 
       <Card className="border-none shadow-md" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
@@ -1376,10 +1464,21 @@ function UsersTab({ users }: { users: any[] }) {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={() => handleViewUser(user)}
                       style={{ borderColor: '#E2E8F0' }}
-                      title="Edit User"
+                      title="View User Details"
                     >
                       <Eye className="h-4 w-4" style={{ color: '#64748B' }} />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteUser(user)}
+                      disabled={deleteMutation.isPending}
+                      style={{ borderColor: '#E2E8F0' }}
+                      title="Delete User"
+                    >
+                      <Trash className="h-4 w-4" style={{ color: '#EF4444' }} />
                     </Button>
                   </div>
                 </div>
@@ -1388,6 +1487,142 @@ function UsersTab({ users }: { users: any[] }) {
           )}
         </CardContent>
       </Card>
+
+      {/* User Details Modal */}
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2" style={{ color: '#20366B' }}>
+              <User className="h-5 w-5" />
+              User Details - {selectedUser?.username}
+            </DialogTitle>
+            <DialogDescription style={{ color: '#64748B' }}>
+              Detailed information about this user
+            </DialogDescription>
+          </DialogHeader>
+
+          {loadingDetails ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+            </div>
+          ) : userDetails ? (
+            <div className="space-y-6">
+              {/* User Info */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
+                    <User className="h-5 w-5" />
+                    User Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Username</label>
+                      <p style={{ color: '#1F2937' }}>{userDetails.username}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Email</label>
+                      <p style={{ color: '#1F2937' }}>{userDetails.email}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Role</label>
+                      <Badge style={{ backgroundColor: '#278DD4', color: 'white' }}>
+                        {userDetails.role || 'member'}
+                      </Badge>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Status</label>
+                      <Badge style={{ backgroundColor: userDetails.isActive ? '#24D367' : '#EF4444', color: 'white' }}>
+                        {userDetails.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Organisations */}
+              {userDetails.organizations && userDetails.organizations.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
+                      <Building2 className="h-5 w-5" />
+                      Organisations ({userDetails.organizations.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {userDetails.organizations.map((org: any) => (
+                        <div key={org.organizationId} className="flex items-center justify-between p-3 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
+                          <div>
+                            <p className="font-medium" style={{ color: '#1E293B' }}>{org.organizationName || `Organisation ${org.organizationId}`}</p>
+                            <p className="text-sm" style={{ color: '#64748B' }}>Role: {org.role}</p>
+                          </div>
+                          <Badge style={{ backgroundColor: '#20366B', color: 'white' }}>
+                            {org.role}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Recent Bookings */}
+              {userDetails.recentBookings && userDetails.recentBookings.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
+                      <Calendar className="h-5 w-5" />
+                      Recent Bookings ({userDetails.bookingCount} total)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {userDetails.recentBookings.map((booking: any) => (
+                        <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
+                          <div>
+                            <p className="font-medium" style={{ color: '#1E293B' }}>{booking.className}</p>
+                            <p className="text-sm" style={{ color: '#64748B' }}>
+                              {booking.organizationName} • {new Date(booking.bookingDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Badge style={{ backgroundColor: '#24D367', color: 'white' }}>
+                            {booking.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p style={{ color: '#64748B' }}>Failed to load user details</p>
+            </div>
+          )}
+
+          <DialogFooter className="mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowViewModal(false)}
+              style={{ borderColor: '#E2E8F0' }}
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => handleDeleteUser(selectedUser)}
+              disabled={deleteMutation.isPending}
+              style={{ backgroundColor: '#EF4444', color: 'white' }}
+              className="hover:opacity-90"
+            >
+              <Trash className="h-4 w-4 mr-2" />
+              Delete User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

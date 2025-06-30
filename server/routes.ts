@@ -3619,6 +3619,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete user endpoint
+  app.delete("/api/users/:id", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const userId = parseInt(req.params.id);
+      
+      // Prevent self-deletion
+      if (userId === currentUser.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      const success = await storage.deleteUser(userId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Cleanup orphaned users endpoint
+  app.post("/api/users/cleanup-orphaned", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      }
+
+      const result = await storage.cleanupOrphanedUsers();
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error cleaning up orphaned users:", error);
+      res.status(500).json({ message: "Failed to cleanup orphaned users" });
+    }
+  });
+
   // Routes registered successfully
   console.log("Multi-tenant API routes with real-time WebSocket support registered");
   return httpServer;
