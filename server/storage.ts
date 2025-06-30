@@ -423,8 +423,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   // User-Organization relationship methods
-  async getUserOrganizations(userId: number): Promise<UserOrganization[]> {
-    return await db.select().from(userOrganizations).where(eq(userOrganizations.userId, userId));
+  async getUserOrganizations(userId: number): Promise<any[]> {
+    const result = await db.select({
+      id: userOrganizations.id,
+      userId: userOrganizations.userId,
+      organizationId: userOrganizations.organizationId,
+      role: userOrganizations.role,
+      joinedAt: userOrganizations.joinedAt,
+      organizationName: organizations.name,
+      organizationDescription: organizations.description,
+      organizationIsActive: organizations.isActive,
+      organizationEmail: organizations.email,
+      organizationPrimaryColor: organizations.primaryColor,
+      organizationLogo: organizations.logo
+    })
+    .from(userOrganizations)
+    .innerJoin(organizations, eq(userOrganizations.organizationId, organizations.id))
+    .where(eq(userOrganizations.userId, userId));
+    
+    return result;
   }
 
   async getAllUserOrganizations(): Promise<UserOrganization[]> {
