@@ -1487,6 +1487,24 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users).where(eq(users.role, 'global_admin'));
   }
 
+  // Reset user password
+  async resetUserPassword(userId: number, newPassword: string): Promise<boolean> {
+    try {
+      const result = await db
+        .update(users)
+        .set({ 
+          password: newPassword,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+      
+      return (result.rowCount || 0) > 0;
+    } catch (error) {
+      console.error("Error resetting user password:", error);
+      return false;
+    }
+  }
+
   // User management for global admin
   async getUserBookings(userId: number): Promise<any[]> {
     // First get the user to find their email
