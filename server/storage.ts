@@ -547,7 +547,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(userOrganizations.userId, users.id))
       .where(and(
         eq(userOrganizations.organizationId, organizationId),
-        eq(userOrganizations.role, 'organization_admin'),
+        eq(userOrganizations.role, 'admin'),
         eq(userOrganizations.isActive, true)
       ));
     
