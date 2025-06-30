@@ -48,9 +48,9 @@ export default function GlobalAdminDashboard() {
 
   // Fetch global stats
   const { data: globalStats = {}, isLoading: loadingStats } = useQuery({
-    queryKey: ['/api/global-stats'],
+    queryKey: ['/api/stats/global'],
     queryFn: async () => {
-      const response = await apiRequest("GET", "/api/global-stats");
+      const response = await apiRequest("GET", "/api/stats/global");
       if (!response.ok) throw new Error("Failed to fetch global stats");
       return response.json();
     }
@@ -111,6 +111,7 @@ export default function GlobalAdminDashboard() {
             activeOrgs={activeOrgs}
             trialOrgs={trialOrgs}
             totalUsers={totalUsers}
+            globalStats={globalStats}
             onTabChange={setActiveTab}
           />
         </TabsContent>
