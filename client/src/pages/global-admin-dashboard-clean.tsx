@@ -585,6 +585,16 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="h-10 w-10 p-0 hover:bg-yellow-50"
+                        style={{ borderColor: '#E2E8F0' }}
+                        onClick={() => handleEditOrg(org)}
+                        title="Edit Organisation"
+                      >
+                        <Edit className="h-5 w-5" style={{ color: '#F59E0B' }} />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="h-10 w-10 p-0 hover:bg-green-50"
                         style={{ borderColor: '#E2E8F0' }}
                         onClick={() => handleToggleStatus(org)}
@@ -943,8 +953,10 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
                         className="w-full justify-start" 
                         variant="outline"
                         onClick={() => {
-                          // Store admin session and redirect to organization dashboard
-                          window.open(`${window.location.origin}/?adminAccess=${selectedOrg.id}`, '_blank');
+                          // Store the organization ID for global admin access
+                          sessionStorage.setItem('globalAdminOrgId', selectedOrg.id.toString());
+                          // Open in new tab to organization dashboard
+                          window.open(`${window.location.origin}/organization-dashboard`, '_blank');
                         }}
                       >
                         <Eye className="h-4 w-4 mr-2" />
@@ -1010,6 +1022,94 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
               </DialogFooter>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Organization Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle style={{ color: '#20366B' }}>Edit Organisation Details</DialogTitle>
+            <DialogDescription style={{ color: '#64748B' }}>
+              Update the basic information for {selectedOrg?.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Organisation Name</Label>
+                <Input
+                  value={editFormData.name}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter organisation name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Contact Email</Label>
+                <Input
+                  type="email"
+                  value={editFormData.email}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter contact email"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Input
+                value={editFormData.description}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter organisation description"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Phone Number</Label>
+                <Input
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Website</Label>
+                <Input
+                  value={editFormData.website}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, website: e.target.value }))}
+                  placeholder="Enter website URL"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Address</Label>
+              <Input
+                value={editFormData.address}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, address: e.target.value }))}
+                placeholder="Enter physical address"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowEditModal(false)}
+              style={{ borderColor: '#E2E8F0' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdateOrg}
+              disabled={updateOrgMutation.isPending}
+              style={{ backgroundColor: '#20366B', color: 'white' }}
+            >
+              {updateOrgMutation.isPending ? 'Updating...' : 'Update Organisation'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
