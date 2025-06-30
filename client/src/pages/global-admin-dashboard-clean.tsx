@@ -1393,7 +1393,7 @@ function UsersTab({ users }: { users: any[] }) {
 }
 
 // Revenue Tab Component
-function RevenueTab() {
+function RevenueTab({ globalStats, organisations }: { globalStats: any; organisations: any[] }) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -1406,21 +1406,25 @@ function RevenueTab() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="border-none shadow-md" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
           <CardHeader>
-            <CardTitle style={{ color: '#1E293B' }}>Monthly Revenue</CardTitle>
+            <CardTitle style={{ color: '#1E293B' }}>Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>R45,230</div>
-            <p className="text-xs" style={{ color: '#64748B' }}>+12% from last month</p>
+            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>
+              R{globalStats?.totalRevenue ? Number(globalStats.totalRevenue).toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}
+            </div>
+            <p className="text-xs" style={{ color: '#64748B' }}>All-time platform revenue</p>
           </CardContent>
         </Card>
         
         <Card className="border-none shadow-md" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
           <CardHeader>
-            <CardTitle style={{ color: '#1E293B' }}>Active Subscriptions</CardTitle>
+            <CardTitle style={{ color: '#1E293B' }}>Active Organisations</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>24</div>
-            <p className="text-xs" style={{ color: '#64748B' }}>Organisations paying</p>
+            <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>
+              {organisations ? organisations.filter((org: any) => org.isActive).length : 0}
+            </div>
+            <p className="text-xs" style={{ color: '#64748B' }}>Active organisations</p>
           </CardContent>
         </Card>
         
@@ -1429,7 +1433,11 @@ function RevenueTab() {
             <CardTitle style={{ color: '#1E293B' }}>Average Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>R1,885</div>
+            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>
+              R{globalStats?.totalRevenue && globalStats?.totalOrganizations > 0 
+                ? Math.round(globalStats.totalRevenue / globalStats.totalOrganizations).toLocaleString('en-ZA') 
+                : '0'}
+            </div>
             <p className="text-xs" style={{ color: '#64748B' }}>Per organisation</p>
           </CardContent>
         </Card>
