@@ -68,8 +68,8 @@ export default function GlobalAdminDashboard() {
 
   // Calculate overview stats
   const totalOrgs = organisations.length;
-  const activeOrgs = organisations.filter((org: any) => org.status === 'active').length;
-  const trialOrgs = organisations.filter((org: any) => org.trialStatus === 'active').length;
+  const activeOrgs = organisations.filter((org: any) => org.subscriptionStatus === 'active').length;
+  const trialOrgs = organisations.filter((org: any) => org.subscriptionStatus === 'trial').length;
   const totalUsers = users.length;
 
   if (loadingOrgs || loadingStats || loadingUsers) {
@@ -1422,7 +1422,7 @@ function RevenueTab({ globalStats, organisations }: { globalStats: any; organisa
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: '#278DD4' }}>
-              {organisations ? organisations.filter((org: any) => org.isActive).length : 0}
+              {organisations ? organisations.filter((org: any) => org.subscriptionStatus === 'active').length : 0}
             </div>
             <p className="text-xs" style={{ color: '#64748B' }}>Active organisations</p>
           </CardContent>
