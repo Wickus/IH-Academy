@@ -446,6 +446,11 @@ function Router() {
     return <FreeTrialSignup />;
   }
 
+  // Show password reset page
+  if (!isAuthenticated && location === "/reset-password") {
+    return <ResetPassword />;
+  }
+
   // Allow organization setup for authenticated users
   if (isAuthenticated && user && location.startsWith("/organization-setup")) {
     return <OrganizationSetup />;

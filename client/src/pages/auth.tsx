@@ -7,10 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { api, type User, type Organization } from "@/lib/api";
-import { UserPlus, LogIn, Building2, Users, Dumbbell } from "lucide-react";
+import { UserPlus, LogIn, Building2, Users, Dumbbell, Key } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface LoginFormData {
