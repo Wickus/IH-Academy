@@ -1218,6 +1218,53 @@ function GlobalAdminsTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reset Password Modal */}
+      <Dialog open={showResetModal} onOpenChange={setShowResetModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Global Admin Password</DialogTitle>
+            <DialogDescription>
+              Reset password for {selectedAdmin?.name || selectedAdmin?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                placeholder="Enter new password (minimum 8 characters)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowResetModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={submitPasswordReset}
+              disabled={resetPasswordMutation.isPending}
+              style={{ backgroundColor: '#278DD4', color: 'white' }}
+              className="hover:opacity-90"
+            >
+              {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
