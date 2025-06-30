@@ -1488,10 +1488,10 @@ function UsersTab({ users }: { users: any[] }) {
         </CardContent>
       </Card>
 
-      {/* User Details Modal */}
+      {/* User Details Modal - Optimized for smaller screens */}
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center gap-2" style={{ color: '#20366B' }}>
               <User className="h-5 w-5" />
               User Details - {selectedUser?.username}
@@ -1506,34 +1506,34 @@ function UsersTab({ users }: { users: any[] }) {
               <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : userDetails ? (
-            <div className="space-y-6">
-              {/* User Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
-                    <User className="h-5 w-5" />
+            <div className="overflow-y-auto flex-1 space-y-4 pr-2">
+              {/* User Info - Compact layout */}
+              <Card className="border-none shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg" style={{ color: '#1E293B' }}>
+                    <User className="h-4 w-4" />
                     User Information
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardContent className="pt-0">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Username</label>
-                      <p style={{ color: '#1F2937' }}>{userDetails.username}</p>
+                      <label className="text-xs font-medium text-gray-500">Username</label>
+                      <p className="font-medium" style={{ color: '#1F2937' }}>{userDetails.username}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Email</label>
-                      <p style={{ color: '#1F2937' }}>{userDetails.email}</p>
+                      <label className="text-xs font-medium text-gray-500">Email</label>
+                      <p className="font-medium" style={{ color: '#1F2937' }}>{userDetails.email}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Role</label>
-                      <Badge style={{ backgroundColor: '#278DD4', color: 'white' }}>
+                      <label className="text-xs font-medium text-gray-500">Role</label>
+                      <Badge className="text-xs" style={{ backgroundColor: '#278DD4', color: 'white' }}>
                         {userDetails.role || 'member'}
                       </Badge>
                     </div>
                     <div>
-                      <label className="text-sm font-medium" style={{ color: '#374151' }}>Status</label>
-                      <Badge style={{ backgroundColor: userDetails.isActive ? '#24D367' : '#EF4444', color: 'white' }}>
+                      <label className="text-xs font-medium text-gray-500">Status</label>
+                      <Badge className="text-xs" style={{ backgroundColor: userDetails.isActive ? '#24D367' : '#EF4444', color: 'white' }}>
                         {userDetails.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
@@ -1541,24 +1541,26 @@ function UsersTab({ users }: { users: any[] }) {
                 </CardContent>
               </Card>
 
-              {/* Organisations */}
+              {/* Organisations - Scrollable list */}
               {userDetails.organizations && userDetails.organizations.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
-                      <Building2 className="h-5 w-5" />
+                <Card className="border-none shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg" style={{ color: '#1E293B' }}>
+                      <Building2 className="h-4 w-4" />
                       Organisations ({userDetails.organizations.length})
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
+                  <CardContent className="pt-0">
+                    <div className="max-h-40 overflow-y-auto space-y-2">
                       {userDetails.organizations.map((org: any) => (
-                        <div key={org.organizationId} className="flex items-center justify-between p-3 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
-                          <div>
-                            <p className="font-medium" style={{ color: '#1E293B' }}>{org.organizationName || `Organisation ${org.organizationId}`}</p>
-                            <p className="text-sm" style={{ color: '#64748B' }}>Role: {org.role}</p>
+                        <div key={org.organizationId} className="flex items-center justify-between p-2 rounded border border-gray-200 bg-gray-50">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm truncate" style={{ color: '#1E293B' }}>
+                              {org.organizationName || `Organisation ${org.organizationId}`}
+                            </p>
+                            <p className="text-xs" style={{ color: '#64748B' }}>Role: {org.role}</p>
                           </div>
-                          <Badge style={{ backgroundColor: '#20366B', color: 'white' }}>
+                          <Badge className="text-xs ml-2" style={{ backgroundColor: '#20366B', color: 'white' }}>
                             {org.role}
                           </Badge>
                         </div>
@@ -1568,26 +1570,26 @@ function UsersTab({ users }: { users: any[] }) {
                 </Card>
               )}
 
-              {/* Recent Bookings */}
+              {/* Recent Bookings - Scrollable list */}
               {userDetails.recentBookings && userDetails.recentBookings.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2" style={{ color: '#1E293B' }}>
-                      <Calendar className="h-5 w-5" />
+                <Card className="border-none shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg" style={{ color: '#1E293B' }}>
+                      <Calendar className="h-4 w-4" />
                       Recent Bookings ({userDetails.bookingCount} total)
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
+                  <CardContent className="pt-0">
+                    <div className="max-h-32 overflow-y-auto space-y-2">
                       {userDetails.recentBookings.map((booking: any) => (
-                        <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg" style={{ border: '1px solid #E2E8F0' }}>
-                          <div>
-                            <p className="font-medium" style={{ color: '#1E293B' }}>{booking.className}</p>
-                            <p className="text-sm" style={{ color: '#64748B' }}>
+                        <div key={booking.id} className="flex items-center justify-between p-2 rounded border border-gray-200 bg-gray-50">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm truncate" style={{ color: '#1E293B' }}>{booking.className}</p>
+                            <p className="text-xs" style={{ color: '#64748B' }}>
                               {booking.organizationName} • {new Date(booking.bookingDate).toLocaleDateString()}
                             </p>
                           </div>
-                          <Badge style={{ backgroundColor: '#24D367', color: 'white' }}>
+                          <Badge className="text-xs ml-2" style={{ backgroundColor: '#24D367', color: 'white' }}>
                             {booking.status}
                           </Badge>
                         </div>
@@ -1603,15 +1605,17 @@ function UsersTab({ users }: { users: any[] }) {
             </div>
           )}
 
-          <DialogFooter className="mt-6">
+          <DialogFooter className="flex-shrink-0 mt-4 pt-4 border-t border-gray-200">
             <Button 
               variant="outline" 
+              size="sm"
               onClick={() => setShowViewModal(false)}
               style={{ borderColor: '#E2E8F0' }}
             >
               Close
             </Button>
             <Button
+              size="sm"
               onClick={() => handleDeleteUser(selectedUser)}
               disabled={deleteMutation.isPending}
               style={{ backgroundColor: '#EF4444', color: 'white' }}
