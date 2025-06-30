@@ -1415,20 +1415,27 @@ export class DatabaseStorage implements IStorage {
 
   // User management for global admin
   async getUserBookings(userId: number): Promise<any[]> {
+    // First get the user to find their email
+    const user = await this.getUserById(userId);
+    if (!user) {
+      return [];
+    }
+
+    // Then get bookings by email since bookings table uses participantEmail
     const result = await db.select({
       id: bookings.id,
       classId: bookings.classId,
       participantName: bookings.participantName,
       participantEmail: bookings.participantEmail,
       bookingDate: bookings.bookingDate,
-      status: bookings.status,
+      paymentStatus: bookings.paymentStatus,
       className: classes.name,
       organizationName: organizations.name
     })
     .from(bookings)
     .leftJoin(classes, eq(bookings.classId, classes.id))
     .leftJoin(organizations, eq(classes.organizationId, organizations.id))
-    .where(eq(bookings.userId, userId))
+    .where(eq(bookings.participantEmail, user.email))
     .orderBy(desc(bookings.bookingDate));
     
     return result;
