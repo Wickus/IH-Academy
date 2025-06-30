@@ -2863,6 +2863,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send message to organization administrators (Global Admin)
+  app.post("/api/messages/send-to-org", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin required." });
+      }
+
+      const { organizationId, subject, content, fromGlobalAdmin } = req.body;
+
+      if (!organizationId || !subject || !content) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Get organization details
+      const organization = await storage.getOrganization(organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Get organization admins
+      const admins = await storage.getOrganizationAdmins(organizationId);
+      if (admins.length === 0) {
+        return res.status(404).json({ message: "No administrators found for this organization" });
+      }
+
+      // Create message record for each admin
+      const messagePromises = admins.map(admin => 
+        storage.createMessage({
+          subject,
+          message: content,
+          senderId: user.id,
+          recipientType: 'user',
+          recipientId: admin.id
+        })
+      );
+
+      // Send email notifications to admins
+      const emailPromises = admins.map(admin =>
+        sendEmail({
+          to: admin.email,
+          from: "admin@itshappening.africa",
+          subject: `IH Academy Global Admin: ${subject}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); color: white; padding: 20px; text-align: center;">
+                <h1 style="margin: 0; font-size: 24px;">IH Academy Global Admin</h1>
+                <p style="margin: 5px 0 0; opacity: 0.9;">Official Platform Communication</p>
+              </div>
+              
+              <div style="background-color: #fff; padding: 30px; border: 1px solid #e9ecef;">
+                <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #20366B; margin-bottom: 25px;">
+                  <p style="margin: 0 0 10px; font-weight: bold; color: #20366B;">To: ${organization.name} Administrators</p>
+                  <p style="margin: 0 0 10px; font-weight: bold; color: #20366B;">From: IH Academy Global Support Team</p>
+                  <p style="margin: 0; font-weight: bold; color: #20366B;">Subject: ${subject}</p>
+                </div>
+                
+                <div style="line-height: 1.6; color: #374151; white-space: pre-line; margin-bottom: 25px;">
+${content}
+                </div>
+                
+                <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 0; color: #1976d2; font-size: 14px;">
+                    💡 <strong>Global Admin Communication:</strong> This message was sent by the IH Academy platform administrators. Please respond through your organization dashboard messaging system if needed.
+                  </p>
+                </div>
+              </div>
+              
+              <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+                <p style="margin: 0; color: #6c757d; font-size: 14px;">
+                  IH Academy Platform | Official Administrator Communication
+                </p>
+                <p style="margin: 5px 0 0; color: #6c757d; font-size: 12px;">
+                  This is an automated message from the IH Academy platform administration team.
+                </p>
+              </div>
+            </div>
+          `
+        })
+      );
+
+      // Execute both message creation and email sending
+      const [messages, emailResults] = await Promise.all([
+        Promise.allSettled(messagePromises),
+        Promise.allSettled(emailPromises)
+      ]);
+
+      const successfulMessages = messages.filter(result => result.status === 'fulfilled').length;
+      const successfulEmails = emailResults.filter(result => result.status === 'fulfilled').length;
+
+      if (successfulMessages > 0) {
+        res.json({ 
+          message: "Message sent successfully to organization administrators",
+          recipientCount: successfulMessages,
+          emailsSent: successfulEmails,
+          totalAdmins: admins.length
+        });
+      } else {
+        res.status(500).json({ message: "Failed to send message" });
+      }
+    } catch (error: any) {
+      console.error("Error sending message to organization:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Mark message as read
   app.put("/api/messages/:messageId/read", async (req: Request, res: Response) => {
     try {
