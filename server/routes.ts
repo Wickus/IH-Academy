@@ -736,6 +736,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add alternate endpoint for dashboard compatibility
+  app.get("/api/global-stats", async (req: Request, res: Response) => {
+    try {
+      const stats = await storage.getGlobalStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching global stats:", error);
+      res.status(500).json({ message: "Failed to fetch global stats" });
+    }
+  });
+
   app.get("/api/stats/organization/:id", async (req: Request, res: Response) => {
     try {
       const organizationId = parseInt(req.params.id);

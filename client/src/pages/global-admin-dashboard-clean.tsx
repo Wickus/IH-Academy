@@ -133,19 +133,7 @@ export default function GlobalAdminDashboard() {
         </TabsContent>
 
         <TabsContent value="revenue" className="space-y-6">
-          <RevenueTab />
-        </TabsContent>
-
-        <TabsContent value="pricing" className="space-y-6">
-          <PricingTab />
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-6">
-          <UsersTab users={users} />
-        </TabsContent>
-
-        <TabsContent value="revenue" className="space-y-6">
-          <RevenueTab />
+          <RevenueTab globalStats={globalStats} organisations={organisations} />
         </TabsContent>
 
         <TabsContent value="pricing" className="space-y-6">
@@ -157,11 +145,12 @@ export default function GlobalAdminDashboard() {
 }
 
 // Overview Tab Component
-function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange }: {
+function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, globalStats, onTabChange }: {
   totalOrgs: number;
   activeOrgs: number;
   trialOrgs: number;
   totalUsers: number;
+  globalStats: any;
   onTabChange: (tab: string) => void;
 }) {
   return (
@@ -212,9 +201,11 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
             <DollarSign className="h-4 w-4" style={{ color: '#24D367' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>R45,230</div>
+            <div className="text-2xl font-bold" style={{ color: '#24D367' }}>
+              R{globalStats?.totalRevenue ? Number(globalStats.totalRevenue).toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'}
+            </div>
             <p className="text-xs" style={{ color: '#64748B' }}>
-              This month
+              Total platform revenue
             </p>
           </CardContent>
         </Card>
@@ -229,9 +220,9 @@ function OverviewTab({ totalOrgs, activeOrgs, trialOrgs, totalUsers, onTabChange
             <Settings className="h-4 w-4" style={{ color: '#20366B' }} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>3</div>
+            <div className="text-2xl font-bold" style={{ color: '#20366B' }}>6</div>
             <p className="text-xs" style={{ color: '#64748B' }}>
-              Active plans
+              Available pricing tiers
             </p>
           </CardContent>
         </Card>
