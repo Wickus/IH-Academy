@@ -17,7 +17,8 @@ import {
   Power,
   DollarSign,
   Edit,
-  Calendar
+  Calendar,
+  Key
 } from "lucide-react";
 import {
   Dialog,
@@ -960,6 +961,10 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
 // Global Admins Tab Component  
 function GlobalAdminsTab() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminName, setNewAdminName] = useState("");
   const { toast } = useToast();
@@ -1015,6 +1020,31 @@ function GlobalAdminsTab() {
     },
   });
 
+  // Reset password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (data: { adminId: number; newPassword: string }) => {
+      const response = await apiRequest("POST", `/api/global-admins/${data.adminId}/reset-password`, {
+        newPassword: data.newPassword
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to reset password");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Password reset successfully" });
+      setShowResetModal(false);
+      setSelectedAdmin(null);
+      setNewPassword("");
+      setConfirmPassword("");
+      refetchAdmins();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
   const handleAddAdmin = () => {
     if (!newAdminEmail.trim() || !newAdminName.trim()) {
       toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
@@ -1027,6 +1057,33 @@ function GlobalAdminsTab() {
     if (confirm(`Are you sure you want to remove ${adminName} as a global admin?`)) {
       removeAdminMutation.mutate(adminId);
     }
+  };
+
+  const handleResetPassword = (admin: any) => {
+    setSelectedAdmin(admin);
+    setShowResetModal(true);
+  };
+
+  const submitPasswordReset = () => {
+    if (!newPassword.trim()) {
+      toast({ title: "Error", description: "Please enter a new password", variant: "destructive" });
+      return;
+    }
+    
+    if (newPassword.length < 8) {
+      toast({ title: "Error", description: "Password must be at least 8 characters long", variant: "destructive" });
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    
+    resetPasswordMutation.mutate({ 
+      adminId: selectedAdmin.id, 
+      newPassword: newPassword.trim() 
+    });
   };
 
   if (loadingAdmins) {
@@ -1090,6 +1147,15 @@ function GlobalAdminsTab() {
                     <Badge variant="secondary" style={{ backgroundColor: '#24D367', color: 'white' }}>
                       Global Admin
                     </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleResetPassword(admin)}
+                      disabled={resetPasswordMutation.isPending}
+                      style={{ borderColor: '#E2E8F0' }}
+                    >
+                      <Key className="h-4 w-4" style={{ color: '#278DD4' }} />
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
