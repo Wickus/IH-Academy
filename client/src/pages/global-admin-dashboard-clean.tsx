@@ -470,7 +470,8 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
         <Button
           variant={filterStatus === 'all' ? 'default' : 'outline'}
           onClick={() => setFilterStatus('all')}
-          style={filterStatus === 'all' ? { backgroundColor: '#20366B', color: 'white' } : { borderColor: '#E2E8F0' }}
+          style={filterStatus === 'all' ? { backgroundColor: '#20366B', color: 'white !important' } : { borderColor: '#E2E8F0' }}
+          className={filterStatus === 'all' ? 'text-white' : ''}
         >
           All ({organisations.length})
         </Button>
@@ -1197,7 +1198,8 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
             <Button
               onClick={handleUpdateOrg}
               disabled={updateOrgMutation.isPending}
-              style={{ backgroundColor: '#20366B', color: 'white' }}
+              style={{ backgroundColor: '#20366B', color: 'white !important' }}
+              className="text-white"
             >
               {updateOrgMutation.isPending ? 'Updating...' : 'Update Organisation'}
             </Button>
@@ -2291,7 +2293,7 @@ function PricingTab() {
           onClick={handleSave}
           disabled={savePricingMutation.isPending}
           className="text-white font-medium"
-          style={{ backgroundColor: '#20366B', color: 'white' }}
+          style={{ backgroundColor: '#20366B', color: 'white !important' }}
         >
           {savePricingMutation.isPending ? 'Saving...' : 'Save All Changes'}
         </Button>
