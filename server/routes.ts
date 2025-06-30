@@ -314,32 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/users/:id", async (req: Request, res: Response) => {
-    try {
-      const currentUser = getCurrentUser(req);
-      if (!currentUser || currentUser.role !== 'global_admin') {
-        return res.status(403).json({ message: "Access denied. Global admin only." });
-      }
-      
-      const userId = parseInt(req.params.id);
-      const targetUser = await storage.getUser(userId);
-      
-      if (!targetUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      if (targetUser.role === 'global_admin') {
-        return res.status(400).json({ message: "Cannot delete global admin user" });
-      }
-      
-      // Soft delete by setting isActive to false
-      const updatedUser = await storage.updateUser(userId, { isActive: false });
-      res.json({ message: "User deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      res.status(500).json({ message: "Failed to delete user" });
-    }
-  });
+
 
   app.post("/api/users/bulk-purge", async (req: Request, res: Response) => {
     try {
@@ -3544,27 +3519,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User management endpoints for global admin
-  app.delete("/api/users/:id", async (req: Request, res: Response) => {
-    try {
-      const currentUser = getCurrentUser(req);
-      if (!currentUser || currentUser.role !== 'global_admin') {
-        return res.status(403).json({ message: "Access denied. Global admin role required." });
-      }
-
-      const userId = parseInt(req.params.id);
-      
-      // Don't allow deleting themselves
-      if (userId === currentUser.id) {
-        return res.status(400).json({ message: "Cannot delete your own account" });
-      }
-
-      await storage.deleteUser(userId);
-      res.json({ message: "User deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      res.status(500).json({ message: "Failed to delete user" });
-    }
-  });
 
   // Clean up orphaned users (users not associated with any organization)
   app.post("/api/users/cleanup-orphaned", async (req: Request, res: Response) => {
