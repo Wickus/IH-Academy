@@ -38,6 +38,10 @@ export const organizations = pgTable("organizations", {
   // Membership settings (for membership model)
   membershipPrice: decimal("membership_price", { precision: 10, scale: 2 }).default("0.00"),
   membershipBillingCycle: text("membership_billing_cycle", { enum: ["monthly", "quarterly", "yearly"] }).default("monthly"),
+  // Fee management settings
+  customDiscount: decimal("custom_discount", { precision: 5, scale: 2 }).default("0.00"),
+  commissionRate: decimal("commission_rate", { precision: 5, scale: 2 }).default("5.00"),
+  specialNotes: text("special_notes"),
   // Subscription/plan info
   planType: text("plan_type", { enum: ["free", "basic", "premium"] }).default("free"),
   maxClasses: integer("max_classes").default(10),

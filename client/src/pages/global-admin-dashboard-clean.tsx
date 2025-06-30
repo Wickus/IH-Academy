@@ -361,7 +361,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
       membershipPrice: org.membershipPrice || '',
       discountPercentage: org.customDiscount || '',
       commissionRate: org.commissionRate || '',
-      paymentTerms: org.specialNotes ? org.specialNotes.replace('Payment Terms: ', '').replace(' days', '') : ''
+      paymentTerms: org.specialNotes || ''
     });
   };
 
@@ -390,7 +390,7 @@ function OrganisationsTab({ organisations }: { organisations: any[] }) {
           membershipPrice: response.organization.membershipPrice || '',
           discountPercentage: response.organization.customDiscount || '',
           commissionRate: response.organization.commissionRate || '',
-          paymentTerms: response.organization.specialNotes ? response.organization.specialNotes.replace('Payment Terms: ', '').replace(' days', '') : ''
+          paymentTerms: response.organization.specialNotes || ''
         });
       }
       // Force aggressive cache invalidation and refetch
