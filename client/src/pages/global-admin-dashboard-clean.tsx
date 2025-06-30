@@ -84,28 +84,28 @@ export default function GlobalAdminDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-3 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: '#20366B' }}>Global Admin Dashboard</h1>
-          <p className="text-gray-600">Manage the IH Academy platform</p>
+          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#20366B' }}>Global Admin Dashboard</h1>
+          <p className="text-sm md:text-base text-gray-600">Manage the IH Academy platform</p>
         </div>
         <div className="flex items-center gap-2">
           <img 
             src="https://itshappening.africa/wp-content/uploads/2024/06/images-1.jpeg" 
             alt="IH Academy"
-            className="h-8 w-8 rounded object-cover"
+            className="h-6 w-6 md:h-8 md:w-8 rounded object-cover"
           />
-          <span className="font-semibold" style={{ color: '#20366B' }}>IH Academy</span>
+          <span className="text-sm md:text-base font-semibold" style={{ color: '#20366B' }}>IH Academy</span>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4" style={{ backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0' }}>
-          <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Overview</TabsTrigger>
-          <TabsTrigger value="organizations" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Organisations</TabsTrigger>
-          <TabsTrigger value="global-admins" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Global Admins</TabsTrigger>
-          <TabsTrigger value="settings" className="data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Settings</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1" style={{ backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0' }}>
+          <TabsTrigger value="overview" className="text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Overview</TabsTrigger>
+          <TabsTrigger value="organizations" className="text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Organisations</TabsTrigger>
+          <TabsTrigger value="global-admins" className="text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Global Admins</TabsTrigger>
+          <TabsTrigger value="settings" className="text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:text-blue-900 data-[state=active]:shadow-sm">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
