@@ -34,9 +34,12 @@ export interface IStorage {
   getInactiveUsers(): Promise<User[]>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: number): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
   deleteUser(id: number): Promise<boolean>;
+  getUserBookings(userId: number): Promise<any[]>;
+  cleanupOrphanedUsers(): Promise<{ deletedCount: number; deletedUsers: string[] }>;
 
   // Achievements
   getAllAchievements(): Promise<Achievement[]>;
@@ -279,6 +282,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
@@ -1403,6 +1411,75 @@ export class DatabaseStorage implements IStorage {
   // Global admin management
   async getGlobalAdmins(): Promise<User[]> {
     return await db.select().from(users).where(eq(users.role, 'global_admin'));
+  }
+
+  // User management for global admin
+  async getUserBookings(userId: number): Promise<any[]> {
+    const result = await db.select({
+      id: bookings.id,
+      classId: bookings.classId,
+      participantName: bookings.participantName,
+      participantEmail: bookings.participantEmail,
+      bookingDate: bookings.bookingDate,
+      status: bookings.status,
+      className: classes.name,
+      organizationName: organizations.name
+    })
+    .from(bookings)
+    .leftJoin(classes, eq(bookings.classId, classes.id))
+    .leftJoin(organizations, eq(classes.organizationId, organizations.id))
+    .where(eq(bookings.userId, userId))
+    .orderBy(desc(bookings.bookingDate));
+    
+    return result;
+  }
+
+  async cleanupOrphanedUsers(): Promise<{ deletedCount: number; deletedUsers: string[] }> {
+    // Find users that are not global admins and not associated with any organization
+    const orphanedUsers = await db.select({
+      id: users.id,
+      username: users.username,
+      email: users.email,
+      role: users.role
+    })
+    .from(users)
+    .leftJoin(userOrganizations, eq(users.id, userOrganizations.userId))
+    .where(
+      and(
+        isNull(userOrganizations.userId), // Not in any organization
+        ne(users.role, 'global_admin') // Not a global admin
+      )
+    );
+
+    console.log(`Found ${orphanedUsers.length} orphaned users:`, orphanedUsers.map(u => u.email));
+
+    const deletedUsers: string[] = [];
+    let deletedCount = 0;
+
+    for (const user of orphanedUsers) {
+      try {
+        // Delete user's bookings first (if any)
+        await db.delete(bookings).where(eq(bookings.userId, user.id));
+        
+        // Delete user's payments (if any)
+        await db.delete(payments).where(eq(payments.userId, user.id));
+        
+        // Delete user's coach records (if any)
+        await db.delete(coaches).where(eq(coaches.userId, user.id));
+        
+        // Delete the user
+        await db.delete(users).where(eq(users.id, user.id));
+        
+        deletedUsers.push(user.email);
+        deletedCount++;
+        
+        console.log(`Deleted orphaned user: ${user.email} (ID: ${user.id})`);
+      } catch (error) {
+        console.error(`Failed to delete orphaned user ${user.email}:`, error);
+      }
+    }
+
+    return { deletedCount, deletedUsers };
   }
 
   // Global settings management
