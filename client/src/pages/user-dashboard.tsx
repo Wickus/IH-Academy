@@ -251,14 +251,14 @@ export default function UserDashboard() {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/completed-classes')}>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">Completed Classes</p>
-                  <p className="text-2xl font-bold text-[#20366B]">{pastBookings.length}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-slate-700 truncate">Completed Classes</p>
+                  <p className="text-lg sm:text-2xl font-bold text-[#20366B]">{pastBookings.length}</p>
                 </div>
-                <div className="p-3 bg-[#24D367]/10 rounded-lg">
-                  <Trophy className="h-6 w-6 text-[#24D367]" />
+                <div className="p-2 sm:p-3 bg-[#24D367]/10 rounded-lg flex-shrink-0 ml-2">
+                  <Trophy className="h-4 w-4 sm:h-6 sm:w-6 text-[#24D367]" />
                 </div>
               </div>
             </CardContent>
@@ -271,30 +271,30 @@ export default function UserDashboard() {
               orgSection.scrollIntoView({ behavior: 'smooth' });
             }
           }}>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">My Organizations</p>
-                  <p className="text-2xl font-bold text-[#20366B]">{userOrganizations.length}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-slate-700 truncate">My Organizations</p>
+                  <p className="text-lg sm:text-2xl font-bold text-[#20366B]">{userOrganizations.length}</p>
                 </div>
-                <div className="p-3 bg-[#278DD4]/10 rounded-lg">
-                  <Building2 className="h-6 w-6 text-[#278DD4]" />
+                <div className="p-2 sm:p-3 bg-[#278DD4]/10 rounded-lg flex-shrink-0 ml-2">
+                  <Building2 className="h-4 w-4 sm:h-6 sm:w-6 text-[#278DD4]" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/messages')}>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">Messages</p>
-                  <p className="text-2xl font-bold text-[#20366B]">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-slate-700 truncate">Messages</p>
+                  <p className="text-lg sm:text-2xl font-bold text-[#20366B]">
                     {messages ? messages.filter((msg: any) => msg.messageType === 'received' && msg.status !== 'read').length : 0}
                   </p>
                 </div>
-                <div className="p-3 bg-[#1c9bfd]/10 rounded-lg">
-                  <MessageCircle className="h-6 w-6 text-[#1c9bfd]" />
+                <div className="p-2 sm:p-3 bg-[#1c9bfd]/10 rounded-lg flex-shrink-0 ml-2">
+                  <MessageCircle className="h-4 w-4 sm:h-6 sm:w-6 text-[#1c9bfd]" />
                 </div>
               </div>
             </CardContent>
