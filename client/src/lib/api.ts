@@ -71,7 +71,7 @@ export interface Class {
   id: number;
   organizationId: number;
   sportId: number;
-  coachId: number;
+  coachId?: number | null;
   name: string;
   description?: string;
   startTime: string;
@@ -233,6 +233,10 @@ export const api = {
   updateClass: async (id: number, classData: Partial<Omit<Class, 'id' | 'sport' | 'coach' | 'bookingCount' | 'availableSpots'>>): Promise<Class> => {
     const response = await apiRequest('PUT', `/api/classes/${id}`, classData);
     return response.json();
+  },
+
+  deleteClass: async (id: number): Promise<void> => {
+    await apiRequest('DELETE', `/api/classes/${id}`);
   },
 
   // Bookings
