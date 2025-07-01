@@ -67,6 +67,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     enabled: !!initialData?.id,
   });
 
+  // Convert data to arrays for safe processing
+  const coachesArray = Array.isArray(coaches) ? coaches : [];
+  const classCoachesArray = Array.isArray(classCoaches) ? classCoaches : [];
+
   // Initialize selected coaches from class coach assignments
   useEffect(() => {
     console.log('ClassForm coach data:', { 
@@ -248,9 +252,6 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   const removeCoach = (coachId: number) => {
     setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
   };
-
-  const coachesArray = Array.isArray(coaches) ? coaches : [];
-  const classCoachesArray = Array.isArray(classCoaches) ? classCoaches : [];
 
   const getCoachName = (coachId: number) => {
     const coach = coachesArray.find((c: any) => c.id === coachId || c.userId === coachId);
