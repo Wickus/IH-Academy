@@ -366,13 +366,13 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                           setRegistrationType("user");
                           setRegisterData({...registerData, role: "member"});
                         }}
-                        className="w-full h-16 bg-gradient-to-r from-[#278DD4] to-[#24D3BF] hover:from-[#1f7bc4] hover:to-[#1fb5a3] text-white font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg"
+                        className="w-full h-16 sm:h-20 bg-gradient-to-r from-[#278DD4] to-[#24D3BF] hover:from-[#1f7bc4] hover:to-[#1fb5a3] text-white font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg"
                       >
-                        <div className="flex items-center justify-center gap-3">
-                          <Users className="h-6 w-6" />
-                          <div className="text-left">
-                            <div className="font-bold text-lg">Register as User</div>
-                            <div className="text-sm opacity-90">Join organizations and book classes</div>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 px-2">
+                          <Users className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+                          <div className="text-center sm:text-left">
+                            <div className="font-bold text-sm sm:text-lg leading-tight">Register as User</div>
+                            <div className="text-xs sm:text-sm opacity-90 leading-tight">Join organizations and book classes</div>
                           </div>
                         </div>
                       </Button>
@@ -383,13 +383,13 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                           setRegistrationType("organization");
                           setRegisterData({...registerData, role: "organization_admin"});
                         }}
-                        className="w-full h-16 bg-gradient-to-r from-[#20366B] to-[#278DD4] hover:from-[#1a2d5a] hover:to-[#1f7bc4] text-white font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg"
+                        className="w-full h-16 sm:h-20 bg-gradient-to-r from-[#20366B] to-[#278DD4] hover:from-[#1a2d5a] hover:to-[#1f7bc4] text-white font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg"
                       >
-                        <div className="flex items-center justify-center gap-3">
-                          <Building2 className="h-6 w-6" />
-                          <div className="text-left">
-                            <div className="font-bold text-lg">Register as Organization</div>
-                            <div className="text-sm opacity-90">Manage your sports academy or club</div>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 px-2">
+                          <Building2 className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+                          <div className="text-center sm:text-left">
+                            <div className="font-bold text-sm sm:text-lg leading-tight">Register as Organization</div>
+                            <div className="text-xs sm:text-sm opacity-90 leading-tight">Manage your sports academy or club</div>
                           </div>
                         </div>
                       </Button>
@@ -408,26 +408,26 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                           Back
                         </Button>
                       </div>
-                      <form onSubmit={handleRegister} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                      <form onSubmit={handleRegister} className="space-y-3 sm:space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="firstName" className="text-white font-medium">First Name</Label>
+                            <Label htmlFor="firstName" className="text-white font-medium text-sm">First Name</Label>
                             <Input
                               id="firstName"
                               value={registerData.firstName}
                               onChange={(e) => setRegisterData({...registerData, firstName: e.target.value})}
                               required
-                              className="bg-white/90 border-white/30 text-gray-900 placeholder-gray-500 focus:border-white focus:ring-white"
+                              className="bg-white/90 border-white/30 text-gray-900 placeholder-gray-500 focus:border-white focus:ring-white h-10 sm:h-9"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="lastName" className="text-white font-medium">Last Name</Label>
+                            <Label htmlFor="lastName" className="text-white font-medium text-sm">Last Name</Label>
                             <Input
                               id="lastName"
                               value={registerData.lastName}
                               onChange={(e) => setRegisterData({...registerData, lastName: e.target.value})}
                               required
-                              className="bg-white/90 border-white/30 text-gray-900 placeholder-gray-500 focus:border-white focus:ring-white"
+                              className="bg-white/90 border-white/30 text-gray-900 placeholder-gray-500 focus:border-white focus:ring-white h-10 sm:h-9"
                             />
                           </div>
                         </div>
