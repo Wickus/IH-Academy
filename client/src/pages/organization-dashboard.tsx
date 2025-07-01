@@ -51,18 +51,9 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
       // Fallback to URL params
       targetOrganizationId = parseInt(orgIdFromParams);
     }
-  } else if (propOrganization) {
-    // Organization provided via props
-    targetOrganizationId = propOrganization.id;
   }
 
-  // Fetch organization data if needed
-  const { data: fetchedOrganization } = useQuery({
-    queryKey: [`/api/organizations/${targetOrganizationId}`],
-    enabled: !!targetOrganizationId && !propOrganization,
-  });
 
-  const organization = propOrganization || fetchedOrganization;
 
   // Check if organization needs onboarding (new organization with default settings)
   useEffect(() => {
