@@ -52,58 +52,87 @@ export default function FreeTrialSignup() {
 
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
-      // Step 1: Create user account
-      const userResponse = await apiRequest("POST", "/api/auth/register", {
-        username: data.email,
-        email: data.email,
-        password: data.password,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        name: `${data.firstName} ${data.lastName}`,
-        role: "organization_admin",
-      });
+      try {
+        // Step 1: Create user account
+        console.log("Creating user account...");
+        const userResponse = await apiRequest("POST", "/api/auth/register", {
+          username: data.email,
+          email: data.email,
+          password: data.password,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          name: `${data.firstName} ${data.lastName}`,
+          role: "organization_admin",
+        });
 
-      if (!userResponse.ok) {
-        throw new Error("Failed to create user account");
+        if (!userResponse.ok) {
+          const errorText = await userResponse.text();
+          console.error("User registration failed:", errorText);
+          throw new Error("Failed to create user account: " + errorText);
+        }
+
+        console.log("User account created successfully");
+
+        // Step 2: Login the user (wait a moment for session to be established)
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log("Logging in user...");
+        
+        const loginResponse = await apiRequest("POST", "/api/auth/login", {
+          username: data.email,
+          password: data.password,
+        });
+
+        if (!loginResponse.ok) {
+          const errorText = await loginResponse.text();
+          console.error("Login failed:", errorText);
+          throw new Error("Failed to login: " + errorText);
+        }
+
+        console.log("User logged in successfully");
+
+        // Step 3: Create organization with trial (wait a moment for auth to be established)
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log("Creating organization...");
+        
+        const orgResponse = await apiRequest("POST", "/api/organizations", {
+          name: data.organizationName,
+          description: data.organizationDescription,
+          phone: data.organizationPhone,
+          email: data.email,
+          address: data.organizationAddress,
+          businessModel: "pay_per_class", // Default to pay per class
+          subscriptionStatus: "trial",
+          planType: "basic",
+        });
+
+        if (!orgResponse.ok) {
+          const errorText = await orgResponse.text();
+          console.error("Organization creation failed:", errorText);
+          throw new Error("Failed to create organization: " + errorText);
+        }
+
+        console.log("Organization created successfully");
+        return await orgResponse.json();
+        
+      } catch (error) {
+        console.error("Signup process failed:", error);
+        throw error;
       }
-
-      // Step 2: Login the user
-      const loginResponse = await apiRequest("POST", "/api/auth/login", {
-        username: data.email,
-        password: data.password,
-      });
-
-      if (!loginResponse.ok) {
-        throw new Error("Failed to login");
-      }
-
-      // Step 3: Create organization with trial
-      const orgResponse = await apiRequest("POST", "/api/organizations", {
-        name: data.organizationName,
-        description: data.organizationDescription,
-        phone: data.organizationPhone,
-        email: data.email,
-        address: data.organizationAddress,
-        businessModel: "pay_per_class", // Default to pay per class
-        subscriptionStatus: "trial",
-        planType: "basic",
-      });
-
-      if (!orgResponse.ok) {
-        throw new Error("Failed to create organization");
-      }
-
-      return await orgResponse.json();
     },
-    onSuccess: (organization) => {
+    onSuccess: async (organization) => {
       toast({
         title: "Welcome to IH Academy!",
         description: "Your 21-day free trial has started. Explore all features with no limitations.",
       });
+      
+      // Clear all query cache to ensure fresh data
+      queryClient.clear();
+      
       // Force a complete page reload to ensure authentication state is properly loaded
+      // This is necessary because the authentication context needs to be refreshed
       setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+        window.location.href = "/dashboard";
+      }, 1500);
     },
     onError: (error: any) => {
       toast({
