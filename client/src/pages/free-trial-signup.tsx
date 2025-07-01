@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ type SignupForm = z.infer<typeof signupSchema>;
 export default function FreeTrialSignup() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
 
   const form = useForm<SignupForm>({
@@ -99,10 +100,10 @@ export default function FreeTrialSignup() {
         title: "Welcome to IH Academy!",
         description: "Your 21-day free trial has started. Explore all features with no limitations.",
       });
-      // Force a small delay to ensure authentication state is set, then redirect
+      // Force a complete page reload to ensure authentication state is properly loaded
       setTimeout(() => {
-        window.location.href = "/";
-      }, 100);
+        window.location.reload();
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
