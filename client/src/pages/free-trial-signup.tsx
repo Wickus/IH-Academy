@@ -51,96 +51,99 @@ export default function FreeTrialSignup() {
   });
 
   const signupMutation = useMutation({
-    mutationFn: async (data: SignupForm) => {
+    mutationFn: async (signupData: any) => {
+      console.log("Starting signup process...");
+
       try {
-        // Step 1: Create user account
-        console.log("Creating user account...");
-        const userResponse = await apiRequest("POST", "/api/auth/register", {
-          username: data.email,
-          email: data.email,
-          password: data.password,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          name: `${data.firstName} ${data.lastName}`,
-          role: "organization_admin",
+        // Step 1: Register user
+        console.log("Step 1: Registering user");
+        const user = await api.register({
+          username: signupData.email.split('@')[0],
+          email: signupData.email,
+          password: signupData.password,
+          firstName: signupData.firstName,
+          lastName: signupData.lastName,
+          phone: signupData.phone,
+          role: "organization_admin" as const
         });
+        console.log("User registered successfully:", user);
 
-        if (!userResponse.ok) {
-          const errorText = await userResponse.text();
-          console.error("User registration failed:", errorText);
-          throw new Error("Failed to create user account: " + errorText);
-        }
-
-        console.log("User account created successfully");
-
-        // Step 2: Login the user (wait a moment for session to be established)
-        await new Promise(resolve => setTimeout(resolve, 500));
-        console.log("Logging in user...");
-        
-        const loginResponse = await apiRequest("POST", "/api/auth/login", {
-          username: data.email,
-          password: data.password,
+        // Step 2: Login to get proper session
+        console.log("Step 2: Logging in user");
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const loginResult = await api.login({
+          username: signupData.email.split('@')[0],
+          password: signupData.password
         });
+        console.log("Login successful:", loginResult);
 
-        if (!loginResponse.ok) {
-          const errorText = await loginResponse.text();
-          console.error("Login failed:", errorText);
-          throw new Error("Failed to login: " + errorText);
-        }
-
-        console.log("User logged in successfully");
-
-        // Step 3: Create organization with trial (wait a moment for auth to be established)
-        await new Promise(resolve => setTimeout(resolve, 500));
-        console.log("Creating organization...");
-        
-        const orgResponse = await apiRequest("POST", "/api/organizations", {
-          name: data.organizationName,
-          description: data.organizationDescription,
-          phone: data.organizationPhone,
-          email: data.email,
-          address: data.organizationAddress,
-          businessModel: "pay_per_class", // Default to pay per class
-          subscriptionStatus: "trial",
-          planType: "basic",
+        // Step 3: Create organization
+        console.log("Step 3: Creating organization");
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const organization = await api.createOrganization({
+          name: signupData.organizationName,
+          description: signupData.description || `${signupData.organizationName} sports academy`,
+          email: signupData.email,
+          phone: signupData.phone,
+          businessModel: signupData.businessModel || "pay_per_class",
+          planType: "free",
+          primaryColor: "#20366B",
+          secondaryColor: "#278DD4", 
+          accentColor: "#24D367",
+          maxClasses: 10,
+          maxMembers: 100,
+          subscriptionStatus: 'trial',
+          trialStartDate: new Date(),
+          trialEndDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
         });
+        console.log("Organization created successfully:", organization);
 
-        if (!orgResponse.ok) {
-          const errorText = await orgResponse.text();
-          console.error("Organization creation failed:", errorText);
-          throw new Error("Failed to create organization: " + errorText);
-        }
-
-        console.log("Organization created successfully");
-        return await orgResponse.json();
-        
+        return { user: loginResult, organization };
       } catch (error) {
-        console.error("Signup process failed:", error);
+        console.error("Error in signup process:", error);
         throw error;
       }
     },
-    onSuccess: async (organization) => {
-      toast({
-        title: "Welcome to IH Academy!",
-        description: "Your 21-day free trial has started. Explore all features with no limitations.",
-      });
-      
-      // Clear all query cache to ensure fresh data
+    onSuccess: ({ user, organization }) => {
+      console.log("Signup flow completed successfully");
+
+      // Clear all cache and set fresh data
+      queryClient.invalidateQueries();
       queryClient.clear();
-      
-      // Force a complete page reload to ensure authentication state is properly loaded
-      // This is necessary because the authentication context needs to be refreshed
+
+      // Set user and organization data
+      queryClient.setQueryData(['/api/auth/me'], user);
+      queryClient.setQueryData(['/api/organizations/my'], [organization]);
+
+      toast({
+        title: "Welcome to IH Academy! 🎉",
+        description: `${organization.name} is ready for action. Start with your 21-day free trial!`
+      });
+
+      // Navigate to the organization setup page first, then to dashboard
       setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 1500);
+        console.log("Redirecting to organization dashboard");
+        setLocation("/organization-dashboard");
+      }, 1200);
     },
     onError: (error: any) => {
+      console.error("Signup failed:", error);
+
+      let errorMessage = "Please try again or contact support";
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.status === 400) {
+        errorMessage = "This email is already registered. Please try logging in instead.";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again in a few moments.";
+      }
+
       toast({
         title: "Signup Failed",
-        description: error.message || "Please try again or contact support.",
-        variant: "destructive",
+        description: errorMessage,
+        variant: "destructive"
       });
-    },
+    }
   });
 
   const onSubmit = (data: SignupForm) => {
@@ -178,7 +181,7 @@ export default function FreeTrialSignup() {
               <p className="text-blue-100">21 days of full access, no credit card required</p>
             </div>
           </div>
-          
+
           {/* Trial Benefits */}
           <div className="bg-white/10 backdrop-blur rounded-xl p-6 mb-8">
             <h2 className="text-xl font-semibold text-white mb-4">What's included in your free trial:</h2>
@@ -370,7 +373,7 @@ export default function FreeTrialSignup() {
                   >
                     Previous
                   </Button>
-                  
+
                   <Button
                     type="button"
                     onClick={nextStep}
