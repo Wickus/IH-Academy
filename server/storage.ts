@@ -103,6 +103,18 @@ export interface IStorage {
   updateClass(id: number, classData: Partial<InsertClass>): Promise<Class | undefined>;
   deleteClass(id: number): Promise<boolean>;
 
+  // Class Coach Assignments
+  getClassCoaches(classId: number): Promise<ClassCoach[]>;
+  assignCoachToClass(assignment: InsertClassCoach): Promise<ClassCoach>;
+  removeCoachFromClass(classId: number, coachId: number): Promise<boolean>;
+  updateClassCoachRole(classId: number, coachId: number, role: string): Promise<ClassCoach | undefined>;
+
+  // Organisation Admin Management
+  getOrganisationAdmins(organizationId: number): Promise<User[]>;
+  addOrganisationAdmin(userId: number, organizationId: number, assignedBy: number): Promise<UserOrganization>;
+  removeOrganisationAdmin(userId: number, organizationId: number): Promise<boolean>;
+  updateOrganisationAdminRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined>;
+
   // Bookings
   getBooking(id: number): Promise<Booking | undefined>;
   getBookingsByClass(classId: number): Promise<Booking[]>;
@@ -717,6 +729,84 @@ export class DatabaseStorage implements IStorage {
   async deleteClass(id: number): Promise<boolean> {
     const result = await db.delete(classes).where(eq(classes.id, id));
     return (result.rowCount || 0) > 0;
+  }
+
+  // Class Coach Assignment methods
+  async getClassCoaches(classId: number): Promise<ClassCoach[]> {
+    return await db.select().from(classCoaches).where(and(eq(classCoaches.classId, classId), eq(classCoaches.isActive, true)));
+  }
+
+  async assignCoachToClass(assignment: InsertClassCoach): Promise<ClassCoach> {
+    const [newAssignment] = await db.insert(classCoaches).values(assignment).returning();
+    return newAssignment;
+  }
+
+  async removeCoachFromClass(classId: number, coachId: number): Promise<boolean> {
+    const result = await db.update(classCoaches)
+      .set({ isActive: false })
+      .where(and(eq(classCoaches.classId, classId), eq(classCoaches.coachId, coachId)));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updateClassCoachRole(classId: number, coachId: number, role: string): Promise<ClassCoach | undefined> {
+    const [updated] = await db.update(classCoaches)
+      .set({ role: role as "primary" | "assistant" | "substitute" })
+      .where(and(eq(classCoaches.classId, classId), eq(classCoaches.coachId, coachId)))
+      .returning();
+    return updated || undefined;
+  }
+
+  // Organisation Admin Management methods
+  async getOrganisationAdmins(organizationId: number): Promise<User[]> {
+    const adminUsers = await db
+      .select({ user: users })
+      .from(userOrganizations)
+      .innerJoin(users, eq(userOrganizations.userId, users.id))
+      .where(and(
+        eq(userOrganizations.organizationId, organizationId),
+        eq(userOrganizations.role, "admin"),
+        eq(userOrganizations.isActive, true)
+      ));
+    return adminUsers.map(row => row.user);
+  }
+
+  async addOrganisationAdmin(userId: number, organizationId: number, assignedBy: number): Promise<UserOrganization> {
+    // First, check if user is already in the organization
+    const existingRelation = await db.select().from(userOrganizations)
+      .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.organizationId, organizationId)))
+      .limit(1);
+
+    if (existingRelation.length > 0) {
+      // Update existing relation to admin role
+      const [updated] = await db.update(userOrganizations)
+        .set({ role: "admin", isActive: true })
+        .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.organizationId, organizationId)))
+        .returning();
+      return updated;
+    } else {
+      // Create new admin relation
+      const [newAdmin] = await db.insert(userOrganizations).values({
+        userId,
+        organizationId,
+        role: "admin"
+      }).returning();
+      return newAdmin;
+    }
+  }
+
+  async removeOrganisationAdmin(userId: number, organizationId: number): Promise<boolean> {
+    const result = await db.update(userOrganizations)
+      .set({ isActive: false })
+      .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.organizationId, organizationId)));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async updateOrganisationAdminRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined> {
+    const [updated] = await db.update(userOrganizations)
+      .set({ role: role as "member" | "coach" | "admin" })
+      .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.organizationId, organizationId)))
+      .returning();
+    return updated || undefined;
   }
 
   // Booking methods
