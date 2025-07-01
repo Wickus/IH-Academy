@@ -252,7 +252,7 @@ export default function UserDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Completed Classes</p>
+                  <p className="text-sm font-medium text-slate-700">Completed Classes</p>
                   <p className="text-2xl font-bold text-[#20366B]">{pastBookings.length}</p>
                 </div>
                 <div className="p-3 bg-[#24D367]/10 rounded-lg">
@@ -272,7 +272,7 @@ export default function UserDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">My Organizations</p>
+                  <p className="text-sm font-medium text-slate-700">My Organizations</p>
                   <p className="text-2xl font-bold text-[#20366B]">{userOrganizations.length}</p>
                 </div>
                 <div className="p-3 bg-[#278DD4]/10 rounded-lg">
@@ -286,9 +286,9 @@ export default function UserDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Messages</p>
+                  <p className="text-sm font-medium text-slate-700">Messages</p>
                   <p className="text-2xl font-bold text-[#20366B]">
-                    {messages ? messages.filter(msg => msg.messageType === 'received' && msg.status !== 'read').length : 0}
+                    {messages ? messages.filter((msg: any) => msg.messageType === 'received' && msg.status !== 'read').length : 0}
                   </p>
                 </div>
                 <div className="p-3 bg-[#1c9bfd]/10 rounded-lg">
@@ -302,7 +302,7 @@ export default function UserDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Activity Score</p>
+                  <p className="text-sm font-medium text-slate-700">Activity Score</p>
                   <p className="text-2xl font-bold text-[#20366B]">{myBookings.length * 10}</p>
                 </div>
                 <div className="p-3 bg-[#D3BF24]/10 rounded-lg">
@@ -373,7 +373,7 @@ export default function UserDashboard() {
                         </div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-[#20366B] text-lg">{org.name}</h3>
-                          <p className="text-sm text-slate-600 line-clamp-2">{org.description}</p>
+                          <p className="text-sm text-slate-700 line-clamp-2">{org.description}</p>
                           <Badge 
                             variant="outline"
                             className="mt-1"
@@ -521,7 +521,7 @@ export default function UserDashboard() {
                                 {booking.paymentStatus}
                               </Badge>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-600">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-700">
                               <div className="flex items-center space-x-2">
                                 <Clock className="h-4 w-4" />
                                 <span>{formatDateTime(booking.class?.startTime)}</span>
@@ -563,7 +563,7 @@ export default function UserDashboard() {
                   <div className="text-center py-12">
                     <Calendar className="mx-auto h-16 w-16 text-slate-400 mb-4" />
                     <h3 className="text-xl font-semibold text-[#20366B] mb-2">No upcoming classes</h3>
-                    <p className="text-slate-600 mb-4">
+                    <p className="text-slate-700 mb-4">
                       Ready to book your next adventure? Explore available classes and join the fun!
                     </p>
                     <Button 
@@ -595,7 +595,7 @@ export default function UserDashboard() {
                           <div className="w-2 h-2 bg-[#24D367] rounded-full"></div>
                           <div>
                             <p className="font-medium text-[#20366B]">{booking.class?.name}</p>
-                            <p className="text-sm text-slate-600">{formatDateTime(booking.class?.startTime)}</p>
+                            <p className="text-sm text-slate-700">{formatDateTime(booking.class?.startTime)}</p>
                           </div>
                         </div>
                         <Badge variant="outline" className="bg-[#24D367]/10 text-[#24D367] border-[#24D367]/20">
@@ -629,7 +629,7 @@ export default function UserDashboard() {
                         <Star className="h-8 w-8 text-[#278DD4]" />
                         <div>
                           <p className="text-2xl font-bold text-[#20366B]">{myBookings.length * 10}</p>
-                          <p className="text-sm text-slate-600">Activity Points</p>
+                          <p className="text-sm text-slate-700">Activity Points</p>
                         </div>
                       </div>
                     </div>
