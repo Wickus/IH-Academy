@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -73,6 +73,13 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   const removeCoach = (coachId: number) => {
     setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
   };
+
+  // Initialize selected coaches when editing
+  useEffect(() => {
+    if (initialData && initialData.coachId) {
+      setSelectedCoaches([initialData.coachId]);
+    }
+  }, [initialData]);
 
   const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ["/api/coaches"],
@@ -179,7 +186,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         name: data.name,
         description: data.description || undefined,
         sportId: parseInt(data.sportId),
-        coachId: data.coachId && data.coachId !== "none" && data.coachId !== "" ? parseInt(data.coachId) : null,
+        coachId: selectedCoaches.length > 0 ? selectedCoaches[0] : null, // Primary coach (first selected)
         startTime: startDateTime,
         endTime: endDateTime,
         capacity: parseInt(data.capacity),
@@ -188,6 +195,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         requirements: data.requirements || undefined,
         isRecurring: data.isRecurring,
         recurrencePattern: data.isRecurring ? data.recurrencePattern || undefined : undefined,
+        selectedCoaches: selectedCoaches, // Send all selected coaches
       };
 
       if (initialData?.id) {
