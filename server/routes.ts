@@ -1488,7 +1488,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send invitation email (if email service is configured)
       try {
-        const inviteLink = `${process.env.FRONTEND_URL || 'https://your-domain.com'}/login`;
+        // Get proper application URL
+        const baseUrl = process.env.FRONTEND_URL || 
+                        process.env.REPLIT_URL || 
+                        `http://localhost:${process.env.PORT || 5000}`;
+        const inviteLink = `${baseUrl}/login`;
         const htmlContent = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: ${organization.primaryColor || '#20366B'};">Organization Admin Invitation</h2>
           <p>Hello!</p>
@@ -1505,6 +1509,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                style="background-color: ${organization.primaryColor || '#20366B'}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
               Access Dashboard
             </a>
+          </p>
+          <p style="font-size: 12px; color: #666;">
+            If the button doesn't work, copy and paste this link: ${inviteLink}
           </p>
           <p>If you don't have an account yet, you can log in with:</p>
           <p><strong>Email:</strong> ${email}</p>
