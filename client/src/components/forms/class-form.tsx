@@ -382,7 +382,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {selectedCoaches.map((coachId) => {
-                          const coach = coaches.find(c => c.id === coachId);
+                          const coach = Array.isArray(coaches) ? coaches.find(c => c.id === coachId) : null;
                           if (!coach) return null;
                           return (
                             <div 
@@ -421,7 +421,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                       <SelectValue placeholder="Add a coach..." className="text-slate-900" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-slate-300">
-                      {coaches
+                      {Array.isArray(coaches) ? coaches
                         .filter(coach => !selectedCoaches.includes(coach.id))
                         .map((coach) => (
                         <SelectItem 
@@ -438,8 +438,8 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                         >
                           {coach.name || coach.displayName || coach.username}
                         </SelectItem>
-                      ))}
-                      {coaches.filter(coach => !selectedCoaches.includes(coach.id)).length === 0 && (
+                      )) : null}
+                      {Array.isArray(coaches) && coaches.filter(coach => !selectedCoaches.includes(coach.id)).length === 0 && (
                         <div className="px-2 py-2 text-sm text-slate-500">
                           All available coaches have been selected
                         </div>
