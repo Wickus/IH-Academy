@@ -226,28 +226,30 @@ export default function UserDashboard() {
         </div>
 
         {/* Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-[#20366B] to-[#278DD4] rounded-xl p-8 text-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                  <User className="h-8 w-8" />
+        <div className="mb-6 sm:mb-8">
+          <div className="bg-gradient-to-r from-[#20366B] to-[#278DD4] rounded-xl p-4 sm:p-6 lg:p-8 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="h-6 w-6 sm:h-8 sm:w-8" />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-[#f5f9fc]">Welcome back, {currentUser.firstName || currentUser.username}!</h1>
-                  <p className="text-white/80 text-lg">Ready for your next adventure?</p>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#f5f9fc] leading-tight">
+                    Welcome back, {currentUser.firstName || currentUser.username}!
+                  </h1>
+                  <p className="text-white/80 text-sm sm:text-base lg:text-lg">Ready for your next adventure?</p>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold">{myBookings.length}</div>
-                <div className="text-white/80">Total Bookings</div>
+              <div className="text-center sm:text-right flex-shrink-0">
+                <div className="text-2xl sm:text-3xl font-bold">{myBookings.length}</div>
+                <div className="text-white/80 text-sm sm:text-base">Total Bookings</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card className="border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation('/completed-classes')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">

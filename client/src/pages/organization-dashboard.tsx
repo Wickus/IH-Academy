@@ -132,75 +132,81 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
 
       {/* Custom Header with Organization Branding */}
       <div 
-        className="rounded-lg p-6 text-white"
+        className="rounded-lg p-4 sm:p-6 text-white"
         style={{ 
           background: `linear-gradient(135deg, ${organization.primaryColor} 0%, ${organization.secondaryColor} 100%)` 
         }}
       >
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{organization.name} Dashboard</h1>
-            <p className="text-white/90 mt-2">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">{organization.name} Dashboard</h1>
+            <p className="text-white/90 mt-1 sm:mt-2 text-sm sm:text-base">
               Welcome back, {user.firstName}! Here's your organization overview.
             </p>
-            <div className="flex items-center gap-3 mt-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
               <Badge 
-                className="bg-white/20 text-white border-white/30"
+                className="bg-white/20 text-white border-white/30 text-xs sm:text-sm w-fit"
               >
-                {organization.subscriptionStatus === 'trial' ? 'Free Trial' : `${organization.planType} Plan`}
+                {organization.planType || 'Free Trial'}
               </Badge>
-              <span className="text-white/80 text-sm">
+              <span className="text-white/80 text-xs sm:text-sm">
                 {stats?.totalMembers || 0} members • {stats?.activeClasses || 0} active classes
               </span>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 lg:gap-3 shrink-0">
             <Button 
               variant="secondary" 
-              className="gap-2 text-white"
+              size="sm"
+              className="gap-1 sm:gap-2 text-white text-xs sm:text-sm flex-1 sm:flex-none"
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
               onClick={() => setLocation('/settings')}
             >
-              <Settings className="h-4 w-4" />
-              Settings
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Settings</span>
+              <span className="sm:hidden">Settings</span>
             </Button>
             <Button 
               variant="secondary" 
-              className="gap-2 text-white"
+              size="sm"
+              className="gap-1 sm:gap-2 text-white text-xs sm:text-sm flex-1 sm:flex-none"
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
               onClick={() => setLocation('/classes')}
             >
-              <Plus className="h-4 w-4" />
-              New Class
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">New Class</span>
+              <span className="sm:hidden">Add Class</span>
             </Button>
           </div>
         </div>
         
         {/* Invite Code Section */}
         {organization.inviteCode && (
-          <div className="mt-6 p-4 bg-white/10 rounded-lg border border-white/20">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-medium text-white mb-1">
+          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-white/10 rounded-lg border border-white/20">
+            <div className="flex flex-col space-y-3">
+              <div>
+                <h3 className="text-base sm:text-lg font-medium text-white mb-1">
                   Share Your Organization
                 </h3>
-                <p className="text-white/80 text-sm mb-3">
+                <p className="text-white/80 text-xs sm:text-sm mb-3">
                   Invite new members with your branded link or quick code
                 </p>
+              </div>
                 
-                {/* Branded Invite Link */}
-                <div className="space-y-3">
+              {/* Branded Invite Link */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    value={`${window.location.origin}/invite/${organization.inviteCode}`}
+                    readOnly
+                    className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60 text-xs sm:text-sm h-9 sm:h-10"
+                    style={{ backdropFilter: 'blur(10px)' }}
+                  />
                   <div className="flex gap-2">
-                    <Input
-                      value={`${window.location.origin}/invite/${organization.inviteCode}`}
-                      readOnly
-                      className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60 text-sm"
-                      style={{ backdropFilter: 'blur(10px)' }}
-                    />
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white/30 text-white hover:bg-white/20"
+                      className="border-white/30 text-white hover:bg-white/20 flex-1 sm:flex-none text-xs"
                       onClick={() => {
                         navigator.clipboard.writeText(`${window.location.origin}/invite/${organization.inviteCode}`);
                         toast({
@@ -209,17 +215,19 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
                         });
                       }}
                     >
-                      <Copy className="h-4 w-4" />
+                      <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="ml-1 sm:hidden">Copy</span>
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white/30 text-white hover:bg-white/20"
+                      className="border-white/30 text-white hover:bg-white/20 flex-1 sm:flex-none text-xs"
                       onClick={() => {
                         window.open(`/invite/${organization.inviteCode}`, '_blank');
                       }}
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="ml-1 sm:hidden">Open</span>
                     </Button>
                   </div>
                   
@@ -292,7 +300,7 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
       </div>
 
       {/* Organization-Specific Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card 
           className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
           style={{ borderLeftColor: organization.primaryColor }}
@@ -464,9 +472,9 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
           <CardDescription>Monitor your plan limits and usage</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span>Classes Used</span>
                 <span>{stats?.activeClasses || 0} / {organization.maxClasses}</span>
               </div>
