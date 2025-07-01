@@ -131,7 +131,7 @@ export const classes = pgTable("classes", {
   id: serial("id").primaryKey(),
   organizationId: integer("organization_id").notNull(),
   sportId: integer("sport_id").notNull(),
-  coachId: integer("coach_id").notNull(), // Keep for backward compatibility - primary coach
+  coachId: integer("coach_id"), // Keep for backward compatibility - primary coach (nullable for new multiple coach system)
   name: text("name").notNull(),
   description: text("description"),
   startTime: timestamp("start_time").notNull(),
