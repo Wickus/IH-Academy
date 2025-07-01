@@ -504,6 +504,91 @@ export default function ClassesManagement() {
                                   </DialogContent>
                                 </Dialog>
 
+                                {/* View Details Dialog */}
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="default"
+                                      size="sm"
+                                      style={{ 
+                                        backgroundColor: organization.accentColor,
+                                        color: '#000000',
+                                        border: 'none'
+                                      }}
+                                    >
+                                      View Details
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl">
+                                    <DialogHeader>
+                                      <DialogTitle style={{ color: organization.primaryColor }}>
+                                        Class Details: {cls.name}
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="space-y-6">
+                                      {/* Class Information */}
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <h4 className="font-medium text-gray-900 mb-2">Basic Information</h4>
+                                          <div className="space-y-2">
+                                            <div>
+                                              <span className="text-sm text-gray-500">Class Name:</span>
+                                              <p className="font-medium">{cls.name}</p>
+                                            </div>
+                                            {cls.description && (
+                                              <div>
+                                                <span className="text-sm text-gray-500">Description:</span>
+                                                <p className="text-sm">{cls.description}</p>
+                                              </div>
+                                            )}
+                                            <div>
+                                              <span className="text-sm text-gray-500">Price:</span>
+                                              <p className="font-medium">R{cls.price}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <h4 className="font-medium text-gray-900 mb-2">Schedule & Location</h4>
+                                          <div className="space-y-2">
+                                            <div>
+                                              <span className="text-sm text-gray-500">Date:</span>
+                                              <p className="font-medium">{formatDate(cls.startTime)}</p>
+                                            </div>
+                                            <div>
+                                              <span className="text-sm text-gray-500">Time:</span>
+                                              <p className="font-medium">{formatTime(cls.startTime)} - {formatTime(cls.endTime)}</p>
+                                            </div>
+                                            <div>
+                                              <span className="text-sm text-gray-500">Location:</span>
+                                              <p className="font-medium">{cls.location || 'No location set'}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Coach & Capacity */}
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <h4 className="font-medium text-gray-900 mb-2">Coach</h4>
+                                          <p className="font-medium">{coach?.name || 'No coach assigned'}</p>
+                                        </div>
+                                        <div>
+                                          <h4 className="font-medium text-gray-900 mb-2">Capacity</h4>
+                                          <p className="font-medium">{cls.capacity} participants</p>
+                                        </div>
+                                      </div>
+
+                                      {/* Requirements */}
+                                      {cls.requirements && (
+                                        <div>
+                                          <h4 className="font-medium text-gray-900 mb-2">Requirements</h4>
+                                          <p className="text-sm bg-gray-50 p-3 rounded-lg">{cls.requirements}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+
                                 {/* Notify Participants Dialog */}
                                 <Dialog>
                                   <DialogTrigger asChild>
