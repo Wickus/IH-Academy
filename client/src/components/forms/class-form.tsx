@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, Clock, User, Users } from "lucide-react";
 import { api, type Sport } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import ClassCoachesForm from "@/components/forms/class-coaches-form";
 
 const classFormSchema = z.object({
@@ -74,18 +74,34 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
   };
 
-  // Initialize selected coaches when editing
-  useEffect(() => {
-    if (initialData && initialData.coachId) {
-      setSelectedCoaches([initialData.coachId]);
-    }
-  }, [initialData]);
-
   const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ["/api/coaches"],
     queryFn: () => api.getCoaches(organization?.id || 1),
     enabled: !!organization?.id,
   });
+
+  // Fetch existing coach assignments when editing a class
+  const { data: classCoaches = [] } = useQuery({
+    queryKey: ["/api/classes", initialData?.id, "coaches"],
+    queryFn: () => apiRequest('GET', `/api/classes/${initialData!.id}/coaches`),
+    enabled: !!initialData?.id,
+  });
+
+  // Initialize selected coaches from class coach assignments
+  useEffect(() => {
+    if (Array.isArray(classCoaches) && classCoaches.length > 0) {
+      // Sort by role priority (primary, assistant, substitute)
+      const sortedCoaches = [...classCoaches].sort((a: any, b: any) => {
+        const roleOrder: { [key: string]: number } = { primary: 0, assistant: 1, substitute: 2 };
+        return (roleOrder[a.role] || 3) - (roleOrder[b.role] || 3);
+      });
+      const coachIds = sortedCoaches.map((cc: any) => cc.coachId);
+      setSelectedCoaches(coachIds);
+    } else if (initialData?.coachId && !Array.isArray(classCoaches)) {
+      // Fallback to initial coachId if no coach assignments exist yet
+      setSelectedCoaches([initialData.coachId]);
+    }
+  }, [classCoaches, initialData]);
 
   const form = useForm<ClassFormData>({
     resolver: zodResolver(classFormSchema),
