@@ -55,13 +55,13 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     accentColor: "#24D367"
   };
 
-  const { data: coaches } = useQuery({
+  const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ["/api/coaches"],
     queryFn: () => apiRequest('GET', '/api/coaches'),
   });
 
   // Fetch existing coach assignments when editing a class
-  const { data: classCoaches = [] } = useQuery({
+  const { data: classCoaches = [], isLoading: classCoachesLoading } = useQuery({
     queryKey: ["/api/classes", initialData?.id, "coaches"],
     queryFn: () => apiRequest('GET', `/api/classes/${initialData!.id}/coaches`),
     enabled: !!initialData?.id,
@@ -78,8 +78,21 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       classCoachesArray, 
       coachesArray,
       coaches,
-      initialData: initialData?.id 
+      initialData: initialData?.id,
+      coachesLoading,
+      classCoachesLoading,
+      coachesType: typeof coaches,
+      classCoachesType: typeof classCoaches,
+      coachesIsArray: Array.isArray(coaches),
+      classCoachesIsArray: Array.isArray(classCoaches)
     });
+    
+    // Wait for data to load
+    if (coachesLoading || classCoachesLoading) {
+      console.log('Still loading data...');
+      return;
+    }
+    
     if (classCoachesArray.length > 0) {
       // Sort by role priority (primary, assistant, substitute)
       const sortedCoaches = [...classCoachesArray].sort((a: any, b: any) => {
@@ -94,7 +107,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       console.log('Setting selected coaches from initialData:', [initialData.coachId]);
       setSelectedCoaches([initialData.coachId]);
     }
-  }, [classCoaches, classCoachesArray, initialData, coaches, coachesArray]);
+  }, [classCoaches, classCoachesArray, initialData, coaches, coachesArray, coachesLoading, classCoachesLoading]);
 
   const form = useForm<ClassFormData>({
     resolver: zodResolver(classFormSchema),
