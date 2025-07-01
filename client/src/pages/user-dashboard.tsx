@@ -638,7 +638,7 @@ export default function UserDashboard() {
                         <Trophy className="h-8 w-8 text-[#24D367]" />
                         <div>
                           <p className="text-2xl font-bold text-[#20366B]">{Math.floor(myBookings.length / 5)}</p>
-                          <p className="text-sm text-slate-600">Milestones Reached</p>
+                          <p className="text-sm text-slate-700">Milestones Reached</p>
                         </div>
                       </div>
                     </div>
@@ -654,7 +654,7 @@ export default function UserDashboard() {
                             <p className="font-medium text-[#20366B]">
                               Joined {booking.class?.name}
                             </p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-700">
                               {formatDateTime(booking.bookingDate)} • +10 points
                             </p>
                           </div>
