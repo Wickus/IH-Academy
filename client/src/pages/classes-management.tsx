@@ -53,14 +53,14 @@ export default function ClassesManagement() {
   // Get classes
   const { data: classes = [], isLoading: classesLoading } = useQuery({
     queryKey: ['/api/classes'],
-    queryFn: api.getClasses,
+    queryFn: () => api.getClasses({ organizationId: organization?.id }),
     enabled: !!organization?.id,
   });
 
   // Get coaches
   const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ['/api/coaches'],
-    queryFn: api.getCoaches,
+    queryFn: () => apiRequest('GET', '/api/coaches'),
     enabled: !!organization?.id,
   });
 
