@@ -1490,9 +1490,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         // Get proper application URL
         const baseUrl = process.env.FRONTEND_URL || 
+                        (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null) ||
                         process.env.REPLIT_URL || 
                         `http://localhost:${process.env.PORT || 5000}`;
         const inviteLink = `${baseUrl}/login`;
+        console.log('Generated invite link:', inviteLink);
         const htmlContent = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: ${organization.primaryColor || '#20366B'};">Organization Admin Invitation</h2>
           <p>Hello!</p>
