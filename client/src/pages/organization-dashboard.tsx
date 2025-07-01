@@ -34,6 +34,16 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
   });
 
   const user = propUser || currentUser;
+  const { organization, isLoading: orgLoading } = useOrganization();
+
+  // Early return if we're still loading or don't have organization data
+  if (orgLoading || !organization) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   // Get global admin access info from session storage or search params
   const globalAdminOrgId = sessionStorage.getItem('globalAdminOrgId');

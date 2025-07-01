@@ -88,10 +88,10 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   if (user?.role === 'global_admin') {
     // Check if accessing specific organization dashboard
     const searchParams = new URLSearchParams(window.location.search);
-    if (location.pathname === '/organization-dashboard' && searchParams.get('globalAdminAccess') === 'true') {
+    if (location === '/organization-dashboard' && searchParams.get('globalAdminAccess') === 'true') {
       return (
         <AppLayout>
-          <OrganizationDashboard />
+          <OrganizationDashboard user={user} />
         </AppLayout>
       );
     }
@@ -100,7 +100,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
       <Switch>
         <Route path="/organization-dashboard" component={() => (
           <AppLayout>
-            <OrganizationDashboard />
+            <OrganizationDashboard user={user} />
           </AppLayout>
         )} />
         <Route path="/" component={GlobalAdminDashboard} />

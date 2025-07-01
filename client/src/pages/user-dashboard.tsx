@@ -165,7 +165,7 @@ export default function UserDashboard() {
 
   // If user is an organization admin and belongs to an organization, show organization dashboard
   if (hasOrganization && organization && currentUser?.role === 'organization_admin') {
-    return <OrganizationDashboard user={currentUser} organization={organization} />;
+    return <OrganizationDashboard user={currentUser} />;
   }
 
   const upcomingBookings = myBookings.filter(booking => 
