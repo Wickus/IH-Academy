@@ -112,11 +112,17 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
     onSuccess: (user: User) => {
       console.log("Login completed successfully, updating cache and redirecting");
       
-      // Clear any stale cache data
+      // Clear stale cache data but preserve preloaded organization data
+      const preloadedOrgs = queryClient.getQueryData(['/api/organizations/my']);
       queryClient.clear();
       
       // Set fresh user data
       queryClient.setQueryData(['/api/auth/me'], user);
+      
+      // Restore preloaded organization data
+      if (preloadedOrgs) {
+        queryClient.setQueryData(['/api/organizations/my'], preloadedOrgs);
+      }
       
       toast({ title: "Welcome back!", description: `Logged in as ${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user as any).name}` });
       

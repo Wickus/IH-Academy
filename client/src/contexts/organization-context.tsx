@@ -26,17 +26,21 @@ export function OrganizationProvider({ children, user }: OrganizationProviderPro
     queryKey: ["/api/organizations/my"],
     queryFn: api.getUserOrganizations,
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes - longer cache for better UX
+    gcTime: 60 * 60 * 1000, // 1 hour (gcTime is the new name for cacheTime in v5)
   });
 
   const organization = userOrganizations?.[0] || null;
   const hasOrganization = !!organization;
 
+  // Show loading state only if we have a user but no cached data
+  const shouldShowLoading = isLoading && !!user && !userOrganizations;
+
   return (
     <OrganizationContext.Provider 
       value={{ 
         organization, 
-        isLoading: isLoading && !!user, 
+        isLoading: shouldShowLoading, 
         hasOrganization 
       }}
     >
