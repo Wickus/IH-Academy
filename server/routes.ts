@@ -7,7 +7,7 @@ import { debitOrderService } from "./debit-order";
 import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail, sendWalkInRegistrationEmail, sendEmail } from "./email";
+import { sendEmail } from "./email";
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -1303,7 +1303,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/organizations/:id/admins", async (req: Request, res: Response) => {
     try {
       const user = getCurrentUser(req);
+      console.log("Getting admins for org", req.params.id, "user:", user?.username, "role:", user?.role);
+      
       if (!user || !['organization_admin', 'global_admin'].includes(user.role)) {
+        console.log("Access denied - user role:", user?.role);
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -1312,13 +1315,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user has access to this organization
       if (user.role === 'organization_admin') {
         const userOrgs = await storage.getUserOrganizations(user.id);
+        console.log("User organizations:", userOrgs);
         const hasAccess = userOrgs.some(org => org.organizationId === organizationId);
         if (!hasAccess) {
+          console.log("No access to organization", organizationId);
           return res.status(403).json({ message: "Access denied to this organization" });
         }
       }
 
       const admins = await storage.getOrganisationAdmins(organizationId);
+      console.log("Found admins:", admins);
       res.json(admins);
     } catch (error) {
       console.error("Error fetching organization admins:", error);
@@ -1523,6 +1529,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           text: textContent,
           html: htmlContent
         });
+        
+        console.log("Email send result for", email, ":", emailSent);
 
         res.json({ 
           message: "Admin invitation sent successfully",
