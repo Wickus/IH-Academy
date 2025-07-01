@@ -988,6 +988,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const selectedCoaches = classData.selectedCoaches || [];
       delete classData.selectedCoaches; // Remove from class data
       
+      // Set primary coach for backward compatibility
+      if (selectedCoaches.length > 0) {
+        classData.coachId = selectedCoaches[0]; // Set first coach as primary
+      }
+      
       // Convert date strings to Date objects
       if (classData.startTime) {
         classData.startTime = new Date(classData.startTime);
@@ -1033,6 +1038,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const classData = { ...req.body };
       const selectedCoaches = classData.selectedCoaches || [];
       delete classData.selectedCoaches; // Remove from class data
+      
+      // Set primary coach for backward compatibility
+      if (selectedCoaches.length > 0) {
+        classData.coachId = selectedCoaches[0]; // Set first coach as primary
+      }
       
       // Convert date strings to Date objects
       if (classData.startTime) {
