@@ -119,7 +119,10 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
     const isSpecialRoute = specialRoutes.some(route => location.startsWith(route)) || 
                            (location.startsWith('/organizations/') && location.includes('/classes'));
 
-    if (!isSpecialRoute) {
+    // Force organization admins to desktop dashboard at root for better UX
+    const isOrgAdminAtRoot = user?.role === 'organization_admin' && location === '/';
+
+    if (!isSpecialRoute && !isOrgAdminAtRoot) {
       if (user?.role === 'coach') {
         return <MobileCoach user={user} />;
       } else if (user?.role === 'organization_admin') {
@@ -160,19 +163,20 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   // Organization Admin Interface  
   if (user?.role === 'organization_admin') {
     return (
-      <Switch>
-        <Route path="/organization-setup" component={OrganizationSetup} />
-        <Route path="/organization-payment" component={OrganizationPayment} />
-        <Route path="/" component={() => (
-          <AppLayout>
-            <Dashboard />
-          </AppLayout>
-        )} />
-        <Route path="/dashboard" component={() => (
-          <AppLayout>
-            <Dashboard />
-          </AppLayout>
-        )} />
+      <OrganizationProvider user={user}>
+        <Switch>
+          <Route path="/organization-setup" component={OrganizationSetup} />
+          <Route path="/organization-payment" component={OrganizationPayment} />
+          <Route path="/" component={() => (
+            <AppLayout>
+              <OrganizationDashboard user={user} />
+            </AppLayout>
+          )} />
+          <Route path="/dashboard" component={() => (
+            <AppLayout>
+              <OrganizationDashboard user={user} />
+            </AppLayout>
+          )} />
         <Route path="/classes" component={() => (
           <AppLayout>
             <Classes />
@@ -440,11 +444,6 @@ function Router() {
         user: authenticatedUser,
         isLoading: false
       });
-      // Force immediate navigation to prevent any auth check race conditions
-      setTimeout(() => {
-        console.log("Forcing navigation after auth success");
-        window.location.href = "/";
-      }, 100);
     }} />;
   }
 

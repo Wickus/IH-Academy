@@ -129,11 +129,8 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       if (onAuthSuccess) {
         onAuthSuccess(user);
       } else {
-        // Add delay to ensure state is properly set before redirect
-        setTimeout(() => {
-          console.log("Redirecting to home after login");
-          setLocation("/");
-        }, 500);
+        console.log("Redirecting to home after login");
+        setLocation("/");
       }
     },
     onError: (error: any) => {
