@@ -95,7 +95,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         </AppLayout>
       );
     }
-    
+
     return (
       <Switch>
         <Route path="/organization-dashboard" component={() => (
@@ -112,13 +112,13 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   }
 
   // Mobile app routing for coaches and participants - temporarily disabled for members
-  
+
   if (isMobile) {
     // Only use desktop routing for these specific pages
     const specialRoutes = ['/edit-profile', '/payment-methods', '/favourite-organizations', '/organizations', '/completed-classes', '/messages', '/achievements'];
     const isSpecialRoute = specialRoutes.some(route => location.startsWith(route)) || 
                            (location.startsWith('/organizations/') && location.includes('/classes'));
-    
+
     if (!isSpecialRoute) {
       if (user?.role === 'coach') {
         return <MobileCoach user={user} />;
@@ -478,6 +478,60 @@ function Router() {
       <RoleBasedRouter user={user} setUser={(newUser) => setAuthState(prev => ({ ...prev, user: newUser }))} setIsAuthenticated={(auth) => setAuthState(prev => ({ ...prev, isAuthenticated: auth }))} />
     </OrganizationProvider>
   );
+}
+
+// Dashboard router component that redirects based on user role
+function DashboardRouter() {
+  const [location, setLocation] = useLocation();
+
+  const { data: currentUser, isLoading } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: api.getCurrentUser,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!currentUser) {
+        console.log("No user found, redirecting to login");
+        setLocation("/login");
+        return;
+      }
+
+      console.log("User found, redirecting based on role:", currentUser.role);
+
+      // Redirect based on user role
+      switch (currentUser.role) {
+        case 'global_admin':
+          setLocation("/global-admin-dashboard");
+          break;
+        case 'organization_admin':
+          setLocation("/organization-dashboard");
+          break;
+        case 'coach':
+          setLocation("/coach-classes");
+          break;
+        case 'member':
+          setLocation("/user-dashboard");
+          break;
+        default:
+          setLocation("/user-dashboard");
+      }
+    }
+  }, [currentUser, isLoading, setLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null; // Will redirect before rendering
 }
 
 function App() {

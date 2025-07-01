@@ -91,13 +91,16 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginFormData) => {
+      console.log("Starting login process for:", credentials.username);
       const user = await api.login(credentials);
+      console.log("Login successful for user:", user.id, user.role);
       
       // Preload organization data for smoother styling transition
       if (user.role === 'organization_admin' || user.role === 'coach' || user.role === 'member') {
         try {
           const organizations = await api.getUserOrganizations();
           queryClient.setQueryData(['/api/organizations/my'], organizations);
+          console.log("Preloaded organization data:", organizations.length, "organizations");
         } catch (error) {
           // Silently handle organization loading error - user can still proceed
           console.warn('Failed to preload organization data:', error);
@@ -107,28 +110,43 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       return user;
     },
     onSuccess: (user: User) => {
+      console.log("Login completed successfully, updating cache and redirecting");
+      
+      // Clear any stale cache data
+      queryClient.clear();
+      
+      // Set fresh user data
       queryClient.setQueryData(['/api/auth/me'], user);
+      
       toast({ title: "Welcome back!", description: `Logged in as ${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user as any).name}` });
+      
       if (onAuthSuccess) {
         onAuthSuccess(user);
+      } else {
+        // Add delay to ensure state is properly set before redirect
+        setTimeout(() => {
+          console.log("Redirecting to dashboard after login");
+          setLocation("/dashboard");
+        }, 300);
       }
-      // Always redirect to dashboard after successful login
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 100); // Small delay to ensure state updates propagate
     },
     onError: (error: any) => {
+      console.error("Login failed:", error);
       toast({ title: "Login failed", description: error.message || "Invalid credentials", variant: "destructive" });
     }
   });
 
   const registerMutation = useMutation({
     mutationFn: async (userData: RegisterFormData) => {
+      console.log("Starting registration process for:", userData.email);
+      
       // First register the user
       const user = await api.register(userData);
+      console.log("User registered successfully:", user.id);
       
       // If registering as organization admin, also create the organization
       if (registrationType === "organization") {
+        console.log("Creating organization for new admin user");
         const orgPayload = {
           ...orgData,
           email: userData.email, // Use user's email for organization contact
@@ -136,6 +154,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           maxMembers: orgData.planType === 'free' ? 100 : orgData.planType === 'basic' ? 500 : 2000,
         };
         const organization = await api.createOrganization(orgPayload);
+        console.log("Organization created successfully:", organization.id);
         return { user, organization };
       }
       
@@ -143,6 +162,12 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
     },
     onSuccess: (result: any) => {
       const { user, organization } = result;
+      console.log("Registration completed successfully, updating cache and redirecting");
+      
+      // Clear any existing cache data
+      queryClient.clear();
+      
+      // Set fresh user data
       queryClient.setQueryData(['/api/auth/me'], user);
       
       if (organization) {
@@ -161,10 +186,15 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       if (onAuthSuccess) {
         onAuthSuccess(user);
       } else {
-        setLocation("/");
+        // Add delay to ensure state is properly set before redirect
+        setTimeout(() => {
+          console.log("Redirecting to dashboard after registration");
+          setLocation("/dashboard");
+        }, 500);
       }
     },
     onError: (error: any) => {
+      console.error("Registration failed:", error);
       toast({ title: "Registration failed", description: error.message || "Failed to create account", variant: "destructive" });
     }
   });
