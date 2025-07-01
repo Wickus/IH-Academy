@@ -65,7 +65,6 @@ export interface IStorage {
   getUserOrganizations(userId: number): Promise<UserOrganization[]>;
   getAllUserOrganizations(): Promise<UserOrganization[]>;
   getOrganizationFollowers(organizationId: number): Promise<User[]>;
-  getOrganisationAdmins(organizationId: number): Promise<User[]>;
   addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization>;
   removeUserFromOrganization(userId: number, organizationId: number): Promise<boolean>;
   updateUserOrganizationRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined>;
@@ -761,7 +760,6 @@ export class DatabaseStorage implements IStorage {
 
   // Organisation Admin Management methods
   async getOrganisationAdmins(organizationId: number): Promise<User[]> {
-    console.log("Getting admins for organization:", organizationId);
     const adminUsers = await db
       .select({ user: users })
       .from(userOrganizations)
@@ -771,7 +769,6 @@ export class DatabaseStorage implements IStorage {
         eq(userOrganizations.role, "admin"),
         eq(userOrganizations.isActive, true)
       ));
-    console.log("Found admin users:", adminUsers);
     return adminUsers.map(row => row.user);
   }
 
