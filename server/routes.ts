@@ -1432,6 +1432,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Invite organization admin by email
+  app.post("/api/organizations/:id/invite-admin", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['organization_admin', 'global_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      const { email } = req.body;
+
+      if (!email || !email.includes('@')) {
+        return res.status(400).json({ message: "Valid email address is required" });
+      }
+
+      // Check if user has access to this organization
+      if (user.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        const hasAccess = userOrgs.some(org => org.organizationId === organizationId);
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this organization" });
+        }
+      }
+
+      // Get organization details for email
+      const organization = await storage.getOrganization(organizationId);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+
+      // Check if user already exists
+      let invitedUser = await storage.getUserByEmail(email);
+      
+      if (!invitedUser) {
+        // Create new user account with temporary password
+        const tempPassword = Math.random().toString(36).slice(-12);
+        invitedUser = await storage.createUser({
+          name: email.split('@')[0], // Use email prefix as name
+          email: email,
+          password: tempPassword, // They'll need to reset password
+          role: 'organization_admin'
+        });
+      }
+
+      // Add user as organization admin if not already
+      const existingAdmin = await storage.getOrganisationAdmins(organizationId);
+      const isAlreadyAdmin = existingAdmin.some(admin => admin.email === email);
+      
+      if (!isAlreadyAdmin) {
+        await storage.addOrganisationAdmin(invitedUser.id, organizationId);
+      }
+
+      // Send invitation email (if email service is configured)
+      try {
+        const inviteLink = `${process.env.FRONTEND_URL || 'https://your-domain.com'}/login`;
+        const emailSent = await sendEmail({
+          to: email,
+          from: process.env.FROM_EMAIL || 'noreply@itshappening.africa',
+          subject: `You've been invited to manage ${organization.name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: ${organization.primaryColor || '#20366B'};">Organization Admin Invitation</h2>
+              <p>Hello!</p>
+              <p>You've been invited to be an administrator for <strong>${organization.name}</strong> on IH Academy.</p>
+              <p>As an administrator, you'll be able to:</p>
+              <ul>
+                <li>Manage classes and schedules</li>
+                <li>Add and manage coaches</li>
+                <li>Monitor bookings and payments</li>
+                <li>Configure organization settings</li>
+              </ul>
+              <p>
+                <a href="${inviteLink}" 
+                   style="background-color: ${organization.primaryColor || '#20366B'}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                  Access Dashboard
+                </a>
+              </p>
+              <p>If you don't have an account yet, you can log in with:</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><em>You'll be prompted to set a new password on first login.</em></p>
+              <p>Welcome to the team!</p>
+              <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+              <p style="color: #666; font-size: 12px;">This invitation was sent by ${user.name || user.email} from ${organization.name}.</p>
+            </div>
+          `
+        });
+
+        res.json({ 
+          message: "Admin invitation sent successfully",
+          emailSent: emailSent,
+          userCreated: !existingAdmin.some(admin => admin.email === email)
+        });
+      } catch (emailError) {
+        console.error("Error sending invitation email:", emailError);
+        res.json({ 
+          message: "Admin added successfully, but invitation email failed to send",
+          emailSent: false,
+          userCreated: !existingAdmin.some(admin => admin.email === email)
+        });
+      }
+
+    } catch (error) {
+      console.error("Error inviting organization admin:", error);
+      res.status(500).json({ message: "Failed to invite organization admin" });
+    }
+  });
+
   // Bookings routes
   app.get("/api/coaches", async (req: Request, res: Response) => {
     try {
