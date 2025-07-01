@@ -25,13 +25,19 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
   // Fetch all users for admin assignment
   const { data: allUsers = [] } = useQuery({
     queryKey: ['/api/users'],
-    queryFn: () => apiRequest('GET', '/api/users'),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/users');
+      return Array.isArray(response) ? response : [];
+    },
   });
 
   // Fetch current organisation admins
   const { data: organisationAdmins = [] } = useQuery({
     queryKey: ['/api/organizations', organizationId, 'admins'],
-    queryFn: () => apiRequest('GET', `/api/organizations/${organizationId}/admins`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/organizations/${organizationId}/admins`);
+      return Array.isArray(response) ? response : [];
+    },
     enabled: !!organizationId,
   });
 
