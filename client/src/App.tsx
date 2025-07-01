@@ -163,20 +163,23 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
   // Organization Admin Interface  
   if (user?.role === 'organization_admin') {
     return (
-      <OrganizationProvider user={user}>
-        <Switch>
-          <Route path="/organization-setup" component={OrganizationSetup} />
-          <Route path="/organization-payment" component={OrganizationPayment} />
-          <Route path="/" component={() => (
+      <Switch>
+        <Route path="/organization-setup" component={OrganizationSetup} />
+        <Route path="/organization-payment" component={OrganizationPayment} />
+        <Route path="/" component={() => (
+          <OrganizationProvider user={user}>
             <AppLayout>
               <OrganizationDashboard user={user} />
             </AppLayout>
-          )} />
-          <Route path="/dashboard" component={() => (
+          </OrganizationProvider>
+        )} />
+        <Route path="/dashboard" component={() => (
+          <OrganizationProvider user={user}>
             <AppLayout>
               <OrganizationDashboard user={user} />
             </AppLayout>
-          )} />
+          </OrganizationProvider>
+        )} />
         <Route path="/classes" component={() => (
           <AppLayout>
             <Classes />

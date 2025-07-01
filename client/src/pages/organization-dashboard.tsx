@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useOrganization } from "@/contexts/organization-context";
 import { api, type OrganizationDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
 import { generateInviteEmailTemplate } from "@/lib/email-templates";
@@ -19,10 +20,9 @@ import { TrialBanner } from "@/components/trial-banner";
 
 interface OrganizationDashboardProps {
   user: User;
-  organization: Organization;
 }
 
-export default function OrganizationDashboard({ user: propUser, organization: propOrganization }: OrganizationDashboardProps = {}) {
+export default function OrganizationDashboard({ user: propUser }: OrganizationDashboardProps) {
   const [, setLocation] = useLocation();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { toast } = useToast();
