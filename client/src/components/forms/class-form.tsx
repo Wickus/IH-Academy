@@ -43,6 +43,8 @@ interface ClassFormProps {
 export default function ClassForm({ sports, onSuccess, initialData, organizationId }: ClassFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState("details");
+  const [newClassId, setNewClassId] = useState<number | null>(null);
 
   const { data: organizations = [] } = useQuery({
     queryKey: ['/api/organizations/my'],
@@ -84,13 +86,19 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   const createClassMutation = useMutation({
     mutationFn: api.createClass,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
+      setNewClassId(data.id);
       toast({
         title: "Class created",
         description: "Your class has been created successfully.",
       });
-      onSuccess();
+      // Don't call onSuccess() immediately for new classes - let user move to coach assignment
+      if (initialData?.id) {
+        onSuccess();
+      } else {
+        setActiveTab("coaches");
+      }
     },
     onError: () => {
       toast({
@@ -161,8 +169,36 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsTrigger 
+          value="details" 
+          className={`flex items-center gap-2 ${activeTab === 'details' ? 'text-white' : ''}`}
+          style={{
+            backgroundColor: activeTab === 'details' ? organization.secondaryColor || '#278DD4' : 'transparent',
+            borderColor: activeTab === 'details' ? organization.secondaryColor || '#278DD4' : 'transparent'
+          }}
+        >
+          <User className="h-4 w-4" />
+          Class Details
+        </TabsTrigger>
+        <TabsTrigger 
+          value="coaches" 
+          className={`flex items-center gap-2 ${activeTab === 'coaches' ? 'text-white' : ''}`}
+          style={{
+            backgroundColor: activeTab === 'coaches' ? organization.secondaryColor || '#278DD4' : 'transparent',
+            borderColor: activeTab === 'coaches' ? organization.secondaryColor || '#278DD4' : 'transparent'
+          }}
+          disabled={!initialData?.id && !newClassId}
+        >
+          <Users className="h-4 w-4" />
+          Coach Assignments
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="details">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <FormField
@@ -624,7 +660,30 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
             }
           </Button>
         </div>
-      </form>
-    </Form>
+          </form>
+        </Form>
+      </TabsContent>
+
+      <TabsContent value="coaches">
+        <div className="space-y-4">
+          {(initialData?.id || newClassId) && (
+            <ClassCoachesForm 
+              classId={initialData?.id || newClassId} 
+              onSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
+                onSuccess();
+              }}
+            />
+          )}
+          
+          {!initialData?.id && !newClassId && (
+            <div className="text-center py-8 text-slate-500">
+              <Users className="mx-auto h-12 w-12 mb-4 text-slate-400" />
+              <p>Please create the class first to assign coaches.</p>
+            </div>
+          )}
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }
