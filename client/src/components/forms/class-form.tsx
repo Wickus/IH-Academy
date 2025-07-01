@@ -69,19 +69,28 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   // Initialize selected coaches from class coach assignments
   useEffect(() => {
-    if (Array.isArray(classCoaches) && classCoaches.length > 0) {
+    console.log('ClassForm coach data:', { 
+      classCoaches, 
+      classCoachesArray, 
+      coachesArray,
+      coaches,
+      initialData: initialData?.id 
+    });
+    if (classCoachesArray.length > 0) {
       // Sort by role priority (primary, assistant, substitute)
-      const sortedCoaches = [...classCoaches].sort((a: any, b: any) => {
+      const sortedCoaches = [...classCoachesArray].sort((a: any, b: any) => {
         const roleOrder: { [key: string]: number } = { primary: 0, assistant: 1, substitute: 2 };
         return (roleOrder[a.role] || 3) - (roleOrder[b.role] || 3);
       });
       const coachIds = sortedCoaches.map((cc: any) => cc.coachId);
+      console.log('Setting selected coaches from assignments:', coachIds, 'sortedCoaches:', sortedCoaches);
       setSelectedCoaches(coachIds);
-    } else if (initialData?.coachId && !Array.isArray(classCoaches)) {
+    } else if (initialData?.coachId && classCoachesArray.length === 0) {
       // Fallback to initial coachId if no coach assignments exist yet
+      console.log('Setting selected coaches from initialData:', [initialData.coachId]);
       setSelectedCoaches([initialData.coachId]);
     }
-  }, [classCoaches, initialData]);
+  }, [classCoaches, classCoachesArray, initialData, coaches, coachesArray]);
 
   const form = useForm<ClassFormData>({
     resolver: zodResolver(classFormSchema),
@@ -241,9 +250,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   };
 
   const coachesArray = Array.isArray(coaches) ? coaches : [];
+  const classCoachesArray = Array.isArray(classCoaches) ? classCoaches : [];
 
   const getCoachName = (coachId: number) => {
-    const coach = coachesArray.find((c: any) => c.id === coachId);
+    const coach = coachesArray.find((c: any) => c.id === coachId || c.userId === coachId);
     return coach?.name || coach?.displayName || coach?.username || 'Unknown Coach';
   };
 
@@ -359,7 +369,8 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {selectedCoaches.map((coachId, index) => {
-                    const coach = coachesArray.find((c: any) => c.id === coachId);
+                    const coach = coachesArray.find((c: any) => c.id === coachId || c.userId === coachId);
+                    console.log('Looking for coach:', coachId, 'Found:', coach, 'Available coaches:', coachesArray);
                     if (!coach) return null;
                     return (
                       <div 
