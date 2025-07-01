@@ -1039,6 +1039,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const selectedCoaches = classData.selectedCoaches || [];
       delete classData.selectedCoaches; // Remove from class data
       
+      // Get existing class to preserve organizationId
+      const existingClass = await storage.getClass(classId);
+      if (!existingClass) {
+        return res.status(404).json({ message: "Class not found" });
+      }
+      
+      // Preserve organizationId - never allow it to be changed during updates
+      classData.organizationId = existingClass.organizationId;
+      
       // Set primary coach for backward compatibility
       if (selectedCoaches.length > 0) {
         classData.coachId = selectedCoaches[0]; // Set first coach as primary

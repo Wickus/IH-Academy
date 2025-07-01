@@ -225,7 +225,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         coachId: data.coachId ? parseInt(data.coachId) : null,
         capacity: parseInt(data.capacity),
         price: parseFloat(data.price),
-        organizationId: organizationId || 1,
+        organizationId: initialData?.organizationId || organizationId || 1, // Preserve existing organizationId for updates
         selectedCoaches, // Include selected coaches in submission
       };
 
