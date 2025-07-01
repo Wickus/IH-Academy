@@ -1100,6 +1100,236 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Class Coach Assignment routes
+  app.get("/api/classes/:id/coaches", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['organization_admin', 'coach'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const classId = parseInt(req.params.id);
+      const classCoaches = await storage.getClassCoaches(classId);
+      
+      res.json(classCoaches);
+    } catch (error) {
+      console.error("Error fetching class coaches:", error);
+      res.status(500).json({ message: "Failed to fetch class coaches" });
+    }
+  });
+
+  app.post("/api/classes/:id/coaches", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+
+      const classId = parseInt(req.params.id);
+      const { coachId, role = "assistant" } = req.body;
+
+      if (!coachId) {
+        return res.status(400).json({ message: "Coach ID is required" });
+      }
+
+      const assignment = await storage.assignCoachToClass({
+        classId,
+        coachId,
+        role: role as "primary" | "assistant" | "substitute",
+        assignedBy: user.id
+      });
+
+      res.json(assignment);
+    } catch (error) {
+      console.error("Error assigning coach to class:", error);
+      res.status(500).json({ message: "Failed to assign coach to class" });
+    }
+  });
+
+  app.put("/api/classes/:classId/coaches/:coachId", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+
+      const classId = parseInt(req.params.classId);
+      const coachId = parseInt(req.params.coachId);
+      const { role } = req.body;
+
+      if (!role) {
+        return res.status(400).json({ message: "Role is required" });
+      }
+
+      const updatedAssignment = await storage.updateClassCoachRole(classId, coachId, role);
+      
+      if (!updatedAssignment) {
+        return res.status(404).json({ message: "Class coach assignment not found" });
+      }
+
+      res.json(updatedAssignment);
+    } catch (error) {
+      console.error("Error updating class coach role:", error);
+      res.status(500).json({ message: "Failed to update class coach role" });
+    }
+  });
+
+  app.delete("/api/classes/:classId/coaches/:coachId", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || user.role !== 'organization_admin') {
+        return res.status(403).json({ message: "Access denied. Organization admin only." });
+      }
+
+      const classId = parseInt(req.params.classId);
+      const coachId = parseInt(req.params.coachId);
+
+      const success = await storage.removeCoachFromClass(classId, coachId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Class coach assignment not found" });
+      }
+
+      res.json({ message: "Coach removed from class successfully" });
+    } catch (error) {
+      console.error("Error removing coach from class:", error);
+      res.status(500).json({ message: "Failed to remove coach from class" });
+    }
+  });
+
+  // Organisation Admin Management routes
+  app.get("/api/organizations/:id/admins", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['organization_admin', 'global_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      
+      // Check if user has access to this organization
+      if (user.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        const hasAccess = userOrgs.some(org => org.organizationId === organizationId);
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this organization" });
+        }
+      }
+
+      const admins = await storage.getOrganisationAdmins(organizationId);
+      res.json(admins);
+    } catch (error) {
+      console.error("Error fetching organization admins:", error);
+      res.status(500).json({ message: "Failed to fetch organization admins" });
+    }
+  });
+
+  app.post("/api/organizations/:id/admins", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['organization_admin', 'global_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const organizationId = parseInt(req.params.id);
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Check if user has access to this organization
+      if (user.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        const hasAccess = userOrgs.some(org => org.organizationId === organizationId);
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this organization" });
+        }
+      }
+
+      const adminRelation = await storage.addOrganisationAdmin(userId, organizationId, user.id);
+      res.json(adminRelation);
+    } catch (error) {
+      console.error("Error adding organization admin:", error);
+      res.status(500).json({ message: "Failed to add organization admin" });
+    }
+  });
+
+  app.put("/api/organizations/:organizationId/admins/:userId", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['organization_admin', 'global_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const organizationId = parseInt(req.params.organizationId);
+      const userId = parseInt(req.params.userId);
+      const { role } = req.body;
+
+      if (!role) {
+        return res.status(400).json({ message: "Role is required" });
+      }
+
+      // Check if user has access to this organization
+      if (user.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        const hasAccess = userOrgs.some(org => org.organizationId === organizationId);
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this organization" });
+        }
+      }
+
+      const updatedRelation = await storage.updateOrganisationAdminRole(userId, organizationId, role);
+      
+      if (!updatedRelation) {
+        return res.status(404).json({ message: "Organization admin relation not found" });
+      }
+
+      res.json(updatedRelation);
+    } catch (error) {
+      console.error("Error updating organization admin role:", error);
+      res.status(500).json({ message: "Failed to update organization admin role" });
+    }
+  });
+
+  app.delete("/api/organizations/:organizationId/admins/:userId", async (req: Request, res: Response) => {
+    try {
+      const user = getCurrentUser(req);
+      if (!user || !['organization_admin', 'global_admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const organizationId = parseInt(req.params.organizationId);
+      const userId = parseInt(req.params.userId);
+
+      // Check if user has access to this organization
+      if (user.role === 'organization_admin') {
+        const userOrgs = await storage.getUserOrganizations(user.id);
+        const hasAccess = userOrgs.some(org => org.organizationId === organizationId);
+        if (!hasAccess) {
+          return res.status(403).json({ message: "Access denied to this organization" });
+        }
+      }
+
+      // Prevent removing the last admin
+      const currentAdmins = await storage.getOrganisationAdmins(organizationId);
+      if (currentAdmins.length <= 1) {
+        return res.status(400).json({ message: "Cannot remove the last admin from organization" });
+      }
+
+      const success = await storage.removeOrganisationAdmin(userId, organizationId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Organization admin relation not found" });
+      }
+
+      res.json({ message: "Organization admin removed successfully" });
+    } catch (error) {
+      console.error("Error removing organization admin:", error);
+      res.status(500).json({ message: "Failed to remove organization admin" });
+    }
+  });
+
   // Bookings routes
   app.get("/api/coaches", async (req: Request, res: Response) => {
     try {
