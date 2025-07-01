@@ -129,6 +129,31 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     },
   });
 
+  const deleteClassMutation = useMutation({
+    mutationFn: () => api.deleteClass(initialData.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
+      toast({
+        title: "Class deleted",
+        description: "The class has been deleted successfully.",
+      });
+      onSuccess();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete class. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteClass = () => {
+    if (window.confirm("Are you sure you want to delete this class? This action cannot be undone.")) {
+      deleteClassMutation.mutate();
+    }
+  };
+
   const onSubmit = async (data: ClassFormData) => {
     setIsSubmitting(true);
     
@@ -641,34 +666,49 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onSuccess}
-            className="border-slate-300 text-slate-600 hover:bg-slate-50"
-          >
-            Cancel
-          </Button>
-          <Button 
-            type="submit" 
-            disabled={isSubmitting || createClassMutation.isPending || updateClassMutation.isPending}
-            className="text-white border-0 shadow-lg"
-            style={{ 
-              backgroundColor: organization.accentColor,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = organization.secondaryColor;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = organization.accentColor;
-            }}
-          >
-            {isSubmitting || createClassMutation.isPending || updateClassMutation.isPending 
-              ? (initialData?.id ? "Updating..." : "Creating...") 
-              : (initialData?.id ? "Update Class" : "Create Class")
-            }
-          </Button>
+        <div className="flex justify-between items-center pt-4 border-t border-slate-200">
+          <div className="flex space-x-2">
+            {initialData?.id && (
+              <Button 
+                type="button" 
+                variant="destructive"
+                onClick={handleDeleteClass}
+                disabled={deleteClassMutation.isPending}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {deleteClassMutation.isPending ? "Deleting..." : "Delete Class"}
+              </Button>
+            )}
+          </div>
+          <div className="flex space-x-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onSuccess}
+              className="border-slate-300 text-slate-600 hover:bg-slate-50"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting || createClassMutation.isPending || updateClassMutation.isPending}
+              className="text-white border-0 shadow-lg"
+              style={{ 
+                backgroundColor: organization.accentColor,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = organization.secondaryColor;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = organization.accentColor;
+              }}
+            >
+              {isSubmitting || createClassMutation.isPending || updateClassMutation.isPending 
+                ? (initialData?.id ? "Updating..." : "Creating...") 
+                : (initialData?.id ? "Update Class" : "Create Class")
+              }
+            </Button>
+          </div>
         </div>
           </form>
         </Form>
