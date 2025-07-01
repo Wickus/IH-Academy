@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ClassCoachesForm from '@/components/forms/class-coaches-form';
-import OrganisationAdminForm from '@/components/forms/organisation-admin-form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowLeft, Search, Calendar, Clock, MapPin, Users, Edit, Bell, Filter, Plus, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -228,19 +228,6 @@ export default function ClassesManagement() {
             >
               Classes Overview
             </button>
-            <button
-              onClick={() => setActiveTab('admins')}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                activeTab === 'admins'
-                  ? 'text-white'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-              style={{
-                backgroundColor: activeTab === 'admins' ? organization.primaryColor : 'transparent'
-              }}
-            >
-              Organisation Admins
-            </button>
           </div>
         </div>
 
@@ -283,7 +270,7 @@ export default function ClassesManagement() {
                     </TableHeader>
                     <TableBody>
                       {filteredClasses.map((cls) => {
-                        const coach = coaches.find(c => c.id === cls.coachId);
+                        const coach = Array.isArray(coaches) ? coaches.find(c => c.id === cls.coachId) : null;
                         return (
                           <TableRow key={cls.id}>
                             <TableCell>
@@ -582,18 +569,7 @@ export default function ClassesManagement() {
           </>
         )}
 
-        {activeTab === 'admins' && (
-          <Card>
-            <CardHeader>
-              <CardTitle style={{ color: organization.primaryColor }}>
-                Organisation Administrators
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OrganisationAdminForm organization={organization} />
-            </CardContent>
-          </Card>
-        )}
+
       </div>
     </div>
   );
