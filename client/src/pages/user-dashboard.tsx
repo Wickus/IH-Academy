@@ -234,7 +234,7 @@ export default function UserDashboard() {
                   <User className="h-8 w-8" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold">Welcome back, {currentUser.firstName || currentUser.username}!</h1>
+                  <h1 className="text-3xl font-bold text-[#f5f9fc]">Welcome back, {currentUser.firstName || currentUser.username}!</h1>
                   <p className="text-white/80 text-lg">Ready for your next adventure?</p>
                 </div>
               </div>
