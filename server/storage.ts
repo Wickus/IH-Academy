@@ -65,6 +65,7 @@ export interface IStorage {
   getUserOrganizations(userId: number): Promise<UserOrganization[]>;
   getAllUserOrganizations(): Promise<UserOrganization[]>;
   getOrganizationFollowers(organizationId: number): Promise<User[]>;
+  getOrganisationAdmins(organizationId: number): Promise<User[]>;
   addUserToOrganization(userOrg: InsertUserOrganization): Promise<UserOrganization>;
   removeUserFromOrganization(userId: number, organizationId: number): Promise<boolean>;
   updateUserOrganizationRole(userId: number, organizationId: number, role: string): Promise<UserOrganization | undefined>;
