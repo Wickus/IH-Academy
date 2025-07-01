@@ -760,6 +760,7 @@ export class DatabaseStorage implements IStorage {
 
   // Organisation Admin Management methods
   async getOrganisationAdmins(organizationId: number): Promise<User[]> {
+    console.log("Getting admins for organization:", organizationId);
     const adminUsers = await db
       .select({ user: users })
       .from(userOrganizations)
@@ -769,6 +770,7 @@ export class DatabaseStorage implements IStorage {
         eq(userOrganizations.role, "admin"),
         eq(userOrganizations.isActive, true)
       ));
+    console.log("Found admin users:", adminUsers);
     return adminUsers.map(row => row.user);
   }
 
