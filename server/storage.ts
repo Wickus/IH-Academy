@@ -1,5 +1,5 @@
 import {
-  users, organizations, userOrganizations, sports, coaches, coachInvitations, coachAvailability, classes, bookings, attendance, payments,
+  users, organizations, userOrganizations, sports, coaches, coachInvitations, coachAvailability, classes, classCoaches, bookings, attendance, payments,
   achievements, userAchievements, userStats, memberships, children, dailySchedules, messages, messageReplies,
   debitOrderMandates, debitOrderTransactions,
   type User, type InsertUser,
@@ -10,6 +10,7 @@ import {
   type CoachInvitation, type InsertCoachInvitation,
   type CoachAvailability, type InsertCoachAvailability,
   type Class, type InsertClass,
+  type ClassCoach, type InsertClassCoach,
   type Booking, type InsertBooking,
   type Attendance, type InsertAttendance,
   type Payment, type InsertPayment,
