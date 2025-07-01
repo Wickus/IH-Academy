@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 const adminNavigation = [
   { name: "Dashboard", href: "/", icon: Calendar },
   { name: "Classes & Clinics", href: "/classes", icon: Users },
+  { name: "Classes Management", href: "/classes-management", icon: Dumbbell },
   { name: "Bookings", href: "/bookings", icon: UserCheck },
   { name: "Coaches", href: "/coaches", icon: Presentation },
   { name: "Payments", href: "/payments", icon: CreditCard },
