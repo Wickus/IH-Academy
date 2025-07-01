@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get organization details
-      const organization = await storage.getOrganizationById(organizationId);
+      const organization = await storage.getOrganization(organizationId);
       if (!organization) {
         return res.status(404).json({ message: "Organization not found" });
       }
@@ -124,7 +124,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Add user as admin to organization
-      await storage.addUserToOrganization(invitedUser.id, organizationId, 'admin');
+      await storage.addUserToOrganization({
+        userId: invitedUser.id,
+        organizationId: organizationId,
+        role: 'admin'
+      });
 
       // Prepare email content
       const inviteLink = `${req.protocol}://${req.headers.host}/login`;
@@ -198,9 +202,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
-      const user = await storage.authenticateUser(email, password);
       
-      if (!user) {
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user || user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
@@ -214,6 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
       });
 
+      console.log(`Login successful for user: ${user.email} (ID: ${user.id}), session: ${sessionId}`);
       res.json({ user, sessionId });
     } catch (error) {
       console.error("Login error:", error);
