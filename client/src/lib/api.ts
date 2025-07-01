@@ -133,8 +133,14 @@ export const api = {
   },
 
   login: async (credentials: { username: string; password: string }): Promise<User> => {
-    const response = await apiRequest('POST', '/api/auth/login', credentials);
-    return response.json();
+    // Send email field to match backend expectation, but accept username from frontend
+    const response = await apiRequest('POST', '/api/auth/login', { 
+      email: credentials.username, 
+      password: credentials.password 
+    });
+    const result = await response.json();
+    // Backend returns { user, sessionId }, but we only need the user
+    return result.user || result;
   },
 
   logout: async (): Promise<void> => {
