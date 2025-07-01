@@ -35,13 +35,20 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
   const inviteAdminMutation = useMutation({
     mutationFn: (email: string) =>
       apiRequest('POST', `/api/organizations/${organizationId}/invite-admin`, { email }),
-    onSuccess: () => {
+    onSuccess: (response: any) => {
+      // Invalidate all related queries to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId] });
+      queryClient.refetchQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       setOpen(false);
       setInviteEmail("");
+      
+      const emailStatus = response?.emailSent ? "They will receive an email with instructions." : "Email delivery may be delayed.";
+      const userCreated = response?.userCreated ? "A new account was created for them." : "They can use their existing account.";
+      
       toast({
         title: "Invitation Sent",
-        description: "Admin invitation has been sent successfully. They will receive an email with instructions.",
+        description: `Admin invitation has been sent successfully. ${emailStatus} ${userCreated}`,
       });
     },
     onError: (error: any) => {

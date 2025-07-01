@@ -1489,36 +1489,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send invitation email (if email service is configured)
       try {
         const inviteLink = `${process.env.FRONTEND_URL || 'https://your-domain.com'}/login`;
+        const htmlContent = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: ${organization.primaryColor || '#20366B'};">Organization Admin Invitation</h2>
+          <p>Hello!</p>
+          <p>You've been invited to be an administrator for <strong>${organization.name}</strong> on IH Academy.</p>
+          <p>As an administrator, you'll be able to:</p>
+          <ul>
+            <li>Manage classes and schedules</li>
+            <li>Add and manage coaches</li>
+            <li>Monitor bookings and payments</li>
+            <li>Configure organization settings</li>
+          </ul>
+          <p>
+            <a href="${inviteLink}" 
+               style="background-color: ${organization.primaryColor || '#20366B'}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+              Access Dashboard
+            </a>
+          </p>
+          <p>If you don't have an account yet, you can log in with:</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><em>You'll be prompted to set a new password on first login.</em></p>
+          <p>Welcome to the team!</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">This invitation was sent by ${user.name || user.email} from ${organization.name}.</p>
+        </div>`;
+        
+        const textContent = `Hello! You've been invited to be an administrator for ${organization.name} on IH Academy. As an administrator, you'll be able to manage classes, coaches, bookings, and organization settings. Access your dashboard at: ${inviteLink}. Email: ${email}. You'll be prompted to set a new password on first login. Welcome to the team!`;
+        
         const emailSent = await sendEmail({
           to: email,
           from: process.env.FROM_EMAIL || 'noreply@itshappening.africa',
           subject: `You've been invited to manage ${organization.name}`,
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: ${organization.primaryColor || '#20366B'};">Organization Admin Invitation</h2>
-              <p>Hello!</p>
-              <p>You've been invited to be an administrator for <strong>${organization.name}</strong> on IH Academy.</p>
-              <p>As an administrator, you'll be able to:</p>
-              <ul>
-                <li>Manage classes and schedules</li>
-                <li>Add and manage coaches</li>
-                <li>Monitor bookings and payments</li>
-                <li>Configure organization settings</li>
-              </ul>
-              <p>
-                <a href="${inviteLink}" 
-                   style="background-color: ${organization.primaryColor || '#20366B'}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
-                  Access Dashboard
-                </a>
-              </p>
-              <p>If you don't have an account yet, you can log in with:</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><em>You'll be prompted to set a new password on first login.</em></p>
-              <p>Welcome to the team!</p>
-              <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
-              <p style="color: #666; font-size: 12px;">This invitation was sent by ${user.name || user.email} from ${organization.name}.</p>
-            </div>
-          `
+          text: textContent,
+          html: htmlContent
         });
 
         res.json({ 
