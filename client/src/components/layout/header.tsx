@@ -235,11 +235,11 @@ export default function Header() {
 
       {/* New Class Dialog */}
       <Dialog open={showNewClassDialog} onOpenChange={setShowNewClassDialog}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="text-[#20366B]">Create New Class</DialogTitle>
           </DialogHeader>
-          <div className="max-h-[75vh] overflow-y-auto pr-2">
+          <div className="flex-1 overflow-y-auto">
             <ClassForm 
               sports={sports || []}
               organizationId={user?.organizationId || 1}

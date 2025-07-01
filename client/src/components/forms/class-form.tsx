@@ -9,12 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, Clock, User, Users } from "lucide-react";
+import { CalendarIcon, Clock, User, Users, X } from "lucide-react";
 import { api, type Sport } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import ClassCoachesForm from "@/components/forms/class-coaches-form";
 
 const classFormSchema = z.object({
   name: z.string().min(1, "Class name is required"),
@@ -43,41 +41,22 @@ interface ClassFormProps {
 export default function ClassForm({ sports, onSuccess, initialData, organizationId }: ClassFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("details");
-  const [newClassId, setNewClassId] = useState<number | null>(null);
   const [selectedCoaches, setSelectedCoaches] = useState<number[]>([]);
 
   const { data: organizations = [] } = useQuery({
-    queryKey: ['/api/organizations/my'],
-    queryFn: async () => {
-      const response = await fetch('/api/organizations/my');
-      if (!response.ok) throw new Error('Failed to fetch organizations');
-      return response.json();
-    }
+    queryKey: ["/api/organizations/my"],
+    queryFn: () => apiRequest('GET', '/api/organizations/my'),
   });
 
-  const organization = organizations[0] || {
-    primaryColor: '#20366B',
-    secondaryColor: '#278DD4', 
-    accentColor: '#fbbf24'
+  const organization = organizations.find((org: any) => org.id === organizationId) || organizations[0] || {
+    primaryColor: "#20366B",
+    secondaryColor: "#278DD4", 
+    accentColor: "#24D367"
   };
 
-  // Helper functions for coach selection
-  const addCoach = (coachIdStr: string) => {
-    const coachId = parseInt(coachIdStr);
-    if (!selectedCoaches.includes(coachId)) {
-      setSelectedCoaches([...selectedCoaches, coachId]);
-    }
-  };
-
-  const removeCoach = (coachId: number) => {
-    setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
-  };
-
-  const { data: coaches = [], isLoading: coachesLoading } = useQuery({
+  const { data: coaches = [] } = useQuery({
     queryKey: ["/api/coaches"],
-    queryFn: () => api.getCoaches(organization?.id || 1),
-    enabled: !!organization?.id,
+    queryFn: () => apiRequest('GET', '/api/coaches'),
   });
 
   // Fetch existing coach assignments when editing a class
@@ -110,10 +89,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       description: initialData?.description || "",
       sportId: initialData?.sportId?.toString() || "",
       coachId: initialData?.coachId?.toString() || "",
-      startTime: initialData?.startTime ? new Date(initialData.startTime).toISOString().slice(0, 16) : "",
-      endTime: initialData?.endTime ? new Date(initialData.endTime).toISOString().slice(0, 16) : "",
+      startTime: initialData?.startTime || "",
+      endTime: initialData?.endTime || "",
       capacity: initialData?.capacity?.toString() || "",
-      price: initialData?.price?.toString() || "",
+      price: initialData?.price || "",
       location: initialData?.location || "",
       requirements: initialData?.requirements || "",
       isRecurring: initialData?.isRecurring || false,
@@ -123,19 +102,32 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   const createClassMutation = useMutation({
     mutationFn: api.createClass,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
-      setNewClassId(data.id);
+      
+      // Create coach assignments if coaches are selected
+      if (selectedCoaches.length > 0) {
+        try {
+          const roleAssignments = selectedCoaches.map((coachId, index) => ({
+            coachId,
+            role: index === 0 ? 'primary' : index === 1 ? 'assistant' : 'substitute'
+          }));
+
+          for (const assignment of roleAssignments) {
+            await apiRequest('POST', `/api/classes/${data.id}/coaches`, assignment);
+          }
+          
+          queryClient.invalidateQueries({ queryKey: ["/api/classes", data.id, "coaches"] });
+        } catch (error) {
+          console.error('Error creating coach assignments:', error);
+        }
+      }
+
       toast({
         title: "Class created",
         description: "Your class has been created successfully.",
       });
-      // Don't call onSuccess() immediately for new classes - let user move to coach assignment
-      if (initialData?.id) {
-        onSuccess();
-      } else {
-        setActiveTab("coaches");
-      }
+      onSuccess();
     },
     onError: () => {
       toast({
@@ -148,8 +140,30 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   const updateClassMutation = useMutation({
     mutationFn: ({ id, ...data }: any) => api.updateClass(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
+      
+      // Update coach assignments if coaches are selected
+      if (initialData?.id && selectedCoaches.length > 0) {
+        try {
+          // Delete existing assignments and create new ones
+          await apiRequest('DELETE', `/api/classes/${initialData.id}/coaches`);
+          
+          const roleAssignments = selectedCoaches.map((coachId, index) => ({
+            coachId,
+            role: index === 0 ? 'primary' : index === 1 ? 'assistant' : 'substitute'
+          }));
+
+          for (const assignment of roleAssignments) {
+            await apiRequest('POST', `/api/classes/${initialData.id}/coaches`, assignment);
+          }
+          
+          queryClient.invalidateQueries({ queryKey: ["/api/classes", initialData.id, "coaches"] });
+        } catch (error) {
+          console.error('Error updating coach assignments:', error);
+        }
+      }
+
       toast({
         title: "Class updated",
         description: "Your class has been updated successfully.",
@@ -184,84 +198,55 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     },
   });
 
-  const handleDeleteClass = () => {
-    if (window.confirm("Are you sure you want to delete this class? This action cannot be undone.")) {
-      deleteClassMutation.mutate();
-    }
-  };
-
   const onSubmit = async (data: ClassFormData) => {
     setIsSubmitting(true);
-    
     try {
-      // Combine date and time for startTime and endTime
-      const startDateTime = new Date(`${data.startTime}:00`).toISOString();
-      const endDateTime = new Date(`${data.endTime}:00`).toISOString();
-
       const classData = {
-        name: data.name,
-        description: data.description || undefined,
+        ...data,
         sportId: parseInt(data.sportId),
-        coachId: selectedCoaches.length > 0 ? selectedCoaches[0] : null, // Primary coach (first selected)
-        startTime: startDateTime,
-        endTime: endDateTime,
+        coachId: data.coachId ? parseInt(data.coachId) : null,
         capacity: parseInt(data.capacity),
-        price: parseFloat(data.price),
-        location: data.location || undefined,
-        requirements: data.requirements || undefined,
-        isRecurring: data.isRecurring,
-        recurrencePattern: data.isRecurring ? data.recurrencePattern || undefined : undefined,
-        selectedCoaches: selectedCoaches, // Send all selected coaches
+        organizationId: organizationId || 1,
+        selectedCoaches, // Include selected coaches in submission
       };
 
       if (initialData?.id) {
-        // Update existing class - don't change organizationId
-        await updateClassMutation.mutateAsync({ id: initialData.id, ...classData });
+        updateClassMutation.mutate({ id: initialData.id, ...classData });
       } else {
-        // Create new class - include organizationId
-        await createClassMutation.mutateAsync({ 
-          organizationId: organizationId || 1,
-          ...classData 
-        });
+        createClassMutation.mutate(classData);
       }
     } catch (error) {
-      console.error('Failed to create class:', error);
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-6">
-        <TabsTrigger 
-          value="details" 
-          className={`flex items-center gap-2 ${activeTab === 'details' ? 'text-white' : ''}`}
-          style={{
-            backgroundColor: activeTab === 'details' ? organization.secondaryColor || '#278DD4' : 'transparent',
-            borderColor: activeTab === 'details' ? organization.secondaryColor || '#278DD4' : 'transparent'
-          }}
-        >
-          <User className="h-4 w-4" />
-          Class Details
-        </TabsTrigger>
-        <TabsTrigger 
-          value="coaches" 
-          className={`flex items-center gap-2 ${activeTab === 'coaches' ? 'text-white' : ''}`}
-          style={{
-            backgroundColor: activeTab === 'coaches' ? organization.secondaryColor || '#278DD4' : 'transparent',
-            borderColor: activeTab === 'coaches' ? organization.secondaryColor || '#278DD4' : 'transparent'
-          }}
-          disabled={!initialData?.id && !newClassId}
-        >
-          <Users className="h-4 w-4" />
-          Coach Assignments
-        </TabsTrigger>
-      </TabsList>
+  const addCoach = (coachId: string) => {
+    const id = parseInt(coachId);
+    if (!selectedCoaches.includes(id)) {
+      setSelectedCoaches([...selectedCoaches, id]);
+    }
+  };
 
-      <TabsContent value="details">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+  const removeCoach = (coachId: number) => {
+    setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
+  };
+
+  const getCoachName = (coachId: number) => {
+    const coach = Array.isArray(coaches) ? coaches.find((c: any) => c.id === coachId) : null;
+    return coach?.name || coach?.displayName || coach?.username || 'Unknown Coach';
+  };
+
+  return (
+    <div className="w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <FormField
@@ -280,7 +265,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                       e.target.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = 'rgb(203 213 225)';
+                      e.target.style.borderColor = '#cbd5e1';
                       e.target.style.boxShadow = 'none';
                     }}
                   />
@@ -296,48 +281,26 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Sport *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger 
-                      className="border-slate-300 text-slate-900"
+                      className="border-slate-300"
                       onFocus={(e) => {
                         e.currentTarget.style.borderColor = organization.secondaryColor;
                         e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
                       }}
                       onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgb(203 213 225)';
+                        e.currentTarget.style.borderColor = '#cbd5e1';
                         e.currentTarget.style.boxShadow = 'none';
                       }}
                     >
-                      <SelectValue placeholder="Select a sport" className="text-slate-900" />
+                      <SelectValue placeholder="Select a sport" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white border-slate-300">
                     {sports.map((sport) => (
-                      <SelectItem 
-                        key={sport.id} 
-                        value={sport.id.toString()} 
-                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                        style={{
-                          backgroundColor: 'transparent'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <i className={`${sport.icon} text-sm`} style={{ color: sport.color }}></i>
-                          <span>{sport.name}</span>
-                        </div>
+                      <SelectItem key={sport.id} value={sport.id.toString()}>
+                        {sport.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -356,9 +319,17 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
               <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Description</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Describe the class objectives, skill level, and what participants can expect..."
+                  placeholder="Class description and details..." 
                   {...field} 
-                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[60px] text-slate-900 placeholder:text-slate-500"
+                  className="border-slate-300 min-h-[100px]"
+                  onFocus={(e) => {
+                    e.target.style.borderColor = organization.secondaryColor;
+                    e.target.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#cbd5e1';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -368,92 +339,106 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
         {/* Coach Selection */}
         <div className="space-y-3">
-          <label className="font-medium" style={{ color: organization.primaryColor }}>Assign Coaches</label>
+          <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>
+            <Users className="inline h-4 w-4 mr-1" />
+            Assigned Coaches
+          </FormLabel>
+          
+          {/* Selected Coaches Display */}
           <div className="space-y-2">
             <div 
-                    className="border border-slate-300 rounded-md p-3 min-h-[42px] bg-white cursor-pointer"
-                    style={{
-                      borderColor: selectedCoaches.length > 0 ? organization.secondaryColor : 'rgb(203 213 225)',
-                      boxShadow: selectedCoaches.length > 0 ? `0 0 0 1px ${organization.secondaryColor}20` : 'none'
-                    }}
-                  >
-                    {selectedCoaches.length === 0 ? (
-                      <span className="text-slate-500">Select coaches (optional)</span>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedCoaches.map((coachId) => {
-                          const coach = Array.isArray(coaches) ? coaches.find(c => c.id === coachId) : null;
-                          if (!coach) return null;
-                          return (
-                            <div 
-                              key={coachId}
-                              className="inline-flex items-center px-2 py-1 rounded-md text-sm text-white"
-                              style={{ backgroundColor: organization.accentColor }}
-                            >
-                              {coach.name || coach.displayName || coach.username}
-                              <button
-                                type="button"
-                                onClick={() => removeCoach(coachId)}
-                                className="ml-2 text-white hover:text-gray-200"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          );
-                        })}
+              className="min-h-[60px] p-3 border-2 border-dashed rounded-lg flex items-center"
+              style={{ borderColor: organization.secondaryColor + '40' }}
+            >
+              {selectedCoaches.length === 0 ? (
+                <span className="text-slate-500">Select coaches (optional)</span>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {selectedCoaches.map((coachId, index) => {
+                    const coach = Array.isArray(coaches) ? coaches.find(c => c.id === coachId) : null;
+                    if (!coach) return null;
+                    return (
+                      <div 
+                        key={coachId}
+                        className="inline-flex items-center px-2 py-1 rounded-md text-sm text-white"
+                        style={{ backgroundColor: organization.primaryColor }}
+                      >
+                        <span className="mr-1">
+                          {index === 0 && <User className="h-3 w-3" />}
+                          {index === 1 && <Users className="h-3 w-3" />}
+                          {index >= 2 && <Users className="h-3 w-3" />}
+                        </span>
+                        {getCoachName(coachId)} 
+                        <span className="ml-1 text-xs opacity-75">
+                          ({index === 0 ? 'Primary' : index === 1 ? 'Assistant' : 'Substitute'})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeCoach(coachId)}
+                          className="ml-2 hover:bg-white hover:bg-opacity-20 rounded-full p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Coach Selection Dropdown */}
-                  <Select onValueChange={addCoach}>
-                    <SelectTrigger 
-                      className="border-slate-300 text-slate-900"
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = organization.secondaryColor;
-                        e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            
+            {/* Coach Selection Dropdown */}
+            <div className="flex items-center gap-2">
+              <Select onValueChange={addCoach} value="">
+                <SelectTrigger 
+                  className="w-full border-slate-300"
+                  style={{
+                    borderColor: organization.secondaryColor + '80'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.setProperty('border-color', organization.secondaryColor, 'important');
+                    e.currentTarget.style.setProperty('box-shadow', `0 0 0 3px ${organization.secondaryColor}20`, 'important');
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.setProperty('border-color', organization.secondaryColor + '80', 'important');
+                    e.currentTarget.style.setProperty('box-shadow', 'none', 'important');
+                  }}
+                >
+                  <SelectValue placeholder="Add a coach..." className="text-slate-900" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-slate-300">
+                  {Array.isArray(coaches) ? coaches
+                    .filter(coach => !selectedCoaches.includes(coach.id))
+                    .map((coach) => (
+                    <SelectItem 
+                      key={coach.id} 
+                      value={coach.id.toString()}
+                      className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                      style={{ backgroundColor: 'transparent' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
                       }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgb(203 213 225)';
-                        e.currentTarget.style.boxShadow = 'none';
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                       }}
                     >
-                      <SelectValue placeholder="Add a coach..." className="text-slate-900" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white border-slate-300">
-                      {Array.isArray(coaches) ? coaches
-                        .filter(coach => !selectedCoaches.includes(coach.id))
-                        .map((coach) => (
-                        <SelectItem 
-                          key={coach.id} 
-                          value={coach.id.toString()}
-                          className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                          style={{ backgroundColor: 'transparent' }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                          }}
-                        >
-                          {coach.name || coach.displayName || coach.username}
-                        </SelectItem>
-                      )) : null}
-                      {Array.isArray(coaches) && coaches.filter(coach => !selectedCoaches.includes(coach.id)).length === 0 && (
-                        <div className="px-2 py-2 text-sm text-slate-500">
-                          All available coaches have been selected
-                        </div>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
+                      {coach.name || coach.displayName || coach.username}
+                    </SelectItem>
+                  )) : null}
+                  {Array.isArray(coaches) && coaches.filter(coach => !selectedCoaches.includes(coach.id)).length === 0 && (
+                    <div className="px-2 py-2 text-sm text-slate-500">
+                      All available coaches have been selected
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
               <p className="text-sm text-slate-600 mt-1">
                 You can assign multiple coaches to this class. The first coach selected will be the primary coach.
               </p>
             </div>
 
-        {/* Scheduling */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {/* Schedule Information */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <FormField
             control={form.control}
             name="startTime"
@@ -523,8 +508,8 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                   <Input 
                     type="number" 
                     placeholder="0.00"
-                    min="0"
                     step="0.01"
+                    min="0"
                     {...field} 
                     className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                   />
@@ -542,7 +527,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                 <FormLabel className="text-[#20366B] font-medium">Location</FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder="e.g., Court 1, Swimming Pool" 
+                    placeholder="e.g., Main Court"
                     {...field} 
                     className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
                   />
@@ -553,26 +538,17 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           />
         </div>
 
-        {/* Additional Information */}
         <FormField
           control={form.control}
           name="requirements"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Requirements & Equipment</FormLabel>
+              <FormLabel className="text-[#20366B] font-medium">Requirements</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="List any equipment, skill level, or preparation requirements..."
+                  placeholder="e.g., Must bring own equipment, minimum skill level..."
                   {...field} 
-                  className="border-slate-300 min-h-[60px] text-slate-900 placeholder:text-slate-500"
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = organization.secondaryColor;
-                    e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'rgb(203 213 225)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
+                  className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4] min-h-[80px]"
                 />
               </FormControl>
               <FormMessage />
@@ -580,7 +556,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           )}
         />
 
-        {/* Recurring Options */}
+        {/* Recurring Class Options */}
         <div className="space-y-3">
           <FormField
             control={form.control}
@@ -592,16 +568,14 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     className="border-slate-300"
-                    style={field.value ? {
-                      backgroundColor: organization.secondaryColor,
-                      borderColor: organization.secondaryColor
-                    } : {}}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Recurring Class</FormLabel>
+                  <FormLabel className="text-[#20366B] font-medium">
+                    Recurring Class
+                  </FormLabel>
                   <p className="text-sm text-slate-600">
-                    This class will repeat according to the schedule pattern
+                    This class will repeat according to the selected pattern
                   </p>
                 </div>
               </FormItem>
@@ -614,108 +588,17 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
               name="recurrencePattern"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Recurrence Pattern</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel className="text-[#20366B] font-medium">Recurrence Pattern</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger 
-                        className="border-slate-300 text-slate-900"
-                        onFocus={(e) => {
-                          e.currentTarget.style.borderColor = organization.secondaryColor;
-                          e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.borderColor = 'rgb(203 213 225)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
-                      >
-                        <SelectValue placeholder="Select recurrence pattern" className="text-slate-900" />
+                      <SelectTrigger className="border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
+                        <SelectValue placeholder="Select recurrence pattern" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="bg-white border-slate-300">
-                      <SelectItem 
-                        value="daily" 
-                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                        style={{
-                          backgroundColor: 'transparent'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                      >
-                        Daily
-                      </SelectItem>
-                      <SelectItem 
-                        value="weekly" 
-                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                        style={{
-                          backgroundColor: 'transparent'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                      >
-                        Weekly
-                      </SelectItem>
-                      <SelectItem 
-                        value="biweekly" 
-                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                        style={{
-                          backgroundColor: 'transparent'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                      >
-                        Bi-weekly
-                      </SelectItem>
-                      <SelectItem 
-                        value="monthly" 
-                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                        style={{
-                          backgroundColor: 'transparent'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                      >
-                        Monthly
-                      </SelectItem>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -725,25 +608,23 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           )}
         </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-between items-center pt-4 border-t border-slate-200">
-          <div className="flex space-x-2">
-            {initialData?.id && (
-              <Button 
-                type="button" 
-                variant="destructive"
-                onClick={handleDeleteClass}
-                disabled={deleteClassMutation.isPending}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                {deleteClassMutation.isPending ? "Deleting..." : "Delete Class"}
-              </Button>
-            )}
-          </div>
-          <div className="flex space-x-4">
+        {/* Form Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          {initialData?.id && (
             <Button 
-              type="button" 
-              variant="outline" 
+              type="button"
+              variant="destructive"
+              onClick={() => deleteClassMutation.mutate()}
+              disabled={deleteClassMutation.isPending}
+              className="order-3 sm:order-1"
+            >
+              {deleteClassMutation.isPending ? "Deleting..." : "Delete Class"}
+            </Button>
+          )}
+          <div className="flex gap-3 order-1 sm:order-2 sm:ml-auto">
+            <Button 
+              type="button"
+              variant="outline"
               onClick={onSuccess}
               className="border-slate-300 text-slate-600 hover:bg-slate-50"
             >
@@ -770,27 +651,8 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
             </Button>
           </div>
         </div>
-          </form>
-        </Form>
-      </TabsContent>
-
-      <TabsContent value="coaches">
-        <div className="space-y-4">
-          {(initialData?.id || newClassId) && (
-            <ClassCoachesForm 
-              classId={initialData?.id || newClassId} 
-              organization={organization}
-            />
-          )}
-          
-          {!initialData?.id && !newClassId && (
-            <div className="text-center py-8 text-slate-500">
-              <Users className="mx-auto h-12 w-12 mb-4 text-slate-400" />
-              <p>Please create the class first to assign coaches.</p>
-            </div>
-          )}
-        </div>
-      </TabsContent>
-    </Tabs>
+        </form>
+      </Form>
+    </div>
   );
 }
