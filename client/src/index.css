@@ -99,10 +99,44 @@
     grid-template-columns: repeat(2, 1fr) !important;
   }
   
-  .tablet-spacing {
-    padding: 1rem !important;
-    gap: 1rem !important;
+  .tablet-padding {
+    padding: 1.5rem !important;
   }
+}
+
+/* Touch-friendly interactive elements */
+@media (pointer: coarse) {
+  .touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  .touch-padding {
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+/* Mobile text scaling */
+@media (max-width: 640px) {
+  .mobile-text-xs { font-size: 0.6rem !important; }
+  .mobile-text-sm { font-size: 0.75rem !important; }
+  .mobile-text-base { font-size: 0.875rem !important; }
+  .mobile-text-lg { font-size: 1rem !important; }
+  .mobile-text-xl { font-size: 1.125rem !important; }
+  .mobile-text-2xl { font-size: 1.25rem !important; }
+  .mobile-text-3xl { font-size: 1.5rem !important; }
+}
+
+/* Mobile spacing utilities */
+@media (max-width: 640px) {
+  .mobile-p-1 { padding: 0.25rem !important; }
+  .mobile-p-2 { padding: 0.5rem !important; }
+  .mobile-p-3 { padding: 0.75rem !important; }
+  .mobile-p-4 { padding: 1rem !important; }
+  .mobile-m-1 { margin: 0.25rem !important; }
+  .mobile-m-2 { margin: 0.5rem !important; }
+  .mobile-m-3 { margin: 0.75rem !important; }
+  .mobile-m-4 { margin: 1rem !important; }
 }
 
 /* Dynamic Organization Tab Styling - Enhanced specificity */
