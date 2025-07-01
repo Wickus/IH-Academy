@@ -20,7 +20,6 @@ const classFormSchema = z.object({
   name: z.string().min(1, "Class name is required"),
   description: z.string().optional(),
   sportId: z.string().min(1, "Sport is required"),
-  coachId: z.string().min(1, "Coach is required"),
   startTime: z.string().min(1, "Start time is required"),
   endTime: z.string().min(1, "End time is required"),
   capacity: z.string().min(1, "Capacity is required"),
@@ -73,7 +72,6 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       name: initialData?.name || "",
       description: initialData?.description || "",
       sportId: initialData?.sportId?.toString() || "",
-      coachId: initialData?.coachId?.toString() || "",
       startTime: initialData?.startTime ? new Date(initialData.startTime).toISOString().slice(0, 16) : "",
       endTime: initialData?.endTime ? new Date(initialData.endTime).toISOString().slice(0, 16) : "",
       capacity: initialData?.capacity?.toString() || "",
@@ -141,7 +139,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         name: data.name,
         description: data.description || undefined,
         sportId: parseInt(data.sportId),
-        coachId: parseInt(data.coachId),
+        coachId: null, // Will be assigned through Coach Assignments tab
         startTime: startDateTime,
         endTime: endDateTime,
         capacity: parseInt(data.capacity),
@@ -304,62 +302,19 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           )}
         />
 
-        {/* Coach and Scheduling */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <FormField
-            control={form.control}
-            name="coachId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Coach *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger 
-                      className="border-slate-300 text-slate-900"
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = organization.secondaryColor;
-                        e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgb(203 213 225)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    >
-                      <SelectValue placeholder="Select a coach" className="text-slate-900" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="bg-white border-slate-300">
-                    {Array.isArray(coaches) && coaches.map((coach) => (
-                      <SelectItem 
-                        key={coach.id} 
-                        value={coach.id.toString()} 
-                        className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                        style={{
-                          backgroundColor: 'transparent'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                        }}
-                      >
-                        {coach.user?.name || `Coach ${coach.id}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Coach Assignment Info */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center gap-2 text-blue-800">
+            <Users className="h-4 w-4" />
+            <span className="text-sm font-medium">Coach Assignment</span>
+          </div>
+          <p className="text-sm text-blue-700 mt-1">
+            Coaches can be assigned to this class after creation using the "Coach Assignments" tab above.
+          </p>
+        </div>
 
+        {/* Scheduling */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <FormField
             control={form.control}
             name="startTime"
