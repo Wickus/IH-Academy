@@ -128,8 +128,10 @@ export default function ClassCoachesForm({ classId, organization }: ClassCoaches
   };
 
   // Get available coaches (not already assigned)
-  const assignedCoachIds = new Set(classCoaches.map((cc: any) => cc.coachId));
-  const availableCoaches = coaches.filter((coach: any) => !assignedCoachIds.has(coach.id));
+  const classCoachesArray = Array.isArray(classCoaches) ? classCoaches : [];
+  const coachesArray = Array.isArray(coaches) ? coaches : [];
+  const assignedCoachIds = new Set(classCoachesArray.map((cc: any) => cc.coachId));
+  const availableCoaches = coachesArray.filter((coach: any) => !assignedCoachIds.has(coach.id));
 
   return (
     <Card className="border shadow-sm">
@@ -142,11 +144,11 @@ export default function ClassCoachesForm({ classId, organization }: ClassCoaches
       <CardContent className="space-y-4">
         {/* Current Assignments */}
         <div className="space-y-2">
-          {classCoaches.length === 0 ? (
+          {classCoachesArray.length === 0 ? (
             <p className="text-sm text-gray-500 italic">No coaches assigned to this class yet.</p>
           ) : (
-            classCoaches.map((assignment: any) => {
-              const coach = coaches.find((c: any) => c.id === assignment.coachId);
+            classCoachesArray.map((assignment: any) => {
+              const coach = coachesArray.find((c: any) => c.id === assignment.coachId);
               return (
                 <div
                   key={assignment.id}
