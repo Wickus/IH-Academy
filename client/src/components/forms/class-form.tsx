@@ -57,13 +57,19 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ["/api/coaches"],
-    queryFn: () => apiRequest('GET', '/api/coaches'),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/coaches');
+      return response.json();
+    },
   });
 
   // Fetch existing coach assignments when editing a class
   const { data: classCoaches = [], isLoading: classCoachesLoading } = useQuery({
     queryKey: ["/api/classes", initialData?.id, "coaches"],
-    queryFn: () => apiRequest('GET', `/api/classes/${initialData!.id}/coaches`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/classes/${initialData!.id}/coaches`);
+      return response.json();
+    },
     enabled: !!initialData?.id,
   });
 
