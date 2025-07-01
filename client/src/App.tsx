@@ -388,7 +388,7 @@ function Router() {
       }
     };
 
-    // Check auth on initial load only
+    // Check auth on initial load only, but not if we're already authenticated
     if (authState.isLoading && authState.isAuthenticated === null) {
       checkAuth();
     }
@@ -434,11 +434,17 @@ function Router() {
   // Show auth page for login/register routes
   if (!isAuthenticated && (location === "/login" || location === "/register")) {
     return <Auth onAuthSuccess={(authenticatedUser) => {
+      console.log("Auth success callback received:", authenticatedUser);
       setAuthState({
         isAuthenticated: true,
         user: authenticatedUser,
         isLoading: false
       });
+      // Force immediate navigation to prevent any auth check race conditions
+      setTimeout(() => {
+        console.log("Forcing navigation after auth success");
+        window.location.href = "/";
+      }, 100);
     }} />;
   }
 
