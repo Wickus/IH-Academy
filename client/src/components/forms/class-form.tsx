@@ -139,7 +139,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         name: data.name,
         description: data.description || undefined,
         sportId: parseInt(data.sportId),
-        coachId: null, // Will be assigned through Coach Assignments tab
+
         startTime: startDateTime,
         endTime: endDateTime,
         capacity: parseInt(data.capacity),
