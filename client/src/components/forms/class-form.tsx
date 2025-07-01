@@ -177,18 +177,31 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
       
       // Update coach assignments if coaches are selected
-      if (initialData?.id && selectedCoaches.length > 0) {
+      if (initialData?.id) {
         try {
-          // Delete existing assignments and create new ones
-          await apiRequest('DELETE', `/api/classes/${initialData.id}/coaches`);
+          // Get existing assignments and remove them individually
+          const existingAssignments = await apiRequest('GET', `/api/classes/${initialData.id}/coaches`);
+          const existingData = await existingAssignments.json();
           
-          const roleAssignments = selectedCoaches.map((coachId, index) => ({
-            coachId,
-            role: index === 0 ? 'primary' : index === 1 ? 'assistant' : 'substitute'
-          }));
+          // Remove existing assignments
+          for (const assignment of existingData) {
+            try {
+              await apiRequest('DELETE', `/api/classes/${initialData.id}/coaches/${assignment.coachId}`);
+            } catch (removeError) {
+              console.warn('Could not remove existing coach assignment:', removeError);
+            }
+          }
+          
+          // Add new assignments if any coaches are selected
+          if (selectedCoaches.length > 0) {
+            const roleAssignments = selectedCoaches.map((coachId, index) => ({
+              coachId,
+              role: index === 0 ? 'primary' : index === 1 ? 'assistant' : 'substitute'
+            }));
 
-          for (const assignment of roleAssignments) {
-            await apiRequest('POST', `/api/classes/${initialData.id}/coaches`, assignment);
+            for (const assignment of roleAssignments) {
+              await apiRequest('POST', `/api/classes/${initialData.id}/coaches`, assignment);
+            }
           }
           
           queryClient.invalidateQueries({ queryKey: ["/api/classes", initialData.id, "coaches"] });
@@ -264,7 +277,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   const addCoach = (coachId: string) => {
     const id = parseInt(coachId);
     if (!selectedCoaches.includes(id)) {
-      setSelectedCoaches([...selectedCoaches, id]);
+      const newCoaches = [...selectedCoaches, id];
+      // Ensure unique IDs
+      const uniqueCoaches = newCoaches.filter((value, index, self) => self.indexOf(value) === index);
+      setSelectedCoaches(uniqueCoaches);
     }
   };
 
@@ -394,7 +410,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     if (!coach) return null;
                     return (
                       <div 
-                        key={coachId}
+                        key={`coach-${coachId}-${index}`}
                         className="inline-flex items-center px-2 py-1 rounded-md text-sm text-white"
                         style={{ backgroundColor: organization.primaryColor }}
                       >
