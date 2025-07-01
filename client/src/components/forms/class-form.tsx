@@ -61,9 +61,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     accentColor: '#fbbf24'
   };
 
-  const { data: coaches = [] } = useQuery({
+  const { data: coaches = [], isLoading: coachesLoading } = useQuery({
     queryKey: ["/api/coaches"],
     queryFn: () => api.getCoaches(organization?.id || 1),
+    enabled: !!organization?.id,
   });
 
   const form = useForm<ClassFormData>({
@@ -328,7 +329,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white border-slate-300">
-                    {coaches.map((coach) => (
+                    {Array.isArray(coaches) && coaches.map((coach) => (
                       <SelectItem 
                         key={coach.id} 
                         value={coach.id.toString()} 
@@ -669,10 +670,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
           {(initialData?.id || newClassId) && (
             <ClassCoachesForm 
               classId={initialData?.id || newClassId} 
-              onSuccess={() => {
-                queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
-                onSuccess();
-              }}
+              organization={organization}
             />
           )}
           
