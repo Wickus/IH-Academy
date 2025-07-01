@@ -43,18 +43,19 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCoaches, setSelectedCoaches] = useState<number[]>([]);
 
-  const { data: organizations = [] } = useQuery({
+  const { data: organizations } = useQuery({
     queryKey: ["/api/organizations/my"],
     queryFn: () => apiRequest('GET', '/api/organizations/my'),
   });
 
-  const organization = organizations.find((org: any) => org.id === organizationId) || organizations[0] || {
+  const organizationsArray = Array.isArray(organizations) ? organizations : [];
+  const organization = organizationsArray.find((org: any) => org.id === organizationId) || organizationsArray[0] || {
     primaryColor: "#20366B",
     secondaryColor: "#278DD4", 
     accentColor: "#24D367"
   };
 
-  const { data: coaches = [] } = useQuery({
+  const { data: coaches } = useQuery({
     queryKey: ["/api/coaches"],
     queryFn: () => apiRequest('GET', '/api/coaches'),
   });
@@ -206,6 +207,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         sportId: parseInt(data.sportId),
         coachId: data.coachId ? parseInt(data.coachId) : null,
         capacity: parseInt(data.capacity),
+        price: parseFloat(data.price),
         organizationId: organizationId || 1,
         selectedCoaches, // Include selected coaches in submission
       };
@@ -238,8 +240,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
   };
 
+  const coachesArray = Array.isArray(coaches) ? coaches : [];
+
   const getCoachName = (coachId: number) => {
-    const coach = Array.isArray(coaches) ? coaches.find((c: any) => c.id === coachId) : null;
+    const coach = coachesArray.find((c: any) => c.id === coachId);
     return coach?.name || coach?.displayName || coach?.username || 'Unknown Coach';
   };
 
@@ -355,7 +359,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {selectedCoaches.map((coachId, index) => {
-                    const coach = Array.isArray(coaches) ? coaches.find(c => c.id === coachId) : null;
+                    const coach = coachesArray.find((c: any) => c.id === coachId);
                     if (!coach) return null;
                     return (
                       <div 
@@ -406,9 +410,9 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                   <SelectValue placeholder="Add a coach..." className="text-slate-900" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-slate-300">
-                  {Array.isArray(coaches) ? coaches
-                    .filter(coach => !selectedCoaches.includes(coach.id))
-                    .map((coach) => (
+                  {coachesArray
+                    .filter((coach: any) => !selectedCoaches.includes(coach.id))
+                    .map((coach: any) => (
                     <SelectItem 
                       key={coach.id} 
                       value={coach.id.toString()}
@@ -423,8 +427,8 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                     >
                       {coach.name || coach.displayName || coach.username}
                     </SelectItem>
-                  )) : null}
-                  {Array.isArray(coaches) && coaches.filter(coach => !selectedCoaches.includes(coach.id)).length === 0 && (
+                  ))}
+                  {coachesArray.filter((coach: any) => !selectedCoaches.includes(coach.id)).length === 0 && (
                     <div className="px-2 py-2 text-sm text-slate-500">
                       All available coaches have been selected
                     </div>
@@ -432,10 +436,11 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                 </SelectContent>
               </Select>
             </div>
-              <p className="text-sm text-slate-600 mt-1">
-                You can assign multiple coaches to this class. The first coach selected will be the primary coach.
-              </p>
-            </div>
+            <p className="text-sm text-slate-600 mt-1">
+              You can assign multiple coaches to this class. The first coach selected will be the primary coach.
+            </p>
+          </div>
+        </div>
 
         {/* Schedule Information */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
