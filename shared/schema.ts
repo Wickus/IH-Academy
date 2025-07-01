@@ -131,7 +131,7 @@ export const classes = pgTable("classes", {
   id: serial("id").primaryKey(),
   organizationId: integer("organization_id").notNull(),
   sportId: integer("sport_id").notNull(),
-  coachId: integer("coach_id").notNull(),
+  coachId: integer("coach_id").notNull(), // Keep for backward compatibility - primary coach
   name: text("name").notNull(),
   description: text("description"),
   startTime: timestamp("start_time").notNull(),
@@ -142,6 +142,17 @@ export const classes = pgTable("classes", {
   recurrencePattern: text("recurrence_pattern"), // weekly, daily, etc.
   location: text("location"),
   requirements: text("requirements"),
+});
+
+// New junction table for multiple coach assignments to classes
+export const classCoaches = pgTable("class_coaches", {
+  id: serial("id").primaryKey(),
+  classId: integer("class_id").notNull(),
+  coachId: integer("coach_id").notNull(),
+  role: text("role", { enum: ["primary", "assistant", "substitute"] }).default("primary"),
+  assignedAt: timestamp("assigned_at").defaultNow().notNull(),
+  assignedBy: integer("assigned_by").notNull(), // admin who assigned
+  isActive: boolean("is_active").notNull().default(true),
 });
 
 export const bookings = pgTable("bookings", {
@@ -273,6 +284,11 @@ export const insertClassSchema = createInsertSchema(classes).omit({
   id: true,
 });
 
+export const insertClassCoachSchema = createInsertSchema(classCoaches).omit({
+  id: true,
+  assignedAt: true,
+});
+
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
 });
@@ -327,6 +343,9 @@ export type InsertCoachAvailability = z.infer<typeof insertCoachAvailabilitySche
 
 export type Class = typeof classes.$inferSelect;
 export type InsertClass = z.infer<typeof insertClassSchema>;
+
+export type ClassCoach = typeof classCoaches.$inferSelect;
+export type InsertClassCoach = z.infer<typeof insertClassCoachSchema>;
 
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
