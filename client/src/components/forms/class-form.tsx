@@ -45,6 +45,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
   const [newClassId, setNewClassId] = useState<number | null>(null);
+  const [selectedCoaches, setSelectedCoaches] = useState<number[]>([]);
 
   const { data: organizations = [] } = useQuery({
     queryKey: ['/api/organizations/my'],
@@ -59,6 +60,18 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     primaryColor: '#20366B',
     secondaryColor: '#278DD4', 
     accentColor: '#fbbf24'
+  };
+
+  // Helper functions for coach selection
+  const addCoach = (coachIdStr: string) => {
+    const coachId = parseInt(coachIdStr);
+    if (!selectedCoaches.includes(coachId)) {
+      setSelectedCoaches([...selectedCoaches, coachId]);
+    }
+  };
+
+  const removeCoach = (coachId: number) => {
+    setSelectedCoaches(selectedCoaches.filter(id => id !== coachId));
   };
 
   const { data: coaches = [], isLoading: coachesLoading } = useQuery({
@@ -330,67 +343,90 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
         />
 
         {/* Coach Selection */}
-        <FormField
-          control={form.control}
-          name="coachId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-medium" style={{ color: organization.primaryColor }}>Primary Coach</FormLabel>
-              <Select onValueChange={(value) => field.onChange(value === "none" ? "" : value)} value={field.value || "none"}>
-                <FormControl>
-                  <SelectTrigger 
-                    className="border-slate-300 text-slate-900"
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = organization.secondaryColor;
-                      e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = 'rgb(203 213 225)';
-                      e.currentTarget.style.boxShadow = 'none';
+        <div className="space-y-3">
+          <label className="font-medium" style={{ color: organization.primaryColor }}>Assign Coaches</label>
+          <div className="space-y-2">
+            <div 
+                    className="border border-slate-300 rounded-md p-3 min-h-[42px] bg-white cursor-pointer"
+                    style={{
+                      borderColor: selectedCoaches.length > 0 ? organization.secondaryColor : 'rgb(203 213 225)',
+                      boxShadow: selectedCoaches.length > 0 ? `0 0 0 1px ${organization.secondaryColor}20` : 'none'
                     }}
                   >
-                    <SelectValue placeholder="Select a coach (optional)" className="text-slate-900" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="bg-white border-slate-300">
-                  <SelectItem 
-                    value="none" 
-                    className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                    style={{ backgroundColor: 'transparent' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
-                    }}
-                  >
-                    No coach assigned
-                  </SelectItem>
-                  {coaches.map((coach) => (
-                    <SelectItem 
-                      key={coach.id} 
-                      value={coach.id.toString()}
-                      className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
-                      style={{ backgroundColor: 'transparent' }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                    {selectedCoaches.length === 0 ? (
+                      <span className="text-slate-500">Select coaches (optional)</span>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCoaches.map((coachId) => {
+                          const coach = coaches.find(c => c.id === coachId);
+                          if (!coach) return null;
+                          return (
+                            <div 
+                              key={coachId}
+                              className="inline-flex items-center px-2 py-1 rounded-md text-sm text-white"
+                              style={{ backgroundColor: organization.accentColor }}
+                            >
+                              {coach.name || coach.displayName || coach.username}
+                              <button
+                                type="button"
+                                onClick={() => removeCoach(coachId)}
+                                className="ml-2 text-white hover:text-gray-200"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Coach Selection Dropdown */}
+                  <Select onValueChange={addCoach}>
+                    <SelectTrigger 
+                      className="border-slate-300 text-slate-900"
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = organization.secondaryColor;
+                        e.currentTarget.style.boxShadow = `0 0 0 3px ${organization.secondaryColor}20`;
                       }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgb(203 213 225)';
+                        e.currentTarget.style.boxShadow = 'none';
                       }}
                     >
-                      {coach.name || coach.displayName || coach.username}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
+                      <SelectValue placeholder="Add a coach..." className="text-slate-900" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-slate-300">
+                      {coaches
+                        .filter(coach => !selectedCoaches.includes(coach.id))
+                        .map((coach) => (
+                        <SelectItem 
+                          key={coach.id} 
+                          value={coach.id.toString()}
+                          className="text-slate-900 focus:bg-transparent data-[highlighted]:bg-transparent"
+                          style={{ backgroundColor: 'transparent' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.setProperty('background-color', `${organization.secondaryColor}20`, 'important');
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+                          }}
+                        >
+                          {coach.name || coach.displayName || coach.username}
+                        </SelectItem>
+                      ))}
+                      {coaches.filter(coach => !selectedCoaches.includes(coach.id)).length === 0 && (
+                        <div className="px-2 py-2 text-sm text-slate-500">
+                          All available coaches have been selected
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
               <p className="text-sm text-slate-600 mt-1">
-                Additional coaches can be assigned using the "Coach Assignments" tab above.
+                You can assign multiple coaches to this class. The first coach selected will be the primary coach.
               </p>
-            </FormItem>
-          )}
-        />
+            </div>
 
         {/* Scheduling */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
