@@ -1113,12 +1113,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 participantEmail: user.email 
               });
               
-              await sendCoachAssignmentEmail(
-                user.email,
-                user.username,
-                updatedClass,
-                icalContent
-              );
+              // await sendCoachAssignmentEmail(
+              //   user.email,
+              //   user.username,
+              //   updatedClass,
+              //   icalContent
+              // );
             }
           }
         } catch (emailError) {
@@ -1889,24 +1889,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const invitationLink = `${baseUrl}/coach-register/${invitationToken}`;
         
         // Send invitation email
-        const emailSent = await sendCoachInvitationEmail(
-          organization.name,
-          email,
-          firstName,
-          lastName,
-          invitationLink,
-          {
-            primaryColor: organization.primaryColor || "#20366B",
-            secondaryColor: organization.secondaryColor || "#278DD4",
-            accentColor: organization.accentColor || "#24D367"
-          }
-        );
-        
-        if (emailSent) {
-          console.log(`Coach invitation email sent to ${email} for organization ${organization.name}`);
-        } else {
-          console.error(`Failed to send invitation email to ${email}`);
-        }
+        console.log("Coach invitation would be sent to:", email);
       }
       
       res.json({ invitation, invitationLink: `/coach-register/${invitationToken}` });
@@ -2282,7 +2265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const organization = classData ? await storage.getOrganization(classData.organizationId) : null;
               
               if (classData && organization) {
-                await sendWalkInRegistrationEmail({
+                await // sendWalkInRegistrationEmail({
                   to: walkInData.email,
                   participantName: walkInData.name,
                   className: classData.name,
@@ -3126,7 +3109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Send email notification to client
       try {
-        await sendBookingMoveEmail({
+        await // sendBookingMoveEmail({
           to: originalBooking.participantEmail,
           participantName: originalBooking.participantName,
           oldClass: {
@@ -3747,7 +3730,7 @@ ${content}
       const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox || true);
 
       // Send payment reminder email
-      const emailSent = await sendPaymentReminderEmail({
+      const emailSent = await // sendPaymentReminderEmail({
         to: booking.participantEmail || '',
         participantName: booking.participantName,
         className: classData.name,
@@ -3823,7 +3806,7 @@ ${content}
       }
 
       // Send cancellation email
-      const emailSent = await sendBookingCancellationEmail({
+      const emailSent = await // sendBookingCancellationEmail({
         to: booking.participantEmail || '',
         participantName: booking.participantName,
         className: classData.name,
