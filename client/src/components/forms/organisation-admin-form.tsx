@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Shield, User, Crown } from "lucide-react";
+import { Trash2, Plus, Shield, User, Crown, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -18,18 +18,8 @@ interface OrganisationAdminFormProps {
 export default function OrganisationAdminForm({ organizationId, organization }: OrganisationAdminFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [searchEmail, setSearchEmail] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
   const [open, setOpen] = useState(false);
-
-  // Fetch all users for admin assignment
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['/api/users'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/users');
-      return Array.isArray(response) ? response : [];
-    },
-  });
 
   // Fetch current organisation admins
   const { data: organisationAdmins = [] } = useQuery({
@@ -41,24 +31,23 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
     enabled: !!organizationId,
   });
 
-  // Add admin mutation
-  const addAdminMutation = useMutation({
-    mutationFn: (userId: number) =>
-      apiRequest('POST', `/api/organizations/${organizationId}/admins`, { userId }),
+  // Invite admin mutation
+  const inviteAdminMutation = useMutation({
+    mutationFn: (email: string) =>
+      apiRequest('POST', `/api/organizations/${organizationId}/invite-admin`, { email }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       setOpen(false);
-      setSelectedUserId(null);
-      setSearchEmail("");
+      setInviteEmail("");
       toast({
-        title: "Admin Added",
-        description: "User has been successfully added as an organisation admin.",
+        title: "Invitation Sent",
+        description: "Admin invitation has been sent successfully. They will receive an email with instructions.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Addition Failed",
-        description: error.message || "Failed to add user as admin.",
+        title: "Invitation Failed",
+        description: error.message || "Failed to send admin invitation.",
         variant: "destructive",
       });
     },
@@ -104,18 +93,14 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
     },
   });
 
-  const handleAddAdmin = () => {
-    if (!selectedUserId) return;
-    addAdminMutation.mutate(selectedUserId);
+  const handleInviteAdmin = () => {
+    if (!inviteEmail.trim()) return;
+    inviteAdminMutation.mutate(inviteEmail.trim());
   };
 
-  // Get available users (not already admins and filtered by search)
-  const currentAdminIds = new Set(organisationAdmins.map((admin: any) => admin.id));
-  const filteredUsers = allUsers.filter((user: any) => {
-    const isNotCurrentAdmin = !currentAdminIds.has(user.id);
-    const matchesSearch = searchEmail === "" || user.email.toLowerCase().includes(searchEmail.toLowerCase());
-    return isNotCurrentAdmin && matchesSearch;
-  });
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -229,50 +214,33 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Add Organisation Administrator</DialogTitle>
+              <DialogTitle>Invite Organisation Administrator</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Search by Email</label>
+                <label className="text-sm font-medium mb-2 block">Email Address</label>
                 <Input
-                  placeholder="Type email to search users..."
-                  value={searchEmail}
-                  onChange={(e) => setSearchEmail(e.target.value)}
+                  type="email"
+                  placeholder="Enter email address to invite..."
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
                 />
+                {inviteEmail && !isValidEmail(inviteEmail) && (
+                  <p className="text-sm text-red-500 mt-1">Please enter a valid email address</p>
+                )}
               </div>
-              {searchEmail && (
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Select User</label>
-                  <Select value={selectedUserId?.toString()} onValueChange={(value) => setSelectedUserId(parseInt(value))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a user" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {filteredUsers.slice(0, 10).map((user: any) => (
-                        <SelectItem key={user.id} value={user.id.toString()}>
-                          <div className="flex flex-col">
-                            <span>{user.name || user.username}</span>
-                            <span className="text-xs text-gray-500">{user.email}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                      {filteredUsers.length === 0 && (
-                        <SelectItem value="none" disabled>
-                          No users found matching "{searchEmail}"
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div className="text-sm text-gray-600 p-3 bg-blue-50 rounded">
+                <Mail className="w-4 h-4 inline mr-1" />
+                An invitation email will be sent to this address. If they don't have an account, one will be created automatically.
+              </div>
               <div className="flex gap-2 pt-4">
                 <Button
-                  onClick={handleAddAdmin}
-                  disabled={!selectedUserId || addAdminMutation.isPending}
+                  onClick={handleInviteAdmin}
+                  disabled={!inviteEmail.trim() || !isValidEmail(inviteEmail) || inviteAdminMutation.isPending}
                   style={{ backgroundColor: organization?.primaryColor || "#20366B" }}
                   className="flex-1"
                 >
-                  {addAdminMutation.isPending ? "Adding..." : "Add Admin"}
+                  {inviteAdminMutation.isPending ? "Sending..." : "Send Invitation"}
                 </Button>
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
