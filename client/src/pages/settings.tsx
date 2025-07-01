@@ -42,6 +42,7 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import SportForm from "@/components/forms/sport-form";
 import PayfastCredentials, { type PayfastCredentialsData } from "@/components/forms/payfast-credentials";
+import OrganisationAdminForm from "@/components/forms/organisation-admin-form";
 
 const organizationSchema = z.object({
   name: z.string().min(1, "Organization name is required"),
@@ -630,15 +631,15 @@ export default function Settings() {
                 Notifications
               </TabsTrigger>
               <TabsTrigger 
-                value="security"
-                className={activeTab === 'security' ? 'text-white' : ''}
+                value="admins"
+                className={activeTab === 'admins' ? 'text-white' : ''}
                 style={{
-                  backgroundColor: activeTab === 'security' ? organization?.secondaryColor || '#278DD4' : 'transparent',
-                  borderColor: activeTab === 'security' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                  backgroundColor: activeTab === 'admins' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'admins' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <Shield className="mr-2 h-4 w-4" />
-                Security
+                <User className="mr-2 h-4 w-4" />
+                Admins
               </TabsTrigger>
               <TabsTrigger 
                 value="appearance"
@@ -1765,6 +1766,27 @@ export default function Settings() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="admins" className="space-y-6">
+              <div className="space-y-6">
+                <div>
+                  <h3 
+                    className="text-lg font-semibold"
+                    style={{ color: organization?.primaryColor || '#20366B' }}
+                  >
+                    Organisation Administrators
+                  </h3>
+                  <p className="text-slate-600">Manage administrators who can access and modify organisation settings</p>
+                </div>
+                
+                {organization && (
+                  <OrganisationAdminForm 
+                    organization={organization} 
+                    organizationId={organization.id} 
+                  />
+                )}
               </div>
             </TabsContent>
           </Tabs>
