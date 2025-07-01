@@ -125,9 +125,9 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       } else {
         // Add delay to ensure state is properly set before redirect
         setTimeout(() => {
-          console.log("Redirecting to dashboard after login");
-          setLocation("/dashboard");
-        }, 300);
+          console.log("Redirecting to home after login");
+          setLocation("/");
+        }, 500);
       }
     },
     onError: (error: any) => {
@@ -183,14 +183,16 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
         });
       }
       
+      // Always use onAuthSuccess callback if available, otherwise use location redirect
       if (onAuthSuccess) {
+        console.log("Using onAuthSuccess callback after registration");
         onAuthSuccess(user);
       } else {
-        // Add delay to ensure state is properly set before redirect
+        // Add longer delay to ensure state is properly set before redirect
         setTimeout(() => {
-          console.log("Redirecting to dashboard after registration");
-          setLocation("/dashboard");
-        }, 500);
+          console.log("Redirecting to home after registration");
+          setLocation("/");
+        }, 1000);
       }
     },
     onError: (error: any) => {
