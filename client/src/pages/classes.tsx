@@ -142,11 +142,11 @@ export default function Classes() {
                 New Class
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle style={{ color: organization.primaryColor }}>Create New Class</DialogTitle>
               </DialogHeader>
-              <div className="max-h-[75vh] overflow-y-auto pr-2">
+              <div className="flex-1 overflow-y-auto pr-2">
                 <ClassForm 
                   sports={sports}
                   organizationId={user?.organizationId}
@@ -158,11 +158,11 @@ export default function Classes() {
 
           {/* Edit Class Dialog */}
           <Dialog open={!!editingClass} onOpenChange={() => setEditingClass(null)}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle className="text-[#20366B]">Edit Class</DialogTitle>
               </DialogHeader>
-              <div className="max-h-[75vh] overflow-y-auto pr-2">
+              <div className="flex-1 overflow-y-auto pr-2">
                 <ClassForm 
                   sports={sports}
                   initialData={editingClass} 
