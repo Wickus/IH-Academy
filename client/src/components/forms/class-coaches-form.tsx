@@ -149,6 +149,7 @@ export default function ClassCoachesForm({ classId, organization }: ClassCoaches
           ) : (
             classCoachesArray.map((assignment: any) => {
               const coach = coachesArray.find((c: any) => c.id === assignment.coachId);
+              const coachName = coach?.name || coach?.displayName || coach?.username || 'Unknown Coach';
               return (
                 <div
                   key={assignment.id}
@@ -157,7 +158,7 @@ export default function ClassCoachesForm({ classId, organization }: ClassCoaches
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       {getRoleIcon(assignment.role)}
-                      <span className="font-medium">{coach?.name || 'Unknown Coach'}</span>
+                      <span className="font-medium">{coachName}</span>
                     </div>
                     <Badge
                       variant="outline"
