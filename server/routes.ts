@@ -985,6 +985,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/classes", async (req: Request, res: Response) => {
     try {
       const classData = { ...req.body };
+      const selectedCoaches = classData.selectedCoaches || [];
+      delete classData.selectedCoaches; // Remove from class data
       
       // Convert date strings to Date objects
       if (classData.startTime) {
@@ -995,6 +997,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const newClass = await storage.createClass(classData);
+      
+      // Assign multiple coaches if selectedCoaches array is provided
+      if (selectedCoaches.length > 0) {
+        const user = getCurrentUser(req);
+        
+        for (let i = 0; i < selectedCoaches.length; i++) {
+          const coachId = selectedCoaches[i];
+          const role = i === 0 ? 'primary' : (i === 1 ? 'assistant' : 'substitute');
+          
+          try {
+            await storage.assignCoachToClass({
+              classId: newClass.id,
+              coachId: coachId,
+              role: role,
+              assignedBy: user?.id || 1,
+              isActive: true
+            });
+          } catch (assignError) {
+            console.error(`Error assigning coach ${coachId} to class ${newClass.id}:`, assignError);
+          }
+        }
+      }
+      
       res.json(newClass);
     } catch (error) {
       console.error("Error creating class:", error);
@@ -1006,6 +1031,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const classId = parseInt(req.params.id);
       const classData = { ...req.body };
+      const selectedCoaches = classData.selectedCoaches || [];
+      delete classData.selectedCoaches; // Remove from class data
       
       // Convert date strings to Date objects
       if (classData.startTime) {
@@ -1019,6 +1046,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!updatedClass) {
         return res.status(404).json({ message: "Class not found" });
+      }
+      
+      // Handle multiple coach assignments if selectedCoaches array is provided
+      if (selectedCoaches.length > 0) {
+        const user = getCurrentUser(req);
+        
+        // Clear existing coach assignments for this class
+        try {
+          const existingAssignments = await storage.getClassCoaches(classId);
+          for (const assignment of existingAssignments) {
+            await storage.removeCoachFromClass(classId, assignment.coachId);
+          }
+        } catch (clearError) {
+          console.error(`Error clearing existing coach assignments for class ${classId}:`, clearError);
+        }
+        
+        // Assign new coaches
+        for (let i = 0; i < selectedCoaches.length; i++) {
+          const coachId = selectedCoaches[i];
+          const role = i === 0 ? 'primary' : (i === 1 ? 'assistant' : 'substitute');
+          
+          try {
+            await storage.assignCoachToClass({
+              classId: classId,
+              coachId: coachId,
+              role: role,
+              assignedBy: user?.id || 1,
+              isActive: true
+            });
+          } catch (assignError) {
+            console.error(`Error assigning coach ${coachId} to class ${classId}:`, assignError);
+          }
+        }
       }
       
       // If coach was newly assigned, send email notification with iCal
