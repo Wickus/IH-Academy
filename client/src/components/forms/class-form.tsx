@@ -134,26 +134,20 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   });
 
   const createClassMutation = useMutation({
-    mutationFn: api.createClass,
+    mutationFn: (data: any) => {
+      // Include selectedCoaches in the data to let backend handle assignments
+      const createData = {
+        ...data,
+        selectedCoaches: selectedCoaches
+      };
+      return api.createClass(createData);
+    },
     onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
       
-      // Create coach assignments if coaches are selected
-      if (selectedCoaches.length > 0) {
-        try {
-          const roleAssignments = selectedCoaches.map((coachId, index) => ({
-            coachId,
-            role: index === 0 ? 'primary' : index === 1 ? 'assistant' : 'substitute'
-          }));
-
-          for (const assignment of roleAssignments) {
-            await apiRequest('POST', `/api/classes/${data.id}/coaches`, assignment);
-          }
-          
-          queryClient.invalidateQueries({ queryKey: ["/api/classes", data.id, "coaches"] });
-        } catch (error) {
-          console.error('Error creating coach assignments:', error);
-        }
+      // Invalidate coach assignments cache if class ID exists
+      if (data?.id) {
+        queryClient.invalidateQueries({ queryKey: ["/api/classes", data.id, "coaches"] });
       }
 
       toast({
@@ -172,42 +166,20 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
   });
 
   const updateClassMutation = useMutation({
-    mutationFn: ({ id, ...data }: any) => api.updateClass(id, data),
+    mutationFn: ({ id, ...data }: any) => {
+      // Include selectedCoaches in the data to let backend handle assignments
+      const updateData = {
+        ...data,
+        selectedCoaches: selectedCoaches
+      };
+      return api.updateClass(id, updateData);
+    },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["/api/classes"] });
       
-      // Update coach assignments if coaches are selected
+      // Invalidate coach assignments cache if class ID exists
       if (initialData?.id) {
-        try {
-          // Get existing assignments and remove them individually
-          const existingAssignments = await apiRequest('GET', `/api/classes/${initialData.id}/coaches`);
-          const existingData = await existingAssignments.json();
-          
-          // Remove existing assignments
-          for (const assignment of existingData) {
-            try {
-              await apiRequest('DELETE', `/api/classes/${initialData.id}/coaches/${assignment.coachId}`);
-            } catch (removeError) {
-              console.warn('Could not remove existing coach assignment:', removeError);
-            }
-          }
-          
-          // Add new assignments if any coaches are selected
-          if (selectedCoaches.length > 0) {
-            const roleAssignments = selectedCoaches.map((coachId, index) => ({
-              coachId,
-              role: index === 0 ? 'primary' : index === 1 ? 'assistant' : 'substitute'
-            }));
-
-            for (const assignment of roleAssignments) {
-              await apiRequest('POST', `/api/classes/${initialData.id}/coaches`, assignment);
-            }
-          }
-          
-          queryClient.invalidateQueries({ queryKey: ["/api/classes", initialData.id, "coaches"] });
-        } catch (error) {
-          console.error('Error updating coach assignments:', error);
-        }
+        queryClient.invalidateQueries({ queryKey: ["/api/classes", initialData.id, "coaches"] });
       }
 
       toast({
