@@ -22,13 +22,14 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
   const [open, setOpen] = useState(false);
 
   // Fetch current organisation admins
-  const { data: organisationAdmins = [] } = useQuery({
+  const { data: organisationAdmins = [], refetch: refetchAdmins } = useQuery({
     queryKey: ['/api/organizations', organizationId, 'admins'],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/organizations/${organizationId}/admins`);
       return Array.isArray(response) ? response : [];
     },
     enabled: !!organizationId,
+    staleTime: 0 // Always consider data stale to force fresh fetches
   });
 
   // Invite admin mutation
@@ -36,10 +37,17 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
     mutationFn: (email: string) =>
       apiRequest('POST', `/api/organizations/${organizationId}/invite-admin`, { email }),
     onSuccess: (response: any) => {
-      // Invalidate all related queries to ensure fresh data
+      // Force complete cache refresh for admin data
+      queryClient.removeQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId] });
-      queryClient.refetchQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
+      
+      // Force immediate refetch to update UI
+      setTimeout(() => {
+        refetchAdmins();
+        queryClient.refetchQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
+      }, 500);
+      
       setOpen(false);
       setInviteEmail("");
       
