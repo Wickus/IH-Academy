@@ -42,6 +42,69 @@
   --toast-error: 239 68 68; /* #EF4444 */
 }
 
+/* Mobile Optimization CSS */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Mobile-friendly buttons */
+  .mobile-button {
+    min-height: 44px !important; /* iOS tap target size */
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Touch-friendly form inputs */
+  .mobile-input {
+    min-height: 44px !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    padding: 0.75rem !important;
+  }
+  
+  /* Mobile card optimization */
+  .mobile-card {
+    margin: 0.5rem !important;
+    border-radius: 0.75rem !important;
+  }
+  
+  /* Mobile modal optimization */
+  .mobile-modal {
+    max-height: 85vh !important;
+    margin: 1rem !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Mobile table optimization */
+  .mobile-table {
+    font-size: 0.75rem !important;
+    overflow-x: auto !important;
+  }
+  
+  /* Mobile grid optimization */
+  .mobile-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .tablet-grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .tablet-spacing {
+    padding: 1rem !important;
+    gap: 1rem !important;
+  }
+}
+
 /* Dynamic Organization Tab Styling - Enhanced specificity */
 .organization-tabs button[role="tab"][data-state="active"] {
   background-color: var(--org-secondary-color, #278DD4) !important;
