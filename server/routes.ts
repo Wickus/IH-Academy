@@ -1109,8 +1109,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const classId = parseInt(req.params.id);
-      const classCoaches = await storage.getClassCoaches(classId);
       
+      // First, try to sync any existing coachId assignment for this class
+      try {
+        const classData = await storage.getClass(classId);
+        if (classData && classData.coachId) {
+          // Check if this class already has coach assignments
+          const existingAssignments = await storage.getClassCoaches(classId);
+          if (existingAssignments.length === 0) {
+            // No assignments exist, create one from the existing coachId
+            await storage.assignCoachToClass({
+              classId: classData.id,
+              coachId: classData.coachId,
+              role: "primary",
+              assignedBy: user.id,
+              isActive: true
+            });
+            console.log(`Synced coach assignment for class ${classData.id} with coach ${classData.coachId}`);
+          }
+        }
+      } catch (syncError) {
+        console.error("Error syncing coach assignment:", syncError);
+        // Continue with fetching even if sync fails
+      }
+
+      const classCoaches = await storage.getClassCoaches(classId);
       res.json(classCoaches);
     } catch (error) {
       console.error("Error fetching class coaches:", error);

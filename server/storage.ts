@@ -756,49 +756,7 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
-  // Sync existing class coachId assignments to the new multiple coach system
-  async syncExistingCoachAssignments(): Promise<void> {
-    try {
-      // Get all classes that have a coachId but no coach assignments in classCoaches table
-      const classesWithCoach = await db.select()
-        .from(classes)
-        .where(and(
-          isNotNull(classes.coachId),
-          not(exists(
-            db.select().from(classCoaches)
-              .where(and(
-                eq(classCoaches.classId, classes.id),
-                eq(classCoaches.isActive, true)
-              ))
-          ))
-        ));
 
-      for (const classData of classesWithCoach) {
-        if (classData.coachId) {
-          // Create a primary coach assignment for this class
-          await this.assignCoachToClass({
-            classId: classData.id,
-            coachId: classData.coachId,
-            role: "primary",
-            assignedBy: 1, // System assignment
-            isActive: true
-          });
-          
-          console.log(`Synced coach assignment for class ${classData.id} with coach ${classData.coachId}`);
-        }
-      }
-    } catch (error) {
-      console.error("Error syncing existing coach assignments:", error);
-    }
-  }
-
-  async updateClassCoachRole(classId: number, coachId: number, role: string): Promise<ClassCoach | undefined> {
-    const [updated] = await db.update(classCoaches)
-      .set({ role: role as "primary" | "assistant" | "substitute" })
-      .where(and(eq(classCoaches.classId, classId), eq(classCoaches.coachId, coachId)))
-      .returning();
-    return updated || undefined;
-  }
 
   // Organisation Admin Management methods
   async getOrganisationAdmins(organizationId: number): Promise<User[]> {
