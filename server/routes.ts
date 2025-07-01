@@ -1468,8 +1468,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!invitedUser) {
         // Create new user account with temporary password
         const tempPassword = Math.random().toString(36).slice(-12);
+        const emailPrefix = email.split('@')[0];
         invitedUser = await storage.createUser({
-          name: email.split('@')[0], // Use email prefix as name
+          name: emailPrefix,
+          username: emailPrefix, // Add username field
           email: email,
           password: tempPassword, // They'll need to reset password
           role: 'organization_admin'
@@ -1481,7 +1483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isAlreadyAdmin = existingAdmin.some(admin => admin.email === email);
       
       if (!isAlreadyAdmin) {
-        await storage.addOrganisationAdmin(invitedUser.id, organizationId);
+        await storage.addOrganisationAdmin(invitedUser.id, organizationId, user.id);
       }
 
       // Send invitation email (if email service is configured)
