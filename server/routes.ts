@@ -4167,20 +4167,15 @@ ${content}
     }
   });
 
-  // Reset user password (for admin management)
+  // Reset user password (for admin management) - sends email
   app.post("/api/users/:userId/reset-password", async (req: Request, res: Response) => {
     try {
       const currentUser = getCurrentUser(req);
-      if (!currentUser || currentUser.role !== 'global_admin') {
-        return res.status(403).json({ message: "Access denied. Global admin role required." });
+      if (!currentUser || (currentUser.role !== 'global_admin' && currentUser.role !== 'organization_admin')) {
+        return res.status(403).json({ message: "Access denied. Admin role required." });
       }
 
       const userId = parseInt(req.params.userId);
-      const { newPassword } = req.body;
-
-      if (!newPassword || newPassword.length < 8) {
-        return res.status(400).json({ message: "Password must be at least 8 characters long" });
-      }
 
       // Get the user to reset password for
       const userToReset = await storage.getUserById(userId);
@@ -4188,16 +4183,184 @@ ${content}
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Reset the password
-      const success = await storage.resetUserPassword(userId, newPassword);
+      // For organization admins, verify they can manage this user
+      if (currentUser.role === 'organization_admin') {
+        // Check if the user is an admin in the same organization
+        const userOrgs = await storage.getUserOrganizations(userToReset.id);
+        const currentUserOrgs = await storage.getUserOrganizations(currentUser.id);
+        
+        const hasSharedOrg = userOrgs.some(userOrg => 
+          currentUserOrgs.some(currentOrg => currentOrg.organizationId === userOrg.organizationId)
+        );
+        
+        if (!hasSharedOrg) {
+          return res.status(403).json({ message: "Cannot reset password for users outside your organization" });
+        }
+      }
+
+      // Generate a temporary password reset token (simplified approach)
+      const resetToken = Math.random().toString(36).slice(-8);
+      const tempPassword = `temp_${resetToken}`;
+      
+      // Reset to temporary password
+      const success = await storage.resetUserPassword(userId, tempPassword);
       if (!success) {
         return res.status(500).json({ message: "Failed to reset password" });
       }
 
-      res.json({ message: "Password reset successfully" });
+      // Send password reset email
+      try {
+        const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #20366B;">Password Reset - IH Academy</h2>
+          <p>Hello ${userToReset.firstName || userToReset.name || userToReset.username},</p>
+          <p>Your password has been reset by an administrator. Your temporary login credentials are:</p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Email:</strong> ${userToReset.email}</p>
+            <p><strong>Temporary Password:</strong> ${tempPassword}</p>
+          </div>
+          <p><strong>Important:</strong> Please log in immediately and change your password in your profile settings.</p>
+          <p>
+            <a href="https://academy.itshappening.africa/" 
+               style="background-color: #20366B; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+              Login to IH Academy
+            </a>
+          </p>
+          <p>If you have any questions, please contact your organization administrator.</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">This password reset was initiated by ${currentUser.name || currentUser.email}.</p>
+        </div>`;
+        
+        const textContent = `Hello ${userToReset.firstName || userToReset.name || userToReset.username}, Your password has been reset by an administrator. Email: ${userToReset.email}, Temporary Password: ${tempPassword}. Please log in immediately and change your password. Login at: https://academy.itshappening.africa/`;
+        
+        await sendEmail({
+          to: userToReset.email,
+          from: process.env.FROM_EMAIL || 'noreply@itshappening.africa',
+          subject: 'Password Reset - IH Academy',
+          text: textContent,
+          html: htmlContent
+        });
+        
+        res.json({ message: "Password reset email sent successfully to " + userToReset.email });
+      } catch (emailError) {
+        console.error("Error sending password reset email:", emailError);
+        res.json({ message: "Password reset but email delivery failed. Temporary password: " + tempPassword });
+      }
+
     } catch (error) {
       console.error("Error resetting user password:", error);
       res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // Update user email (for admin management)
+  app.put("/api/users/:userId/email", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'global_admin' && currentUser.role !== 'organization_admin')) {
+        return res.status(403).json({ message: "Access denied. Admin role required." });
+      }
+
+      const userId = parseInt(req.params.userId);
+      const { email } = req.body;
+
+      if (!email || !email.includes('@')) {
+        return res.status(400).json({ message: "Valid email address is required" });
+      }
+
+      // Get the user to update email for
+      const userToUpdate = await storage.getUserById(userId);
+      if (!userToUpdate) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // For organization admins, verify they can manage this user
+      if (currentUser.role === 'organization_admin') {
+        // Check if the user is an admin in the same organization
+        const userOrgs = await storage.getUserOrganizations(userToUpdate.id);
+        const currentUserOrgs = await storage.getUserOrganizations(currentUser.id);
+        
+        const hasSharedOrg = userOrgs.some(userOrg => 
+          currentUserOrgs.some(currentOrg => currentOrg.organizationId === userOrg.organizationId)
+        );
+        
+        if (!hasSharedOrg) {
+          return res.status(403).json({ message: "Cannot update email for users outside your organization" });
+        }
+      }
+
+      // Check if email is already in use by another user
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(400).json({ message: "Email address is already in use by another user" });
+      }
+
+      // Update the email
+      const success = await storage.updateUserEmail(userId, email);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update email" });
+      }
+
+      // Send email confirmation to both old and new email addresses
+      try {
+        const oldEmail = userToUpdate.email;
+        
+        // Email to old address
+        const oldEmailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #20366B;">Email Address Changed - IH Academy</h2>
+          <p>Hello ${userToUpdate.firstName || userToUpdate.name || userToUpdate.username},</p>
+          <p>Your email address has been changed by an administrator from <strong>${oldEmail}</strong> to <strong>${email}</strong>.</p>
+          <p>If you did not request this change, please contact your organization administrator immediately.</p>
+          <p>This change was made by: ${currentUser.name || currentUser.email}</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">IH Academy Security Notification</p>
+        </div>`;
+        
+        // Email to new address
+        const newEmailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #20366B;">Welcome to your new email - IH Academy</h2>
+          <p>Hello ${userToUpdate.firstName || userToUpdate.name || userToUpdate.username},</p>
+          <p>Your email address has been successfully updated to <strong>${email}</strong>.</p>
+          <p>You can now use this email address to log in to your IH Academy account.</p>
+          <p>
+            <a href="https://academy.itshappening.africa/" 
+               style="background-color: #20366B; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+              Login to IH Academy
+            </a>
+          </p>
+          <p>If you have any questions, please contact your organization administrator.</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">This change was made by ${currentUser.name || currentUser.email}.</p>
+        </div>`;
+        
+        // Send to old email
+        await sendEmail({
+          to: oldEmail,
+          from: process.env.FROM_EMAIL || 'noreply@itshappening.africa',
+          subject: 'Email Address Changed - IH Academy',
+          html: oldEmailHtml
+        });
+        
+        // Send to new email
+        await sendEmail({
+          to: email,
+          from: process.env.FROM_EMAIL || 'noreply@itshappening.africa',
+          subject: 'Email Address Confirmed - IH Academy',
+          html: newEmailHtml
+        });
+        
+      } catch (emailError) {
+        console.error("Error sending email confirmation:", emailError);
+        // Continue even if email fails - the update was successful
+      }
+
+      res.json({ message: "Email updated successfully" });
+
+    } catch (error) {
+      console.error("Error updating user email:", error);
+      res.status(500).json({ message: "Failed to update email" });
     }
   });
 

@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Shield, User, Crown, Mail } from "lucide-react";
+import { Trash2, Plus, Shield, User, Crown, Mail, Settings, Key, Edit, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { apiRequest } from "@/lib/queryClient";
 
 interface OrganisationAdminFormProps {
@@ -20,6 +22,9 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
   const queryClient = useQueryClient();
   const [inviteEmail, setInviteEmail] = useState("");
   const [open, setOpen] = useState(false);
+  const [editingAdmin, setEditingAdmin] = useState<any>(null);
+  const [editEmail, setEditEmail] = useState("");
+  const [resetPasswordAdmin, setResetPasswordAdmin] = useState<any>(null);
 
   // Fetch current organisation admins
   const { data: organisationAdmins = [], refetch: refetchAdmins } = useQuery({
@@ -108,6 +113,48 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
     },
   });
 
+  // Update admin email mutation
+  const updateEmailMutation = useMutation({
+    mutationFn: ({ userId, email }: { userId: number; email: string }) =>
+      apiRequest('PUT', `/api/users/${userId}/email`, { email }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
+      setEditingAdmin(null);
+      setEditEmail("");
+      toast({
+        title: "Email Updated",
+        description: "Admin email has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update admin email.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Reset admin password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: (userId: number) =>
+      apiRequest('POST', `/api/users/${userId}/reset-password`),
+    onSuccess: (response: any) => {
+      setResetPasswordAdmin(null);
+      toast({
+        title: "Password Reset",
+        description: response.message || "Password reset email has been sent to the admin.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Reset Failed",
+        description: error.message || "Failed to reset admin password.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleInviteAdmin = () => {
     if (!inviteEmail.trim()) return;
     inviteAdminMutation.mutate(inviteEmail.trim());
@@ -162,12 +209,18 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
                 key={admin.id}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                   <div className="flex items-center gap-2">
                     {getRoleIcon("admin")}
                     <div>
-                      <span className="font-medium block">{admin.name || admin.username}</span>
+                      <span className="font-medium block">{admin.firstName && admin.lastName ? `${admin.firstName} ${admin.lastName}` : admin.name || admin.username}</span>
                       <span className="text-sm text-gray-500">{admin.email}</span>
+                      <div className="text-xs text-gray-400">
+                        Created: {new Date(admin.createdAt).toLocaleDateString()}
+                        {admin.lastLogin && (
+                          <span className="ml-2">Last login: {new Date(admin.lastLogin).toLocaleDateString()}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <Badge
@@ -181,6 +234,49 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Admin Management Buttons */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setEditingAdmin(admin);
+                      setEditEmail(admin.email);
+                    }}
+                    title="Edit Email"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        title="Reset Password"
+                      >
+                        <Key className="w-4 h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Reset Password</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will send a password reset email to {admin.email}. They will need to click the link in the email to set a new password.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => resetPasswordMutation.mutate(admin.id)}
+                          disabled={resetPasswordMutation.isPending}
+                          style={{ backgroundColor: organization?.primaryColor || "#20366B" }}
+                        >
+                          {resetPasswordMutation.isPending ? "Sending..." : "Send Reset Email"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
                   <Select
                     value="admin"
                     onValueChange={(newRole) =>
@@ -196,15 +292,37 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
                       <SelectItem value="member">Member</SelectItem>
                     </SelectContent>
                   </Select>
+                  
                   {organisationAdmins.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeAdminMutation.mutate(admin.id)}
-                      disabled={removeAdminMutation.isPending}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Remove Admin"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove Administrator</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to remove {admin.firstName && admin.lastName ? `${admin.firstName} ${admin.lastName}` : admin.name || admin.username} as an administrator? They will lose access to organization management features.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => removeAdminMutation.mutate(admin.id)}
+                            disabled={removeAdminMutation.isPending}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            {removeAdminMutation.isPending ? "Removing..." : "Remove Admin"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   )}
                 </div>
               </div>
@@ -269,6 +387,59 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
           <Shield className="w-4 h-4 inline mr-1" />
           Administrators have full access to manage this organisation, including classes, coaches, members, and settings.
         </div>
+
+        {/* Edit Email Dialog */}
+        <Dialog open={!!editingAdmin} onOpenChange={(open) => !open && setEditingAdmin(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Administrator Email</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Administrator</Label>
+                <p className="text-sm text-gray-600">
+                  {editingAdmin?.firstName && editingAdmin?.lastName 
+                    ? `${editingAdmin.firstName} ${editingAdmin.lastName}` 
+                    : editingAdmin?.name || editingAdmin?.username
+                  }
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="edit-email" className="text-sm font-medium">Email Address</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  placeholder="Enter new email address..."
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                />
+                {editEmail && !isValidEmail(editEmail) && (
+                  <p className="text-sm text-red-500 mt-1">Please enter a valid email address</p>
+                )}
+              </div>
+              <div className="text-sm text-gray-600 p-3 bg-amber-50 rounded flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 mt-0.5 text-amber-600" />
+                <div>
+                  <p className="font-medium text-amber-800">Important:</p>
+                  <p>The administrator will need to verify their new email address. They will receive a confirmation email at the new address.</p>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={() => updateEmailMutation.mutate({ userId: editingAdmin.id, email: editEmail })}
+                  disabled={!editEmail.trim() || !isValidEmail(editEmail) || updateEmailMutation.isPending || editEmail === editingAdmin?.email}
+                  style={{ backgroundColor: organization?.primaryColor || "#20366B" }}
+                  className="flex-1"
+                >
+                  {updateEmailMutation.isPending ? "Updating..." : "Update Email"}
+                </Button>
+                <Button variant="outline" onClick={() => setEditingAdmin(null)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
