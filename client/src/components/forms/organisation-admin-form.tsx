@@ -27,14 +27,28 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
   const [resetPasswordAdmin, setResetPasswordAdmin] = useState<any>(null);
 
   // Fetch current organisation admins
-  const { data: organisationAdmins = [], refetch: refetchAdmins } = useQuery({
+  const { data: organisationAdmins = [], refetch: refetchAdmins, isLoading, error } = useQuery({
     queryKey: ['/api/organizations', organizationId, 'admins'],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/organizations/${organizationId}/admins`);
-      return Array.isArray(response) ? response : [];
+      try {
+        console.log(`Fetching admins for organization ${organizationId}`);
+        const response = await apiRequest('GET', `/api/organizations/${organizationId}/admins`);
+        const json = await response.json();
+        console.log("Admins API response:", json);
+        console.log("Response type:", typeof json, "Is array:", Array.isArray(json));
+        return Array.isArray(json) ? json : [];
+      } catch (error) {
+        console.error("Error fetching admins:", error);
+        console.error("Error details:", {
+          message: error.message,
+          stack: error.stack
+        });
+        throw error;
+      }
     },
     enabled: !!organizationId,
-    staleTime: 0 // Always consider data stale to force fresh fetches
+    staleTime: 0, // Always consider data stale to force fresh fetches
+    retry: 1 // Reduce retries to see error faster
   });
 
   // Invite admin mutation
@@ -201,8 +215,24 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
       <CardContent className="space-y-4">
         {/* Current Admins */}
         <div className="space-y-2">
-          {organisationAdmins.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No administrators found.</p>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="text-sm text-gray-500">Loading administrators...</div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center p-4 bg-red-50 rounded-lg">
+              <div className="text-sm text-red-600">
+                <AlertCircle className="w-4 h-4 inline mr-2" />
+                Error loading administrators: {error.message}
+              </div>
+            </div>
+          ) : organisationAdmins.length === 0 ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="text-sm text-gray-500 text-center">
+                <Shield className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                No administrators found for this organisation.
+              </div>
+            </div>
           ) : (
             organisationAdmins.map((admin: any) => (
               <div
