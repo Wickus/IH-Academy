@@ -153,7 +153,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/messages" component={Messages} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
-        <Route component={NotFound} />
+        <Route component={UserDashboard} />
       </Switch>
     );
   }
