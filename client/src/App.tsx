@@ -424,8 +424,8 @@ function Router() {
     );
   }
 
-  // If authenticated user but they're at root, redirect to dashboard
-  if (isAuthenticated && user && location === "/") {
+  // If authenticated user, apply role-based routing regardless of current location
+  if (isAuthenticated && user) {
     return (
       <OrganizationProvider user={user}>
         <RoleBasedRouter user={user} setUser={(newUser) => setAuthState(prev => ({ ...prev, user: newUser }))} setIsAuthenticated={(auth) => setAuthState(prev => ({ ...prev, isAuthenticated: auth }))} />
