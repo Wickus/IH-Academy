@@ -38,6 +38,7 @@ export interface IStorage {
   getUserById(id: number): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  updateUserEmail(userId: number, newEmail: string): Promise<boolean>;
   deleteUser(id: number): Promise<boolean>;
   getUserBookings(userId: number): Promise<any[]>;
   cleanupOrphanedUsers(): Promise<{ deletedCount: number; deletedUsers: string[] }>;
@@ -311,6 +312,16 @@ export class DatabaseStorage implements IStorage {
   async updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined> {
     const [updatedUser] = await db.update(users).set(user).where(eq(users.id, id)).returning();
     return updatedUser || undefined;
+  }
+
+  async updateUserEmail(userId: number, newEmail: string): Promise<boolean> {
+    try {
+      const result = await db.update(users).set({ email: newEmail }).where(eq(users.id, userId));
+      return (result.rowCount || 0) > 0;
+    } catch (error) {
+      console.error("Error updating user email:", error);
+      return false;
+    }
   }
 
   async getInactiveUsers(): Promise<User[]> {
