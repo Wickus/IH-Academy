@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { api, type Organization } from "@/lib/api";
 import { formatTime, formatDate, formatCurrency } from "@/lib/utils";
 import { generateInviteEmailTemplate } from "@/lib/email-templates";
@@ -29,7 +36,10 @@ import {
   MapPin,
   Building2,
   Star,
-  Mail
+  Mail,
+  LogOut,
+  User,
+  Home
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BrandHeader from "@/components/brand-header";
@@ -43,6 +53,22 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: api.logout,
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.href = "/login";
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Fetch user's organization
   const { data: userOrganizations } = useQuery({
@@ -189,13 +215,50 @@ export default function MobileAdmin({ user }: MobileAdminProps) {
                 <p className="text-sm opacity-80">Admin Portal</p>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="text-white hover:bg-white/20"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="text-white hover:bg-white/20"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = "/organization-dashboard"}
+                  className="cursor-pointer"
+                >
+                  <Home className="mr-2 h-4 w-4" />
+                  <span>Desktop View</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = "/settings"}
+                  className="cursor-pointer"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = "/user-dashboard"}
+                  className="cursor-pointer"
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                  className="cursor-pointer text-red-600"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{logoutMutation.isPending ? "Logging out..." : "Log out"}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Quick Stats Row */}
