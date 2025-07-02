@@ -1488,8 +1488,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send invitation email (if email service is configured)
       try {
-        // Get proper application URL
+        // Get proper application URL - prioritize production domain
         const baseUrl = process.env.FRONTEND_URL || 
+                        'https://academy.itshappening.africa' ||
                         (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null) ||
                         process.env.REPLIT_URL || 
                         `http://localhost:${process.env.PORT || 5000}`;
