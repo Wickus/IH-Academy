@@ -191,11 +191,9 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
         console.log("Using onAuthSuccess callback after registration");
         onAuthSuccess(user);
       } else {
-        // Add longer delay to ensure state is properly set before redirect
-        setTimeout(() => {
-          console.log("Redirecting to home after registration");
-          setLocation("/");
-        }, 1000);
+        // Immediate redirect to ensure proper routing
+        console.log("Redirecting to home after registration");
+        setLocation("/");
       }
     },
     onError: (error: any) => {
