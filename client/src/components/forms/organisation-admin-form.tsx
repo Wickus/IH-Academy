@@ -60,19 +60,19 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
       queryClient.removeQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId] });
-      
+
       // Force immediate refetch to update UI
       setTimeout(() => {
         refetchAdmins();
         queryClient.refetchQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
       }, 500);
-      
+
       setOpen(false);
       setInviteEmail("");
-      
+
       const emailStatus = response?.emailSent ? "They will receive an email with instructions." : "Email delivery may be delayed.";
       const userCreated = response?.userCreated ? "A new account was created for them." : "They can use their existing account.";
-      
+
       toast({
         title: "Invitation Sent",
         description: `Admin invitation has been sent successfully. ${emailStatus} ${userCreated}`,
@@ -109,19 +109,34 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
 
   // Update admin role mutation
   const updateRoleMutation = useMutation({
-    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
-      apiRequest('PUT', `/api/organizations/${organizationId}/admins/${userId}`, { role }),
+    mutationFn: async ({ adminId, newRole }: { adminId: number; newRole: string }) => {
+      const response = await fetch(`/api/users/${adminId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ role: newRole }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update role');
+      }
+
+      return response.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/organizations/${organization?.id}/admins`] });
       toast({
-        title: "Role Updated",
-        description: "Admin role has been updated successfully.",
+        title: "Success",
+        description: "Role updated successfully",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
-        description: error.message || "Failed to update admin role.",
+        title: "Error",
+        description: error.message || "Failed to update role",
         variant: "destructive",
       });
     },
@@ -129,21 +144,36 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
 
   // Update admin email mutation
   const updateEmailMutation = useMutation({
-    mutationFn: ({ userId, email }: { userId: number; email: string }) =>
-      apiRequest('PUT', `/api/users/${userId}/email`, { email }),
+    mutationFn: async ({ adminId, newEmail }: { adminId: number; newEmail: string }) => {
+      const response = await fetch(`/api/users/${adminId}/email`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email: newEmail }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update email');
+      }
+
+      return response.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/organizations', organizationId, 'admins'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/organizations/${organization?.id}/admins`] });
       setEditingAdmin(null);
-      setEditEmail("");
+      setEditEmail('');
       toast({
-        title: "Email Updated",
-        description: "Admin email has been updated successfully.",
+        title: "Success",
+        description: "Email updated successfully",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Update Failed",
-        description: error.message || "Failed to update admin email.",
+        title: "Error",
+        description: error.message || "Failed to update email",
         variant: "destructive",
       });
     },
@@ -151,19 +181,32 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
 
   // Reset admin password mutation
   const resetPasswordMutation = useMutation({
-    mutationFn: (userId: number) =>
-      apiRequest('POST', `/api/users/${userId}/reset-password`),
-    onSuccess: (response: any) => {
-      setResetPasswordAdmin(null);
+    mutationFn: async (adminId: number) => {
+      const response = await fetch(`/api/users/${adminId}/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to reset password');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
       toast({
-        title: "Password Reset",
-        description: response.message || "Password reset email has been sent to the admin.",
+        title: "Success",
+        description: "Password reset email sent successfully",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Reset Failed",
-        description: error.message || "Failed to reset admin password.",
+        title: "Error",
+        description: error.message || "Failed to send password reset email",
         variant: "destructive",
       });
     },
@@ -276,7 +319,7 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
@@ -310,7 +353,7 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
                   <Select
                     value="admin"
                     onValueChange={(newRole) =>
-                      updateRoleMutation.mutate({ userId: admin.id, role: newRole })
+                      updateRoleMutation.mutate({ adminId: admin.id, newRole })
                     }
                   >
                     <SelectTrigger className="w-32">
@@ -322,7 +365,7 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
                       <SelectItem value="member">Member</SelectItem>
                     </SelectContent>
                   </Select>
-                  
+
                   {organisationAdmins.length > 1 && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -456,7 +499,7 @@ export default function OrganisationAdminForm({ organizationId, organization }: 
               </div>
               <div className="flex gap-2 pt-4">
                 <Button
-                  onClick={() => updateEmailMutation.mutate({ userId: editingAdmin.id, email: editEmail })}
+                  onClick={() => updateEmailMutation.mutate({ adminId: editingAdmin.id, newEmail: editEmail })}
                   disabled={!editEmail.trim() || !isValidEmail(editEmail) || updateEmailMutation.isPending || editEmail === editingAdmin?.email}
                   style={{ backgroundColor: organization?.primaryColor || "#20366B" }}
                   className="flex-1"

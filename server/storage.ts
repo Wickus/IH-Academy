@@ -342,52 +342,52 @@ export class DatabaseStorage implements IStorage {
       // Delete user's bookings by email (since bookings table uses participantEmail)
       await db.delete(bookings).where(eq(bookings.participantEmail, user.email));
       console.log(`Deleted bookings for user ${user.email}`);
-      
+
       // Delete user's coach records (if any)
       await db.delete(coaches).where(eq(coaches.userId, user.id));
       console.log(`Deleted coach records for user ${user.email}`);
-      
+
       // Delete user's attendance records as coach (if any)
       await db.delete(attendance).where(eq(attendance.markedBy, user.id));
       console.log(`Deleted attendance records marked by user ${user.email}`);
-      
+
       // Delete user's attendance records as participant by email (if any)
       await db.delete(attendance).where(eq(attendance.participantEmail, user.email));
       console.log(`Deleted attendance records for participant ${user.email}`);
-      
+
       // Delete user's memberships (if any)
       await db.delete(memberships).where(eq(memberships.userId, user.id));
       console.log(`Deleted memberships for user ${user.email}`);
-      
+
       // Delete user's debit order mandates (if any)
       await db.delete(debitOrderMandates).where(eq(debitOrderMandates.userId, user.id));
       console.log(`Deleted debit order mandates for user ${user.email}`);
-      
+
       // Delete user's messages (if any)
       await db.delete(messages).where(eq(messages.senderId, user.id));
       await db.delete(messageReplies).where(eq(messageReplies.senderId, user.id));
       console.log(`Deleted messages for user ${user.email}`);
-      
+
       // Delete user's user achievements (if any)
       await db.delete(userAchievements).where(eq(userAchievements.userId, user.id));
       console.log(`Deleted achievements for user ${user.email}`);
-      
+
       // Delete user's user stats (if any)
       await db.delete(userStats).where(eq(userStats.userId, user.id));
       console.log(`Deleted stats for user ${user.email}`);
-      
+
       // Delete user's children (if any)
       await db.delete(children).where(eq(children.parentId, user.id));
       console.log(`Deleted children records for user ${user.email}`);
-      
+
       // Delete user organization relationships
       await db.delete(userOrganizations).where(eq(userOrganizations.userId, user.id));
       console.log(`Deleted organization relationships for user ${user.email}`);
-      
+
       // Finally, delete the user
       await db.delete(users).where(eq(users.id, id));
       console.log(`Successfully deleted user: ${user.email} (ID: ${id})`);
-      
+
       return true;
     } catch (error) {
       console.error("Error permanently deleting user:", error);
@@ -409,13 +409,13 @@ export class DatabaseStorage implements IStorage {
   async getAllOrganizations(includeInactive: boolean = false): Promise<Organization[]> {
     const allOrgs = await db.select().from(organizations);
     console.log(`Found ${allOrgs.length} total organizations in database`);
-    
+
     // For global admin or when explicitly requested, return all organizations
     if (includeInactive) {
       console.log(`Returning all ${allOrgs.length} organizations (includeInactive=true)`);
       return allOrgs;
     }
-    
+
     // For regular users, filter by isActive
     const activeOrgs = allOrgs.filter(org => org.isActive === true || org.isActive === null);
     console.log(`Returning ${activeOrgs.length} active organizations`);
@@ -428,7 +428,7 @@ export class DatabaseStorage implements IStorage {
       .from(userOrganizations)
       .innerJoin(organizations, eq(userOrganizations.organizationId, organizations.id))
       .where(and(eq(userOrganizations.userId, userId), eq(userOrganizations.isActive, true)));
-    
+
     return userOrgs.map(row => row.organization);
   }
 
@@ -456,7 +456,7 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(organizations.id, organizationId))
       .returning();
-    
+
     return updatedOrg || undefined;
   }
 
@@ -521,7 +521,7 @@ export class DatabaseStorage implements IStorage {
     .from(userOrganizations)
     .innerJoin(organizations, eq(userOrganizations.organizationId, organizations.id))
     .where(eq(userOrganizations.userId, userId));
-    
+
     return result;
   }
 
@@ -560,7 +560,7 @@ export class DatabaseStorage implements IStorage {
         eq(userOrganizations.organizationId, organizationId),
         eq(userOrganizations.isActive, true)
       ));
-    
+
     return result.map(row => row.user);
   }
 
@@ -574,7 +574,7 @@ export class DatabaseStorage implements IStorage {
         eq(userOrganizations.role, 'admin'),
         eq(userOrganizations.isActive, true)
       ));
-    
+
     return result.map(row => row.user);
   }
 
@@ -606,7 +606,7 @@ export class DatabaseStorage implements IStorage {
 
   async getAllCoaches(): Promise<any[]> {
     const coachList = await db.select().from(coaches);
-    
+
     // Enrich with user data and apply organization-specific overrides
     const enrichedCoaches = await Promise.all(coachList.map(async (coach) => {
       const user = await this.getUser(coach.userId);
@@ -626,7 +626,7 @@ export class DatabaseStorage implements IStorage {
 
   async getCoachesByOrganization(organizationId: number): Promise<any[]> {
     const coachList = await db.select().from(coaches).where(eq(coaches.organizationId, organizationId));
-    
+
     // Enrich with user data and apply organization-specific overrides
     const enrichedCoaches = await Promise.all(coachList.map(async (coach) => {
       const user = await this.getUser(coach.userId);
@@ -778,8 +778,7 @@ export class DatabaseStorage implements IStorage {
       .where(and(
         eq(userOrganizations.organizationId, organizationId),
         eq(userOrganizations.role, "admin"),
-        eq(userOrganizations.isActive, true)
-      ));
+        eq(userOrganizations.isActive, true)      ));
     return adminUsers.map(row => row.user);
   }
 
@@ -840,7 +839,7 @@ export class DatabaseStorage implements IStorage {
     // Get user email first
     const user = await this.getUser(userId);
     if (!user) return [];
-    
+
     return await db.select().from(bookings).where(eq(bookings.participantEmail, user.email));
   }
 
@@ -855,7 +854,7 @@ export class DatabaseStorage implements IStorage {
         .limit(limit)
         .then(rows => rows.map(row => row.booking));
     }
-    
+
     return await db.select().from(bookings).orderBy(desc(bookings.bookingDate)).limit(limit);
   }
 
@@ -917,7 +916,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(bookings, eq(payments.bookingId, bookings.id))
       .innerJoin(classes, eq(bookings.classId, classes.id))
       .where(eq(classes.organizationId, organizationId));
-    
+
     return result.map(row => row.payment);
   }
 
@@ -931,7 +930,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(bookings, eq(payments.bookingId, bookings.id))
       .innerJoin(classes, eq(bookings.classId, classes.id))
       .where(eq(classes.organizationId, organizationId));
-    
+
     // Group by month and sum amounts
     const monthlyData = result.reduce((acc, payment) => {
       if (payment.month) {
@@ -1044,7 +1043,7 @@ export class DatabaseStorage implements IStorage {
 
   async checkAndUnlockAchievements(userId: number): Promise<Achievement[]> {
     const newlyUnlocked: Achievement[] = [];
-    
+
     // Get user stats
     let stats = await this.getUserStats(userId);
     if (!stats) {
@@ -1061,7 +1060,7 @@ export class DatabaseStorage implements IStorage {
       if (unlockedIds.has(achievement.id)) continue;
 
       let shouldUnlock = false;
-      
+
       switch (achievement.category) {
         case 'booking':
           if (achievement.name === 'First Steps' && stats.totalBookings >= 1) shouldUnlock = true;
@@ -1088,12 +1087,12 @@ export class DatabaseStorage implements IStorage {
           progress: achievement.threshold,
           isCompleted: true
         });
-        
+
         // Add points to user stats
         await this.updateUserStats(userId, {
           totalPoints: stats.totalPoints + achievement.points
         });
-        
+
         newlyUnlocked.push(achievement);
       }
     }
@@ -1296,7 +1295,7 @@ export class DatabaseStorage implements IStorage {
       );
 
     const adminOrgIds = userAdminOrgs.map(org => org.organizationId);
-    
+
     let receivedMessages: any[] = [];
     if (adminOrgIds.length > 0) {
       receivedMessages = await db
@@ -1498,25 +1497,25 @@ export class DatabaseStorage implements IStorage {
   // Delete organization and all related data
   async deleteOrganization(id: number): Promise<void> {
     console.log(`Starting hard deletion of organization ID: ${id}`);
-    
+
     // Get organization info before deletion for logging
     const orgToDelete = await this.getOrganization(id);
     if (!orgToDelete) {
       throw new Error(`Organization with ID ${id} not found`);
     }
     console.log(`Permanently deleting organization: ${orgToDelete.name} (ID: ${id})`);
-    
+
     try {
       // Delete in correct order to handle foreign key constraints
-      
+
       // 1. Delete debit order transactions first
       const transactionsResult = await db.delete(debitOrderTransactions).where(eq(debitOrderTransactions.organizationId, id));
       console.log(`Deleted ${transactionsResult.rowCount || 0} debit order transactions for org ${id}`);
-      
+
       // 2. Delete debit order mandates
       const mandatesResult = await db.delete(debitOrderMandates).where(eq(debitOrderMandates.organizationId, id));
       console.log(`Deleted ${mandatesResult.rowCount || 0} debit order mandates for org ${id}`);
-      
+
       // 3. Delete message replies first, then messages
       const orgMessages = await db.select({ id: messages.id }).from(messages).where(eq(messages.recipientId, id));
       const messageIds = orgMessages.map(m => m.id);
@@ -1526,7 +1525,7 @@ export class DatabaseStorage implements IStorage {
       }
       const messagesResult = await db.delete(messages).where(eq(messages.recipientId, id));
       console.log(`Deleted ${messagesResult.rowCount || 0} messages for org ${id}`);
-      
+
       // 4. Delete attendance records first, then bookings for classes in this organization
       const orgClasses = await db.select({ id: classes.id }).from(classes).where(eq(classes.organizationId, id));
       const classIds = orgClasses.map(c => c.id);
@@ -1536,15 +1535,15 @@ export class DatabaseStorage implements IStorage {
         const bookingsResult = await db.delete(bookings).where(inArray(bookings.classId, classIds));
         console.log(`Deleted ${bookingsResult.rowCount || 0} bookings for org ${id}`);
       }
-      
+
       // 5. Delete payments related to this organization
       const paymentsResult = await db.delete(payments).where(eq(payments.organizationId, id));
       console.log(`Deleted ${paymentsResult.rowCount || 0} payments for org ${id}`);
-      
+
       // 6. Delete memberships
       const membershipsResult = await db.delete(memberships).where(eq(memberships.organizationId, id));
       console.log(`Deleted ${membershipsResult.rowCount || 0} memberships for org ${id}`);
-      
+
       // 7. Delete coach availability and coach invitations
       const orgCoaches = await db.select({ id: coaches.id }).from(coaches).where(eq(coaches.organizationId, id));
       const coachIds = orgCoaches.map(c => c.id);
@@ -1554,31 +1553,31 @@ export class DatabaseStorage implements IStorage {
         const invitationsResult = await db.delete(coachInvitations).where(inArray(coachInvitations.coachId, coachIds));
         console.log(`Deleted ${invitationsResult.rowCount || 0} coach invitations for org ${id}`);
       }
-      
+
       // 8. Delete coaches
       const coachesResult = await db.delete(coaches).where(eq(coaches.organizationId, id));
       console.log(`Deleted ${coachesResult.rowCount || 0} coaches for org ${id}`);
-      
+
       // 9. Delete daily schedules
       const schedulesResult = await db.delete(dailySchedules).where(eq(dailySchedules.organizationId, id));
       console.log(`Deleted ${schedulesResult.rowCount || 0} daily schedules for org ${id}`);
-      
+
       // 10. Delete classes
       const classesResult = await db.delete(classes).where(eq(classes.organizationId, id));
       console.log(`Deleted ${classesResult.rowCount || 0} classes for org ${id}`);
-      
+
       // 11. Delete user organization relationships
       const userOrgsResult = await db.delete(userOrganizations).where(eq(userOrganizations.organizationId, id));
       console.log(`Deleted ${userOrgsResult.rowCount || 0} user organization relationships for org ${id}`);
-      
+
       // 12. Finally delete the organization itself
       const orgResult = await db.delete(organizations).where(eq(organizations.id, id));
       console.log(`Deleted organization ${id}, rows affected: ${orgResult.rowCount || 0}`);
-      
+
       if ((orgResult.rowCount || 0) === 0) {
         throw new Error(`No organization found with ID ${id} to delete`);
       }
-      
+
       console.log(`Successfully completed hard deletion of organization ID: ${id}`);
     } catch (error) {
       console.error(`Error during organization deletion for ID ${id}:`, error);
@@ -1601,7 +1600,7 @@ export class DatabaseStorage implements IStorage {
           updatedAt: new Date()
         })
         .where(eq(users.id, userId));
-      
+
       return (result.rowCount || 0) > 0;
     } catch (error) {
       console.error("Error resetting user password:", error);
@@ -1633,7 +1632,7 @@ export class DatabaseStorage implements IStorage {
     .leftJoin(organizations, eq(classes.organizationId, organizations.id))
     .where(eq(bookings.participantEmail, user.email))
     .orderBy(desc(bookings.bookingDate));
-    
+
     return result;
   }
 
@@ -1663,41 +1662,41 @@ export class DatabaseStorage implements IStorage {
       try {
         // Delete user's bookings by email (since bookings table uses participantEmail)
         await db.delete(bookings).where(eq(bookings.participantEmail, user.email));
-        
+
         // Delete user's coach records (if any)
         await db.delete(coaches).where(eq(coaches.userId, user.id));
-        
+
         // Delete user's attendance records as coach (if any)
         await db.delete(attendance).where(eq(attendance.markedBy, user.id));
-        
+
         // Delete user's attendance records as participant by email (if any)
         await db.delete(attendance).where(eq(attendance.participantEmail, user.email));
-        
+
         // Delete user's memberships (if any)
         await db.delete(memberships).where(eq(memberships.userId, user.id));
-        
+
         // Delete user's debit order mandates (if any)
         await db.delete(debitOrderMandates).where(eq(debitOrderMandates.userId, user.id));
-        
+
         // Delete user's messages (if any)
         await db.delete(messages).where(eq(messages.senderId, user.id));
         await db.delete(messageReplies).where(eq(messageReplies.senderId, user.id));
-        
+
         // Delete user's user achievements (if any)
         await db.delete(userAchievements).where(eq(userAchievements.userId, user.id));
-        
+
         // Delete user's user stats (if any)
         await db.delete(userStats).where(eq(userStats.userId, user.id));
-        
+
         // Delete user's children (if any)
         await db.delete(children).where(eq(children.parentId, user.id));
-        
+
         // Delete the user
         await db.delete(users).where(eq(users.id, user.id));
-        
+
         deletedUsers.push(user.email);
         deletedCount++;
-        
+
         console.log(`Deleted orphaned user: ${user.email} (ID: ${user.id})`);
       } catch (error) {
         console.error(`Failed to delete orphaned user ${user.email}:`, error);
@@ -1714,11 +1713,11 @@ export class DatabaseStorage implements IStorage {
       const result = await db.execute(sql`
         SELECT value FROM global_settings WHERE key = 'payfast'
       `);
-      
+
       if (result.rows.length > 0) {
         return { payfast: result.rows[0].value };
       }
-      
+
       // Fallback to empty settings
       return { payfast: { merchantId: '', merchantKey: '', passphrase: '', sandbox: true } };
     } catch (error) {
