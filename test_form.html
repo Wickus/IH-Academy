@@ -1,0 +1,38 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Redirecting to PayFast...</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+            .loader { margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <h2>Redirecting to PayFast...</h2>
+          <div class="loader"></div>
+          <p>Please wait while we redirect you to complete your payment.</p>
+          
+      <form action="https://sandbox.payfast.co.za/eng/process" method="post" id="payfast-payment-form">
+        <input type="hidden" name="merchant_id" value="10000100">
+<input type="hidden" name="merchant_key" value="46f0cd694581a">
+<input type="hidden" name="return_url" value="http://localhost:5000/payment-success">
+<input type="hidden" name="cancel_url" value="http://localhost:5000/payment-cancelled">
+<input type="hidden" name="notify_url" value="http://localhost:5000/api/payfast-notify">
+<input type="hidden" name="name_first" value="Kat">
+<input type="hidden" name="name_last" value="Nkuna">
+<input type="hidden" name="email_address" value="katlego+1@itshappening.africa">
+<input type="hidden" name="m_payment_id" value="activation_25_1751537119773">
+<input type="hidden" name="amount" value="4000.00">
+<input type="hidden" name="item_name" value="Test">
+<input type="hidden" name="item_description" value="Activation fee for KurtXtreme Sports - includes setup and first month">
+<input type="hidden" name="custom_str1" value="org_25">
+        <input type="hidden" name="signature" value="df5c594a728430fa92b66aa16d85293e">
+        <button type="submit" class="btn btn-primary">Pay with PayFast</button>
+      </form>
+      <script>document.getElementById('payfast-payment-form').submit();</script>
+    
+        </body>
+        </html>
+      
