@@ -74,7 +74,7 @@ const membershipSchema = z.object({
 });
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("organization");
+  const [activeTab, setActiveTab] = useState("membership");
   const [showSportForm, setShowSportForm] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
@@ -1791,7 +1791,6 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
-                {/* DEBUG: This is between the two cards in membership tab */}
                 {/* Membership Configuration Form */}
                 <Card className="border border-slate-200">
                   <CardHeader>
