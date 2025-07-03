@@ -2961,25 +2961,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Organization not found" });
       }
 
-      // For sandbox testing, use PayFast's official test credentials
-      let payfastConfig;
-      if (organization.payfastSandbox) {
-        // Use PayFast's official sandbox test credentials
-        payfastConfig = {
-          merchantId: '10000100',
-          merchantKey: '46f0cd694581a',
-          passphrase: 'jt7NOE43FZPn',
-          sandbox: true
-        };
-      } else {
-        // Use organization's production credentials
-        payfastConfig = {
-          merchantId: organization.payfastMerchantId,
-          merchantKey: organization.payfastMerchantKey,
-          passphrase: organization.payfastPassphrase,
-          sandbox: false
-        };
-      }
+      // Use organization's PayFast credentials (sandbox or production)
+      let payfastConfig = {
+        merchantId: organization.payfastMerchantId,
+        merchantKey: organization.payfastMerchantKey,
+        passphrase: organization.payfastPassphrase,
+        sandbox: organization.payfastSandbox || false
+      };
 
       // If organization doesn't have PayFast credentials, use global settings
       if (!payfastConfig.merchantId || !payfastConfig.merchantKey) {
@@ -3006,13 +2994,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return_url: `http://localhost:5000/payment-success`,
         cancel_url: `http://localhost:5000/payment-cancelled`,
         notify_url: `http://localhost:5000/api/payfast-notify`,
-        name_first: 'Test',
-        name_last: 'User',
-        email_address: 'test@example.com',
-        m_payment_id: `PF${Date.now()}`,
-        amount: '100.00',
-        item_name: 'Test Payment',
-        item_description: 'Test payment description',
+        name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin').trim(),
+        name_last: (primaryAdmin.lastName || primaryAdmin.name?.split(' ').slice(1).join(' ') || 'User').trim(),
+        email_address: primaryAdmin.email || 'admin@example.com',
+        m_payment_id: `activation_${organization.id}_${Date.now()}`,
+        amount: parseFloat(amount as string).toFixed(2),
+        item_name: (description as string || 'Activation Fee').trim(),
+        item_description: `Activation fee for ${organization.name || 'Organization'} - includes setup and first month`,
         custom_str1: `org_${organization.id}`,
         passphrase: payfastConfig.passphrase || '',
       };
