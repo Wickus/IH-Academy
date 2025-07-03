@@ -49,34 +49,43 @@ export default function DailyScheduleCoachesForm({ dailyScheduleId, organization
     role: string;
   }>;
 
-  // Load existing coach assignments
+  // Load existing coach assignments when data changes
   useEffect(() => {
-    const sortedCoaches = typedScheduleCoaches.sort((a, b) => {
-      if (a.role === 'primary') return -1;
-      if (b.role === 'primary') return 1;
-      return 0;
-    });
-
-    setCoach1(sortedCoaches[0]?.coachId || null);
-    setCoach2(sortedCoaches[1]?.coachId || null);
-    setCoach3(sortedCoaches[2]?.coachId || null);
-    setCoach4(sortedCoaches[3]?.coachId || null);
-  }, [scheduleCoaches]);
+    if (typedScheduleCoaches.length > 0) {
+      // Find coaches by their role
+      const primaryCoach = typedScheduleCoaches.find(sc => sc.role === 'primary');
+      const assistantCoaches = typedScheduleCoaches.filter(sc => sc.role === 'assistant');
+      
+      if (primaryCoach) setCoach1(primaryCoach.coachId);
+      if (assistantCoaches[0]) setCoach2(assistantCoaches[0].coachId);
+      if (assistantCoaches[1]) setCoach3(assistantCoaches[1].coachId);
+      if (assistantCoaches[2]) setCoach4(assistantCoaches[2].coachId);
+    }
+  }, [typedScheduleCoaches]);
 
   // Update coaches mutation
   const updateCoachesMutation = useMutation({
     mutationFn: async (coachIds: (number | null)[]) => {
-      // First, remove all existing coaches
-      for (const assignment of typedScheduleCoaches) {
-        await apiRequest('DELETE', `/api/daily-schedules/${dailyScheduleId}/coaches/${assignment.coachId}`);
+      const assignments = [];
+      
+      // Add primary coach (Coach 1)
+      if (coachIds[0]) {
+        assignments.push({ coachId: coachIds[0], role: 'primary' });
       }
       
-      // Then add new coaches
-      const validCoachIds = coachIds.filter(id => id !== null) as number[];
-      for (let i = 0; i < validCoachIds.length; i++) {
-        const coachId = validCoachIds[i];
-        const role = i === 0 ? 'primary' : 'assistant';
-        await apiRequest('POST', `/api/daily-schedules/${dailyScheduleId}/coaches`, { coachId, role });
+      // Add assistant coaches (Coach 2, 3, 4)
+      for (let i = 1; i < coachIds.length; i++) {
+        if (coachIds[i]) {
+          assignments.push({ coachId: coachIds[i], role: 'assistant' });
+        }
+      }
+
+      const response = await apiRequest('PUT', `/api/daily-schedules/${dailyScheduleId}/coaches`, {
+        assignments
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update coach assignments');
       }
       return { success: true };
     },
@@ -118,125 +127,140 @@ export default function DailyScheduleCoachesForm({ dailyScheduleId, organization
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-4">
-          {/* Coach 1 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Coach 1 (Primary)</label>
-            <Select
-              value={coach1?.toString() || ""}
-              onValueChange={(value) => setCoach1(value ? parseInt(value) : null)}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select primary coach" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No coach assigned</SelectItem>
-                {coachesArray.map((coach: any) => (
-                  <SelectItem 
-                    key={coach.id} 
-                    value={coach.id.toString()}
-                    disabled={[coach2, coach3, coach4].includes(coach.id)}
-                  >
-                    {getCoachName(coach.id)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {coachesArray.length === 0 ? (
+          <div className="text-center py-8">
+            <Users className="h-12 w-12 mx-auto text-slate-400 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No Coaches Available</h3>
+            <p className="text-slate-600 mb-4">
+              You need to add coaches to your organization before you can assign them to daily schedules.
+            </p>
+            <p className="text-sm text-slate-500">
+              Go to the Coaches page to invite or add coaches to your organization.
+            </p>
           </div>
+        ) : (
+          <>
+            <div className="grid gap-4">
+              {/* Coach 1 */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Coach 1 (Primary)</label>
+                <Select
+                  value={coach1?.toString() || ""}
+                  onValueChange={(value) => setCoach1(value ? parseInt(value) : null)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select primary coach" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No coach assigned</SelectItem>
+                    {coachesArray.map((coach: any) => (
+                      <SelectItem 
+                        key={coach.id} 
+                        value={coach.id.toString()}
+                        disabled={[coach2, coach3, coach4].includes(coach.id)}
+                      >
+                        {getCoachName(coach.id)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Coach 2 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Coach 2</label>
-            <Select
-              value={coach2?.toString() || ""}
-              onValueChange={(value) => setCoach2(value ? parseInt(value) : null)}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select second coach" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No coach assigned</SelectItem>
-                {coachesArray.map((coach: any) => (
-                  <SelectItem 
-                    key={coach.id} 
-                    value={coach.id.toString()}
-                    disabled={[coach1, coach3, coach4].includes(coach.id)}
-                  >
-                    {getCoachName(coach.id)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              {/* Coach 2 */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Coach 2</label>
+                <Select
+                  value={coach2?.toString() || ""}
+                  onValueChange={(value) => setCoach2(value ? parseInt(value) : null)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select second coach" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No coach assigned</SelectItem>
+                    {coachesArray.map((coach: any) => (
+                      <SelectItem 
+                        key={coach.id} 
+                        value={coach.id.toString()}
+                        disabled={[coach1, coach3, coach4].includes(coach.id)}
+                      >
+                        {getCoachName(coach.id)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Coach 3 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Coach 3</label>
-            <Select
-              value={coach3?.toString() || ""}
-              onValueChange={(value) => setCoach3(value ? parseInt(value) : null)}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select third coach" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No coach assigned</SelectItem>
-                {coachesArray.map((coach: any) => (
-                  <SelectItem 
-                    key={coach.id} 
-                    value={coach.id.toString()}
-                    disabled={[coach1, coach2, coach4].includes(coach.id)}
-                  >
-                    {getCoachName(coach.id)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              {/* Coach 3 */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Coach 3</label>
+                <Select
+                  value={coach3?.toString() || ""}
+                  onValueChange={(value) => setCoach3(value ? parseInt(value) : null)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select third coach" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No coach assigned</SelectItem>
+                    {coachesArray.map((coach: any) => (
+                      <SelectItem 
+                        key={coach.id} 
+                        value={coach.id.toString()}
+                        disabled={[coach1, coach2, coach4].includes(coach.id)}
+                      >
+                        {getCoachName(coach.id)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Coach 4 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Coach 4</label>
-            <Select
-              value={coach4?.toString() || ""}
-              onValueChange={(value) => setCoach4(value ? parseInt(value) : null)}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select fourth coach" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No coach assigned</SelectItem>
-                {coachesArray.map((coach: any) => (
-                  <SelectItem 
-                    key={coach.id} 
-                    value={coach.id.toString()}
-                    disabled={[coach1, coach2, coach3].includes(coach.id)}
-                  >
-                    {getCoachName(coach.id)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+              {/* Coach 4 */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Coach 4</label>
+                <Select
+                  value={coach4?.toString() || ""}
+                  onValueChange={(value) => setCoach4(value ? parseInt(value) : null)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select fourth coach" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No coach assigned</SelectItem>
+                    {coachesArray.map((coach: any) => (
+                      <SelectItem 
+                        key={coach.id} 
+                        value={coach.id.toString()}
+                        disabled={[coach1, coach2, coach3].includes(coach.id)}
+                      >
+                        {getCoachName(coach.id)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-        <div className="flex justify-end">
-          <Button 
-            onClick={handleSaveCoaches}
-            disabled={isLoading}
-            className="text-white"
-            style={{ 
-              backgroundColor: organization?.primaryColor || '#20366B',
-              borderColor: organization?.primaryColor || '#20366B'
-            }}
-          >
-            {isLoading ? 'Saving...' : 'Save Assignments'}
-          </Button>
-        </div>
+            <div className="flex justify-end">
+              <Button 
+                onClick={handleSaveCoaches}
+                disabled={isLoading}
+                className="text-white"
+                style={{ 
+                  backgroundColor: organization?.primaryColor || '#20366B',
+                  borderColor: organization?.primaryColor || '#20366B'
+                }}
+              >
+                {isLoading ? 'Saving...' : 'Save Assignments'}
+              </Button>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
