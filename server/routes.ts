@@ -2961,13 +2961,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Organization not found" });
       }
 
-      // Check if organization has PayFast credentials, fallback to global settings
-      let payfastConfig = {
-        merchantId: organization.payfastMerchantId,
-        merchantKey: organization.payfastMerchantKey,
-        passphrase: organization.payfastPassphrase,
-        sandbox: organization.payfastSandbox
-      };
+      // For sandbox testing, use PayFast's official test credentials
+      let payfastConfig;
+      if (organization.payfastSandbox) {
+        // Use PayFast's official sandbox test credentials
+        payfastConfig = {
+          merchantId: '10000100',
+          merchantKey: '46f0cd694581a',
+          passphrase: 'jt7NOE43FZPn',
+          sandbox: true
+        };
+      } else {
+        // Use organization's production credentials
+        payfastConfig = {
+          merchantId: organization.payfastMerchantId,
+          merchantKey: organization.payfastMerchantKey,
+          passphrase: organization.payfastPassphrase,
+          sandbox: false
+        };
+      }
 
       // If organization doesn't have PayFast credentials, use global settings
       if (!payfastConfig.merchantId || !payfastConfig.merchantKey) {
@@ -2994,14 +3006,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return_url: `${req.protocol}://${req.get('host')}/payment-success?type=activation&org_id=${organization.id}`,
         cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?type=activation&org_id=${organization.id}`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
-        name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin').trim(),
+        name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Test').trim(),
         name_last: (primaryAdmin.lastName || primaryAdmin.name?.split(' ').slice(1).join(' ') || 'User').trim(),
-        email_address: primaryAdmin.email || '',
+        email_address: primaryAdmin.email || 'test@example.com',
         m_payment_id: `activation_${organization.id}_${Date.now()}`,
         amount: parseFloat(amount as string).toFixed(2),
         item_name: (description as string || 'Activation Fee').trim(),
         item_description: `Activation fee for ${organization.name || 'Organization'} - includes setup and first month`,
-        passphrase: payfastConfig.passphrase || undefined,
+        custom_str1: `org_${organization.id}`,
+        passphrase: payfastConfig.passphrase || '',
       };
 
       // Validate required fields before generating URL
@@ -3013,20 +3026,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Missing required payment information" });
       }
 
-      console.log('PayFast payment data:', {
-        merchant_id: paymentData.merchant_id,
-        name_first: paymentData.name_first,
-        name_last: paymentData.name_last,
-        email_address: paymentData.email_address,
-        amount: paymentData.amount,
+      console.log('PayFast payment data (full):', paymentData);
+      console.log('PayFast config:', {
+        merchantId: payfastConfig.merchantId,
+        merchantKey: payfastConfig.merchantKey ? '[SET]' : '[EMPTY]',
+        passphrase: payfastConfig.passphrase ? '[SET]' : '[EMPTY]',
         sandbox: payfastConfig.sandbox
       });
 
-      // Generate payment URL and redirect
-      const paymentUrl = payfastService.generatePaymentUrl(paymentData, payfastConfig.sandbox || false);
+      // Generate payment form and return HTML for auto-submission
+      const paymentForm = payfastService.generatePaymentForm(paymentData, payfastConfig.sandbox || false);
       
-      // Redirect to PayFast
-      res.redirect(paymentUrl);
+      // Return HTML form that auto-submits to PayFast
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Redirecting to PayFast...</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+            .loader { margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <h2>Redirecting to PayFast...</h2>
+          <div class="loader"></div>
+          <p>Please wait while we redirect you to complete your payment.</p>
+          ${paymentForm}
+        </body>
+        </html>
+      `);
     } catch (error) {
       console.error("Error creating activation fee payment:", error);
       res.status(500).json({ message: "Failed to create payment" });

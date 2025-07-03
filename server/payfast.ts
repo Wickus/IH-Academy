@@ -13,6 +13,11 @@ export interface PayFastPaymentData {
   amount: string;
   item_name: string;
   item_description: string;
+  custom_str1?: string;
+  custom_str2?: string;
+  custom_str3?: string;
+  custom_str4?: string;
+  custom_str5?: string;
   passphrase?: string;
 }
 
@@ -98,27 +103,33 @@ export class PayFastService {
       ? 'https://sandbox.payfast.co.za/eng/process'
       : 'https://www.payfast.co.za/eng/process';
 
-    // Convert to record for signature generation
+    // Convert to record for signature generation (exclude undefined and null values)
     const dataRecord: Record<string, string> = {};
     Object.entries(paymentData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+      if (value !== undefined && value !== null && value !== '') {
         dataRecord[key] = value.toString();
       }
     });
 
+    console.log('PayFast data for signature:', dataRecord);
+
     // Generate signature
     const signature = this.generateSignature(dataRecord, paymentData.passphrase);
+    console.log('Generated signature:', signature);
 
-    // Create query parameters
+    // Create query parameters (ensure only non-empty values)
     const params = new URLSearchParams();
     Object.entries(paymentData).forEach(([key, value]) => {
-      if (key !== 'passphrase' && value) {
-        params.append(key, value);
+      if (key !== 'passphrase' && value !== undefined && value !== null && value !== '') {
+        params.append(key, value.toString());
       }
     });
     params.append('signature', signature);
 
-    return `${baseUrl}?${params.toString()}`;
+    const finalUrl = `${baseUrl}?${params.toString()}`;
+    console.log('Final PayFast URL:', finalUrl);
+    
+    return finalUrl;
   }
 
   validateNotification(notification: PayFastNotification, passphrase?: string): boolean {
