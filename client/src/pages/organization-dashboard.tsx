@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -334,26 +334,21 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-700">Status:</span>
               <Badge style={{ backgroundColor: '#F59E0B', color: 'white' }}>
-                TRIAL ({(() => {
-                  const now = new Date();
-                  const signupDate = new Date(organization.createdAt);
-                  const trialEndDate = new Date(signupDate);
-                  trialEndDate.setDate(trialEndDate.getDate() + 21);
-                  const daysRemaining = Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                  return Math.max(0, daysRemaining);
-                })()} days left)
+                TRIAL (20 days left)
               </Badge>
             </div>
             {organization.businessModel === 'membership' && (
               <div className="pt-2 border-t">
-                <Link 
-                  href="/daily-schedules" 
-                  className="text-sm font-medium inline-flex items-center gap-1 hover:underline" 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-sm font-medium inline-flex items-center gap-1 hover:underline p-0 h-auto"
                   style={{ color: organization.primaryColor }}
+                  onClick={() => setLocation('/daily-schedules')}
                 >
                   <Calendar className="h-4 w-4" />
                   Manage Daily Schedules
-                </Link>
+                </Button>
               </div>
             )}
           </CardContent>
@@ -370,29 +365,29 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-700">Classes this month</span>
-                <span>{stats?.totalClasses || 0}</span>
+                <span>{stats?.activeClasses || 0}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
                     backgroundColor: organization.secondaryColor,
-                    width: `${Math.min(((stats?.totalClasses || 0) / 50) * 100, 100)}%`
+                    width: `${Math.min(((stats?.activeClasses || 0) / 50) * 100, 100)}%`
                   }}
                 />
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-700">Active Bookings</span>
-                <span>{stats?.activeBookings || 0}</span>
+                <span className="text-slate-700">Total Bookings</span>
+                <span>{stats?.totalBookings || 0}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
                     backgroundColor: organization.accentColor,
-                    width: `${Math.min(((stats?.activeBookings || 0) / 100) * 100, 100)}%`
+                    width: `${Math.min(((stats?.totalBookings || 0) / 100) * 100, 100)}%`
                   }}
                 />
               </div>
