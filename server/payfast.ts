@@ -63,13 +63,45 @@ export class PayFastService {
     // Remove signature from data if it exists
     const { signature: _, ...cleanData } = data;
     
-    // Sort keys alphabetically and create query string
-    const sortedKeys = Object.keys(cleanData).sort();
+    // PayFast requires specific field order, not alphabetical
+    const fieldOrder = [
+      'merchant_id',
+      'merchant_key', 
+      'return_url',
+      'cancel_url',
+      'notify_url',
+      'name_first',
+      'name_last',
+      'email_address',
+      'cell_number',
+      'm_payment_id',
+      'amount',
+      'item_name',
+      'item_description',
+      'custom_int1',
+      'custom_int2',
+      'custom_int3',
+      'custom_int4',
+      'custom_int5',
+      'custom_str1',
+      'custom_str2',
+      'custom_str3',
+      'custom_str4',
+      'custom_str5',
+      'email_confirmation',
+      'confirmation_address',
+      'payment_method'
+    ];
     
-    // PayFast requires URL-decoded values for signature generation
-    const queryString = sortedKeys
-      .map(key => `${key}=${cleanData[key] || ''}`)
-      .join('&');
+    // Build parameter string in correct order
+    const params: string[] = [];
+    for (const field of fieldOrder) {
+      if (cleanData[field] && cleanData[field] !== '') {
+        params.push(`${field}=${cleanData[field]}`);
+      }
+    }
+    
+    const queryString = params.join('&');
     
     // Add passphrase if provided
     const stringToSign = passphrase 
