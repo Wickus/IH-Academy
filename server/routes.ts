@@ -2806,6 +2806,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Daily Schedule Coach Management Routes
+  app.get("/api/daily-schedules/:id/coaches", async (req: Request, res: Response) => {
+    try {
+      const scheduleId = parseInt(req.params.id);
+      const coaches = await storage.getDailyScheduleCoaches(scheduleId);
+      res.json(coaches);
+    } catch (error) {
+      console.error("Error fetching daily schedule coaches:", error);
+      res.status(500).json({ message: "Failed to fetch coaches" });
+    }
+  });
+
+  app.post("/api/daily-schedules/:id/coaches", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'organization_admin' && currentUser.role !== 'global_admin')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const scheduleId = parseInt(req.params.id);
+      const { coachId, role } = req.body;
+
+      if (!coachId || !role) {
+        return res.status(400).json({ message: "Coach ID and role are required" });
+      }
+
+      const assignment = await storage.assignCoachToDailySchedule(scheduleId, coachId, role);
+      res.status(201).json(assignment);
+    } catch (error) {
+      console.error("Error assigning coach to daily schedule:", error);
+      res.status(500).json({ message: "Failed to assign coach" });
+    }
+  });
+
+  app.put("/api/daily-schedules/:id/coaches/:coachId", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'organization_admin' && currentUser.role !== 'global_admin')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const scheduleId = parseInt(req.params.id);
+      const coachId = parseInt(req.params.coachId);
+      const { role } = req.body;
+
+      if (!role) {
+        return res.status(400).json({ message: "Role is required" });
+      }
+
+      const updated = await storage.updateDailyScheduleCoachRole(scheduleId, coachId, role);
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Coach assignment not found" });
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating coach role:", error);
+      res.status(500).json({ message: "Failed to update coach role" });
+    }
+  });
+
+  app.delete("/api/daily-schedules/:id/coaches/:coachId", async (req: Request, res: Response) => {
+    try {
+      const currentUser = await getCurrentUser(req);
+      if (!currentUser || (currentUser.role !== 'organization_admin' && currentUser.role !== 'global_admin')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const scheduleId = parseInt(req.params.id);
+      const coachId = parseInt(req.params.coachId);
+
+      const success = await storage.removeCoachFromDailySchedule(scheduleId, coachId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Coach assignment not found" });
+      }
+
+      res.json({ message: "Coach removed successfully" });
+    } catch (error) {
+      console.error("Error removing coach from daily schedule:", error);
+      res.status(500).json({ message: "Failed to remove coach" });
+    }
+  });
+
   // PayFast connection test endpoint
   app.post("/api/test-payfast-connection", async (req: Request, res: Response) => {
     try {

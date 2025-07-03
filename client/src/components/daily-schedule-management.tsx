@@ -12,8 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
+import DailyScheduleCoachesForm from "@/components/forms/daily-schedule-coaches-form";
 
 const scheduleSchema = z.object({
   dayOfWeek: z.number().min(0).max(6),
@@ -220,7 +222,7 @@ export default function DailyScheduleManagement({ organizationId, organization }
                 Add Schedule
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader className="pb-4 border-b border-slate-200">
                 <DialogTitle className="text-[#20366B] text-xl font-bold">
                   {editingSchedule ? "Edit Daily Schedule" : "Add Daily Schedule"}
@@ -230,8 +232,17 @@ export default function DailyScheduleManagement({ organizationId, organization }
                 </DialogDescription>
               </DialogHeader>
               
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+              <Tabs defaultValue="details" className="pt-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="details">Schedule Details</TabsTrigger>
+                  <TabsTrigger value="coaches" disabled={!editingSchedule}>
+                    Coach Assignments
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="details" className="mt-6">
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -471,9 +482,20 @@ export default function DailyScheduleManagement({ organizationId, organization }
                         editingSchedule ? "Update Schedule" : "Create Schedule"
                       }
                     </Button>
-                  </div>
-                </form>
-              </Form>
+                    </div>
+                  </form>
+                </Form>
+              </TabsContent>
+              
+              <TabsContent value="coaches" className="mt-6">
+                {editingSchedule && organization && (
+                  <DailyScheduleCoachesForm 
+                    dailyScheduleId={editingSchedule.id} 
+                    organization={organization}
+                  />
+                )}
+              </TabsContent>
+            </Tabs>
             </DialogContent>
           </Dialog>
         </div>
