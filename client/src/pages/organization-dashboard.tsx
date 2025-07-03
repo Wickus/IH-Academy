@@ -16,6 +16,7 @@ import RecentBookings from "@/components/dashboard/recent-bookings";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
 import CoachAttendance from "@/components/dashboard/coach-attendance";
 import OrganizationSetupFlow from "@/components/onboarding/organization-setup-flow";
+import { PostActivationOnboarding } from "@/components/post-activation-onboarding";
 import { TrialBanner } from "@/components/trial-banner";
 
 interface OrganizationDashboardProps {
@@ -25,6 +26,7 @@ interface OrganizationDashboardProps {
 export default function OrganizationDashboard({ user: propUser }: OrganizationDashboardProps) {
   const [, setLocation] = useLocation();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showPostActivationOnboarding, setShowPostActivationOnboarding] = useState(false);
   const { toast } = useToast();
 
   // Get current user if not provided via props
@@ -71,6 +73,7 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
   // Hook for organization onboarding check
   useEffect(() => {
     if (organization) {
+      // Check for standard onboarding (new organizations)
       const needsOnboarding = (
         organization.planType === 'free' &&
         organization.primaryColor === '#20366B' &&
@@ -80,8 +83,20 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
         (!organization.membershipPrice || organization.membershipPrice === '299.00')
       );
       
+      // Check for post-activation onboarding (newly activated organizations)
+      const needsPostActivationOnboarding = (
+        organization.subscriptionStatus === 'active' &&
+        organization.planType === 'basic' &&
+        // Check if this is a fresh activation (recently transitioned from trial)
+        sessionStorage.getItem('justActivated') === 'true'
+      );
+      
       if (needsOnboarding) {
         setShowOnboarding(true);
+      } else if (needsPostActivationOnboarding) {
+        setShowPostActivationOnboarding(true);
+        // Clear the activation flag so it doesn't show again
+        sessionStorage.removeItem('justActivated');
       }
     }
   }, [organization]);
@@ -607,6 +622,14 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
           isOpen={showOnboarding}
           onComplete={() => setShowOnboarding(false)}
           organization={organization || null}
+        />
+      )}
+
+      {/* Post-Activation Onboarding */}
+      {showPostActivationOnboarding && (
+        <PostActivationOnboarding
+          organization={organization}
+          onComplete={() => setShowPostActivationOnboarding(false)}
         />
       )}
     </div>
