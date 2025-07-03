@@ -245,8 +245,22 @@ export default function DailyScheduleManagement({ organizationId, organization }
               
               <Tabs defaultValue="details" className="pt-4">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="details">Schedule Details</TabsTrigger>
-                  <TabsTrigger value="coaches">
+                  <TabsTrigger 
+                    value="details"
+                    className="data-[state=active]:bg-white"
+                    style={{
+                      '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                    } as React.CSSProperties}
+                  >
+                    Schedule Details
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="coaches"
+                    className="data-[state=active]:bg-white"
+                    style={{
+                      '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                    } as React.CSSProperties}
+                  >
                     Coach Assignments
                   </TabsTrigger>
                 </TabsList>
@@ -459,11 +473,19 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="location"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-semibold">Location (Optional)</FormLabel>
+                          <FormLabel 
+                            className="font-semibold"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Location (Optional)
+                          </FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="e.g., Studio A" 
-                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              className="h-11 border-slate-300"
+                              style={{
+                                '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                              } as React.CSSProperties}
                               {...field} 
                             />
                           </FormControl>
@@ -478,11 +500,19 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#20366B] font-semibold">Description (Optional)</FormLabel>
+                        <FormLabel 
+                          className="font-semibold"
+                          style={{ color: organization?.primaryColor || '#20366B' }}
+                        >
+                          Description (Optional)
+                        </FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Brief description of the class..."
-                            className="min-h-[80px] border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                            className="min-h-[80px] border-slate-300"
+                            style={{
+                              '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                            } as React.CSSProperties}
                             {...field} 
                           />
                         </FormControl>
@@ -496,11 +526,19 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     name="requirements"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#20366B] font-semibold">Requirements (Optional)</FormLabel>
+                        <FormLabel 
+                          className="font-semibold"
+                          style={{ color: organization?.primaryColor || '#20366B' }}
+                        >
+                          Requirements (Optional)
+                        </FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Any equipment or prerequisites needed..."
-                            className="min-h-[80px] border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                            className="min-h-[80px] border-slate-300"
+                            style={{
+                              '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                            } as React.CSSProperties}
                             {...field} 
                           />
                         </FormControl>
@@ -520,7 +558,10 @@ export default function DailyScheduleManagement({ organizationId, organization }
                     </Button>
                     <Button 
                       type="submit" 
-                      className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white font-semibold"
+                      className="text-white font-semibold hover:opacity-90"
+                      style={{
+                        background: `linear-gradient(to right, ${organization?.primaryColor || '#20366B'}, ${organization?.secondaryColor || '#278DD4'})`
+                      }}
                       disabled={createMutation.isPending || updateMutation.isPending}
                     >
                       {createMutation.isPending || updateMutation.isPending ? 
