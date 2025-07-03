@@ -37,14 +37,14 @@ export default function Bookings() {
   const organization = organizations?.[0];
 
   const { data: bookings = [], isLoading } = useQuery({
-    queryKey: ["/api/bookings", { recent: 100 }],
-    queryFn: () => api.getBookings({ recent: 100 }),
+    queryKey: ["/api/bookings", { organizationId: organization?.id, recent: 100 }],
+    queryFn: () => api.getBookings({ organizationId: organization.id, recent: 100 }),
     enabled: !!organization,
   });
 
   const { data: classes = [] } = useQuery({
-    queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses(),
+    queryKey: ["/api/classes", { organizationId: organization?.id }],
+    queryFn: () => api.getClasses({ organizationId: organization.id }),
     enabled: !!organization,
   });
 

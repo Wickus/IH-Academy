@@ -90,13 +90,15 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
   });
 
   const { data: classes, isLoading: classesLoading } = useQuery({
-    queryKey: ['/api/classes'],
-    queryFn: () => api.getClasses(),
+    queryKey: ['/api/classes', { organizationId: organization?.id }],
+    queryFn: () => api.getClasses({ organizationId: organization.id }),
+    enabled: !!organization?.id,
   });
 
   const { data: recentBookings, isLoading: bookingsLoading } = useQuery({
-    queryKey: ['/api/bookings'],
-    queryFn: () => api.getBookings(),
+    queryKey: ['/api/bookings', { organizationId: organization?.id }],
+    queryFn: () => api.getBookings({ organizationId: organization.id }),
+    enabled: !!organization?.id,
   });
 
   // Show loading screen until organization data and essential data is loaded

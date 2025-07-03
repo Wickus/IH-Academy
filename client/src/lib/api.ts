@@ -240,11 +240,12 @@ export const api = {
   },
 
   // Bookings
-  getBookings: async (params?: { email?: string; classId?: number; recent?: number }): Promise<Booking[]> => {
+  getBookings: async (params?: { email?: string; classId?: number; recent?: number; organizationId?: number }): Promise<Booking[]> => {
     const searchParams = new URLSearchParams();
     if (params?.email) searchParams.append('email', params.email);
     if (params?.classId) searchParams.append('classId', params.classId.toString());
     if (params?.recent) searchParams.append('recent', params.recent.toString());
+    if (params?.organizationId) searchParams.append('organizationId', params.organizationId.toString());
     
     const response = await apiRequest('GET', `/api/bookings?${searchParams.toString()}`);
     return response.json();
