@@ -411,7 +411,7 @@ export const dailySchedules = pgTable("daily_schedules", {
   className: text("class_name").notNull(),
   description: text("description"),
   sportId: integer("sport_id").references(() => sports.id),
-  coachId: integer("coach_id").references(() => coaches.id),
+  coachId: integer("coach_id").references(() => coaches.id), // Keep for backward compatibility
   capacity: integer("capacity").notNull().default(20),
   location: text("location"),
   requirements: text("requirements"),
@@ -420,10 +420,20 @@ export const dailySchedules = pgTable("daily_schedules", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Daily schedule coach assignments for multiple coach support
+export const dailyScheduleCoaches = pgTable("daily_schedule_coaches", {
+  id: serial("id").primaryKey(),
+  dailyScheduleId: integer("daily_schedule_id").references(() => dailySchedules.id, { onDelete: "cascade" }).notNull(),
+  coachId: integer("coach_id").references(() => coaches.id).notNull(),
+  role: text("role", { enum: ["primary", "assistant", "substitute"] }).notNull().default("primary"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertAchievementSchema = createInsertSchema(achievements);
 export const insertUserAchievementSchema = createInsertSchema(userAchievements);
 export const insertUserStatsSchema = createInsertSchema(userStats);
 export const insertDailyScheduleSchema = createInsertSchema(dailySchedules);
+export const insertDailyScheduleCoachSchema = createInsertSchema(dailyScheduleCoaches);
 
 export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
@@ -433,6 +443,8 @@ export type UserStats = typeof userStats.$inferSelect;
 export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
 export type DailySchedule = typeof dailySchedules.$inferSelect;
 export type InsertDailySchedule = z.infer<typeof insertDailyScheduleSchema>;
+export type DailyScheduleCoach = typeof dailyScheduleCoaches.$inferSelect;
+export type InsertDailyScheduleCoach = z.infer<typeof insertDailyScheduleCoachSchema>;
 
 // Memberships for organizations using membership business model
 export const memberships = pgTable("memberships", {

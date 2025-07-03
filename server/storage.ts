@@ -1,6 +1,6 @@
 import {
   users, organizations, userOrganizations, sports, coaches, coachInvitations, coachAvailability, classes, classCoaches, bookings, attendance, payments,
-  achievements, userAchievements, userStats, memberships, children, dailySchedules, messages, messageReplies,
+  achievements, userAchievements, userStats, memberships, children, dailySchedules, dailyScheduleCoaches, messages, messageReplies,
   debitOrderMandates, debitOrderTransactions,
   type User, type InsertUser,
   type Organization, type InsertOrganization,
@@ -20,6 +20,7 @@ import {
   type Membership, type InsertMembership,
   type Child, type InsertChild,
   type DailySchedule, type InsertDailySchedule,
+  type DailyScheduleCoach, type InsertDailyScheduleCoach,
   type Message, type InsertMessage,
   type MessageReply, type InsertMessageReply,
   type DebitOrderMandate, type InsertDebitOrderMandate,
@@ -177,6 +178,12 @@ export interface IStorage {
   createMessage(message: InsertMessage): Promise<Message>;
   createMessageReply(reply: InsertMessageReply): Promise<MessageReply>;
   markMessageAsRead(messageId: number): Promise<void>;
+
+  // Daily Schedule Coach Management
+  getDailyScheduleCoaches(dailyScheduleId: number): Promise<DailyScheduleCoach[]>;
+  assignCoachToDailySchedule(dailyScheduleId: number, coachId: number, role: string): Promise<DailyScheduleCoach>;
+  removeCoachFromDailySchedule(dailyScheduleId: number, coachId: number): Promise<boolean>;
+  updateDailyScheduleCoachRole(dailyScheduleId: number, coachId: number, role: string): Promise<DailyScheduleCoach | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1257,6 +1264,43 @@ export class DatabaseStorage implements IStorage {
   async getDailySchedule(id: number): Promise<DailySchedule | undefined> {
     const [schedule] = await db.select().from(dailySchedules).where(eq(dailySchedules.id, id));
     return schedule || undefined;
+  }
+
+  // Daily Schedule Coach Management methods
+  async getDailyScheduleCoaches(dailyScheduleId: number): Promise<DailyScheduleCoach[]> {
+    return await db.select().from(dailyScheduleCoaches)
+      .where(eq(dailyScheduleCoaches.dailyScheduleId, dailyScheduleId))
+      .orderBy(sql`CASE WHEN role = 'primary' THEN 1 WHEN role = 'assistant' THEN 2 ELSE 3 END`);
+  }
+
+  async assignCoachToDailySchedule(dailyScheduleId: number, coachId: number, role: string): Promise<DailyScheduleCoach> {
+    const [assignment] = await db.insert(dailyScheduleCoaches).values({
+      dailyScheduleId: dailyScheduleId,
+      coachId: coachId,
+      role: role as any
+    }).returning();
+    return assignment;
+  }
+
+  async removeCoachFromDailySchedule(dailyScheduleId: number, coachId: number): Promise<boolean> {
+    const [removed] = await db.delete(dailyScheduleCoaches)
+      .where(and(
+        eq(dailyScheduleCoaches.dailyScheduleId, dailyScheduleId),
+        eq(dailyScheduleCoaches.coachId, coachId)
+      ))
+      .returning();
+    return !!removed;
+  }
+
+  async updateDailyScheduleCoachRole(dailyScheduleId: number, coachId: number, role: string): Promise<DailyScheduleCoach | undefined> {
+    const [updated] = await db.update(dailyScheduleCoaches)
+      .set({ role: role as any })
+      .where(and(
+        eq(dailyScheduleCoaches.dailyScheduleId, dailyScheduleId),
+        eq(dailyScheduleCoaches.coachId, coachId)
+      ))
+      .returning();
+    return updated || undefined;
   }
 
   // Messages implementation
