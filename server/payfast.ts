@@ -48,6 +48,17 @@ export interface PayFastNotification {
 }
 
 export class PayFastService {
+  private escapeHtml(text: string): string {
+    const map: { [key: string]: string } = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+  }
+
   private generateSignature(data: Record<string, string>, passphrase?: string): string {
     // Remove signature from data if it exists
     const { signature: _, ...cleanData } = data;
