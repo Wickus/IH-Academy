@@ -49,6 +49,25 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
     enabled: !!organization?.id,
   });
 
+  // Always declare all hooks first before any conditional logic
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: [`/api/stats/organization/${organization?.id}`],
+    queryFn: () => api.getOrganizationStats(organization.id),
+    enabled: !!organization?.id,
+  });
+
+  const { data: classes, isLoading: classesLoading } = useQuery({
+    queryKey: ['/api/classes', { organizationId: organization?.id }],
+    queryFn: () => api.getClasses({ organizationId: organization.id }),
+    enabled: !!organization?.id,
+  });
+
+  const { data: recentBookings, isLoading: bookingsLoading } = useQuery({
+    queryKey: ['/api/bookings', { organizationId: organization?.id }],
+    queryFn: () => api.getBookings({ organizationId: organization.id }),
+    enabled: !!organization?.id,
+  });
+
   // Hook for organization onboarding check
   useEffect(() => {
     if (organization) {
@@ -95,26 +114,6 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
   }
 
 
-
-
-
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: [`/api/stats/organization/${organization?.id}`],
-    queryFn: () => api.getOrganizationStats(organization.id),
-    enabled: !!organization?.id,
-  });
-
-  const { data: classes, isLoading: classesLoading } = useQuery({
-    queryKey: ['/api/classes', { organizationId: organization?.id }],
-    queryFn: () => api.getClasses({ organizationId: organization.id }),
-    enabled: !!organization?.id,
-  });
-
-  const { data: recentBookings, isLoading: bookingsLoading } = useQuery({
-    queryKey: ['/api/bookings', { organizationId: organization?.id }],
-    queryFn: () => api.getBookings({ organizationId: organization.id }),
-    enabled: !!organization?.id,
-  });
 
   // Show loading screen until organization data and essential data is loaded
   if (!organization || statsLoading || classesLoading || bookingsLoading) {
