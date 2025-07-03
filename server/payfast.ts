@@ -107,10 +107,14 @@ export class PayFastService {
       if (cleanData[field] && cleanData[field].trim() !== '') {
         const value = cleanData[field].trim();
         // PayFast requires URL encoding with spaces as + and uppercase encoding
+        // Also replace problematic characters that cause signature mismatches
         const encodedValue = encodeURIComponent(value)
           .replace(/%20/g, '+')
           .replace(/'/g, '%27')
-          .replace(/~/g, '%7E');
+          .replace(/~/g, '%7E')
+          .replace(/%28/g, '(')    // Convert encoded ( back to literal (
+          .replace(/%29/g, ')')    // Convert encoded ) back to literal )
+          .replace(/%2B/g, '+');   // Ensure + stays as +
         params.push(`${field}=${encodedValue}`);
       }
     }
