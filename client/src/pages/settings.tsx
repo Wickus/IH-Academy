@@ -623,83 +623,88 @@ export default function Settings() {
           )}
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6" key={organization?.id}>
-            <TabsList className="grid w-full grid-cols-6 bg-slate-100">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7 bg-slate-100">
               <TabsTrigger 
                 value="organization"
-                className={activeTab === 'organization' ? 'text-white' : ''}
+                className={`${activeTab === 'organization' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'organization' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'organization' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <Building className="mr-2 h-4 w-4" />
-                Organization
+                <Building className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Organization</span>
+                <span className="sm:hidden">Org</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="sports"
-                className={activeTab === 'sports' ? 'text-white' : ''}
+                className={`${activeTab === 'sports' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'sports' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'sports' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <Dumbbell className="mr-2 h-4 w-4" />
+                <Dumbbell className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
                 Sports
               </TabsTrigger>
               <TabsTrigger 
                 value="membership"
-                className={activeTab === 'membership' ? 'text-white' : ''}
+                className={`${activeTab === 'membership' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'membership' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'membership' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <Banknote className="mr-2 h-4 w-4" />
-                Membership
+                <Banknote className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Membership</span>
+                <span className="sm:hidden">Member</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="payments"
-                className={activeTab === 'payments' ? 'text-white' : ''}
+                className={`${activeTab === 'payments' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'payments' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'payments' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <CreditCard className="mr-2 h-4 w-4" />
-                Payments
+                <CreditCard className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Payments</span>
+                <span className="sm:hidden">Pay</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="notifications"
-                className={activeTab === 'notifications' ? 'text-white' : ''}
+                className={`${activeTab === 'notifications' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'notifications' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'notifications' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <Bell className="mr-2 h-4 w-4" />
-                Notifications
+                <Bell className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Notifications</span>
+                <span className="sm:hidden">Notify</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="admins"
-                className={activeTab === 'admins' ? 'text-white' : ''}
+                className={`${activeTab === 'admins' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'admins' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'admins' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <User className="mr-2 h-4 w-4" />
+                <User className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
                 Admins
               </TabsTrigger>
               <TabsTrigger 
                 value="appearance"
-                className={activeTab === 'appearance' ? 'text-white' : ''}
+                className={`${activeTab === 'appearance' ? 'text-white' : ''} text-xs md:text-sm`}
                 style={{
                   backgroundColor: activeTab === 'appearance' ? organization?.secondaryColor || '#278DD4' : 'transparent',
                   borderColor: activeTab === 'appearance' ? organization?.secondaryColor || '#278DD4' : 'transparent'
                 }}
               >
-                <Palette className="mr-2 h-4 w-4" />
-                Appearance
+                <Palette className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Appearance</span>
+                <span className="sm:hidden">Style</span>
               </TabsTrigger>
             </TabsList>
 
