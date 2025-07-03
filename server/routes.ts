@@ -2988,12 +2988,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Create PayFast payment data for activation fee
+      const baseUrl = process.env.REPLIT_URL || 
+                      (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://academy.itshappening.africa');
       const paymentData: PayFastPaymentData = {
         merchant_id: payfastConfig.merchantId || '',
         merchant_key: payfastConfig.merchantKey || '',
-        return_url: `http://localhost:5000/payment-success`,
-        cancel_url: `http://localhost:5000/payment-cancelled`,
-        notify_url: `http://localhost:5000/api/payfast-notify`,
+        return_url: `${baseUrl}/payment-success`,
+        cancel_url: `${baseUrl}/payment-cancelled`,
+        notify_url: `${baseUrl}/api/payfast-notify`,
         name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin').trim(),
         name_last: (primaryAdmin.lastName || primaryAdmin.name?.split(' ').slice(1).join(' ') || 'User').trim(),
         email_address: (primaryAdmin.email || 'admin@example.com').replace(/\+[^@]*/, ''),
