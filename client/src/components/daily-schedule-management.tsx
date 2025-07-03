@@ -246,7 +246,7 @@ export default function DailyScheduleManagement({ organizationId, organization }
               <Tabs defaultValue="details" className="pt-4">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="details">Schedule Details</TabsTrigger>
-                  <TabsTrigger value="coaches" disabled={!editingSchedule}>
+                  <TabsTrigger value="coaches">
                     Coach Assignments
                   </TabsTrigger>
                 </TabsList>
@@ -534,12 +534,35 @@ export default function DailyScheduleManagement({ organizationId, organization }
               </TabsContent>
               
               <TabsContent value="coaches" className="mt-6">
-                {editingSchedule && organization && (
+                {editingSchedule && organization ? (
                   <DailyScheduleCoachesForm 
                     dailyScheduleId={editingSchedule.id} 
                     organization={organization}
                   />
-                )}
+                ) : organization ? (
+                  <div className="space-y-4">
+                    <div className="text-center p-8 border-2 border-dashed border-slate-300 rounded-lg">
+                      <Users className="h-12 w-12 mx-auto text-slate-400 mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-600 mb-2">
+                        Create Schedule First
+                      </h3>
+                      <p className="text-slate-500 mb-4">
+                        Please complete the schedule details first, then you can assign coaches to this recurring class.
+                      </p>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          const tabs = document.querySelector('[role="tablist"]');
+                          const detailsTab = tabs?.querySelector('[value="details"]') as HTMLElement;
+                          detailsTab?.click();
+                        }}
+                        className="text-slate-600 border-slate-300 hover:bg-slate-50"
+                      >
+                        Go to Schedule Details
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
               </TabsContent>
             </Tabs>
             </DialogContent>
