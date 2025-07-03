@@ -23,7 +23,7 @@ export default function DailySchedules() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#278DD4] mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
           <p className="mt-2 text-gray-500">Loading...</p>
         </div>
       </div>
@@ -58,8 +58,13 @@ export default function DailySchedules() {
   if (userOrganization.businessModel !== 'membership') {
     return (
       <div className="container mx-auto p-6 space-y-6">
-        {/* Header with ItsHappening.Africa branding */}
-        <div className="bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367] p-6 rounded-lg text-white">
+        {/* Header with organization-specific branding */}
+        <div 
+          className="p-6 rounded-lg text-white"
+          style={{
+            background: `linear-gradient(to right, ${userOrganization?.primaryColor || '#20366B'}, ${userOrganization?.secondaryColor || '#278DD4'}, ${userOrganization?.accentColor || '#24D367'})`
+          }}
+        >
           <div className="flex items-center space-x-3 mb-4">
             <Building className="h-8 w-8" />
             <div>
@@ -69,9 +74,15 @@ export default function DailySchedules() {
           </div>
         </div>
 
-        <Card className="border-l-4 border-l-[#278DD4]">
+        <Card 
+          className="border-l-4"
+          style={{ borderLeftColor: userOrganization?.secondaryColor || '#278DD4' }}
+        >
           <CardHeader>
-            <CardTitle className="flex items-center text-[#20366B]">
+            <CardTitle 
+              className="flex items-center"
+              style={{ color: userOrganization?.primaryColor || '#20366B' }}
+            >
               <Calendar className="h-5 w-5 mr-2" />
               Membership Business Model Required
             </CardTitle>
@@ -80,15 +91,36 @@ export default function DailySchedules() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 bg-gradient-to-r from-[#20366B]/5 to-[#278DD4]/5 rounded-lg">
-              <h3 className="font-semibold text-[#20366B] mb-2">Current Business Model</h3>
-              <Badge variant="secondary" className="bg-[#24D367]/20 text-[#20366B]">
+            <div 
+              className="p-4 rounded-lg"
+              style={{
+                background: `linear-gradient(to right, ${userOrganization?.primaryColor || '#20366B'}05, ${userOrganization?.secondaryColor || '#278DD4'}05)`
+              }}
+            >
+              <h3 
+                className="font-semibold mb-2"
+                style={{ color: userOrganization?.primaryColor || '#20366B' }}
+              >
+                Current Business Model
+              </h3>
+              <Badge 
+                variant="secondary" 
+                style={{
+                  backgroundColor: `${userOrganization?.accentColor || '#24D367'}20`,
+                  color: userOrganization?.primaryColor || '#20366B'
+                }}
+              >
                 {userOrganization.businessModel === 'pay_per_class' ? 'Pay Per Class' : 'Other'}
               </Badge>
             </div>
             
             <div className="space-y-3">
-              <h3 className="font-semibold text-[#20366B]">About Daily Schedules</h3>
+              <h3 
+                className="font-semibold"
+                style={{ color: userOrganization?.primaryColor || '#20366B' }}
+              >
+                About Daily Schedules
+              </h3>
               <p className="text-gray-600">
                 Daily schedule management allows membership-based organisations to:
               </p>
@@ -113,9 +145,16 @@ export default function DailySchedules() {
 
         {/* Feature overview cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-[#278DD4]/20">
+          <Card 
+            style={{ 
+              borderColor: `${userOrganization?.secondaryColor || '#278DD4'}20` 
+            }}
+          >
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center text-[#20366B] text-lg">
+              <CardTitle 
+                className="flex items-center text-lg"
+                style={{ color: userOrganization?.primaryColor || '#20366B' }}
+              >
                 <Calendar className="h-5 w-5 mr-2" />
                 Weekly Planning
               </CardTitle>
@@ -128,9 +167,16 @@ export default function DailySchedules() {
             </CardContent>
           </Card>
 
-          <Card className="border-[#278DD4]/20">
+          <Card 
+            style={{ 
+              borderColor: `${userOrganization?.secondaryColor || '#278DD4'}20` 
+            }}
+          >
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center text-[#20366B] text-lg">
+              <CardTitle 
+                className="flex items-center text-lg"
+                style={{ color: userOrganization?.primaryColor || '#20366B' }}
+              >
                 <Users className="h-5 w-5 mr-2" />
                 Capacity Management
               </CardTitle>
@@ -143,9 +189,16 @@ export default function DailySchedules() {
             </CardContent>
           </Card>
 
-          <Card className="border-[#278DD4]/20">
+          <Card 
+            style={{ 
+              borderColor: `${userOrganization?.secondaryColor || '#278DD4'}20` 
+            }}
+          >
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center text-[#20366B] text-lg">
+              <CardTitle 
+                className="flex items-center text-lg"
+                style={{ color: userOrganization?.primaryColor || '#20366B' }}
+              >
                 <Clock className="h-5 w-5 mr-2" />
                 Time Optimization
               </CardTitle>

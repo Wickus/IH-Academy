@@ -197,8 +197,13 @@ export default function DailyScheduleManagement({ organizationId, organization }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header with ItsHappening.Africa branding */}
-      <div className="bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367] p-8 rounded-xl text-white shadow-lg">
+      {/* Header with organization-specific branding */}
+      <div 
+        className="p-8 rounded-xl text-white shadow-lg"
+        style={{
+          background: `linear-gradient(to right, ${organization?.primaryColor || '#20366B'}, ${organization?.secondaryColor || '#278DD4'}, ${organization?.accentColor || '#24D367'})`
+        }}
+      >
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-2">Daily Schedule Management</h1>
@@ -212,7 +217,10 @@ export default function DailyScheduleManagement({ organizationId, organization }
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button 
-                className="bg-white text-[#20366B] hover:bg-white/90"
+                className="bg-white hover:bg-white/90"
+                style={{ 
+                  color: organization?.primaryColor || '#20366B' 
+                }}
                 onClick={() => {
                   setEditingSchedule(null);
                   form.reset();
@@ -224,7 +232,10 @@ export default function DailyScheduleManagement({ organizationId, organization }
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader className="pb-4 border-b border-slate-200">
-                <DialogTitle className="text-[#20366B] text-xl font-bold">
+                <DialogTitle 
+                  className="text-xl font-bold"
+                  style={{ color: organization?.primaryColor || '#20366B' }}
+                >
                   {editingSchedule ? "Edit Daily Schedule" : "Add Daily Schedule"}
                 </DialogTitle>
                 <DialogDescription className="text-slate-600">
@@ -249,13 +260,24 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="dayOfWeek"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-semibold">Day of Week</FormLabel>
+                          <FormLabel 
+                            className="font-semibold"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Day of Week
+                          </FormLabel>
                           <Select 
                             onValueChange={(value) => field.onChange(parseInt(value))}
                             value={field.value?.toString()}
                           >
                             <FormControl>
-                              <SelectTrigger className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]">
+                              <SelectTrigger 
+                                className="h-11 border-slate-300"
+                                style={{
+                                  '--tw-ring-color': organization?.secondaryColor || '#278DD4',
+                                  borderColor: organization?.secondaryColor || '#278DD4'
+                                } as React.CSSProperties}
+                              >
                                 <SelectValue placeholder="Select day" />
                               </SelectTrigger>
                             </FormControl>
@@ -277,11 +299,19 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="className"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-semibold">Class Name</FormLabel>
+                          <FormLabel 
+                            className="font-semibold"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Class Name
+                          </FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="e.g., Morning Yoga" 
-                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              className="h-11 border-slate-300"
+                              style={{
+                                '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                              } as React.CSSProperties}
                               {...field} 
                             />
                           </FormControl>
@@ -297,11 +327,19 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="startTime"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-semibold">Start Time</FormLabel>
+                          <FormLabel 
+                            className="font-semibold"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            Start Time
+                          </FormLabel>
                           <FormControl>
                             <Input 
                               type="time" 
-                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              className="h-11 border-slate-300"
+                              style={{
+                                '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                              } as React.CSSProperties}
                               {...field} 
                             />
                           </FormControl>
@@ -315,11 +353,19 @@ export default function DailyScheduleManagement({ organizationId, organization }
                       name="endTime"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#20366B] font-semibold">End Time</FormLabel>
+                          <FormLabel 
+                            className="font-semibold"
+                            style={{ color: organization?.primaryColor || '#20366B' }}
+                          >
+                            End Time
+                          </FormLabel>
                           <FormControl>
                             <Input 
                               type="time" 
-                              className="h-11 border-slate-300 focus:border-[#278DD4] focus:ring-[#278DD4]"
+                              className="h-11 border-slate-300"
+                              style={{
+                                '--tw-ring-color': organization?.secondaryColor || '#278DD4'
+                              } as React.CSSProperties}
                               {...field} 
                             />
                           </FormControl>
