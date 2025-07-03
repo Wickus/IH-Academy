@@ -2996,7 +2996,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         notify_url: `http://localhost:5000/api/payfast-notify`,
         name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin').trim(),
         name_last: (primaryAdmin.lastName || primaryAdmin.name?.split(' ').slice(1).join(' ') || 'User').trim(),
-        email_address: primaryAdmin.email || 'admin@example.com',
+        email_address: (primaryAdmin.email || 'admin@example.com').replace(/\+[^@]*/, ''),
         m_payment_id: `activation_${organization.id}_${Date.now()}`,
         amount: parseFloat(amount as string).toFixed(2),
         item_name: (description as string || 'Activation Fee').trim(),
