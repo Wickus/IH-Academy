@@ -36,6 +36,37 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
   const user = propUser || currentUser;
   const { organization, isLoading: orgLoading } = useOrganization();
 
+  // Get trial status for accurate display
+  const { data: trialStatus } = useQuery({
+    queryKey: [`/api/organizations/${organization?.id}/trial-status`],
+    queryFn: async () => {
+      const response = await fetch(`/api/organizations/${organization?.id}/trial-status`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch trial status');
+      return response.json();
+    },
+    enabled: !!organization?.id,
+  });
+
+  // Hook for organization onboarding check
+  useEffect(() => {
+    if (organization) {
+      const needsOnboarding = (
+        organization.planType === 'free' &&
+        organization.primaryColor === '#20366B' &&
+        organization.secondaryColor === '#278DD4' &&
+        organization.accentColor === '#24D367' &&
+        !organization.logo &&
+        (!organization.membershipPrice || organization.membershipPrice === '299.00')
+      );
+      
+      if (needsOnboarding) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [organization]);
+
   // Early return if we're still loading or don't have organization data
   if (orgLoading || !organization) {
     return (
@@ -65,23 +96,7 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
 
 
 
-  // Check if organization needs onboarding (new organization with default settings)
-  useEffect(() => {
-    if (organization) {
-      const needsOnboarding = (
-        organization.planType === 'free' &&
-        organization.primaryColor === '#20366B' &&
-        organization.secondaryColor === '#278DD4' &&
-        organization.accentColor === '#24D367' &&
-        !organization.logo &&
-        (!organization.membershipPrice || organization.membershipPrice === '299.00')
-      );
-      
-      if (needsOnboarding) {
-        setShowOnboarding(true);
-      }
-    }
-  }, [organization]);
+
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: [`/api/stats/organization/${organization?.id}`],
@@ -305,16 +320,28 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Current Plan
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Current Plan
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setLocation('/settings')}
+                style={{ borderColor: organization.secondaryColor, color: organization.secondaryColor }}
+                className="hover:opacity-90"
+              >
+                <Settings className="h-4 w-4 mr-1" />
+                Edit
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-700">Plan Type:</span>
               <Badge style={{ backgroundColor: organization.accentColor, color: 'white' }}>
-                {organization.planType?.toUpperCase() || 'FREE'}
+                {trialStatus?.subscriptionStatus === 'trial' ? 'TRIAL' : organization.planType?.toUpperCase() || 'FREE'}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
@@ -333,9 +360,19 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
             )}
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-700">Status:</span>
-              <Badge style={{ backgroundColor: '#F59E0B', color: 'white' }}>
-                TRIAL (20 days left)
-              </Badge>
+              {trialStatus?.subscriptionStatus === 'trial' ? (
+                <Badge style={{ backgroundColor: '#F59E0B', color: 'white' }}>
+                  TRIAL ({trialStatus.daysRemaining} days left)
+                </Badge>
+              ) : organization.isActive ? (
+                <Badge style={{ backgroundColor: '#10B981', color: 'white' }}>
+                  ACTIVE
+                </Badge>
+              ) : (
+                <Badge style={{ backgroundColor: '#EF4444', color: 'white' }}>
+                  INACTIVE
+                </Badge>
+              )}
             </div>
             {organization.businessModel === 'membership' && (
               <div className="pt-2 border-t">
