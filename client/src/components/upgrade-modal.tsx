@@ -28,7 +28,7 @@ export function UpgradeModal({ isOpen, onClose, organizationId, organizationColo
 
   const handlePayActivationFee = () => {
     // Redirect to PayFast payment with R4000 activation fee
-    window.location.href = `/api/create-payfast-payment?amount=4000&organizationId=${organizationId}&description=Activation Fee (includes setup and first month)`;
+    window.location.href = `/api/create-payfast-payment?amount=4000&organizationId=${organizationId}&description=Activation Fee`;
   };
 
   const handleSetupDebitOrder = () => {
