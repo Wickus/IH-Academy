@@ -31,15 +31,15 @@ export default function BookingsManagement() {
 
   // Fetch bookings for the organization
   const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
-    queryKey: ['/api/bookings', organization?.id],
-    queryFn: () => api.getBookings(),
+    queryKey: ['/api/bookings', { organizationId: organization?.id }],
+    queryFn: () => api.getBookings({ organizationId: organization.id }),
     enabled: !!organization,
   });
 
   // Fetch classes for moving bookings
   const { data: classes = [] } = useQuery({
-    queryKey: ['/api/classes', organization?.id],
-    queryFn: () => api.getClasses(),
+    queryKey: ['/api/classes', { organizationId: organization?.id }],
+    queryFn: () => api.getClasses({ organizationId: organization.id }),
     enabled: !!organization,
   });
 

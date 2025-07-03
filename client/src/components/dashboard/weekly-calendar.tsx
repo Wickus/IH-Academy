@@ -14,8 +14,9 @@ export default function WeeklyCalendar() {
   if (!organization) return null;
 
   const { data: allClasses = [] } = useQuery({
-    queryKey: ["/api/classes"],
-    queryFn: () => api.getClasses(),
+    queryKey: ["/api/classes", { organizationId: organization?.id }],
+    queryFn: () => api.getClasses({ organizationId: organization.id }),
+    enabled: !!organization?.id,
   });
 
   const getWeekDays = (date: Date) => {
