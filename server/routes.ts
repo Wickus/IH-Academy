@@ -3003,9 +3003,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const paymentData: PayFastPaymentData = {
         merchant_id: payfastConfig.merchantId || '',
         merchant_key: payfastConfig.merchantKey || '',
-        return_url: `${req.protocol}://${req.get('host')}/payment-success?type=activation&org_id=${organization.id}`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?type=activation&org_id=${organization.id}`,
-        notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
+        return_url: `http://localhost:5000/payment-success`,
+        cancel_url: `http://localhost:5000/payment-cancelled`,
+        notify_url: `http://localhost:5000/api/payfast-notify`,
         name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Test').trim(),
         name_last: (primaryAdmin.lastName || primaryAdmin.name?.split(' ').slice(1).join(' ') || 'User').trim(),
         email_address: primaryAdmin.email || 'test@example.com',

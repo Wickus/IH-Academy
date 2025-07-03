@@ -50,21 +50,28 @@ export interface PayFastNotification {
 export class PayFastService {
   private generateSignature(data: Record<string, string>, passphrase?: string): string {
     // Remove signature from data if it exists
-    const { signature, ...cleanData } = data;
+    const { signature: _, ...cleanData } = data;
     
     // Sort keys alphabetically and create query string
     const sortedKeys = Object.keys(cleanData).sort();
+    
+    // PayFast requires URL-decoded values for signature generation
     const queryString = sortedKeys
-      .map(key => `${key}=${encodeURIComponent(cleanData[key] || '')}`)
+      .map(key => `${key}=${cleanData[key] || ''}`)
       .join('&');
     
     // Add passphrase if provided
     const stringToSign = passphrase 
-      ? `${queryString}&passphrase=${encodeURIComponent(passphrase)}`
+      ? `${queryString}&passphrase=${passphrase}`
       : queryString;
     
+    console.log('PayFast signature string:', stringToSign);
+    
     // Generate MD5 hash
-    return crypto.createHash('md5').update(stringToSign).digest('hex');
+    const generatedSignature = crypto.createHash('md5').update(stringToSign).digest('hex');
+    console.log('Generated signature:', generatedSignature);
+    
+    return generatedSignature;
   }
 
   generatePaymentForm(paymentData: PayFastPaymentData, sandbox: boolean = true): string {
@@ -72,10 +79,10 @@ export class PayFastService {
       ? 'https://sandbox.payfast.co.za/eng/process'
       : 'https://www.payfast.co.za/eng/process';
 
-    // Convert to record for signature generation
+    // Convert to record for signature generation (exclude passphrase from data fields)
     const dataRecord: Record<string, string> = {};
     Object.entries(paymentData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+      if (value !== undefined && value !== null && key !== 'passphrase') {
         dataRecord[key] = value.toString();
       }
     });
