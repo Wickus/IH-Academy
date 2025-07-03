@@ -1791,6 +1791,7 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
+                {/* DEBUG: This is between the two cards in membership tab */}
                 {/* Membership Configuration Form */}
                 <Card className="border border-slate-200">
                   <CardHeader>
