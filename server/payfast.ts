@@ -94,18 +94,25 @@ export class PayFastService {
     ];
     
     // Build parameter string in correct order
+    // Only include non-empty values as per PayFast documentation
     const params: string[] = [];
     for (const field of fieldOrder) {
-      if (cleanData[field] && cleanData[field] !== '') {
-        params.push(`${field}=${cleanData[field]}`);
+      if (cleanData[field] && cleanData[field].trim() !== '') {
+        const value = cleanData[field].trim();
+        // PayFast requires URL encoding with spaces as + and uppercase encoding
+        const encodedValue = encodeURIComponent(value)
+          .replace(/%20/g, '+')
+          .replace(/'/g, '%27')
+          .replace(/~/g, '%7E');
+        params.push(`${field}=${encodedValue}`);
       }
     }
     
     const queryString = params.join('&');
     
-    // Add passphrase if provided
-    const stringToSign = passphrase 
-      ? `${queryString}&passphrase=${passphrase}`
+    // Add passphrase if provided (must be at the end)
+    const stringToSign = passphrase && passphrase.trim() !== ''
+      ? `${queryString}&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, '+')}`
       : queryString;
     
     console.log('PayFast signature string:', stringToSign);
