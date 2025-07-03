@@ -10,7 +10,7 @@ import { useOrganization } from "@/contexts/organization-context";
 import { api, type OrganizationDashboardStats, type Organization, type User } from "@/lib/api";
 import { formatCurrency } from "@/lib/utils";
 import { generateInviteEmailTemplate } from "@/lib/email-templates";
-import { Users, Calendar, TrendingUp, DollarSign, Plus, Settings, UserPlus, BarChart3, Copy, ExternalLink, Share2, Mail } from "lucide-react";
+import { Users, Calendar, TrendingUp, DollarSign, Plus, Settings, UserPlus, BarChart3, Copy, ExternalLink, Share2, Mail, CreditCard } from "lucide-react";
 import StatsCards from "@/components/dashboard/stats-cards";
 import RecentBookings from "@/components/dashboard/recent-bookings";
 import WeeklyCalendar from "@/components/dashboard/weekly-calendar";
@@ -121,7 +121,7 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
   return (
     <div className="space-y-6 p-6">
       {/* Trial Banner */}
-      {organization.subscriptionStatus === 'trial' && (
+      {organization && (
         <TrialBanner 
           organizationId={organization.id} 
           organizationColors={{
@@ -301,6 +301,109 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
         )}
       </div>
 
+      {/* Plan Information - Critical Fix for PlaySmarter Hockey Academy */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Current Plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-slate-700">Plan Type:</span>
+              <Badge style={{ backgroundColor: organization.accentColor, color: 'white' }}>
+                {organization.planType?.toUpperCase() || 'FREE'}
+              </Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-slate-700">Business Model:</span>
+              <Badge variant="outline" style={{ borderColor: organization.secondaryColor, color: organization.secondaryColor }}>
+                {organization.businessModel === 'membership' ? 'Membership' : 'Pay-per-Class'}
+              </Badge>
+            </div>
+            {organization.businessModel === 'membership' && organization.membershipPrice && (
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-700">Membership Price:</span>
+                <span className="font-medium" style={{ color: organization.primaryColor }}>
+                  R{organization.membershipPrice}/{organization.membershipBillingCycle}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-slate-700">Status:</span>
+              <Badge style={{ backgroundColor: '#F59E0B', color: 'white' }}>
+                TRIAL ({(() => {
+                  const now = new Date();
+                  const signupDate = new Date(organization.createdAt);
+                  const trialEndDate = new Date(signupDate);
+                  trialEndDate.setDate(trialEndDate.getDate() + 21);
+                  const daysRemaining = Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                  return Math.max(0, daysRemaining);
+                })()} days left)
+              </Badge>
+            </div>
+            {organization.businessModel === 'membership' && (
+              <div className="pt-2 border-t">
+                <Link 
+                  href="/daily-schedules" 
+                  className="text-sm font-medium inline-flex items-center gap-1 hover:underline" 
+                  style={{ color: organization.primaryColor }}
+                >
+                  <Calendar className="h-4 w-4" />
+                  Manage Daily Schedules
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Plan Usage
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-700">Classes this month</span>
+                <span>{stats?.totalClasses || 0}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="h-2 rounded-full transition-all duration-300"
+                  style={{ 
+                    backgroundColor: organization.secondaryColor,
+                    width: `${Math.min(((stats?.totalClasses || 0) / 50) * 100, 100)}%`
+                  }}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-700">Active Bookings</span>
+                <span>{stats?.activeBookings || 0}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="h-2 rounded-full transition-all duration-300"
+                  style={{ 
+                    backgroundColor: organization.accentColor,
+                    width: `${Math.min(((stats?.activeBookings || 0) / 100) * 100, 100)}%`
+                  }}
+                />
+              </div>
+            </div>
+            <div className="text-xs text-slate-600 mt-3">
+              Plan limits based on {organization.planType?.toLowerCase() || 'free'} tier
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Organization-Specific Stats */}
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card 
@@ -467,55 +570,12 @@ export default function OrganizationDashboard({ user: propUser }: OrganizationDa
         </Card>
       </div>
 
-      {/* Plan Usage */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Plan Usage</CardTitle>
-          <CardDescription>Monitor your plan limits and usage</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs sm:text-sm">
-                <span>Classes Used</span>
-                <span>{stats?.activeClasses || 0} / {organization.maxClasses}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="h-2 rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${Math.min(((stats?.activeClasses || 0) / organization.maxClasses) * 100, 100)}%`,
-                    backgroundColor: organization.secondaryColor
-                  }}
-                ></div>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Members</span>
-                <span>{stats?.totalMembers || 0} / {organization.maxMembers}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="h-2 rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${Math.min(((stats?.totalMembers || 0) / organization.maxMembers) * 100, 100)}%`,
-                    backgroundColor: organization.secondaryColor
-                  }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Organization Setup Flow */}
       {showOnboarding && (
         <OrganizationSetupFlow
           isOpen={showOnboarding}
           onComplete={() => setShowOnboarding(false)}
-          organization={organization}
+          organization={organization || null}
         />
       )}
     </div>
