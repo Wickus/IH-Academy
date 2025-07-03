@@ -2989,20 +2989,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create PayFast payment data for activation fee
       const paymentData: PayFastPaymentData = {
-        merchant_id: payfastConfig.merchantId,
-        merchant_key: payfastConfig.merchantKey,
+        merchant_id: payfastConfig.merchantId || '',
+        merchant_key: payfastConfig.merchantKey || '',
         return_url: `${req.protocol}://${req.get('host')}/payment-success?type=activation&org_id=${organization.id}`,
         cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?type=activation&org_id=${organization.id}`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
-        name_first: primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin',
-        name_last: primaryAdmin.lastName || primaryAdmin.name?.split(' ')[1] || 'User',
-        email_address: primaryAdmin.email,
+        name_first: (primaryAdmin.firstName || primaryAdmin.name?.split(' ')[0] || 'Admin').trim(),
+        name_last: (primaryAdmin.lastName || primaryAdmin.name?.split(' ').slice(1).join(' ') || 'User').trim(),
+        email_address: primaryAdmin.email || '',
         m_payment_id: `activation_${organization.id}_${Date.now()}`,
         amount: parseFloat(amount as string).toFixed(2),
-        item_name: description as string || 'Activation Fee',
-        item_description: `Activation fee for ${organization.name} - includes setup and first month`,
+        item_name: (description as string || 'Activation Fee').trim(),
+        item_description: `Activation fee for ${organization.name || 'Organization'} - includes setup and first month`,
         passphrase: payfastConfig.passphrase || undefined,
       };
+
+      // Validate required fields before generating URL
+      if (!paymentData.merchant_id || !paymentData.merchant_key) {
+        return res.status(400).json({ message: "PayFast merchant credentials not configured" });
+      }
+      
+      if (!paymentData.email_address || !paymentData.name_first || !paymentData.amount) {
+        return res.status(400).json({ message: "Missing required payment information" });
+      }
+
+      console.log('PayFast payment data:', {
+        merchant_id: paymentData.merchant_id,
+        name_first: paymentData.name_first,
+        name_last: paymentData.name_last,
+        email_address: paymentData.email_address,
+        amount: paymentData.amount,
+        sandbox: payfastConfig.sandbox
+      });
 
       // Generate payment URL and redirect
       const paymentUrl = payfastService.generatePaymentUrl(paymentData, payfastConfig.sandbox || false);
