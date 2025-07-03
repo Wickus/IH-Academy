@@ -63,7 +63,9 @@ export class PayFastService {
     // Remove signature from data if it exists
     const { signature: _, ...cleanData } = data;
     
-    // PayFast requires specific field order, not alphabetical
+    // PayFast payment forms require SPECIFIC field order (not alphabetical)
+    // Reference: https://developers.payfast.co.za/docs#step_1_form_fields
+    // Note: This is different from API signature generation which uses alphabetical order
     const fieldOrder = [
       'merchant_id',
       'merchant_key', 
@@ -90,10 +92,15 @@ export class PayFastService {
       'custom_str5',
       'email_confirmation',
       'confirmation_address',
-      'payment_method'
+      'payment_method',
+      'subscription_type',
+      'billing_date',
+      'recurring_amount',
+      'frequency',
+      'cycles'
     ];
     
-    // Build parameter string in correct order
+    // Build parameter string in PayFast documented field order
     // Only include non-empty values as per PayFast documentation
     const params: string[] = [];
     for (const field of fieldOrder) {
@@ -115,7 +122,7 @@ export class PayFastService {
       ? `${queryString}&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, '+')}`
       : queryString;
     
-    console.log('PayFast signature string:', stringToSign);
+    console.log('PayFast signature string (payment form field order):', stringToSign);
     
     // Generate MD5 hash
     const generatedSignature = crypto.createHash('md5').update(stringToSign).digest('hex');
@@ -129,20 +136,24 @@ export class PayFastService {
       ? 'https://sandbox.payfast.co.za/eng/process'
       : 'https://www.payfast.co.za/eng/process';
 
-    // Convert to record for signature generation (exclude passphrase from data fields)
+    // Convert to record for signature generation (exclude passphrase and only include non-empty values)
     const dataRecord: Record<string, string> = {};
     Object.entries(paymentData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && key !== 'passphrase') {
-        dataRecord[key] = value.toString();
+      if (value !== undefined && value !== null && value !== '' && key !== 'passphrase') {
+        dataRecord[key] = value.toString().trim();
       }
     });
 
-    // Generate signature
-    const signature = this.generateSignature(dataRecord, paymentData.passphrase);
+    console.log('PayFast form data for signature:', dataRecord);
 
+    // Generate signature using the same logic as URL generation
+    const signature = this.generateSignature(dataRecord, paymentData.passphrase);
+    console.log('PayFast form signature:', signature);
+
+    // Create form fields, ensuring proper HTML escaping
     const formFields = Object.entries(paymentData)
-      .filter(([key]) => key !== 'passphrase')
-      .map(([key, value]) => `<input type="hidden" name="${key}" value="${value}">`)
+      .filter(([key, value]) => key !== 'passphrase' && value !== undefined && value !== null && value !== '')
+      .map(([key, value]) => `<input type="hidden" name="${this.escapeHtml(key)}" value="${this.escapeHtml(value.toString())}">`)
       .join('\n');
 
     return `
