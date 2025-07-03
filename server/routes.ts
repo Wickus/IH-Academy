@@ -1,6 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
+import multer from "multer";
+import bcrypt from "bcrypt";
 import { storage } from "./storage";
 import { payfastService, type PayFastPaymentData } from "./payfast";
 import { debitOrderService } from "./debit-order";
@@ -8,6 +10,12 @@ import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail, sendWalkInRegistrationEmail, sendEmail } from "./email";
+
+// Configure multer for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
 
 // Helper function to generate iCal events
 function generateICalEvent(classData: any, booking: any): string {
@@ -2317,6 +2325,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Member upload endpoint
+  app.post("/api/upload-members", upload.single('memberFile'), async (req: Request, res: Response) => {
+    try {
+      const { organizationId } = req.body;
+      const file = req.file;
+      
+      if (!file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      if (!organizationId) {
+        return res.status(400).json({ message: "Organization ID required" });
+      }
+
+      // Parse CSV file
+      const fileContent = file.buffer.toString();
+      const lines = fileContent.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        return res.status(400).json({ message: "File must contain at least a header and one data row" });
+      }
+
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const requiredHeaders = ['name', 'email'];
+      
+      // Validate required headers
+      const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+      if (missingHeaders.length > 0) {
+        return res.status(400).json({ 
+          message: `Missing required columns: ${missingHeaders.join(', ')}` 
+        });
+      }
+
+      let importedCount = 0;
+      const errors: string[] = [];
+
+      // Process each row
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        const rowData: any = {};
+        
+        headers.forEach((header, index) => {
+          rowData[header] = values[index] || '';
+        });
+
+        try {
+          // Create user account
+          const hashedPassword = await bcrypt.hash('TempPass123!', 10);
+          const newUser = await storage.createUser({
+            email: rowData.email,
+            name: rowData.name,
+            username: rowData.email,
+            role: 'member',
+            password: hashedPassword,
+            phone: rowData.phone || null
+          });
+
+          // Add user to organization
+          await storage.addUserToOrganization(newUser.id, parseInt(organizationId), 'member');
+          importedCount++;
+        } catch (error: any) {
+          errors.push(`Row ${i + 1}: ${error.message}`);
+        }
+      }
+
+      res.json({ 
+        count: importedCount,
+        errors: errors.length > 0 ? errors : null,
+        message: `Successfully imported ${importedCount} members`
+      });
+    } catch (error) {
+      console.error("Error uploading members:", error);
+      res.status(500).json({ message: "Failed to upload members" });
+    }
+  });
+
   // Push notification routes
   app.post("/api/notifications/subscribe", async (req: Request, res: Response) => {
     try {
@@ -3137,7 +3221,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (payment_status === 'COMPLETE') {
-        if (paymentType === 'membership') {
+        // Handle activation fee payment
+        const activationMatch = m_payment_id.match(/activation_(\d+)_/);
+        if (activationMatch) {
+          const orgId = parseInt(activationMatch[1]);
+          console.log(`Processing activation fee payment for organization ${orgId}`);
+          
+          // Update organization status from trial to active
+          const updatedOrg = await storage.updateOrganization(orgId, {
+            subscriptionStatus: 'active',
+            planType: 'basic' // Move from trial to basic paid plan
+          });
+          
+          console.log(`Organization ${orgId} upgraded to active status:`, updatedOrg);
+          
+          console.log(`Activation fee payment recorded for organization ${orgId}`);
+        } else if (paymentType === 'membership') {
           // Handle membership payment
           if (organization) {
             const startDate = new Date();

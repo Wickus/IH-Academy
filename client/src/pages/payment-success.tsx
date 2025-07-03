@@ -28,7 +28,17 @@ export default function PaymentSuccess() {
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-  }, []);
+    
+    // Check if this is an activation fee payment by checking URL or payment type
+    const isActivationPayment = window.location.search.includes('activation') ||
+                               window.location.href.includes('activation') ||
+                               booking?.type === 'activation';
+    
+    // Set activation flag for post-activation onboarding
+    if (isActivationPayment || orgId) {
+      sessionStorage.setItem('justActivated', 'true');
+    }
+  }, [booking, orgId]);
 
   if (isLoading) {
     return (
