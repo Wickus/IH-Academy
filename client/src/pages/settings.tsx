@@ -74,7 +74,7 @@ const membershipSchema = z.object({
 });
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("membership");
+  const [activeTab, setActiveTab] = useState("organization");
   const [showSportForm, setShowSportForm] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
