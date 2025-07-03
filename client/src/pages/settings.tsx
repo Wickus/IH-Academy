@@ -68,6 +68,11 @@ const colorSchema = z.object({
   accentColor: z.string().regex(/^#[0-9A-F]{6}$/i, "Must be a valid hex color"),
 });
 
+const membershipSchema = z.object({
+  membershipPrice: z.string().min(1, "Membership price is required"),
+  planType: z.enum(["free", "basic", "premium"]),
+});
+
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("organization");
   const [showSportForm, setShowSportForm] = useState(false);
@@ -138,6 +143,14 @@ export default function Settings() {
       primaryColor: organization?.primaryColor || '#20366B',
       secondaryColor: organization?.secondaryColor || '#278DD4',
       accentColor: organization?.accentColor || '#24D367',
+    },
+  });
+
+  const membershipForm = useForm({
+    resolver: zodResolver(membershipSchema),
+    defaultValues: {
+      membershipPrice: organization?.membershipPrice || '299.00',
+      planType: organization?.planType || 'free',
     },
   });
 
@@ -245,6 +258,31 @@ export default function Settings() {
   const onColorSubmit = (data: any) => {
     updateOrganizationMutation.mutate(data);
     setShowColorPicker(false);
+  };
+
+  const updateMembershipMutation = useMutation({
+    mutationFn: (data: any) => {
+      if (!organization?.id) throw new Error("No organization found");
+      return api.updateOrganization(organization.id, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
+      toast({
+        title: "Success",
+        description: "Membership settings updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update membership settings",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onMembershipSubmit = (data: any) => {
+    updateMembershipMutation.mutate(data);
   };
 
   // PayFast connection status check
@@ -607,6 +645,17 @@ export default function Settings() {
               >
                 <Dumbbell className="mr-2 h-4 w-4" />
                 Sports
+              </TabsTrigger>
+              <TabsTrigger 
+                value="membership"
+                className={activeTab === 'membership' ? 'text-white' : ''}
+                style={{
+                  backgroundColor: activeTab === 'membership' ? organization?.secondaryColor || '#278DD4' : 'transparent',
+                  borderColor: activeTab === 'membership' ? organization?.secondaryColor || '#278DD4' : 'transparent'
+                }}
+              >
+                <Banknote className="mr-2 h-4 w-4" />
+                Membership
               </TabsTrigger>
               <TabsTrigger 
                 value="payments"
@@ -1766,6 +1815,181 @@ export default function Settings() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="membership" className="space-y-6">
+              <div className="space-y-6">
+                <div>
+                  <h3 
+                    className="text-lg font-semibold"
+                    style={{ color: organization?.primaryColor || '#20366B' }}
+                  >
+                    Membership Configuration
+                  </h3>
+                  <p className="text-slate-600">Configure your membership pricing and plan type settings</p>
+                </div>
+
+                {/* Plan Information */}
+                <Card className="border border-slate-200">
+                  <CardHeader>
+                    <CardTitle 
+                      className="text-base font-semibold flex items-center gap-2"
+                      style={{ color: organization?.primaryColor || '#20366B' }}
+                    >
+                      <CreditCard className="h-5 w-5" />
+                      Current Plan Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">Plan Type</label>
+                        <div className="mt-1 text-sm font-medium">
+                          {organization?.trialEndDate && new Date(organization.trialEndDate) > new Date() ? 'TRIAL' : organization?.planType?.toUpperCase() || 'FREE'}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">Business Model</label>
+                        <div className="mt-1 text-sm font-medium">{organization?.businessModel || 'pay-per-class'}</div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">Membership Price</label>
+                        <div className="mt-1 text-sm font-medium">R{organization?.membershipPrice || '299.00'}</div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">Status</label>
+                        <div className="mt-1">
+                          {organization?.trialEndDate && new Date(organization.trialEndDate) > new Date() ? (
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                              Trial Active
+                            </Badge>
+                          ) : organization?.isActive ? (
+                            <Badge variant="secondary" className="bg-green-100 text-green-800">
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="bg-red-100 text-red-800">
+                              Inactive
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Membership Configuration Form */}
+                <Card className="border border-slate-200">
+                  <CardHeader>
+                    <CardTitle 
+                      className="text-base font-semibold flex items-center gap-2"
+                      style={{ color: organization?.primaryColor || '#20366B' }}
+                    >
+                      <Settings className="h-5 w-5" />
+                      Edit Membership Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Form {...membershipForm}>
+                      <form onSubmit={membershipForm.handleSubmit(onMembershipSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <FormField
+                            control={membershipForm.control}
+                            name="membershipPrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel 
+                                  className="font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
+                                  Monthly Membership Fee (R)
+                                </FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="299.00"
+                                    {...field}
+                                    className="border-slate-300"
+                                    style={{
+                                      '--focus-border': organization?.secondaryColor || '#278DD4',
+                                      '--focus-ring': organization?.secondaryColor || '#278DD4'
+                                    } as React.CSSProperties}
+                                    onFocus={(e) => {
+                                      e.currentTarget.style.borderColor = organization?.secondaryColor || '#278DD4';
+                                      e.currentTarget.style.boxShadow = `0 0 0 2px ${organization?.secondaryColor || '#278DD4'}20`;
+                                    }}
+                                    onBlur={(e) => {
+                                      e.currentTarget.style.borderColor = '#cbd5e1';
+                                      e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormDescription>
+                                  Set the monthly subscription fee for your members
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={membershipForm.control}
+                            name="planType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel 
+                                  className="font-medium"
+                                  style={{ color: organization?.primaryColor || '#20366B' }}
+                                >
+                                  Plan Type
+                                </FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="border-slate-300">
+                                      <SelectValue placeholder="Select plan type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="free">Free</SelectItem>
+                                    <SelectItem value="basic">Basic</SelectItem>
+                                    <SelectItem value="premium">Premium</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormDescription>
+                                  Choose the subscription tier for your organization
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex justify-end">
+                          <Button 
+                            type="submit" 
+                            disabled={updateMembershipMutation.isPending}
+                            className="text-white"
+                            style={{ backgroundColor: organization?.accentColor || '#24D367' }}
+                          >
+                            {updateMembershipMutation.isPending ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Updating...
+                              </>
+                            ) : (
+                              <>
+                                <Save className="mr-2 h-4 w-4" />
+                                Update Settings
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
