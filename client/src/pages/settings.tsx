@@ -1718,6 +1718,7 @@ export default function Settings() {
             </TabsContent>
 
             <TabsContent value="membership" className="space-y-6">
+              {/* Membership tab content - updated */}
               <div className="space-y-6">
                 <div>
                   <h3 
