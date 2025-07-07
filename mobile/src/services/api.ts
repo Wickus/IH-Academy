@@ -243,6 +243,27 @@ class ApiClient {
     return response.data;
   }
 
+  async replyToMessage(messageId: number, content: string): Promise<ApiResponse<any>> {
+    const response = await this.instance.post(`/messages/${messageId}/reply`, { content });
+    return response.data;
+  }
+
+  async markMessageAsRead(messageId: number): Promise<ApiResponse<void>> {
+    const response = await this.instance.put(`/messages/${messageId}/read`);
+    return response.data;
+  }
+
+  // Profile methods
+  async updateProfile(profileData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+  }): Promise<ApiResponse<any>> {
+    const response = await this.instance.put('/profile', profileData);
+    return response.data;
+  }
+
   // Stats methods
   async getOrganizationStats(organizationId: number): Promise<ApiResponse<any>> {
     const response = await this.instance.get(`/stats/organization/${organizationId}`);
