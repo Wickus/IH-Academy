@@ -49,19 +49,12 @@ async function createFeatureGraphicWithLogo() {
       <!-- App icon placeholder (will be replaced with actual logo) -->
       <rect x="100" y="150" width="120" height="120" rx="25" fill="white" opacity="0.95" filter="url(#shadow)" id="logo-placeholder"/>
       
-      <!-- Sports icons around logo area -->
+      <!-- Sports icons around logo area (no text) -->
       <g opacity="0.8">
         <circle cx="80" cy="130" r="20" fill="#24D367"/>
-        <text x="80" y="138" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white">⚽</text>
-        
         <circle cx="240" cy="130" r="20" fill="#24D367"/>
-        <text x="240" y="138" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white">🏀</text>
-        
         <circle cx="80" cy="310" r="20" fill="#24D367"/>
-        <text x="80" y="318" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white">🏊</text>
-        
         <circle cx="240" cy="310" r="20" fill="#24D367"/>
-        <text x="240" y="318" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white">🎾</text>
       </g>
       
       <!-- Main title and content -->
@@ -81,35 +74,55 @@ async function createFeatureGraphicWithLogo() {
         </g>
       </g>
       
-      <!-- Phone mockup -->
-      <g transform="translate(800, 100)">
-        <rect x="0" y="0" width="170" height="300" rx="25" fill="#2C3E50" filter="url(#shadow)"/>
-        <rect x="10" y="20" width="150" height="260" rx="20" fill="white"/>
+      <!-- Realistic iPhone mockup (moved right) -->
+      <g transform="translate(850, 80)">
+        <!-- Phone outer frame with realistic proportions -->
+        <rect x="0" y="0" width="150" height="320" rx="35" fill="#1a1a1a" filter="url(#shadow)"/>
+        
+        <!-- Phone inner bezel -->
+        <rect x="5" y="5" width="140" height="310" rx="30" fill="#000000"/>
+        
+        <!-- Screen area -->
+        <rect x="10" y="25" width="130" height="270" rx="25" fill="white"/>
+        
+        <!-- Notch area -->
+        <rect x="55" y="5" width="40" height="15" rx="7" fill="#000000"/>
+        
+        <!-- Camera and speaker -->
+        <circle cx="65" cy="12" r="2" fill="#333"/>
+        <rect x="80" y="10" width="15" height="4" rx="2" fill="#333"/>
         
         <!-- Phone content -->
-        <rect x="15" y="25" width="140" height="50" rx="10" fill="url(#primaryBg)"/>
-        <text x="85" y="45" font-family="Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="white">IH Academy</text>
-        <text x="85" y="60" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="white" opacity="0.8">Dashboard</text>
+        <rect x="15" y="30" width="120" height="45" rx="8" fill="url(#primaryBg)"/>
+        <text x="75" y="48" font-family="Arial, sans-serif" font-size="11" font-weight="600" text-anchor="middle" fill="white">IH Academy</text>
+        <text x="75" y="62" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white" opacity="0.8">Dashboard</text>
         
-        <rect x="20" y="85" width="60" height="40" rx="8" fill="#F8FAFC" stroke="#278DD4" stroke-width="1"/>
-        <text x="50" y="100" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="#20366B">Classes</text>
-        <text x="50" y="115" font-family="Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="#278DD4">24</text>
+        <!-- Dashboard cards -->
+        <rect x="20" y="85" width="50" height="35" rx="6" fill="#F8FAFC" stroke="#278DD4" stroke-width="1"/>
+        <text x="45" y="98" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="#20366B">Classes</text>
+        <text x="45" y="110" font-family="Arial, sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="#278DD4">24</text>
         
-        <rect x="90" y="85" width="60" height="40" rx="8" fill="#F8FAFC" stroke="#24D367" stroke-width="1"/>
-        <text x="120" y="100" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="#20366B">Members</text>
-        <text x="120" y="115" font-family="Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="#24D367">156</text>
+        <rect x="80" y="85" width="50" height="35" rx="6" fill="#F8FAFC" stroke="#24D367" stroke-width="1"/>
+        <text x="105" y="98" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="#20366B">Members</text>
+        <text x="105" y="110" font-family="Arial, sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="#24D367">156</text>
         
-        <rect x="20" y="135" width="130" height="60" rx="8" fill="#EBF4FF"/>
-        <text x="85" y="150" font-family="Arial, sans-serif" font-size="9" font-weight="600" text-anchor="middle" fill="#20366B">Upcoming Classes</text>
-        <text x="25" y="165" font-family="Arial, sans-serif" font-size="7" fill="#278DD4">Soccer Training</text>
-        <text x="25" y="175" font-family="Arial, sans-serif" font-size="7" fill="#278DD4">Basketball Basics</text>
-        <text x="25" y="185" font-family="Arial, sans-serif" font-size="7" fill="#278DD4">Swimming Lessons</text>
+        <!-- Upcoming classes section -->
+        <rect x="20" y="130" width="110" height="55" rx="6" fill="#EBF4FF"/>
+        <text x="75" y="145" font-family="Arial, sans-serif" font-size="8" font-weight="600" text-anchor="middle" fill="#20366B">Upcoming Classes</text>
+        <text x="25" y="158" font-family="Arial, sans-serif" font-size="6" fill="#278DD4">Soccer Training</text>
+        <text x="25" y="167" font-family="Arial, sans-serif" font-size="6" fill="#278DD4">Basketball Basics</text>
+        <text x="25" y="176" font-family="Arial, sans-serif" font-size="6" fill="#278DD4">Swimming Lessons</text>
         
-        <rect x="15" y="240" width="140" height="35" rx="10" fill="#20366B"/>
-        <circle cx="35" cy="257" r="8" fill="#24D367"/>
-        <circle cx="65" cy="257" r="6" fill="white" opacity="0.5"/>
-        <circle cx="95" cy="257" r="6" fill="white" opacity="0.5"/>
-        <circle cx="125" cy="257" r="6" fill="white" opacity="0.5"/>
+        <!-- Bottom navigation -->
+        <rect x="15" y="255" width="120" height="30" rx="8" fill="#20366B"/>
+        <circle cx="32" cy="270" r="6" fill="#24D367"/>
+        <circle cx="55" cy="270" r="5" fill="white" opacity="0.5"/>
+        <circle cx="78" cy="270" r="5" fill="white" opacity="0.5"/>
+        <circle cx="101" cy="270" r="5" fill="white" opacity="0.5"/>
+        <circle cx="123" cy="270" r="5" fill="white" opacity="0.5"/>
+        
+        <!-- Home indicator -->
+        <rect x="65" y="305" width="20" height="3" rx="1.5" fill="#666"/>
       </g>
       
       <!-- Bottom accent -->
