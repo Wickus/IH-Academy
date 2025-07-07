@@ -4673,7 +4673,47 @@ ${content}
     }
   });
 
-  // Delete user endpoint
+  // Self-service account deletion endpoint
+  app.delete("/api/auth/delete-account", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { confirmEmail } = req.body;
+      
+      // Require email confirmation for security
+      if (confirmEmail !== currentUser.email) {
+        return res.status(400).json({ message: "Email confirmation does not match your account email" });
+      }
+
+      // Prevent global admins from deleting their own accounts
+      if (currentUser.role === 'global_admin') {
+        return res.status(400).json({ message: "Global administrators cannot delete their own accounts. Please contact support." });
+      }
+
+      const success = await storage.deleteUser(currentUser.id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Clear the session after successful deletion
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Error destroying session after account deletion:", err);
+        }
+      });
+
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
+  // Delete user endpoint (admin only)
   app.delete("/api/users/:id", async (req: Request, res: Response) => {
     try {
       const currentUser = getCurrentUser(req);

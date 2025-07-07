@@ -359,6 +359,17 @@ export const api = {
     await apiRequest('DELETE', `/api/users/${userId}`);
   },
 
+  // Self-service account deletion
+  deleteOwnAccount: async (confirmEmail: string): Promise<void> => {
+    await apiRequest('DELETE', '/api/auth/delete-account', { confirmEmail });
+  },
+
+  // Update current user profile
+  updateUser: async (userId: number, data: any): Promise<User> => {
+    const response = await apiRequest('PUT', `/api/users/${userId}`, data);
+    return response.json();
+  },
+
   updateOrganizationStatus: async (orgId: number, isActive: boolean): Promise<Organization> => {
     const response = await apiRequest('PUT', `/api/organizations/${orgId}/status`, { isActive });
     return response.json();
