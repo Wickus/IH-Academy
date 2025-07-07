@@ -264,6 +264,47 @@ class ApiClient {
     return response.data;
   }
 
+  // Coach-specific methods
+  async getCoachProfile(coachId: number): Promise<ApiResponse<any>> {
+    const response = await this.instance.get(`/coaches/${coachId}/profile`);
+    return response.data;
+  }
+
+  async updateCoachProfile(profileData: any): Promise<ApiResponse<any>> {
+    const response = await this.instance.put('/coaches/profile', profileData);
+    return response.data;
+  }
+
+  async getCoachAvailability(coachId: number): Promise<ApiResponse<any>> {
+    const response = await this.instance.get(`/coaches/${coachId}/availability`);
+    return response.data;
+  }
+
+  async updateCoachAvailability(availabilityData: any): Promise<ApiResponse<any>> {
+    const response = await this.instance.put('/coaches/availability', availabilityData);
+    return response.data;
+  }
+
+  async getCoachStats(coachId: number): Promise<ApiResponse<any>> {
+    const response = await this.instance.get(`/coaches/${coachId}/stats`);
+    return response.data;
+  }
+
+  async getClassAttendance(classId: number): Promise<ApiResponse<any[]>> {
+    const response = await this.instance.get(`/classes/${classId}/attendance`);
+    return response.data;
+  }
+
+  async markAttendance(attendanceData: {
+    classId: number;
+    participantId: number;
+    status: 'present' | 'absent' | 'late';
+    markedBy: number;
+  }): Promise<ApiResponse<any>> {
+    const response = await this.instance.post('/attendance', attendanceData);
+    return response.data;
+  }
+
   // Stats methods
   async getOrganizationStats(organizationId: number): Promise<ApiResponse<any>> {
     const response = await this.instance.get(`/stats/organization/${organizationId}`);
