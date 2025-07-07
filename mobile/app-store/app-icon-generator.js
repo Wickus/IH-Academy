@@ -113,12 +113,43 @@ async function generateIcons(sourceIcon) {
   console.log('App icons generated successfully!');
 }
 
-// Create base app icon if it doesn't exist
+// Use existing IH Academy 4 image as base icon
 async function createBaseIcon() {
   const iconPath = path.join(__dirname, 'base-icon.png');
+  const sourceImagePath = path.join(__dirname, 'IH Academy 4_resized.png');
   
   if (!fs.existsSync(iconPath)) {
-    console.log('Creating base app icon...');
+    console.log('Using IH Academy 4_resized.png as base app icon...');
+    
+    // Check if source image exists
+    if (!fs.existsSync(sourceImagePath)) {
+      console.error('IH Academy 4_resized.png not found!');
+      return null;
+    }
+    
+    // Copy and resize the source image to create base icon
+    await sharp(sourceImagePath)
+      .resize(1024, 1024, {
+        kernel: sharp.kernel.lanczos3,
+        fit: 'fill',
+        background: { r: 255, g: 255, b: 255, alpha: 0 }
+      })
+      .png({ quality: 100 })
+      .toFile(iconPath);
+      
+    console.log('Base icon created from IH Academy 4_resized.png!');
+    return iconPath;
+  }
+  
+  return iconPath;
+}
+
+// Legacy SVG generation (keeping for reference)
+async function createSvgIcon() {
+  const iconPath = path.join(__dirname, 'base-icon-svg.png');
+  
+  if (!fs.existsSync(iconPath)) {
+    console.log('Creating SVG base app icon...');
     
     // Create a professional app icon with IH Academy branding
     const iconSvg = `
@@ -217,7 +248,7 @@ async function createBaseIcon() {
       .png({ quality: 100 })
       .toFile(iconPath);
       
-    console.log('Base icon created successfully!');
+    console.log('SVG Base icon created successfully!');
   }
   
   return iconPath;
