@@ -1731,7 +1731,6 @@ export default function Settings() {
             </TabsContent>
 
             <TabsContent value="membership" className="space-y-6">
-              {/* DEBUG: This should only show in membership tab */}
               <div className="space-y-6">
                 <div>
                   <h3 
