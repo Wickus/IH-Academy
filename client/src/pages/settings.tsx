@@ -1742,7 +1742,7 @@ export default function Settings() {
                   <p className="text-slate-600">Configure your membership pricing and plan type settings</p>
                 </div>
 
-                {/* Plan Information */}
+                {/* Current Plan Information */}
                 <Card className="border border-slate-200">
                   <CardHeader>
                     <CardTitle 
@@ -1791,7 +1791,7 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
-                {/* Membership Configuration Form */}
+                {/* Editable Membership Settings */}
                 <Card className="border border-slate-200">
                   <CardHeader>
                     <CardTitle 
