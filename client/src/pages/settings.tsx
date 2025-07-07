@@ -1779,15 +1779,15 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
-                {/* Editable Membership Settings */}
+                {/* Membership Configuration */}
                 <Card className="border border-slate-200">
                   <CardHeader>
                     <CardTitle 
                       className="text-base font-semibold flex items-center gap-2"
                       style={{ color: organization?.primaryColor || '#20366B' }}
                     >
-                      <Settings className="h-5 w-5" />
-                      Edit Membership Settings
+                      <CreditCard className="h-5 w-5" />
+                      Membership Configuration
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -1803,13 +1803,13 @@ export default function Settings() {
                                   className="font-medium"
                                   style={{ color: organization?.primaryColor || '#20366B' }}
                                 >
-                                  Monthly Membership Fee (R)
+                                  Edit Monthly Membership Fee (R)
                                 </FormLabel>
                                 <FormControl>
                                   <Input 
                                     type="number"
                                     step="0.01"
-                                    placeholder="299.00"
+                                    placeholder="1000.00"
                                     {...field}
                                     className="border-slate-300"
                                     style={{
@@ -1843,7 +1843,7 @@ export default function Settings() {
                                   className="font-medium"
                                   style={{ color: organization?.primaryColor || '#20366B' }}
                                 >
-                                  Plan Type
+                                  Edit Plan Type
                                 </FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
@@ -1881,7 +1881,7 @@ export default function Settings() {
                             ) : (
                               <>
                                 <Save className="mr-2 h-4 w-4" />
-                                Update Settings
+                                Update Membership
                               </>
                             )}
                           </Button>
