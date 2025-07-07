@@ -164,15 +164,17 @@ async function createBaseIcon() {
           <circle cx="0" cy="0" r="360" fill="white" opacity="0.12" filter="url(#shadow)"/>
           <circle cx="0" cy="0" r="320" fill="white" opacity="0.18"/>
           
-          <!-- IH monogram container -->
-          <rect x="-200" y="-120" width="400" height="160" rx="25" fill="white" opacity="0.95" filter="url(#shadow)"/>
+          <!-- IH Academy 4 monogram container -->
+          <rect x="-220" y="-100" width="440" height="140" rx="25" fill="white" opacity="0.95" filter="url(#shadow)"/>
           
-          <!-- IH Letters with professional typography -->
-          <text x="-60" y="20" font-family="Arial, sans-serif" font-size="120" font-weight="800" text-anchor="middle" fill="#20366B">I</text>
-          <text x="60" y="20" font-family="Arial, sans-serif" font-size="120" font-weight="800" text-anchor="middle" fill="#20366B">H</text>
+          <!-- IH Academy 4 Letters with professional typography -->
+          <text x="-100" y="0" font-family="Arial, sans-serif" font-size="90" font-weight="800" text-anchor="middle" fill="#20366B">I</text>
+          <text x="-40" y="0" font-family="Arial, sans-serif" font-size="90" font-weight="800" text-anchor="middle" fill="#20366B">H</text>
+          <text x="40" y="0" font-family="Arial, sans-serif" font-size="90" font-weight="800" text-anchor="middle" fill="#20366B">A</text>
+          <text x="100" y="0" font-family="Arial, sans-serif" font-size="90" font-weight="800" text-anchor="middle" fill="#278DD4">4</text>
           
           <!-- Academy text -->
-          <text x="0" y="80" font-family="Arial, sans-serif" font-size="28" font-weight="600" text-anchor="middle" fill="#278DD4" letter-spacing="4px">ACADEMY</text>
+          <text x="0" y="60" font-family="Arial, sans-serif" font-size="24" font-weight="600" text-anchor="middle" fill="#278DD4" letter-spacing="2px">ACADEMY</text>
           
           <!-- Decorative elements - sports icons in circles -->
           <g opacity="0.9">
