@@ -59,12 +59,17 @@ async function createFeatureGraphic() {
           <!-- App icon background -->
           <rect x="50" y="100" width="120" height="120" rx="25" fill="white" opacity="0.95" filter="url(#shadow)"/>
           
-          <!-- Mini app icon -->
-          <g transform="translate(110, 160)">
-            <!-- IH monogram -->
-            <text x="-25" y="0" font-family="Arial, sans-serif" font-size="35" font-weight="800" text-anchor="middle" fill="#20366B">I</text>
-            <text x="15" y="0" font-family="Arial, sans-serif" font-size="35" font-weight="800" text-anchor="middle" fill="#20366B">H</text>
-            <text x="-5" y="25" font-family="Arial, sans-serif" font-size="8" font-weight="600" text-anchor="middle" fill="#278DD4" letter-spacing="1px">ACADEMY</text>
+          <!-- Actual IH Academy 4 logo placeholder -->
+          <rect x="60" y="110" width="100" height="100" rx="20" fill="#20366B"/>
+          <circle cx="110" cy="160" r="35" fill="#278DD4"/>
+          
+          <!-- Sports equipment icons in white -->
+          <g transform="translate(110, 160)" fill="white" opacity="0.9">
+            <circle cx="-12" cy="-8" r="4"/>
+            <rect x="-2" y="-12" width="2" height="12" rx="1"/>
+            <rect x="8" y="-10" width="6" height="3" rx="1"/>
+            <circle cx="-8" cy="8" r="6" fill="none" stroke="white" stroke-width="1"/>
+            <circle cx="8" cy="8" r="4"/>
           </g>
           
           <!-- Sports icons around app icon -->
