@@ -60,7 +60,8 @@ async function createFeatureGraphicWithLogo() {
       <!-- Main title and content -->
       <g transform="translate(330, 100)">
         <text x="0" y="80" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="white" filter="url(#textShadow)">IH Academy</text>
-        <text x="0" y="120" font-family="Arial, sans-serif" font-size="24" font-weight="600" fill="white" opacity="0.9">Complete Sports Academy Management</text>
+        <text x="0" y="115" font-family="Arial, sans-serif" font-size="24" font-weight="600" fill="white" opacity="0.9">Complete Sports Academy</text>
+        <text x="0" y="145" font-family="Arial, sans-serif" font-size="24" font-weight="600" fill="white" opacity="0.9">Management</text>
         
         <!-- Features -->
         <g transform="translate(0, 160)">
