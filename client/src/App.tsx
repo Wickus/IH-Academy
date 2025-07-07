@@ -16,6 +16,7 @@ import Coaches from "@/pages/coaches";
 import Payments from "@/pages/payments";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
+import UserSettings from "@/pages/user-settings";
 import Achievements from "@/pages/achievements";
 import Notifications from "@/pages/notifications";
 import Memberships from "@/pages/memberships";
@@ -218,6 +219,11 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/settings" component={() => (
           <AppLayout>
             <Settings />
+          </AppLayout>
+        )} />
+        <Route path="/user-settings" component={() => (
+          <AppLayout>
+            <UserSettings />
           </AppLayout>
         )} />
         <Route path="/debit-order-management" component={() => (
