@@ -121,6 +121,33 @@ export interface ApiError {
   code?: string;
 }
 
+// Additional coach-specific types
+export interface Attendance {
+  id: number;
+  classId: number;
+  participantId: number;
+  participantName: string;
+  participantEmail: string;
+  status: 'present' | 'absent' | 'late';
+  markedBy: number;
+  markedAt: string;
+  notes?: string;
+}
+
+export interface CoachProfile {
+  id: number;
+  userId: number;
+  bio?: string;
+  experience?: string;
+  certifications?: string;
+  specialties?: string;
+  hourlyRate?: number;
+  qualifications: string[];
+  preferredSports: number[];
+  maxClassesPerDay: number;
+  isActive: boolean;
+}
+
 // Import shared types from web app
 export type {
   User,
