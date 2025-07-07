@@ -152,6 +152,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/favourite-organizations" component={FavouriteOrganizations} />
         <Route path="/completed-classes" component={CompletedClasses} />
         <Route path="/messages" component={Messages} />
+        <Route path="/user-settings" component={UserSettings} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={UserDashboard} />
