@@ -305,6 +305,66 @@ class ApiClient {
     return response.data;
   }
 
+  // Admin-specific methods
+  async getOrganizationStats(organizationId: number): Promise<ApiResponse<any>> {
+    const response = await this.instance.get(`/admin/organizations/${organizationId}/stats`);
+    return response.data;
+  }
+
+  async getOrganizationReports(organizationId: number, period: string): Promise<ApiResponse<any>> {
+    const response = await this.instance.get(`/admin/organizations/${organizationId}/reports`, {
+      params: { period }
+    });
+    return response.data;
+  }
+
+  async getRecentActivity(organizationId: number): Promise<ApiResponse<any[]>> {
+    const response = await this.instance.get(`/admin/organizations/${organizationId}/activity`);
+    return response.data;
+  }
+
+  async getOrganizationMembers(organizationId: number): Promise<ApiResponse<any[]>> {
+    const response = await this.instance.get(`/admin/organizations/${organizationId}/members`);
+    return response.data;
+  }
+
+  async getOrganizationCoaches(organizationId: number): Promise<ApiResponse<any[]>> {
+    const response = await this.instance.get(`/admin/organizations/${organizationId}/coaches`);
+    return response.data;
+  }
+
+  async updateMember(memberId: number, memberData: any): Promise<ApiResponse<any>> {
+    const response = await this.instance.put(`/admin/members/${memberId}`, memberData);
+    return response.data;
+  }
+
+  async inviteMember(inviteData: any): Promise<ApiResponse<any>> {
+    const response = await this.instance.post('/admin/members/invite', inviteData);
+    return response.data;
+  }
+
+  async removeMemberFromOrganization(memberId: number, organizationId: number): Promise<ApiResponse<void>> {
+    const response = await this.instance.delete(`/admin/organizations/${organizationId}/members/${memberId}`);
+    return response.data;
+  }
+
+  async updateCoach(coachId: number, coachData: any): Promise<ApiResponse<any>> {
+    const response = await this.instance.put(`/admin/coaches/${coachId}`, coachData);
+    return response.data;
+  }
+
+  async inviteCoach(inviteData: any): Promise<ApiResponse<any>> {
+    const response = await this.instance.post('/admin/coaches/invite', inviteData);
+    return response.data;
+  }
+
+  async exportReport(organizationId: number, format: 'pdf' | 'excel', period: string): Promise<ApiResponse<any>> {
+    const response = await this.instance.get(`/admin/organizations/${organizationId}/export`, {
+      params: { format, period }
+    });
+    return response.data;
+  }
+
   // Stats methods
   async getOrganizationStats(organizationId: number): Promise<ApiResponse<any>> {
     const response = await this.instance.get(`/stats/organization/${organizationId}`);
