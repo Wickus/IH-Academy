@@ -365,6 +365,53 @@ class ApiClient {
     return response.data;
   }
 
+  // Advanced features methods
+  async registerPushToken(tokenData: {
+    token: string;
+    platform: string;
+    deviceInfo: any;
+  }): Promise<ApiResponse<void>> {
+    const response = await this.instance.post('/push/register', tokenData);
+    return response.data;
+  }
+
+  async updateNotificationPreferences(preferences: any): Promise<ApiResponse<void>> {
+    const response = await this.instance.put('/notifications/preferences', preferences);
+    return response.data;
+  }
+
+  async changePassword(passwordData: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<ApiResponse<void>> {
+    const response = await this.instance.post('/auth/change-password', passwordData);
+    return response.data;
+  }
+
+  async logoutAllDevices(): Promise<ApiResponse<void>> {
+    const response = await this.instance.post('/auth/logout-all');
+    return response.data;
+  }
+
+  async validateBiometricSignature(signatureData: {
+    signature: string;
+    payload: string;
+    publicKey: string;
+  }): Promise<ApiResponse<boolean>> {
+    const response = await this.instance.post('/auth/validate-biometric', signatureData);
+    return response.data;
+  }
+
+  async syncOfflineActions(actions: any[]): Promise<ApiResponse<any>> {
+    const response = await this.instance.post('/sync/actions', { actions });
+    return response.data;
+  }
+
+  async getNotificationHistory(userId: number): Promise<ApiResponse<any[]>> {
+    const response = await this.instance.get(`/notifications/history/${userId}`);
+    return response.data;
+  }
+
   // Stats methods
   async getOrganizationStats(organizationId: number): Promise<ApiResponse<any>> {
     const response = await this.instance.get(`/stats/organization/${organizationId}`);
