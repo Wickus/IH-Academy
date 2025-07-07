@@ -64,7 +64,7 @@ async function createFeatureGraphicWithLogo() {
         <text x="0" y="145" font-family="Arial, sans-serif" font-size="24" font-weight="600" fill="white" opacity="0.9">Management</text>
         
         <!-- Features -->
-        <g transform="translate(0, 160)">
+        <g transform="translate(0, 190)">
           <text x="0" y="0" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#24D367">✓ PayFast Integration</text>
           <text x="0" y="30" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#24D367">✓ Multi-Sport Support</text>
           <text x="0" y="60" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#24D367">✓ South African Built</text>
