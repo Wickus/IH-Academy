@@ -210,7 +210,10 @@ export default function UserDashboard() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setLocation('/user-settings')}>
+              <DropdownMenuItem onClick={() => {
+                console.log('Settings clicked, navigating to /user-settings');
+                setLocation('/user-settings');
+              }}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
