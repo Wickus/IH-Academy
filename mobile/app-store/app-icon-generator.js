@@ -123,58 +123,90 @@ async function createBaseIcon() {
     // Create a professional app icon with IH Academy branding
     const iconSvg = `
       <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-        <!-- Background gradient -->
+        <!-- Background and definitions -->
         <defs>
-          <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <!-- Primary gradient background -->
+          <linearGradient id="primaryBg" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style="stop-color:#20366B;stop-opacity:1" />
-            <stop offset="50%" style="stop-color:#278DD4;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#278DD4;stop-opacity:1" />
+          </linearGradient>
+          
+          <!-- Accent gradient for elements -->
+          <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#278DD4;stop-opacity:1" />
             <stop offset="100%" style="stop-color:#24D367;stop-opacity:1" />
           </linearGradient>
-          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.3"/>
+          
+          <!-- Shadow filter -->
+          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.25"/>
+          </filter>
+          
+          <!-- Inner shadow for depth -->
+          <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+            <feOffset dx="0" dy="2" result="offset"/>
+            <feFlood flood-color="#ffffff" flood-opacity="0.3"/>
+            <feComposite in2="offset" operator="in"/>
+            <feMerge> 
+              <feMergeNode/>
+              <feMergeNode in="SourceGraphic"/> 
+            </feMerge>
           </filter>
         </defs>
         
-        <!-- Background -->
-        <rect width="1024" height="1024" rx="180" fill="url(#bg)"/>
+        <!-- Main background with rounded corners -->
+        <rect width="1024" height="1024" rx="200" fill="url(#primaryBg)"/>
         
-        <!-- Main icon content -->
-        <g transform="translate(200, 200)">
-          <!-- Academy building/structure -->
-          <rect x="150" y="400" width="324" height="224" rx="20" fill="white" opacity="0.95"/>
-          <rect x="170" y="420" width="284" height="184" rx="10" fill="#20366B"/>
+        <!-- Central content area -->
+        <g transform="translate(512, 512)">
+          <!-- Main logo circle background -->
+          <circle cx="0" cy="0" r="360" fill="white" opacity="0.12" filter="url(#shadow)"/>
+          <circle cx="0" cy="0" r="320" fill="white" opacity="0.18"/>
           
-          <!-- Windows -->
-          <rect x="190" y="440" width="60" height="40" rx="5" fill="white" opacity="0.9"/>
-          <rect x="270" y="440" width="60" height="40" rx="5" fill="white" opacity="0.9"/>
-          <rect x="350" y="440" width="60" height="40" rx="5" fill="white" opacity="0.9"/>
-          <rect x="190" y="500" width="60" height="40" rx="5" fill="white" opacity="0.9"/>
-          <rect x="270" y="500" width="60" height="40" rx="5" fill="white" opacity="0.9"/>
-          <rect x="350" y="500" width="60" height="40" rx="5" fill="white" opacity="0.9"/>
+          <!-- IH monogram container -->
+          <rect x="-200" y="-120" width="400" height="160" rx="25" fill="white" opacity="0.95" filter="url(#shadow)"/>
           
-          <!-- Door -->
-          <rect x="280" y="560" width="40" height="60" rx="5" fill="white" opacity="0.9"/>
-          <circle cx="315" cy="590" r="3" fill="#20366B"/>
+          <!-- IH Letters with professional typography -->
+          <text x="-60" y="20" font-family="Arial, sans-serif" font-size="120" font-weight="800" text-anchor="middle" fill="#20366B">I</text>
+          <text x="60" y="20" font-family="Arial, sans-serif" font-size="120" font-weight="800" text-anchor="middle" fill="#20366B">H</text>
           
-          <!-- Text/Logo area -->
-          <rect x="50" y="150" width="524" height="180" rx="30" fill="white" opacity="0.15" filter="url(#shadow)"/>
+          <!-- Academy text -->
+          <text x="0" y="80" font-family="Arial, sans-serif" font-size="28" font-weight="600" text-anchor="middle" fill="#278DD4" letter-spacing="4px">ACADEMY</text>
           
-          <!-- IH text -->
-          <text x="312" y="230" font-family="Arial, sans-serif" font-size="80" font-weight="bold" text-anchor="middle" fill="white">IH</text>
-          <text x="312" y="290" font-family="Arial, sans-serif" font-size="32" font-weight="normal" text-anchor="middle" fill="white" opacity="0.9">ACADEMY</text>
+          <!-- Decorative elements - sports icons in circles -->
+          <g opacity="0.9">
+            <!-- Top left - Soccer -->
+            <circle cx="-200" cy="-200" r="45" fill="url(#accentGradient)" filter="url(#shadow)"/>
+            <circle cx="-200" cy="-200" r="25" fill="white"/>
+            <text x="-200" y="-190" font-family="Arial, sans-serif" font-size="30" text-anchor="middle" fill="#20366B">⚽</text>
+            
+            <!-- Top right - Basketball -->
+            <circle cx="200" cy="-200" r="45" fill="url(#accentGradient)" filter="url(#shadow)"/>
+            <circle cx="200" cy="-200" r="25" fill="white"/>
+            <text x="200" y="-190" font-family="Arial, sans-serif" font-size="30" text-anchor="middle" fill="#20366B">🏀</text>
+            
+            <!-- Bottom left - Swimming -->
+            <circle cx="-200" cy="200" r="45" fill="url(#accentGradient)" filter="url(#shadow)"/>
+            <circle cx="-200" cy="200" r="25" fill="white"/>
+            <text x="-200" y="210" font-family="Arial, sans-serif" font-size="30" text-anchor="middle" fill="#20366B">🏊</text>
+            
+            <!-- Bottom right - Tennis -->
+            <circle cx="200" cy="200" r="45" fill="url(#accentGradient)" filter="url(#shadow)"/>
+            <circle cx="200" cy="200" r="25" fill="white"/>
+            <text x="200" y="210" font-family="Arial, sans-serif" font-size="30" text-anchor="middle" fill="#20366B">🎾</text>
+          </g>
           
-          <!-- Sports icons -->
-          <circle cx="100" cy="100" r="30" fill="white" opacity="0.8"/>
-          <text x="100" y="110" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#20366B">⚽</text>
+          <!-- Connecting lines for visual balance -->
+          <g opacity="0.3" stroke="#24D367" stroke-width="3" fill="none">
+            <line x1="-155" y1="-155" x2="-50" y2="-50"/>
+            <line x1="155" y1="-155" x2="50" y2="-50"/>
+            <line x1="-155" y1="155" x2="-50" y2="50"/>
+            <line x1="155" y1="155" x2="50" y2="50"/>
+          </g>
           
-          <circle cx="524" cy="100" r="30" fill="white" opacity="0.8"/>
-          <text x="524" y="110" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#20366B">🏀</text>
-          
-          <circle cx="100" cy="524" r="30" fill="white" opacity="0.8"/>
-          <text x="100" y="534" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#20366B">🏊</text>
-          
-          <circle cx="524" cy="524" r="30" fill="white" opacity="0.8"/>
-          <text x="524" y="534" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#20366B">🎾</text>
+          <!-- Central highlight for depth -->
+          <ellipse cx="0" cy="-20" rx="180" ry="60" fill="white" opacity="0.15" filter="url(#innerShadow)"/>
         </g>
       </svg>
     `;
