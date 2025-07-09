@@ -113,17 +113,17 @@ async function generateIcons(sourceIcon) {
   console.log('App icons generated successfully!');
 }
 
-// Use existing IH Academy 4 image as base icon
+// Use existing IH Academy 6 image as base icon
 async function createBaseIcon() {
   const iconPath = path.join(__dirname, 'base-icon.png');
-  const sourceImagePath = path.join(__dirname, 'IH Academy 4_resized.png');
+  const sourceImagePath = path.join(__dirname, 'IH Academy 6 (1).png');
   
   if (!fs.existsSync(iconPath)) {
-    console.log('Using IH Academy 4_resized.png as base app icon...');
+    console.log('Using IH Academy 6 (1).png as base app icon...');
     
     // Check if source image exists
     if (!fs.existsSync(sourceImagePath)) {
-      console.error('IH Academy 4_resized.png not found!');
+      console.error('IH Academy 6 (1).png not found!');
       return null;
     }
     
@@ -137,7 +137,7 @@ async function createBaseIcon() {
       .png({ quality: 100 })
       .toFile(iconPath);
       
-    console.log('Base icon created from IH Academy 4_resized.png!');
+    console.log('Base icon created from IH Academy 6 (1).png!');
     return iconPath;
   }
   
