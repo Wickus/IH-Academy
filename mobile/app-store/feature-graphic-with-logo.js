@@ -9,13 +9,13 @@ const path = require('path');
 
 async function createFeatureGraphicWithLogo() {
   const graphicPath = path.join(__dirname, 'feature-graphic.png');
-  const logoPath = path.join(__dirname, 'IH Academy 4_resized.png');
+  const logoPath = path.join(__dirname, 'IH Academy 6 (1).png');
   
-  console.log('Creating feature graphic with actual IH Academy 4 logo...');
+  console.log('Creating feature graphic with actual IH Academy 6 logo...');
   
   // Check if logo exists
   if (!fs.existsSync(logoPath)) {
-    console.error('IH Academy 4_resized.png not found!');
+    console.error('IH Academy 6 (1).png not found!');
     return;
   }
   
@@ -163,7 +163,7 @@ async function createFeatureGraphicWithLogo() {
 async function main() {
   try {
     await createFeatureGraphicWithLogo();
-    console.log('Feature graphic updated with IH Academy 4 logo!');
+    console.log('Feature graphic updated with IH Academy 6 logo!');
   } catch (error) {
     console.error('Error creating feature graphic:', error);
   }

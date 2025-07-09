@@ -22,7 +22,7 @@ import {
   X
 } from "lucide-react";
 
-import ItsHappening_Africa_Logo_Picture_Mark_small from "@assets/ItsHappening.Africa Logo_Picture Mark_small.png";
+import IH_Academy_6 from "@assets/IH Academy 6 (1).png";
 
 export default function LandingPage() {
   const [showDemoModal, setShowDemoModal] = useState(false);
@@ -47,8 +47,8 @@ export default function LandingPage() {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
               <img 
-                src={ItsHappening_Africa_Logo_Picture_Mark_small} 
-                alt="ItsHappening.Africa" 
+                src={IH_Academy_6} 
+                alt="IH Academy" 
                 className="h-10 w-auto"
               />
               <div className="hidden sm:block">

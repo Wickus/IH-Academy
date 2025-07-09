@@ -246,4 +246,4 @@ Changelog:
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
-Keep communications on-platform using in-app notifications instead of mailto for organization messaging.
+Keep communications on-platform using in-app notifications instead of mailto for organization messaging.- July 07, 2025. Updated entire platform branding with new IH Academy 6 whistle logo design - replaced landing page logo from ItsHappening.Africa mark to professional whistle design representing sports coaching authority, regenerated complete app icon suite for both iOS (all sizes from 20px to 1024px) and Android (all density variants) using whistle logo with concentric circle design, updated feature graphic generator to use new logo creating production-ready 1024x500 Google Play Store marketing asset, ensuring consistent whistle-themed branding across web platform, mobile app icons, and app store marketing materials with professional sports academy visual identity
