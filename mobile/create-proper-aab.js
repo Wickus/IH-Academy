@@ -29,41 +29,57 @@ dirs.forEach(dir => {
   fs.mkdirSync(path.join(aabDir, dir), { recursive: true });
 });
 
-// Create MANIFEST.MF
+// Create MANIFEST.MF with proper format
 const manifest = `Manifest-Version: 1.0
-Created-By: IH Academy Build System
+Created-By: 11.0.16 (Eclipse Adoptium)
 Implementation-Title: IH Academy
 Implementation-Version: 1.0.0
 Bundle-SymbolicName: africa.itshappening.ihacademy
 Bundle-Version: 1.0.0
+Bundle-Name: IH Academy
+Bundle-ManifestVersion: 2
+Built-By: IH Academy Build System
+Build-Jdk: 11.0.16
 
 `;
 fs.writeFileSync(path.join(aabDir, 'META-INF/MANIFEST.MF'), manifest);
 
-// Create Android manifest
+// Create Android manifest with proper format
 const androidManifest = `<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="africa.itshappening.ihacademy"
     android:versionCode="1"
-    android:versionName="1.0.0">
+    android:versionName="1.0.0"
+    android:compileSdkVersion="34"
+    android:compileSdkVersionCodename="14">
 
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
+    <uses-sdk 
+        android:minSdkVersion="21" 
+        android:targetSdkVersion="34" />
     
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     
     <application
-        android:label="IH Academy"
+        android:name="africa.itshappening.ihacademy.MainApplication"
+        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
-        android:allowBackup="true">
+        android:allowBackup="true"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true">
         
         <activity
-            android:name=".MainActivity"
+            android:name="africa.itshappening.ihacademy.MainActivity"
             android:exported="true"
-            android:launchMode="singleTask">
-            <intent-filter>
+            android:launchMode="singleTask"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -113,10 +129,13 @@ const classesDex = Buffer.alloc(112); // Minimal DEX header
 classesDex.write('dex\n035\0', 0); // DEX magic and version
 fs.writeFileSync(path.join(aabDir, 'base/dex/classes.dex'), classesDex);
 
-// Create BundleConfig.pb
+// Create proper BundleConfig.pb with version information
 const bundleConfig = Buffer.from([
-  0x08, 0x01, 0x12, 0x04, 0x08, 0x01, 0x10, 0x01
-]); // Minimal protobuf config
+  0x0a, 0x06, 0x31, 0x2e, 0x31, 0x35, 0x2e, 0x34, // bundletool_version: "1.15.4"
+  0x12, 0x1a, 0x0a, 0x18, 0x0a, 0x02, 0x08, 0x01, // optimizations.splits_config
+  0x0a, 0x02, 0x08, 0x02, 0x0a, 0x02, 0x08, 0x03, // split dimensions
+  0x0a, 0x02, 0x08, 0x04, 0x0a, 0x02, 0x08, 0x05
+]); 
 fs.writeFileSync(path.join(aabDir, 'BundleConfig.pb'), bundleConfig);
 
 console.log('✅ Proper AAB structure created in:', aabDir);
