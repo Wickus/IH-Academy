@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IH Academy</string>
+    <string name="app_description">Complete Sports Academy Management</string>
+    <string name="welcome_message">Welcome to IH Academy</string>
+    <string name="login_title">Login to IH Academy</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="classes_title">Classes</string>
+    <string name="bookings_title">Bookings</string>
+    <string name="messages_title">Messages</string>
+    <string name="profile_title">Profile</string>
+</resources>

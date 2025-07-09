@@ -7,7 +7,7 @@ def create_aab_file():
     print("🚀 Creating proper AAB file from bundle structure...")
     
     # Input and output paths
-    source_dir = 'proper-aab'
+    source_dir = 'complete-aab'
     output_file = 'ih-academy-v1.0.0.aab'
     
     # Remove existing AAB if it exists

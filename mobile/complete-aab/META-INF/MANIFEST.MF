@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Created-By: 11.0.16 (Eclipse Adoptium)
+Implementation-Title: IH Academy
+Implementation-Version: 1.0.0
+Implementation-Vendor: ItsHappening.Africa
+Bundle-SymbolicName: africa.itshappening.ihacademy
+Bundle-Version: 1.0.0
+Bundle-Name: IH Academy
+Bundle-ManifestVersion: 2
+Built-By: IH Academy Build System
+Build-Jdk: 11.0.16
+Bundle-Vendor: ItsHappening.Africa
+
