@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Created-By: IH Academy Build System
+Implementation-Title: IH Academy
+Implementation-Version: 1.0.0
+Implementation-Vendor: ItsHappening.Africa
