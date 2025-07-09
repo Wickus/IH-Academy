@@ -1,0 +1,14 @@
+Google Play App Signing Configuration
+====================================
+
+Upload Key Certificate:
+- Key Alias: upload-key
+- Key Password: [Your chosen password]
+- Store Password: [Your chosen password]
+- Validity: 25 years
+
+Google Play Console will manage the app signing key automatically.
+You only need to create an upload key for signing the AAB.
+
+To create upload key:
+keytool -genkey -v -keystore upload-keystore.jks -alias upload-key -keyalg RSA -keysize 2048 -validity 10000

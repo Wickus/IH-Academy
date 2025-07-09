@@ -1,0 +1,14 @@
+{
+  "bundleId": "africa.itshappening.ihacademy",
+  "version": "1.0.0",
+  "versionCode": 1,
+  "targetSdk": 34,
+  "minSdk": 21,
+  "features": [
+    "sports_academy_management",
+    "real_time_messaging", 
+    "payment_integration",
+    "biometric_auth",
+    "offline_sync"
+  ]
+}
