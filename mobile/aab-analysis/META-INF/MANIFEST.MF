@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: IH Academy
+Bundle-SymbolicName: africa.itshappening.ihacademy
+Bundle-Version: 1.0.0
+Created-By: Manual AAB Builder
