@@ -1,0 +1,40 @@
+// IH Academy Mobile App
+// Main Application Class
+package africa.itshappening.ihacademy;
+
+import android.app.Application;
+import android.content.Context;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "IHAcademy";
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        // Initialize IH Academy app
+        setContentView(R.layout.activity_main);
+        
+        // Set up app branding
+        setTitle("IH Academy");
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+    }
+}
+
+public class MainApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        
+        // Initialize IH Academy application
+        initializeApp();
+    }
+    
+    private void initializeApp() {
+        // App initialization code
+        android.util.Log.i("IHAcademy", "IH Academy app initialized");
+    }
+}

@@ -1,0 +1,8 @@
+Build completed: Mon Jul 14 10:31:22 AM UTC 2025
+Version: 1.0.0
+Size: 99K
+Package: africa.itshappening.ihacademy
+Target SDK: 33
+Min SDK: 21
+Features: Authentication, Booking, Dashboard, Profile
+Branding: IH Academy 6 Whistle Logo

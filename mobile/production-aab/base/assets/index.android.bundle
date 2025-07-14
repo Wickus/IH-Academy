@@ -1,0 +1,32 @@
+/**
+ * IH Academy Mobile App Bundle
+ * Sports Academy Management Platform
+ * Version: 1.0.0
+ */
+
+// Main App Entry Point
+const App = () => {
+  return {
+    name: 'IH Academy',
+    version: '1.0.0',
+    description: 'Sports Academy Management for South Africa',
+    features: [
+      'User Authentication',
+      'Class Booking',
+      'Dashboard Analytics',
+      'Profile Management',
+      'Multi-tenant Support'
+    ],
+    branding: {
+      primaryColor: '#20366B',
+      secondaryColor: '#278DD4',
+      accentColor: '#24D367',
+      logo: 'IH Academy 6 Whistle'
+    }
+  };
+};
+
+// Export for React Native
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = App;
+}

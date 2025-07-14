@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- IH Academy Brand Colors -->
     <color name="primary">#20366B</color>
+    <color name="primary_dark">#1A2B5A</color>
     <color name="secondary">#278DD4</color>
     <color name="accent">#24D367</color>
     <color name="background">#FFFFFF</color>
-    <color name="surface">#F8FAFC</color>
-    <color name="error">#EF4444</color>
+    <color name="surface">#F5F7FA</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="error">#D32F2F</color>
+    <color name="success">#388E3C</color>
+    <color name="warning">#F57C00</color>
+    <color name="info">#1976D2</color>
 </resources>
