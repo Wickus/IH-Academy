@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
-Created-By: IH Academy Build System
-Implementation-Title: IH Academy
-Implementation-Version: 1.0.0
-Implementation-Vendor: ItsHappening.Africa
+Bundle-ManifestVersion: 2
+Bundle-Name: IH Academy
 Bundle-SymbolicName: africa.itshappening.ihacademy
 Bundle-Version: 1.0.0
-Bundle-Name: IH Academy
-
+Bundle-Vendor: ItsHappening.Africa
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Description: Sports Academy Management for South Africa
+Created-By: IH Academy Build System
+Build-Jdk: OpenJDK 21
