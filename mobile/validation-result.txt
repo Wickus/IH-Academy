@@ -1,0 +1,11 @@
+[BT:1.15.6] Error: The bundle zip file contains directory zip entry 'base/' which is not allowed.
+com.android.tools.build.bundletool.model.exceptions.InvalidBundleException: The bundle zip file contains directory zip entry 'base/' which is not allowed.
+	at com.android.tools.build.bundletool.model.exceptions.UserExceptionBuilder.build(UserExceptionBuilder.java:58)
+	at com.android.tools.build.bundletool.validation.BundleZipValidator.validateBundleZipEntry(BundleZipValidator.java:33)
+	at com.android.tools.build.bundletool.validation.ValidatorRunner.lambda$validateBundleZipFile$1(ValidatorRunner.java:48)
+	at com.google.common.collect.ImmutableList.forEach(ImmutableList.java:422)
+	at com.android.tools.build.bundletool.validation.ValidatorRunner.validateBundleZipFile(ValidatorRunner.java:47)
+	at com.android.tools.build.bundletool.validation.AppBundleValidator.validateFile(AppBundleValidator.java:103)
+	at com.android.tools.build.bundletool.commands.ValidateBundleCommand.execute(ValidateBundleCommand.java:78)
+	at com.android.tools.build.bundletool.BundleToolMain.main(BundleToolMain.java:126)
+	at com.android.tools.build.bundletool.BundleToolMain.main(BundleToolMain.java:55)
