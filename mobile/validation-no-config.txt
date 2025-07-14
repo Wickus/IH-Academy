@@ -1,0 +1,12 @@
+[BT:1.15.6] Error: The archive doesn't seem to be an App Bundle, it is missing required file 'BundleConfig.pb'.
+com.android.tools.build.bundletool.model.exceptions.InvalidBundleException: The archive doesn't seem to be an App Bundle, it is missing required file 'BundleConfig.pb'.
+	at com.android.tools.build.bundletool.model.exceptions.UserExceptionBuilder.build(UserExceptionBuilder.java:58)
+	at com.android.tools.build.bundletool.validation.MandatoryFilesPresenceValidator.checkBundleHasBundleConfig(MandatoryFilesPresenceValidator.java:73)
+	at com.android.tools.build.bundletool.validation.MandatoryFilesPresenceValidator.validateBundleZipFile(MandatoryFilesPresenceValidator.java:60)
+	at com.android.tools.build.bundletool.validation.ValidatorRunner.lambda$validateBundleZipFile$0(ValidatorRunner.java:42)
+	at com.google.common.collect.ImmutableList.forEach(ImmutableList.java:422)
+	at com.android.tools.build.bundletool.validation.ValidatorRunner.validateBundleZipFile(ValidatorRunner.java:42)
+	at com.android.tools.build.bundletool.validation.AppBundleValidator.validateFile(AppBundleValidator.java:103)
+	at com.android.tools.build.bundletool.commands.ValidateBundleCommand.execute(ValidateBundleCommand.java:78)
+	at com.android.tools.build.bundletool.BundleToolMain.main(BundleToolMain.java:126)
+	at com.android.tools.build.bundletool.BundleToolMain.main(BundleToolMain.java:55)
