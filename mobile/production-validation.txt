@@ -1,0 +1,24 @@
+[BT:1.15.6] Error: Bundle config 'BundleConfig.pb' could not be parsed.
+com.android.tools.build.bundletool.model.exceptions.InvalidBundleException: Bundle config 'BundleConfig.pb' could not be parsed.
+	at com.android.tools.build.bundletool.model.exceptions.UserExceptionBuilder.build(UserExceptionBuilder.java:58)
+	at com.android.tools.build.bundletool.model.utils.BundleParser.readBundleConfig(BundleParser.java:195)
+	at com.android.tools.build.bundletool.model.AppBundle.buildFromZip(AppBundle.java:89)
+	at com.android.tools.build.bundletool.commands.ValidateBundleCommand.execute(ValidateBundleCommand.java:79)
+	at com.android.tools.build.bundletool.BundleToolMain.main(BundleToolMain.java:126)
+	at com.android.tools.build.bundletool.BundleToolMain.main(BundleToolMain.java:55)
+Caused by: com.google.protobuf.InvalidProtocolBufferException$InvalidWireTypeException: Protocol message tag had invalid wire type.
+	at com.google.protobuf.InvalidProtocolBufferException.invalidWireType(InvalidProtocolBufferException.java:134)
+	at com.google.protobuf.UnknownFieldSet$Builder.mergeFieldFrom(UnknownFieldSet.java:527)
+	at com.google.protobuf.GeneratedMessageV3.parseUnknownField(GeneratedMessageV3.java:320)
+	at com.android.bundle.Config$BundleConfig.<init>(Config.java:360)
+	at com.android.bundle.Config$BundleConfig.<init>(Config.java:208)
+	at com.android.bundle.Config$BundleConfig$1.parsePartialFrom(Config.java:2667)
+	at com.android.bundle.Config$BundleConfig$1.parsePartialFrom(Config.java:2661)
+	at com.google.protobuf.AbstractParser.parsePartialFrom(AbstractParser.java:158)
+	at com.google.protobuf.AbstractParser.parseFrom(AbstractParser.java:191)
+	at com.google.protobuf.AbstractParser.parseFrom(AbstractParser.java:203)
+	at com.google.protobuf.AbstractParser.parseFrom(AbstractParser.java:208)
+	at com.google.protobuf.AbstractParser.parseFrom(AbstractParser.java:48)
+	at com.android.bundle.Config$BundleConfig.parseFrom(Config.java:1009)
+	at com.android.tools.build.bundletool.model.utils.BundleParser.readBundleConfig(BundleParser.java:190)
+	... 4 more
