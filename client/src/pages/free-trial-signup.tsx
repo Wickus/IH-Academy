@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { api } from "@/lib/api";
 import { CheckCircle, ArrowRight, Building2, Calendar, Users, Trophy } from "lucide-react";
 
 const signupSchema = z.object({
