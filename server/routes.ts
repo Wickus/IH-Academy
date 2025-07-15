@@ -10,6 +10,7 @@ import { db } from "./db";
 import { organizations } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail, sendWalkInRegistrationEmail, sendEmail } from "./email";
+import { notifyGlobalAdminsNewOrganization } from "./sendgrid-service";
 
 // Configure multer for file uploads
 const upload = multer({ 
@@ -600,6 +601,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: 'admin',
         isActive: true
       });
+
+      // Send email notification to global administrators
+      try {
+        const isFreeTrial = organization.subscriptionStatus === 'trial';
+        await notifyGlobalAdminsNewOrganization(organization, user, isFreeTrial);
+        console.log(`Global admin notification sent for new organization: ${organization.name}`);
+      } catch (emailError) {
+        console.error("Failed to send global admin notification:", emailError);
+        // Don't fail the organization creation if email fails
+      }
 
       res.json(organization);
     } catch (error) {
