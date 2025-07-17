@@ -170,9 +170,6 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="yesterday">Yesterday</string>
-    <string name="this_week">This Week</string>
-    <string name="next_week">Next Week</string>
-    <string name="this_month">This Month</string>
     <string name="next_month">Next Month</string>
     <string name="select_date">Select Date</string>
     <string name="select_time">Select Time</string>
