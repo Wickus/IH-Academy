@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand colors -->
+    <color name="colorPrimary">#20366B</color>
+    <color name="colorPrimaryDark">#1A2A54</color>
+    <color name="colorAccent">#24D367</color>
+    
+    <!-- IH Academy brand colors -->
+    <color name="ih_primary">#20366B</color>
+    <color name="ih_secondary">#278DD4</color>
+    <color name="ih_accent">#24D367</color>
+    <color name="ih_success">#10B981</color>
+    <color name="ih_warning">#F59E0B</color>
+    <color name="ih_error">#EF4444</color>
+    <color name="ih_info">#3B82F6</color>
+    
+    <!-- Neutral colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    
+    <!-- Background colors -->
+    <color name="ih_background">#FFFFFF</color>
+    <color name="ih_surface">#F8FAFC</color>
+    <color name="ih_surface_variant">#F1F5F9</color>
+    <color name="ih_surface_disabled">#F5F5F5</color>
+    
+    <!-- Text colors -->
+    <color name="ih_text">#1F2937</color>
+    <color name="ih_text_secondary">#6B7280</color>
+    <color name="ih_text_tertiary">#9CA3AF</color>
+    <color name="ih_text_disabled">#D1D5DB</color>
+    <color name="ih_text_on_primary">#FFFFFF</color>
+    <color name="ih_text_on_secondary">#FFFFFF</color>
+    <color name="ih_text_on_accent">#000000</color>
+    
+    <!-- Border colors -->
+    <color name="ih_border">#E5E7EB</color>
+    <color name="ih_border_focused">#20366B</color>
+    <color name="ih_border_error">#EF4444</color>
+    <color name="ih_border_success">#10B981</color>
+    
+    <!-- State colors -->
+    <color name="ih_pressed">#1A2A54</color>
+    <color name="ih_hover">#374151</color>
+    <color name="ih_focus">#20366B</color>
+    <color name="ih_disabled">#9CA3AF</color>
+    
+    <!-- Shadow colors -->
+    <color name="ih_shadow_light">#1F29371A</color>
+    <color name="ih_shadow_medium">#1F29372B</color>
+    <color name="ih_shadow_dark">#1F29373D</color>
+    
+    <!-- Status bar colors -->
+    <color name="status_bar_color">@color/colorPrimaryDark</color>
+    <color name="status_bar_light">#E5E7EB</color>
+    
+    <!-- Navigation colors -->
+    <color name="navigation_bar_color">@color/ih_surface</color>
+    <color name="navigation_icon_color">@color/ih_text_secondary</color>
+    <color name="navigation_icon_selected">@color/ih_primary</color>
+    
+    <!-- Card colors -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_stroke">#E5E7EB</color>
+    <color name="card_pressed">#F8FAFC</color>
+    
+    <!-- Button colors -->
+    <color name="button_primary">@color/ih_primary</color>
+    <color name="button_primary_pressed">@color/colorPrimaryDark</color>
+    <color name="button_secondary">#FFFFFF</color>
+    <color name="button_secondary_pressed">#F8FAFC</color>
+    <color name="button_success">@color/ih_success</color>
+    <color name="button_success_pressed">#059669</color>
+    <color name="button_warning">@color/ih_warning</color>
+    <color name="button_warning_pressed">#D97706</color>
+    <color name="button_error">@color/ih_error</color>
+    <color name="button_error_pressed">#DC2626</color>
+    
+    <!-- Input field colors -->
+    <color name="input_background">#FFFFFF</color>
+    <color name="input_background_focused">#FFFFFF</color>
+    <color name="input_background_disabled">#F5F5F5</color>
+    <color name="input_stroke">@color/ih_border</color>
+    <color name="input_stroke_focused">@color/ih_border_focused</color>
+    <color name="input_stroke_error">@color/ih_border_error</color>
+    <color name="input_hint">@color/ih_text_secondary</color>
+    
+    <!-- Overlay colors -->
+    <color name="overlay_dark">#00000080</color>
+    <color name="overlay_light">#FFFFFF80</color>
+    <color name="overlay_scrim">#000000CC</color>
+    
+    <!-- Divider colors -->
+    <color name="divider_light">#E5E7EB</color>
+    <color name="divider_medium">#D1D5DB</color>
+    <color name="divider_dark">#9CA3AF</color>
+    
+    <!-- Progress colors -->
+    <color name="progress_primary">@color/ih_primary</color>
+    <color name="progress_secondary">@color/ih_secondary</color>
+    <color name="progress_background">#E5E7EB</color>
+    
+    <!-- Switch colors -->
+    <color name="switch_track_on">@color/ih_primary</color>
+    <color name="switch_track_off">#D1D5DB</color>
+    <color name="switch_thumb_on">#FFFFFF</color>
+    <color name="switch_thumb_off">#FFFFFF</color>
+    
+    <!-- Chip colors -->
+    <color name="chip_background">#F1F5F9</color>
+    <color name="chip_background_selected">@color/ih_primary</color>
+    <color name="chip_text">@color/ih_text</color>
+    <color name="chip_text_selected">#FFFFFF</color>
+    <color name="chip_stroke">@color/ih_border</color>
+    <color name="chip_stroke_selected">@color/ih_primary</color>
+</resources>

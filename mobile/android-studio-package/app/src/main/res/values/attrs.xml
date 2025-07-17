@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom attributes for IH Academy styling -->
+    <attr name="colorPrimary" format="color" />
+    <attr name="colorPrimaryDark" format="color" />
+    <attr name="colorAccent" format="color" />
+    
+    <!-- Custom button attributes -->
+    <attr name="buttonStyle" format="reference" />
+    <attr name="buttonStyleSmall" format="reference" />
+    
+    <!-- Custom text attributes -->
+    <attr name="textAppearanceButton" format="reference" />
+    <attr name="textAppearanceCaption" format="reference" />
+    
+    <!-- Custom theme attributes -->
+    <attr name="selectableItemBackground" format="reference" />
+    <attr name="selectableItemBackgroundBorderless" format="reference" />
+    
+    <!-- ActionBar attributes -->
+    <attr name="actionBarStyle" format="reference" />
+    <attr name="actionBarTabStyle" format="reference" />
+    <attr name="actionBarTabTextStyle" format="reference" />
+    
+    <!-- Dialog attributes -->
+    <attr name="dialogTheme" format="reference" />
+    <attr name="alertDialogTheme" format="reference" />
+    
+    <!-- EditText attributes -->
+    <attr name="editTextStyle" format="reference" />
+    <attr name="editTextBackground" format="reference" />
+    
+    <!-- Checkbox attributes -->
+    <attr name="checkboxStyle" format="reference" />
+    <attr name="radioButtonStyle" format="reference" />
+    
+    <!-- Spinner attributes -->
+    <attr name="spinnerStyle" format="reference" />
+    <attr name="spinnerDropDownItemStyle" format="reference" />
+    
+    <!-- Switch attributes -->
+    <attr name="switchStyle" format="reference" />
+    <attr name="switchTrackColor" format="color" />
+    <attr name="switchThumbColor" format="color" />
+</resources>

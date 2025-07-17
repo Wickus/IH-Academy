@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IH Academy</string>
+    
+    <!-- App description -->
+    <string name="app_description">Complete sports academy management system for coaches, members, and administrators</string>
+    
+    <!-- Welcome and onboarding -->
+    <string name="welcome_title">Welcome to IH Academy</string>
+    <string name="welcome_subtitle">Your complete sports academy management solution</string>
+    <string name="getting_started">Getting Started</string>
+    <string name="lets_begin">Let\'s Begin</string>
+    
+    <!-- Authentication -->
+    <string name="login_title">Login</string>
+    <string name="login_subtitle">Sign in to your account</string>
+    <string name="register_title">Create Account</string>
+    <string name="register_subtitle">Join IH Academy today</string>
+    <string name="email_label">Email Address</string>
+    <string name="password_label">Password</string>
+    <string name="confirm_password_label">Confirm Password</string>
+    <string name="full_name_label">Full Name</string>
+    <string name="phone_label">Phone Number</string>
+    <string name="username_label">Username</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Create Account</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="back_to_login">Back to Login</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_classes">Classes</string>
+    <string name="nav_bookings">Bookings</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_members">Members</string>
+    <string name="nav_coaches">Coaches</string>
+    <string name="nav_organizations">Organizations</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_welcome">Welcome back, %s!</string>
+    <string name="upcoming_classes">Upcoming Classes</string>
+    <string name="recent_bookings">Recent Bookings</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="statistics">Statistics</string>
+    <string name="today_schedule">Today\'s Schedule</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    
+    <!-- Classes -->
+    <string name="classes_title">Classes</string>
+    <string name="class_details">Class Details</string>
+    <string name="class_name">Class Name</string>
+    <string name="class_description">Description</string>
+    <string name="class_sport">Sport</string>
+    <string name="class_level">Level</string>
+    <string name="class_duration">Duration</string>
+    <string name="class_location">Location</string>
+    <string name="class_instructor">Instructor</string>
+    <string name="class_capacity">Capacity</string>
+    <string name="class_price">Price</string>
+    <string name="class_time">Time</string>
+    <string name="class_date">Date</string>
+    <string name="available_spots">Available Spots</string>
+    <string name="class_full">Class Full</string>
+    <string name="join_class">Join Class</string>
+    <string name="leave_class">Leave Class</string>
+    <string name="book_class">Book Class</string>
+    <string name="cancel_booking">Cancel Booking</string>
+    
+    <!-- Bookings -->
+    <string name="bookings_title">My Bookings</string>
+    <string name="booking_details">Booking Details</string>
+    <string name="booking_status">Status</string>
+    <string name="booking_confirmed">Confirmed</string>
+    <string name="booking_pending">Pending</string>
+    <string name="booking_cancelled">Cancelled</string>
+    <string name="booking_completed">Completed</string>
+    <string name="booking_date">Booking Date</string>
+    <string name="booking_time">Time</string>
+    <string name="booking_location">Location</string>
+    <string name="booking_instructor">Instructor</string>
+    <string name="booking_participants">Participants</string>
+    <string name="booking_payment">Payment</string>
+    <string name="booking_notes">Notes</string>
+    
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="profile_info">Profile Information</string>
+    <string name="personal_info">Personal Information</string>
+    <string name="contact_info">Contact Information</string>
+    <string name="preferences">Preferences</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="account_settings">Account Settings</string>
+    <string name="change_password">Change Password</string>
+    <string name="logout">Logout</string>
+    <string name="delete_account">Delete Account</string>
+    
+    <!-- Common actions -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="view">View</string>
+    <string name="add">Add</string>
+    <string name="remove">Remove</string>
+    <string name="update">Update</string>
+    <string name="confirm">Confirm</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="close">Close</string>
+    <string name="done">Done</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="back">Back</string>
+    <string name="continue_text">Continue</string>
+    <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Loading...</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
+    <string name="paste">Paste</string>
+    <string name="select_all">Select All</string>
+    <string name="clear_all">Clear All</string>
+    
+    <!-- Messages and notifications -->
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    <string name="warning">Warning</string>
+    <string name="info">Information</string>
+    <string name="no_data">No data available</string>
+    <string name="empty_state">Nothing to show here</string>
+    <string name="try_again">Try Again</string>
+    <string name="network_error">Network error. Please check your connection.</string>
+    <string name="server_error">Server error. Please try again later.</string>
+    <string name="unknown_error">An unknown error occurred</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="authentication_required">Authentication required</string>
+    <string name="invalid_input">Invalid input</string>
+    <string name="required_field">This field is required</string>
+    <string name="invalid_email">Please enter a valid email address</string>
+    <string name="invalid_phone">Please enter a valid phone number</string>
+    <string name="password_too_short">Password must be at least 8 characters</string>
+    <string name="passwords_dont_match">Passwords do not match</string>
+    
+    <!-- Success messages -->
+    <string name="login_successful">Login successful</string>
+    <string name="registration_successful">Account created successfully</string>
+    <string name="booking_successful">Booking confirmed</string>
+    <string name="booking_cancelled_successfully">Booking cancelled successfully</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="password_changed">Password changed successfully</string>
+    <string name="settings_saved">Settings saved successfully</string>
+    <string name="message_sent">Message sent successfully</string>
+    <string name="invitation_sent">Invitation sent successfully</string>
+    
+    <!-- Time and date -->
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="this_week">This Week</string>
+    <string name="next_week">Next Week</string>
+    <string name="this_month">This Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="duration">Duration</string>
+    <string name="all_day">All Day</string>
+    <string name="recurring">Recurring</string>
+    <string name="one_time">One Time</string>
+    
+    <!-- File and media -->
+    <string name="photo">Photo</string>
+    <string name="video">Video</string>
+    <string name="document">Document</string>
+    <string name="attachment">Attachment</string>
+    <string name="upload">Upload</string>
+    <string name="download">Download</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="file_manager">File Manager</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="remove_photo">Remove Photo</string>
+    
+    <!-- Permissions -->
+    <string name="permission_camera_title">Camera Permission</string>
+    <string name="permission_camera_message">This app needs camera permission to take photos</string>
+    <string name="permission_storage_title">Storage Permission</string>
+    <string name="permission_storage_message">This app needs storage permission to save files</string>
+    <string name="permission_location_title">Location Permission</string>
+    <string name="permission_location_message">This app needs location permission for location-based features</string>
+    <string name="permission_notification_title">Notification Permission</string>
+    <string name="permission_notification_message">This app needs notification permission to send updates</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="permission_denied_message">Permission denied. Some features may not work properly.</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="general_settings">General</string>
+    <string name="account_settings_title">Account</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="privacy_settings_title">Privacy</string>
+    <string name="about">About</string>
+    <string name="help">Help</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="version">Version</string>
+    <string name="app_version">App Version: %s</string>
+    <string name="build_number">Build: %d</string>
+    
+    <!-- Placeholder text -->
+    <string name="placeholder_search">Search...</string>
+    <string name="placeholder_message">Type a message...</string>
+    <string name="placeholder_comment">Add a comment...</string>
+    <string name="placeholder_notes">Add notes...</string>
+    <string name="placeholder_description">Enter description...</string>
+    <string name="placeholder_name">Enter name...</string>
+    <string name="placeholder_title">Enter title...</string>
+</resources>

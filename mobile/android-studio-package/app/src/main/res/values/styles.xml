@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/ih_background</item>
+        <item name="android:textColorPrimary">@color/ih_text</item>
+        <item name="android:textColorSecondary">@color/ih_text_secondary</item>
+    </style>
+
+    <!-- App theme with no action bar -->
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/status_bar_color</item>
+    </style>
+
+    <!-- Splash screen theme -->
+    <style name="SplashTheme" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- Button styles -->
+    <style name="PrimaryButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:elevation">@dimen/elevation_button</item>
+    </style>
+
+    <style name="SecondaryButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_secondary</item>
+        <item name="android:textColor">@color/ih_primary</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:elevation">@dimen/elevation_button</item>
+    </style>
+
+    <!-- Text styles -->
+    <style name="HeadingLarge">
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
+        <item name="android:textColor">@color/ih_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="HeadingMedium">
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">@color/ih_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BodyText">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@color/ih_text</item>
+    </style>
+
+    <style name="BodyTextSecondary">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@color/ih_text_secondary</item>
+    </style>
+
+    <style name="CaptionText">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/ih_text_secondary</item>
+    </style>
+
+    <!-- Input field styles -->
+    <style name="InputField" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/input_field_background</item>
+        <item name="android:padding">@dimen/padding_medium</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@color/ih_text</item>
+        <item name="android:textColorHint">@color/ih_text_secondary</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+    </style>
+
+    <!-- Card styles -->
+    <style name="CardView" parent="CardView">
+        <item name="cardCornerRadius">@dimen/button_corner_radius</item>
+        <item name="cardElevation">@dimen/elevation_card</item>
+        <item name="cardBackgroundColor">@color/ih_surface</item>
+        <item name="android:layout_margin">@dimen/margin_small</item>
+    </style>
+
+    <!-- Toolbar styles -->
+    <style name="ToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/ih_primary</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:elevation">@dimen/elevation_card</item>
+    </style>
+
+    <!-- Tab layout styles -->
+    <style name="TabLayoutStyle" parent="Widget.Design.TabLayout">
+        <item name="tabTextColor">@color/ih_text_secondary</item>
+        <item name="tabSelectedTextColor">@color/ih_primary</item>
+        <item name="tabIndicatorColor">@color/ih_primary</item>
+        <item name="tabBackground">@color/ih_surface</item>
+    </style>
+
+    <!-- Bottom navigation styles -->
+    <style name="BottomNavigationStyle" parent="Widget.Design.BottomNavigationView">
+        <item name="android:background">@color/ih_surface</item>
+        <item name="itemTextColor">@color/ih_text_secondary</item>
+        <item name="itemIconTint">@color/ih_text_secondary</item>
+    </style>
+
+    <!-- Progress bar styles -->
+    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/ih_primary</item>
+    </style>
+
+    <!-- Material Design Components -->
+    <style name="Theme.AppCompat.DayNight.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/ih_background</item>
+        <item name="android:statusBarColor">@color/status_bar_color</item>
+    </style>
+</resources>
