@@ -170,7 +170,6 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="yesterday">Yesterday</string>
-    <string name="next_week">Next Week</string>
     <string name="next_month">Next Month</string>
     <string name="select_date">Select Date</string>
     <string name="select_time">Select Time</string>
@@ -180,6 +179,20 @@
     <string name="all_day">All Day</string>
     <string name="recurring">Recurring</string>
     <string name="one_time">One Time</string>
+    
+    <!-- File and media -->
+    <string name="photo">Photo</string>
+    <string name="video">Video</string>
+    <string name="document">Document</string>
+    <string name="attachment">Attachment</string>
+    <string name="upload">Upload</string>
+    <string name="download">Download</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="file_manager">File Manager</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="remove_photo">Remove Photo</string>
     
     <!-- Permissions -->
     <string name="permission_camera_title">Camera Permission</string>
