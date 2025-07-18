@@ -12,16 +12,5 @@
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_size_xlarge">24sp</dimen>
     
-    <!-- Button Dimensions -->
-    <dimen name="button_height">48dp</dimen>
-    <dimen name="button_corner_radius">8dp</dimen>
-    
-    <!-- Icon Sizes -->
-    <dimen name="icon_size_small">24dp</dimen>
-    <dimen name="icon_size_medium">32dp</dimen>
-    <dimen name="icon_size_large">48dp</dimen>
-    
-    <!-- Elevation -->
-    <dimen name="elevation_card">4dp</dimen>
-    <dimen name="elevation_button">2dp</dimen>
+    <!-- Essential dimensions only (detailed dimensions in dimens.xml) -->
 </resources>
