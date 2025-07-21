@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
         <!-- Customize your theme here -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -27,7 +27,7 @@
     </style>
 
     <!-- Button styles -->
-    <style name="PrimaryButton" parent="Widget.AppCompat.Button">
+    <style name="PrimaryButton" parent="Widget.Material3.Button">
         <item name="android:background">@drawable/button_primary</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -36,7 +36,7 @@
         <item name="android:elevation">@dimen/elevation_button</item>
     </style>
 
-    <style name="SecondaryButton" parent="Widget.AppCompat.Button">
+    <style name="SecondaryButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:background">@drawable/button_secondary</item>
         <item name="android:textColor">@color/ih_primary</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -74,7 +74,7 @@
     </style>
 
     <!-- Input field styles -->
-    <style name="InputField" parent="Widget.AppCompat.EditText">
+    <style name="InputField" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="android:background">@drawable/input_field_background</item>
         <item name="android:padding">@dimen/padding_medium</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -84,7 +84,7 @@
     </style>
 
     <!-- Card styles -->
-    <style name="CardView" parent="CardView.Light">
+    <style name="CardView" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">@dimen/button_corner_radius</item>
         <item name="cardElevation">@dimen/elevation_card</item>
         <item name="cardBackgroundColor">@color/ih_surface</item>
@@ -92,39 +92,23 @@
     </style>
 
     <!-- Toolbar styles -->
-    <style name="ToolbarStyle" parent="Widget.AppCompat.Toolbar">
+    <style name="ToolbarStyle" parent="Widget.Material3.Toolbar">
         <item name="android:background">@color/ih_primary</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:elevation">@dimen/elevation_card</item>
     </style>
 
     <!-- Tab layout styles -->
-    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
-        <item name="tabTextColor">@color/ih_text_secondary</item>
-        <item name="tabSelectedTextColor">@color/ih_primary</item>
-        <item name="tabIndicatorColor">@color/ih_primary</item>
-        <item name="tabBackground">@color/ih_surface</item>
+    <style name="TabLayoutStyle" parent="Widget.Material3.TabLayout">
+        <item name="android:background">@color/ih_surface</item>
     </style>
 
     <!-- Bottom navigation styles -->
-    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+    <style name="BottomNavigationStyle" parent="Widget.Material3.BottomNavigationView">
         <item name="android:background">@color/ih_surface</item>
-        <item name="itemTextColor">@color/ih_text_secondary</item>
-        <item name="itemIconTint">@color/ih_text_secondary</item>
     </style>
 
     <!-- Progress bar styles -->
-    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+    <style name="ProgressBarStyle" parent="Widget.Material3.CircularProgressIndicator">
         <item name="android:indeterminateTint">@color/ih_primary</item>
-    </style>
-
-    <!-- Material Design Components -->
-    <style name="Theme.AppCompat.DayNight.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/ih_background</item>
-        <item name="android:statusBarColor">@color/status_bar_color</item>
     </style>
 </resources>

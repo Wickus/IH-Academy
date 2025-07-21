@@ -1,0 +1,19 @@
+Android resource linking failed
+error: resource style/Theme.AppCompat.Light.DarkActionBar (aka africa.itshappening.ihacademy:style/Theme.AppCompat.Light.DarkActionBar) not found.
+error: resource style/Widget.MaterialComponents.BottomNavigationView (aka africa.itshappening.ihacademy:style/Widget.MaterialComponents.BottomNavigationView) not found.
+error: resource style/CardView.Light (aka africa.itshappening.ihacademy:style/CardView.Light) not found.
+error: resource style/Widget.AppCompat.EditText (aka africa.itshappening.ihacademy:style/Widget.AppCompat.EditText) not found.
+error: resource style/Widget.AppCompat.Button (aka africa.itshappening.ihacademy:style/Widget.AppCompat.Button) not found.
+error: resource style/Widget.AppCompat.ProgressBar (aka africa.itshappening.ihacademy:style/Widget.AppCompat.ProgressBar) not found.
+error: resource style/Widget.AppCompat.Button (aka africa.itshappening.ihacademy:style/Widget.AppCompat.Button) not found.
+error: resource style/Widget.MaterialComponents.TabLayout (aka africa.itshappening.ihacademy:style/Widget.MaterialComponents.TabLayout) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:713: error: style attribute 'attr/tabSelectedTextColor (aka africa.itshappening.ihacademy:attr/tabSelectedTextColor)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:714: error: style attribute 'attr/tabIndicatorColor (aka africa.itshappening.ihacademy:attr/tabIndicatorColor)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:715: error: style attribute 'attr/tabBackground (aka africa.itshappening.ihacademy:attr/tabBackground)' not found.
+error: resource style/Theme.AppCompat.Light.NoActionBar (aka africa.itshappening.ihacademy:style/Theme.AppCompat.Light.NoActionBar) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:737: error: resource style/ThemeOverlay.AppCompat.Dark (aka africa.itshappening.ihacademy:style/ThemeOverlay.AppCompat.Dark) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:738: error: resource style/ThemeOverlay.AppCompat.Light (aka africa.itshappening.ihacademy:style/ThemeOverlay.AppCompat.Light) not found.
+error: resource style/Widget.AppCompat.Toolbar (aka africa.itshappening.ihacademy:style/Widget.AppCompat.Toolbar) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:737: error: resource style/ThemeOverlay.AppCompat.Dark (aka africa.itshappening.ihacademy:style/ThemeOverlay.AppCompat.Dark) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:738: error: style attribute 'attr/popupTheme (aka africa.itshappening.ihacademy:attr/popupTheme)' not found.
+error: failed linking references.
