@@ -12,7 +12,7 @@
     </style>
 
     <!-- App theme with no action bar -->
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -84,7 +84,7 @@
     </style>
 
     <!-- Card styles -->
-    <style name="CardView" parent="CardView">
+    <style name="CardView" parent="CardView.Light">
         <item name="cardCornerRadius">@dimen/button_corner_radius</item>
         <item name="cardElevation">@dimen/elevation_card</item>
         <item name="cardBackgroundColor">@color/ih_surface</item>
@@ -100,7 +100,7 @@
     </style>
 
     <!-- Tab layout styles -->
-    <style name="TabLayoutStyle" parent="Widget.Design.TabLayout">
+    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
         <item name="tabTextColor">@color/ih_text_secondary</item>
         <item name="tabSelectedTextColor">@color/ih_primary</item>
         <item name="tabIndicatorColor">@color/ih_primary</item>
@@ -108,7 +108,7 @@
     </style>
 
     <!-- Bottom navigation styles -->
-    <style name="BottomNavigationStyle" parent="Widget.Design.BottomNavigationView">
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="android:background">@color/ih_surface</item>
         <item name="itemTextColor">@color/ih_text_secondary</item>
         <item name="itemIconTint">@color/ih_text_secondary</item>

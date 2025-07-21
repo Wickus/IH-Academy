@@ -17,10 +17,22 @@
     <attr name="selectableItemBackground" format="reference" />
     <attr name="selectableItemBackgroundBorderless" format="reference" />
     
+    <!-- Window attributes -->
+    <attr name="windowActionBar" format="boolean" />
+    <attr name="windowNoTitle" format="boolean" />
+    
     <!-- ActionBar attributes -->
     <attr name="actionBarStyle" format="reference" />
     <attr name="actionBarTabStyle" format="reference" />
     <attr name="actionBarTabTextStyle" format="reference" />
+    
+    <!-- Material Design attributes -->
+    <attr name="itemTextColor" format="color" />
+    <attr name="itemIconTint" format="color" />
+    <attr name="cardCornerRadius" format="dimension" />
+    <attr name="cardElevation" format="dimension" />
+    <attr name="cardBackgroundColor" format="color" />
+    <attr name="tabTextColor" format="color" />
     
     <!-- Dialog attributes -->
     <attr name="dialogTheme" format="reference" />

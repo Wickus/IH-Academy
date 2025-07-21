@@ -1,0 +1,21 @@
+Android resource linking failed
+error: resource style/Theme.AppCompat.Light.DarkActionBar (aka africa.itshappening.ihacademy:style/Theme.AppCompat.Light.DarkActionBar) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:608: error: style attribute 'attr/windowActionBar (aka africa.itshappening.ihacademy:attr/windowActionBar)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:609: error: style attribute 'attr/windowNoTitle (aka africa.itshappening.ihacademy:attr/windowNoTitle)' not found.
+error: resource style/Widget.Design.BottomNavigationView (aka africa.itshappening.ihacademy:style/Widget.Design.BottomNavigationView) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:623: error: style attribute 'attr/itemTextColor (aka africa.itshappening.ihacademy:attr/itemTextColor)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:624: error: style attribute 'attr/itemIconTint (aka africa.itshappening.ihacademy:attr/itemIconTint)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:632: error: resource dimen/elevation_card (aka africa.itshappening.ihacademy:dimen/elevation_card) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:631: error: style attribute 'attr/cardCornerRadius (aka africa.itshappening.ihacademy:attr/cardCornerRadius)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:632: error: style attribute 'attr/cardElevation (aka africa.itshappening.ihacademy:attr/cardElevation)' not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:633: error: style attribute 'attr/cardBackgroundColor (aka africa.itshappening.ihacademy:attr/cardBackgroundColor)' not found.
+error: resource style/Widget.AppCompat.EditText (aka africa.itshappening.ihacademy:style/Widget.AppCompat.EditText) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:683: error: resource dimen/elevation_button (aka africa.itshappening.ihacademy:dimen/elevation_button) not found.
+error: resource style/Widget.AppCompat.Button (aka africa.itshappening.ihacademy:style/Widget.AppCompat.Button) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:683: error: resource dimen/elevation_button (aka africa.itshappening.ihacademy:dimen/elevation_button) not found.
+error: resource style/Widget.AppCompat.ProgressBar (aka africa.itshappening.ihacademy:style/Widget.AppCompat.ProgressBar) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:694: error: resource dimen/elevation_button (aka africa.itshappening.ihacademy:dimen/elevation_button) not found.
+error: resource style/Widget.AppCompat.Button (aka africa.itshappening.ihacademy:style/Widget.AppCompat.Button) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:694: error: resource dimen/elevation_button (aka africa.itshappening.ihacademy:dimen/elevation_button) not found.
+error: resource style/Widget.Design.TabLayout (aka africa.itshappening.ihacademy:style/Widget.Design.TabLayout) not found.
+africa.itshappening.ihacademy.app-mergeReleaseResources-41:/values/values.xml:702: error: style attribute 'attr/tabTextColor (aka africa.itshappening.ihacademy:attr/tabTextColor)' not found.
