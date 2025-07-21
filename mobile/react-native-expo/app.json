@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "IH Academy",
+    "slug": "ih-academy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F7FA"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "africa.itshappening.ihacademy",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "IH Academy needs access to your camera to take profile photos and document scanning.",
+        "NSPhotoLibraryUsageDescription": "IH Academy needs access to your photo library to select profile photos and save training certificates.",
+        "NSLocationWhenInUseUsageDescription": "IH Academy uses your location to find nearby training facilities and provide location-based services.",
+        "NSUserNotificationsUsageDescription": "IH Academy sends notifications for class reminders, booking confirmations, and training updates."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#20366B"
+      },
+      "package": "africa.itshappening.ihacademy",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id-here"
+      }
+    },
+    "plugins": [
+      "expo-notifications"
+    ]
+  }
+}
