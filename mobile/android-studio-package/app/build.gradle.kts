@@ -49,7 +49,8 @@ android {
 
     packaging {
         resources {
-            pickFirsts += "**/*.so"
+            pickFirsts.add("**/*.so")
+            excludes.addAll(listOf("META-INF/AL2.0", "META-INF/LGPL2.1"))
         }
     }
 
