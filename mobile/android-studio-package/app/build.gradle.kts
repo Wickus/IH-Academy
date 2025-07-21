@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "africa.itshappening.ihacademy"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "africa.itshappening.ihacademy"
