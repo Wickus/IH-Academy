@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+    <!-- Base application theme using native Android themes -->
+    <style name="AppTheme" parent="android:Theme.Material.Light">
         <!-- Customize your theme here -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/ih_background</item>
         <item name="android:textColorPrimary">@color/ih_text</item>
         <item name="android:textColorSecondary">@color/ih_text_secondary</item>
@@ -26,8 +26,8 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <!-- Button styles -->
-    <style name="PrimaryButton" parent="Widget.MaterialComponents.Button">
+    <!-- Button styles using native Android widgets -->
+    <style name="PrimaryButton" parent="android:Widget.Button">
         <item name="android:background">@drawable/button_primary</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -36,7 +36,7 @@
         <item name="android:elevation">@dimen/elevation_button</item>
     </style>
 
-    <style name="SecondaryButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="SecondaryButton" parent="android:Widget.Button">
         <item name="android:background">@drawable/button_secondary</item>
         <item name="android:textColor">@color/ih_primary</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -73,8 +73,8 @@
         <item name="android:textColor">@color/ih_text_secondary</item>
     </style>
 
-    <!-- Input field styles -->
-    <style name="InputField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <!-- Input field styles using native Android widgets -->
+    <style name="InputField" parent="android:Widget.EditText">
         <item name="android:background">@drawable/input_field_background</item>
         <item name="android:padding">@dimen/padding_medium</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -83,28 +83,28 @@
         <item name="android:minHeight">@dimen/button_height</item>
     </style>
 
-    <!-- Card styles -->
-    <style name="CardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">@dimen/button_corner_radius</item>
-        <item name="cardElevation">@dimen/elevation_card</item>
-        <item name="cardBackgroundColor">@color/ih_surface</item>
+    <!-- Card styles simplified without external dependencies -->
+    <style name="CardView">
+        <item name="android:background">@color/ih_surface</item>
+        <item name="android:elevation">@dimen/elevation_card</item>
         <item name="android:layout_margin">@dimen/margin_small</item>
     </style>
 
-    <!-- Toolbar styles -->
-    <style name="ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+    <!-- Toolbar styles using native widgets -->
+    <style name="ToolbarStyle" parent="android:Widget.Toolbar">
         <item name="android:background">@color/ih_primary</item>
         <item name="android:elevation">@dimen/elevation_card</item>
     </style>
 
-    <!-- Tab layout styles -->
-    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
+    <!-- Simplified layout styles -->
+    <style name="TabLayoutStyle">
         <item name="android:background">@color/ih_surface</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
-    <!-- Bottom navigation styles -->
-    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+    <style name="BottomNavigationStyle">
         <item name="android:background">@color/ih_surface</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
     <!-- Progress bar styles -->
