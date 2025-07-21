@@ -3,6 +3,14 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.0.21" apply false
 }
 
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
