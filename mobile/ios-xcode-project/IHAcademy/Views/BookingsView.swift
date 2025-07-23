@@ -5,6 +5,9 @@ struct BookingsView: View {
     @State private var bookings = sampleBookings
     @State private var showingCancelAlert = false
     @State private var bookingToCancel: Booking?
+    @State private var showingActionAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     
     var upcomingBookings: [Booking] {
         bookings.filter { $0.status == "Confirmed" || $0.status == "Pending" }
@@ -62,6 +65,11 @@ struct BookingsView: View {
             }
         } message: {
             Text("Are you sure you want to cancel this booking? This action cannot be undone.")
+        }
+        .alert(alertTitle, isPresented: $showingActionAlert) {
+            Button("OK") { }
+        } message: {
+            Text(alertMessage)
         }
     }
     

@@ -158,22 +158,34 @@ struct LoginView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             isLoading = false
             
-            // Demo validation
-            if email.lowercased().contains("demo") || email == "admin@ihacademy.africa" {
+            // Demo validation - accept all demo accounts and admin
+            if email.lowercased().contains("demo") || 
+               email.lowercased().contains("@ihacademy.africa") ||
+               email.lowercased().contains("admin") ||
+               email.lowercased().contains("member") ||
+               email.lowercased().contains("coach") {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     isLoggedIn = true
                 }
             } else {
-                alertMessage = "Please use a demo account or contact your administrator"
+                alertMessage = "Please use the demo account buttons below or contact your administrator"
                 showAlert = true
             }
         }
     }
     
     private func loginAsDemo(role: String) {
+        isLoading = true
         email = "\(role)@ihacademy.africa"
         password = "demo123"
-        handleLogin()
+        
+        // Immediate demo login without validation delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isLoading = false
+            withAnimation(.easeInOut(duration: 0.5)) {
+                isLoggedIn = true
+            }
+        }
     }
 }
 
