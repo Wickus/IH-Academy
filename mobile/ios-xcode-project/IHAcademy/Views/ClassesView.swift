@@ -4,6 +4,8 @@ struct ClassesView: View {
     @State private var searchText = ""
     @State private var selectedSport = "All"
     @State private var showingFilter = false
+    @State private var showingBookingAlert = false
+    @State private var selectedClassName = ""
     @State private var classes = sampleClasses
     
     let sports = ["All", "Soccer", "Basketball", "Tennis", "Rugby", "Swimming", "Cricket"]
@@ -74,7 +76,8 @@ struct ClassesView: View {
                         LazyVStack(spacing: IHAcademyTheme.mediumPadding) {
                             ForEach(filteredClasses) { class_ in
                                 ClassCard(sportClass: class_, onBook: {
-                                    // Handle class booking
+                                    selectedClassName = class_.name
+                                    showingBookingAlert = true
                                 })
                             }
                         }
@@ -97,6 +100,12 @@ struct ClassesView: View {
         }
         .sheet(isPresented: $showingFilter) {
             FilterView(selectedSport: $selectedSport, sports: sports)
+        }
+        .alert("Book Class", isPresented: $showingBookingAlert) {
+            Button("Book Now") { }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Demo: Would you like to book \(selectedClassName)? This is demo functionality.")
         }
     }
 }

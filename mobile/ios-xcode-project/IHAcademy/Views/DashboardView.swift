@@ -13,6 +13,10 @@ struct DashboardView: View {
         RecentBooking(id: 3, className: "Cricket Practice", date: "2 days ago", status: "Completed")
     ]
     
+    @State private var showingAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -38,6 +42,11 @@ struct DashboardView: View {
             .background(IHAcademyTheme.backgroundColor)
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.large)
+            .alert(alertTitle, isPresented: $showingAlert) {
+                Button("OK") { }
+            } message: {
+                Text(alertMessage)
+            }
         }
     }
     
@@ -136,7 +145,9 @@ struct DashboardView: View {
                     icon: "calendar.badge.plus",
                     color: IHAcademyTheme.primaryColor
                 ) {
-                    // Navigate to booking
+                    alertTitle = "Book Class"
+                    alertMessage = "Demo: This would open the class booking screen."
+                    showingAlert = true
                 }
                 
                 QuickActionCard(
@@ -144,7 +155,9 @@ struct DashboardView: View {
                     icon: "calendar",
                     color: IHAcademyTheme.secondaryColor
                 ) {
-                    // Navigate to schedule
+                    alertTitle = "View Schedule"
+                    alertMessage = "Demo: This would show your complete class schedule."
+                    showingAlert = true
                 }
                 
                 QuickActionCard(
@@ -152,7 +165,9 @@ struct DashboardView: View {
                     icon: "message.fill",
                     color: IHAcademyTheme.accentColor
                 ) {
-                    // Navigate to messages
+                    alertTitle = "Messages"
+                    alertMessage = "Demo: This would open your message inbox."
+                    showingAlert = true
                 }
                 
                 QuickActionCard(
@@ -160,7 +175,9 @@ struct DashboardView: View {
                     icon: "gear",
                     color: IHAcademyTheme.textSecondary
                 ) {
-                    // Navigate to settings
+                    alertTitle = "Settings"
+                    alertMessage = "Demo: This would open app settings and preferences."
+                    showingAlert = true
                 }
             }
         }

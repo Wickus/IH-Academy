@@ -3,6 +3,9 @@ import SwiftUI
 struct ProfileView: View {
     @State private var showingSettings = false
     @State private var showingEditProfile = false
+    @State private var showingActionAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     @State private var user = sampleUser
     
     var body: some View {
@@ -41,6 +44,11 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingEditProfile) {
             EditProfileView(user: $user)
+        }
+        .alert(alertTitle, isPresented: $showingActionAlert) {
+            Button("OK") { }
+        } message: {
+            Text(alertMessage)
         }
     }
     
@@ -103,25 +111,33 @@ struct ProfileView: View {
     private var menuSection: some View {
         VStack(spacing: 0) {
             ProfileMenuRow(icon: "calendar.badge.plus", title: "My Bookings", subtitle: "View and manage bookings") {
-                // Navigate to bookings
+                alertTitle = "My Bookings"
+                alertMessage = "Demo: This would show your booking history and upcoming reservations."
+                showingActionAlert = true
             }
             
             Divider().padding(.leading, 60)
             
             ProfileMenuRow(icon: "heart.fill", title: "Favorite Classes", subtitle: "Your saved classes") {
-                // Navigate to favorites
+                alertTitle = "Favorite Classes"
+                alertMessage = "Demo: This would display your saved and favorite classes."
+                showingActionAlert = true
             }
             
             Divider().padding(.leading, 60)
             
             ProfileMenuRow(icon: "trophy.fill", title: "Achievements", subtitle: "Your training milestones") {
-                // Navigate to achievements
+                alertTitle = "Achievements"
+                alertMessage = "Demo: This would show your training achievements and progress badges."
+                showingActionAlert = true
             }
             
             Divider().padding(.leading, 60)
             
             ProfileMenuRow(icon: "creditcard.fill", title: "Payment Methods", subtitle: "Manage payment options") {
-                // Navigate to payments
+                alertTitle = "Payment Methods"
+                alertMessage = "Demo: This would allow you to manage your saved payment methods."
+                showingActionAlert = true
             }
             
             Divider().padding(.leading, 60)
@@ -136,19 +152,25 @@ struct ProfileView: View {
     private var accountSection: some View {
         VStack(spacing: 0) {
             ProfileMenuRow(icon: "questionmark.circle.fill", title: "Help & Support", subtitle: "Get help and contact support") {
-                // Open help
+                alertTitle = "Help & Support"
+                alertMessage = "Demo: This would open the help center and support contact options."
+                showingActionAlert = true
             }
             
             Divider().padding(.leading, 60)
             
             ProfileMenuRow(icon: "doc.text.fill", title: "Terms & Privacy", subtitle: "Legal information") {
-                // Open terms
+                alertTitle = "Terms & Privacy"
+                alertMessage = "Demo: This would display terms of service and privacy policy."
+                showingActionAlert = true
             }
             
             Divider().padding(.leading, 60)
             
             ProfileMenuRow(icon: "arrow.right.square.fill", title: "Sign Out", subtitle: "Sign out of your account", isDestructive: true) {
-                // Handle sign out
+                alertTitle = "Sign Out"
+                alertMessage = "Demo: This would sign you out and return to the login screen."
+                showingActionAlert = true
             }
         }
         .ihCardStyle()
