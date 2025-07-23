@@ -133,7 +133,7 @@ struct BookingCard: View {
                 BookingDetailRow(icon: "person.fill", text: booking.coach)
                 BookingDetailRow(icon: "calendar", text: "\(booking.date) at \(booking.time)")
                 BookingDetailRow(icon: "mappin.and.ellipse", text: booking.location)
-                BookingDetailRow(icon: "creditcard.fill", text: "R\(booking.price, specifier: "%.0f")")
+                BookingDetailRow(icon: "creditcard.fill", text: "R\(Int(booking.price))")
             }
             
             // Actions
