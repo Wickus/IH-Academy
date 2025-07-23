@@ -1,0 +1,403 @@
+== DATE:
+
+    Wednesday, 23 July 2025 at 21:41:10 South Africa Standard Time
+    
+    2025-07-23T19:41:10Z
+
+
+
+== PREVIEW UPDATE ERROR:
+
+    SchemeBuildError: Failed to build the scheme “IHAcademy”
+    
+    keyword 'class' cannot be used as an identifier here
+    
+    Compiling ClassesView.swift:
+    Failed frontend command:
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/ContentView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift -primary-file /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Theme/IHAcademyTheme.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/IHAcademyApp.swift /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/GeneratedAssetSymbols.swift -emit-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ClassesView.d -emit-const-values-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ClassesView.swiftconstvalues -emit-reference-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ClassesView.swiftdeps -serialize-diagnostics-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ClassesView.dia -emit-localized-strings -emit-localized-strings-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64 -target arm64-apple-ios15.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -F /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -Xcc -ivfsstatcache -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-generated-files.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-own-target-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-project-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources-normal/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources -Xcc -DDEBUG\=1 -module-name IHAcademy -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -o /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ClassesView.o -index-unit-output-path /IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ClassesView.o -index-store-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Index.noindex/DataStore -index-system-modules
+    
+    
+    Compile ClassesView.swift (arm64):
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: error: keyword 'class' cannot be used as an identifier here
+        let class: SportClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: note: if this name is unavoidable, use backticks to escape it
+        let class: SportClass
+            ^~~~~
+            `class`
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:139:26: error: expected expression in list of expressions
+                        Text(class.name)
+                             ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:139:31: error: expected identifier in class declaration
+                        Text(class.name)
+                                  ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:155:30: error: expected expression in list of expressions
+                        Text("R\(class.price, specifier: "%.0f")")
+                                 ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:167:59: error: expected expression in list of expressions
+                    ClassDetailRow(icon: "person.fill", text: class.coach)
+                                                              ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:167:64: error: expected identifier in class declaration
+                    ClassDetailRow(icon: "person.fill", text: class.coach)
+                                                                   ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:174:17: error: expected expression, var, or let in 'if' condition
+                if !class.description.isEmpty {
+                    ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:174:22: error: expected identifier in class declaration
+                if !class.description.isEmpty {
+                         ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: error: property declaration does not bind any variables
+        let class: SportClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:76:42: error: extra arguments at positions #1, #2 in call
+                                    ClassCard(class: class_) {
+                                             ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:130:8: note: 'init(onBook:)' declared here
+    struct ClassCard: View {
+           ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:76:43: error: missing argument for parameter 'onBook' in call
+                                    ClassCard(class: class_) {
+                                              ^
+                                              onBook: <#() -> Void#>, 
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:130:8: note: 'init(onBook:)' declared here
+    struct ClassCard: View {
+           ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:139:25: error: missing argument for parameter 'verbatim' in call
+                        Text(class.name)
+                            ^
+                            verbatim: <#String#>
+    SwiftUICore.Text.init:2:19: note: 'init(verbatim:)' declared here
+    @inlinable public init(verbatim content: String)}
+                      ^
+    
+    
+    Compiling DashboardView.swift:
+    Failed frontend command:
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/ContentView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift -primary-file /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Theme/IHAcademyTheme.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/IHAcademyApp.swift /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/GeneratedAssetSymbols.swift -emit-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/DashboardView.d -emit-const-values-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/DashboardView.swiftconstvalues -emit-reference-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/DashboardView.swiftdeps -serialize-diagnostics-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/DashboardView.dia -emit-localized-strings -emit-localized-strings-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64 -target arm64-apple-ios15.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -F /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -Xcc -ivfsstatcache -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-generated-files.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-own-target-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-project-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources-normal/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources -Xcc -DDEBUG\=1 -module-name IHAcademy -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -o /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/DashboardView.o -index-unit-output-path /IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/DashboardView.o -index-store-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Index.noindex/DataStore -index-system-modules
+    
+    
+    Compile DashboardView.swift (arm64):
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: error: keyword 'class' cannot be used as an identifier here
+        let class: UpcomingClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: note: if this name is unavoidable, use backticks to escape it
+        let class: UpcomingClass
+            ^~~~~
+            `class`
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:215:22: error: expected expression in list of expressions
+                    Text(class.name)
+                         ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:215:27: error: expected identifier in class declaration
+                    Text(class.name)
+                              ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:226:18: error: expected expression in list of expressions
+                Text(class.time)
+                     ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:226:23: error: expected identifier in class declaration
+                Text(class.time)
+                          ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: error: property declaration does not bind any variables
+        let class: UpcomingClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:100:46: error: argument passed to call that takes no arguments
+                        UpcomingClassCard(class: class_)
+                                         ~~~~~~~~^~~~~~~
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:215:21: error: missing argument for parameter 'verbatim' in call
+                    Text(class.name)
+                        ^
+                        verbatim: <#String#>
+    SwiftUICore.Text.init:2:19: note: 'init(verbatim:)' declared here
+    @inlinable public init(verbatim content: String)}
+                      ^
+    
+    
+    Compiling ContentView.swift:
+    Failed frontend command:
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c -primary-file /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/ContentView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Theme/IHAcademyTheme.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/IHAcademyApp.swift /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/GeneratedAssetSymbols.swift -emit-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ContentView.d -emit-const-values-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ContentView.swiftconstvalues -emit-reference-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ContentView.swiftdeps -serialize-diagnostics-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ContentView.dia -emit-localized-strings -emit-localized-strings-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64 -target arm64-apple-ios15.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -F /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -Xcc -ivfsstatcache -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-generated-files.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-own-target-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-project-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources-normal/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources -Xcc -DDEBUG\=1 -module-name IHAcademy -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -o /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ContentView.o -index-unit-output-path /IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/ContentView.o -index-store-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Index.noindex/DataStore -index-system-modules
+    
+    
+    Compile ContentView.swift (arm64):
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: error: keyword 'class' cannot be used as an identifier here
+        let class: UpcomingClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: note: if this name is unavoidable, use backticks to escape it
+        let class: UpcomingClass
+            ^~~~~
+            `class`
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: error: keyword 'class' cannot be used as an identifier here
+        let class: SportClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: note: if this name is unavoidable, use backticks to escape it
+        let class: SportClass
+            ^~~~~
+            `class`
+    
+    
+    Compiling BookingsView.swift:
+    Failed frontend command:
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/ContentView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift -primary-file /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Theme/IHAcademyTheme.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/IHAcademyApp.swift /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/GeneratedAssetSymbols.swift -emit-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/BookingsView.d -emit-const-values-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/BookingsView.swiftconstvalues -emit-reference-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/BookingsView.swiftdeps -serialize-diagnostics-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/BookingsView.dia -emit-localized-strings -emit-localized-strings-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64 -target arm64-apple-ios15.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -F /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -Xcc -ivfsstatcache -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-generated-files.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-own-target-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-project-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources-normal/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources -Xcc -DDEBUG\=1 -module-name IHAcademy -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -o /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/BookingsView.o -index-unit-output-path /IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/BookingsView.o -index-store-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Index.noindex/DataStore -index-system-modules
+    
+    
+    Compile BookingsView.swift (arm64):
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift:136:95: error: extra argument 'specifier' in call
+                    BookingDetailRow(icon: "creditcard.fill", text: "R\(booking.price, specifier: "%.0f")")
+                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+    
+    
+    Emitting module for IHAcademy:
+    Failed frontend command:
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -emit-module -experimental-skip-non-inlinable-function-bodies-without-types /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/ContentView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Theme/IHAcademyTheme.swift /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/IHAcademyApp.swift /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/GeneratedAssetSymbols.swift -target arm64-apple-ios15.0-simulator -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.5.sdk -I /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -F /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/caitlintudhope/Downloads/mobile/ios-xcode-project -Xcc -ivfsstatcache -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.5-22F76-d5fc8ad4295d2ef488fb7d0f804ce0c4.sdkstatcache -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-generated-files.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-own-target-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-all-target-headers.hmap -Xcc -iquote -Xcc /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/IHAcademy-project-headers.hmap -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources-normal/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources/arm64 -Xcc -I/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/DerivedSources -Xcc -DDEBUG\=1 -module-name IHAcademy -frontend-parseable-output -disable-clang-spi -target-sdk-version 18.5 -target-sdk-name iphonesimulator18.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -emit-module-doc-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.swiftdoc -emit-module-source-info-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.swiftsourceinfo -emit-objc-header-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy-Swift.h -serialize-diagnostics-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy-master-emit-module.dia -emit-dependencies-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy-master-emit-module.d -o /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.swiftmodule -emit-abi-descriptor-path /Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.abi.json
+    
+    
+    Emit Swift module (arm64):
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: error: keyword 'class' cannot be used as an identifier here
+        let class: UpcomingClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: note: if this name is unavoidable, use backticks to escape it
+        let class: UpcomingClass
+            ^~~~~
+            `class`
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:200:9: error: property declaration does not bind any variables
+        let class: UpcomingClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:100:46: error: argument passed to call that takes no arguments
+                        UpcomingClassCard(class: class_)
+                                         ~~~~~~~~^~~~~~~
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:215:22: error: expected expression in list of expressions
+                    Text(class.name)
+                         ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:215:27: error: expected identifier in class declaration
+                    Text(class.name)
+                              ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:226:18: error: expected expression in list of expressions
+                Text(class.time)
+                     ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:226:23: error: expected identifier in class declaration
+                Text(class.time)
+                          ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:215:21: error: missing argument for parameter 'verbatim' in call
+                    Text(class.name)
+                        ^
+                        verbatim: <#String#>
+    SwiftUICore.Text.init:2:19: note: 'init(verbatim:)' declared here
+    @inlinable public init(verbatim content: String)}
+                      ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: error: keyword 'class' cannot be used as an identifier here
+        let class: SportClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: note: if this name is unavoidable, use backticks to escape it
+        let class: SportClass
+            ^~~~~
+            `class`
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:131:9: error: property declaration does not bind any variables
+        let class: SportClass
+            ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:76:42: error: extra arguments at positions #1, #2 in call
+                                    ClassCard(class: class_) {
+                                             ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:130:8: note: 'init(onBook:)' declared here
+    struct ClassCard: View {
+           ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:76:43: error: missing argument for parameter 'onBook' in call
+                                    ClassCard(class: class_) {
+                                              ^
+                                              onBook: <#() -> Void#>, 
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:130:8: note: 'init(onBook:)' declared here
+    struct ClassCard: View {
+           ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:139:26: error: expected expression in list of expressions
+                        Text(class.name)
+                             ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:139:31: error: expected identifier in class declaration
+                        Text(class.name)
+                                  ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:155:30: error: expected expression in list of expressions
+                        Text("R\(class.price, specifier: "%.0f")")
+                                 ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:167:59: error: expected expression in list of expressions
+                    ClassDetailRow(icon: "person.fill", text: class.coach)
+                                                              ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:167:64: error: expected identifier in class declaration
+                    ClassDetailRow(icon: "person.fill", text: class.coach)
+                                                                   ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:174:17: error: expected expression, var, or let in 'if' condition
+                if !class.description.isEmpty {
+                    ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:174:22: error: expected identifier in class declaration
+                if !class.description.isEmpty {
+                         ^
+    /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:139:25: error: missing argument for parameter 'verbatim' in call
+                        Text(class.name)
+                            ^
+                            verbatim: <#String#>
+    SwiftUICore.Text.init:2:19: note: 'init(verbatim:)' declared here
+    @inlinable public init(verbatim content: String)}
+                      ^
+    
+    
+    Copy IHAcademy.swiftdoc (arm64):
+    error: lstat(/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.swiftdoc): No such file or directory (2) (in target 'IHAcademy' from project 'IHAcademy')
+    
+    
+    Copy IHAcademy.abi.json (arm64):
+    error: lstat(/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.abi.json): No such file or directory (2) (in target 'IHAcademy' from project 'IHAcademy')
+    
+    
+    Copy IHAcademy.swiftmodule (arm64):
+    error: lstat(/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.swiftmodule): No such file or directory (2) (in target 'IHAcademy' from project 'IHAcademy')
+    
+    
+    Copy IHAcademy.swiftsourceinfo (arm64):
+    error: lstat(/Users/caitlintudhope/Library/Developer/Xcode/DerivedData/IHAcademy-bxfmywgiezpvvrasrniymnrxqigp/Build/Intermediates.noindex/IHAcademy.build/Debug-iphonesimulator/IHAcademy.build/Objects-normal/arm64/IHAcademy.swiftsourceinfo): No such file or directory (2) (in target 'IHAcademy' from project 'IHAcademy')
+    
+
+
+
+== VERSION INFO:
+
+    Tools: 16F6
+    OS:    24F74
+    PID:   2552
+    Model: MacBook Air
+    Arch:  arm64e
+
+
+
+== EXECUTION MODE PROPERTIES:
+
+    Automatically Refresh Previews: true
+    JIT Mode User Enabled: true
+    Falling back to Dynamic Replacement: false
+
+
+
+== ENVIRONMENT:
+
+    openFiles = [
+        /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift
+    ]
+    wantsNewBuildSystem = true
+    newBuildSystemAvailable = true
+    activeScheme = IHAcademy
+    activeRunDestination = Any iOS Device variant iphoneos undefined_arch
+    workspaceArena = [x]
+    buildArena = [x]
+    buildableEntries = [
+        IHAcademy.app
+    ]
+    runMode = JIT Executor
+
+
+
+== SELECTED RUN DESTINATION:
+
+    Generic | iOS 18.5 | iphoneos | undefined_arch | GenericiOS | no proxy
+
+
+
+== PACKAGE RESOLUTION ERRORS:
+
+    
+
+
+
+== REFERENCED SOURCE PACKAGES:
+
+    
+
+
+
+== JIT LINKAGE:
+
+    
+
+
+
+== SESSION GROUP 6227:
+
+    workspace identifier: WorkspaceIdentifier(identifier: C89C7C6C-3BBA-4AFC-B0F7-5F9793855509)
+    providers: [
+        Preview Provider | LoginView_Previews provider #1 in LoginView.swift [Editor(6183)]
+    ]
+    translation units: [
+        /Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift
+    ]
+    attributes: [
+        Editor(6183):     []
+    ]
+    session: 6232
+    request sessions: [
+        LoginView_Previews provider #1 in LoginView.swift: not completed
+    ]
+
+
+
+== UPDATE SESSION 6232:
+
+    Start Date: Wednesday, 23 July 2025 at 21:40:47 South Africa Standard Time
+    Timing {
+        Elapsed Time: 14.73782503604889s
+        9a11b46dff7c8818,774992447.768569,14.73782503604889s,,PreviewUpdateSession,id:6232
+        c51736e62f39d672,774992447.844952,0.0027610063552856445s,,MakeBuildGraph,
+        2e3fcb5317018c52,774992447.859542,14.628113985061646s,,WorkspaceBuild,
+    }
+    Preview Provider {
+        UpdaterStore {
+            updaterLimit: single
+            expectedAbandonedIdentifiers: [6013]
+        }
+        Simulator {
+            platform: iphonesimulator
+            device: 01682953-C5AF-47BD-A0B0-F0838FA6DC27 iPhone 16 Pro
+            buildNumber: 22F77
+            runtimePath: /Library/Developer/CoreSimulator/Volumes/iOS_22F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 18.5.simruntime
+        }
+    }
+    Build Graph {
+        IHAcademy.app (#3)
+           sourceFile(file:///Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift -> LoginView.swift) (#1)
+           LoginView.swift (#2)
+    }
+    Update Plan {
+        iOS [arm64 iphonesimulator18.5 iphonesimulator] (iPhone 16 Pro, 9DB70ACC-7670-4C91-82A2-1F7A7CFF07C6-iphonesimulator18.5-arm64-iphonesimulator), [], thinning disabled, thunking enabled) {
+            Destination: iPhone 16 Pro 9DB70ACC-7670-4C91-82A2-1F7A7CFF07C6 | default device for iphonesimulator [
+                IHAcademy app - Previews {
+                    execution point packs [
+                        [source: LoginView.swift, role: Previews] (in IHAcademy)
+                    ]
+                    translation units [
+                        LoginView.swift (in IHAcademy.app)
+                    ]
+                    modules [
+                        IHAcademy.app
+                    ]
+                    jit link description [
+                        IHAcademy.app
+                    ]
+                }
+            ]
+        }
+    }
+
+
+
+== BUILD PRODUCTS CACHE:
+
+    BuildCache {
+        Translation Units [
+            file:///Users/caitlintudhope/Downloads/mobile/ios-xcode-project/IHAcademy/Views/LoginView.swift -> LoginView.swift {
+                workspace: iOS [arm64 iphonesimulator18.5 iphonesimulator] (iPhone 16 Pro, 9DB70ACC-7670-4C91-82A2-1F7A7CFF07C6-iphonesimulator18.5-arm64-iphonesimulator), [], thinning disabled, thunking enabled)
+                Previews_LoginView
+            }
+        ]
+    }
+
+
+
+== POWER STATE LOGS:
+
+    2025/07/23, 21:40 Received power source state: Battery Powered (lowPowerMode: false, status: unplugged, level: 56%)
+    2025/07/23, 21:40 Broadcasting device power state: Mid Power
+    2025/07/23, 21:40 No device power state user override user default value.Current power state: Mid Power
+
+

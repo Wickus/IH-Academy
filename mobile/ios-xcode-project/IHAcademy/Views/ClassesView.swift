@@ -73,9 +73,9 @@ struct ClassesView: View {
                     ScrollView {
                         LazyVStack(spacing: IHAcademyTheme.mediumPadding) {
                             ForEach(filteredClasses) { class_ in
-                                ClassCard(class: class_) {
+                                ClassCard(sportClass: class_, onBook: {
                                     // Handle class booking
-                                }
+                                })
                             }
                         }
                         .padding(.horizontal, IHAcademyTheme.mediumPadding)
@@ -128,7 +128,7 @@ struct SportFilterChip: View {
 }
 
 struct ClassCard: View {
-    let class: SportClass
+    let sportClass: SportClass
     let onBook: () -> Void
     
     var body: some View {
@@ -136,23 +136,23 @@ struct ClassCard: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(class.name)
+                    Text(sportClass.name)
                         .font(IHAcademyTheme.headlineFont)
                         .foregroundColor(IHAcademyTheme.textPrimary)
                     
-                    Text(class.sport)
+                    Text(sportClass.sport)
                         .font(IHAcademyTheme.captionFont)
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(sportColor(for: class.sport))
+                        .background(sportColor(for: sportClass.sport))
                         .cornerRadius(6)
                 }
                 
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("R\(class.price, specifier: "%.0f")")
+                    Text("R\(Int(sportClass.price))")
                         .font(IHAcademyTheme.headlineFont)
                         .foregroundColor(IHAcademyTheme.primaryColor)
                     
@@ -164,15 +164,15 @@ struct ClassCard: View {
             
             // Details
             VStack(spacing: IHAcademyTheme.smallPadding) {
-                ClassDetailRow(icon: "person.fill", text: class.coach)
-                ClassDetailRow(icon: "calendar", text: "\(class.day) at \(class.time)")
-                ClassDetailRow(icon: "mappin.and.ellipse", text: class.location)
-                ClassDetailRow(icon: "person.2.fill", text: "\(class.spotsAvailable) spots available")
+                ClassDetailRow(icon: "person.fill", text: sportClass.coach)
+                ClassDetailRow(icon: "calendar", text: "\(sportClass.day) at \(sportClass.time)")
+                ClassDetailRow(icon: "mappin.and.ellipse", text: sportClass.location)
+                ClassDetailRow(icon: "person.2.fill", text: "\(sportClass.spotsAvailable) spots available")
             }
             
             // Description
-            if !class.description.isEmpty {
-                Text(class.description)
+            if !sportClass.description.isEmpty {
+                Text(sportClass.description)
                     .font(IHAcademyTheme.bodyFont)
                     .foregroundColor(IHAcademyTheme.textSecondary)
                     .multilineTextAlignment(.leading)

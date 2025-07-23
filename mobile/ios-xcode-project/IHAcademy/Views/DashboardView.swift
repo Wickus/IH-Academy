@@ -97,7 +97,7 @@ struct DashboardView: View {
             
             LazyVStack(spacing: IHAcademyTheme.smallPadding) {
                 ForEach(upcomingClasses) { class_ in
-                    UpcomingClassCard(class: class_)
+                    UpcomingClassCard(upcomingClass: class_)
                 }
             }
         }
@@ -197,7 +197,7 @@ struct StatCard: View {
 }
 
 struct UpcomingClassCard: View {
-    let class: UpcomingClass
+    let upcomingClass: UpcomingClass
     
     var body: some View {
         HStack(spacing: IHAcademyTheme.mediumPadding) {
@@ -212,18 +212,18 @@ struct UpcomingClassCard: View {
                 )
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(class.name)
+                Text(upcomingClass.name)
                     .font(IHAcademyTheme.bodyFont)
                     .foregroundColor(IHAcademyTheme.textPrimary)
                 
-                Text(class.coach)
+                Text(upcomingClass.coach)
                     .font(IHAcademyTheme.captionFont)
                     .foregroundColor(IHAcademyTheme.textSecondary)
             }
             
             Spacer()
             
-            Text(class.time)
+            Text(upcomingClass.time)
                 .font(IHAcademyTheme.captionFont)
                 .foregroundColor(IHAcademyTheme.primaryColor)
                 .padding(.horizontal, 12)
