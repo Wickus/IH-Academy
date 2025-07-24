@@ -105,7 +105,6 @@ struct BookingsList: View {
                 .padding(.vertical, IHAcademyTheme.mediumPadding)
                 .frame(maxWidth: .infinity)
             }
-            .scrollContentBackground(.hidden)
         }
     }
 }

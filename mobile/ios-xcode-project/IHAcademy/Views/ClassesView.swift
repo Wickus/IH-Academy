@@ -85,7 +85,6 @@ struct ClassesView: View {
                         .padding(.vertical, IHAcademyTheme.mediumPadding)
                         .frame(maxWidth: .infinity)
                     }
-                    .scrollContentBackground(.hidden)
                 }
             }
             .background(IHAcademyTheme.backgroundColor)
