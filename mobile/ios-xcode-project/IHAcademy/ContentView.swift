@@ -28,7 +28,7 @@ struct ContentView: View {
                     }
                     .tag(2)
                 
-                ProfileView()
+                ProfileView(isLoggedIn: $isLoggedIn)
                     .tabItem {
                         Image(systemName: "person.fill")
                         Text("Profile")
@@ -36,6 +36,10 @@ struct ContentView: View {
                     .tag(3)
             }
             .accentColor(IHAcademyTheme.primaryColor)
+            .onAppear {
+                // Reset to dashboard when logging back in
+                selectedTab = 0
+            }
         } else {
             LoginView(isLoggedIn: $isLoggedIn)
         }
