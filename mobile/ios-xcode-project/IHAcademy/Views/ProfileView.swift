@@ -30,7 +30,6 @@ struct ProfileView: View {
                 .padding(.bottom, IHAcademyTheme.largePadding)
                 .frame(maxWidth: .infinity)
             }
-            .scrollContentBackground(.hidden)
             .background(IHAcademyTheme.backgroundColor)
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
@@ -460,6 +459,6 @@ let sampleUser = User(
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView()
+        ProfileView(isLoggedIn: .constant(true))
     }
 }

@@ -1,0 +1,58 @@
+CompileSwift normal arm64 (in target 'IHAcademy' from project 'IHAcademy')
+    cd /Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project
+    
+
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:43:14: error: 'scrollContentBackground' is only available in iOS 16.0 or newer
+            .scrollContentBackground(.hidden)
+             ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:43:14: note: add 'if #available' version check
+            .scrollContentBackground(.hidden)
+             ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:20:9: note: add @available attribute to enclosing property
+    var body: some View {
+        ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/DashboardView.swift:3:8: note: add @available attribute to enclosing struct
+struct DashboardView: View {
+       ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:88:22: error: 'scrollContentBackground' is only available in iOS 16.0 or newer
+                    .scrollContentBackground(.hidden)
+                     ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:88:22: note: add 'if #available' version check
+                    .scrollContentBackground(.hidden)
+                     ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:31:9: note: add @available attribute to enclosing property
+    var body: some View {
+        ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ClassesView.swift:3:8: note: add @available attribute to enclosing struct
+struct ClassesView: View {
+       ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift:108:14: error: 'scrollContentBackground' is only available in iOS 16.0 or newer
+            .scrollContentBackground(.hidden)
+             ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift:108:14: note: add 'if #available' version check
+            .scrollContentBackground(.hidden)
+             ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift:90:9: note: add @available attribute to enclosing property
+    var body: some View {
+        ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/BookingsView.swift:85:8: note: add @available attribute to enclosing struct
+struct BookingsList: View {
+       ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift:33:14: error: 'scrollContentBackground' is only available in iOS 16.0 or newer
+            .scrollContentBackground(.hidden)
+             ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift:33:14: note: add 'if #available' version check
+            .scrollContentBackground(.hidden)
+             ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift:13:9: note: add @available attribute to enclosing property
+    var body: some View {
+        ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift:3:8: note: add @available attribute to enclosing struct
+struct ProfileView: View {
+       ^
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift:463:21: error: missing argument for parameter 'isLoggedIn' in call
+        ProfileView()
+                    ^
+                    isLoggedIn: <#Binding<Bool>#>
+/Users/caitlintudhope/Downloads/IH-Academy/mobile/ios-xcode-project/IHAcademy/Views/ProfileView.swift:3:8: note: 'init(isLoggedIn:)' declared here
+struct ProfileView: View {

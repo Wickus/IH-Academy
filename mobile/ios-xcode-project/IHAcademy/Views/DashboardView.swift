@@ -40,7 +40,6 @@ struct DashboardView: View {
                 .padding(.bottom, IHAcademyTheme.largePadding)
                 .frame(maxWidth: .infinity)
             }
-            .scrollContentBackground(.hidden)
             .background(IHAcademyTheme.backgroundColor)
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.large)
