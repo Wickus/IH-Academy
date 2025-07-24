@@ -19,7 +19,7 @@ struct DashboardView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: IHAcademyTheme.largePadding) {
                     // Header
                     headerSection
@@ -38,7 +38,9 @@ struct DashboardView: View {
                 }
                 .padding(.horizontal, IHAcademyTheme.mediumPadding)
                 .padding(.bottom, IHAcademyTheme.largePadding)
+                .frame(maxWidth: .infinity)
             }
+            .scrollContentBackground(.hidden)
             .background(IHAcademyTheme.backgroundColor)
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.large)

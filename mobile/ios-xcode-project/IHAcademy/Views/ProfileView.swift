@@ -4,13 +4,15 @@ struct ProfileView: View {
     @State private var showingSettings = false
     @State private var showingEditProfile = false
     @State private var showingActionAlert = false
+    @State private var showingLogoutAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var user = sampleUser
+    @Binding var isLoggedIn: Bool
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: IHAcademyTheme.largePadding) {
                     // Profile Header
                     profileHeader
@@ -26,7 +28,9 @@ struct ProfileView: View {
                 }
                 .padding(.horizontal, IHAcademyTheme.mediumPadding)
                 .padding(.bottom, IHAcademyTheme.largePadding)
+                .frame(maxWidth: .infinity)
             }
+            .scrollContentBackground(.hidden)
             .background(IHAcademyTheme.backgroundColor)
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
@@ -49,6 +53,16 @@ struct ProfileView: View {
             Button("OK") { }
         } message: {
             Text(alertMessage)
+        }
+        .alert("Sign Out", isPresented: $showingLogoutAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Sign Out", role: .destructive) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    isLoggedIn = false
+                }
+            }
+        } message: {
+            Text("Are you sure you want to sign out?")
         }
     }
     
@@ -168,9 +182,7 @@ struct ProfileView: View {
             Divider().padding(.leading, 60)
             
             ProfileMenuRow(icon: "arrow.right.square.fill", title: "Sign Out", subtitle: "Sign out of your account", isDestructive: true) {
-                alertTitle = "Sign Out"
-                alertMessage = "Demo: This would sign you out and return to the login screen."
-                showingActionAlert = true
+                showingLogoutAlert = true
             }
         }
         .ihCardStyle()

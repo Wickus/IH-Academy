@@ -91,7 +91,7 @@ struct BookingsList: View {
         if bookings.isEmpty {
             EmptyBookingsView(isUpcoming: isUpcoming)
         } else {
-            ScrollView {
+            ScrollView(.vertical, showsIndicators: true) {
                 LazyVStack(spacing: IHAcademyTheme.mediumPadding) {
                     ForEach(bookings) { booking in
                         BookingCard(
@@ -103,7 +103,9 @@ struct BookingsList: View {
                 }
                 .padding(.horizontal, IHAcademyTheme.mediumPadding)
                 .padding(.vertical, IHAcademyTheme.mediumPadding)
+                .frame(maxWidth: .infinity)
             }
+            .scrollContentBackground(.hidden)
         }
     }
 }

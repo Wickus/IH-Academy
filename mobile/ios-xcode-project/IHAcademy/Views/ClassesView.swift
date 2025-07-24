@@ -72,7 +72,7 @@ struct ClassesView: View {
                 if filteredClasses.isEmpty {
                     EmptyStateView()
                 } else {
-                    ScrollView {
+                    ScrollView(.vertical, showsIndicators: true) {
                         LazyVStack(spacing: IHAcademyTheme.mediumPadding) {
                             ForEach(filteredClasses) { class_ in
                                 ClassCard(sportClass: class_, onBook: {
@@ -83,7 +83,9 @@ struct ClassesView: View {
                         }
                         .padding(.horizontal, IHAcademyTheme.mediumPadding)
                         .padding(.vertical, IHAcademyTheme.mediumPadding)
+                        .frame(maxWidth: .infinity)
                     }
+                    .scrollContentBackground(.hidden)
                 }
             }
             .background(IHAcademyTheme.backgroundColor)
