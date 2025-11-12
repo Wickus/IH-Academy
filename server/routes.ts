@@ -3041,6 +3041,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test SendGrid Email Connection
+  app.post("/api/test-email", async (req: Request, res: Response) => {
+    try {
+      const { testEmail } = req.body;
+      const emailTo = testEmail || 'katlego@itshappening.africa';
+
+      console.log('=== Testing SendGrid Email Configuration ===');
+      console.log('SENDGRID_API_KEY exists:', !!process.env.SENDGRID_API_KEY);
+      console.log('FROM_EMAIL:', process.env.FROM_EMAIL);
+      console.log('Sending test email to:', emailTo);
+
+      const emailSent = await sendEmail({
+        to: emailTo,
+        from: process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa',
+        subject: 'IH Academy - Email System Test',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #20366B 0%, #278DD4 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+              <h1 style="margin: 0; font-size: 24px;">✅ Email System Test</h1>
+              <p style="margin: 10px 0 0 0; opacity: 0.9;">IH Academy Platform</p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+              <h2 style="color: #20366B; margin: 0 0 20px 0; font-size: 20px;">Email Delivery Test Successful!</h2>
+              
+              <div style="background: #dcfce7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a;">
+                <p style="margin: 0; color: #166534; font-size: 16px;"><strong>✅ SendGrid Integration: WORKING</strong></p>
+              </div>
+              
+              <p style="color: #374151; line-height: 1.6; margin: 0 0 15px 0;">This test email confirms that:</p>
+              <ul style="color: #374151; line-height: 1.8;">
+                <li>SendGrid API key is configured correctly</li>
+                <li>FROM email address is valid</li>
+                <li>Email delivery service is operational</li>
+                <li>All notification emails will be sent successfully</li>
+              </ul>
+              
+              <div style="background: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                  <strong>Test Details:</strong><br>
+                  Sent at: ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}<br>
+                  From: ${process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa'}<br>
+                  To: ${emailTo}
+                </p>
+              </div>
+              
+              <p style="color: #374151; line-height: 1.6; margin: 20px 0 0 0;">
+                Your email notification system is ready for production! 🚀
+              </p>
+            </div>
+          </div>
+        `,
+        text: `IH Academy Email System Test
+        
+This test email confirms that your SendGrid integration is working correctly.
+
+✅ SendGrid API key is configured
+✅ FROM email address is valid  
+✅ Email delivery service is operational
+✅ All notification emails will be sent successfully
+
+Sent at: ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}
+From: ${process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa'}
+To: ${emailTo}
+
+Your email notification system is ready for production!`
+      });
+
+      if (emailSent) {
+        console.log('✅ Test email sent successfully!');
+        res.json({
+          success: true,
+          message: 'Test email sent successfully! Check your inbox.',
+          details: {
+            to: emailTo,
+            from: process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa',
+            timestamp: new Date().toISOString()
+          }
+        });
+      } else {
+        console.log('❌ Test email failed to send');
+        res.status(500).json({
+          success: false,
+          message: 'Failed to send test email. Check server logs for details.',
+          details: {
+            apiKeyConfigured: !!process.env.SENDGRID_API_KEY,
+            fromEmail: process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa'
+          }
+        });
+      }
+    } catch (error: any) {
+      console.error('❌ Email test error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Email test failed',
+        error: error.message,
+        details: {
+          apiKeyConfigured: !!process.env.SENDGRID_API_KEY,
+          fromEmail: process.env.FROM_EMAIL
+        }
+      });
+    }
+  });
+
   // PayFast activation fee payment endpoint (GET)
   app.get("/api/create-payfast-payment", async (req: Request, res: Response) => {
     try {
