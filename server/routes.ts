@@ -1618,8 +1618,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let bookings: any[] = [];
       const currentUser = getCurrentUser(req);
 
+      // Require authentication
+      if (!currentUser) {
+        return res.status(403).json({ message: "Authentication required" });
+      }
+
       // Data isolation: Organisation admins only see bookings for their organisation's classes
-      if (currentUser?.role === 'organization_admin') {
+      if (currentUser.role === 'organization_admin') {
         const userOrgs = await storage.getUserOrganizations(currentUser.id);
         if (userOrgs.length > 0) {
           const orgClasses = await storage.getClassesByOrganization(userOrgs[0].organizationId);
@@ -1631,15 +1636,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           bookings = []; // No organisation set up yet
         }
-      } else if (email) {
-        bookings = await storage.getBookingsByEmail(email as string);
-      } else if (classId) {
-        bookings = await storage.getBookingsByClass(parseInt(classId as string));
-      } else if (recent) {
-        const orgId = organizationId ? parseInt(organizationId as string) : undefined;
-        bookings = await storage.getRecentBookings(parseInt(recent as string), orgId);
+      } else if (currentUser.role === 'coach') {
+        // Coaches can see bookings for their classes or organization
+        const userOrgs = await storage.getUserOrganizations(currentUser.id);
+        if (userOrgs.length > 0) {
+          const orgClasses = await storage.getClassesByOrganization(userOrgs[0].organizationId);
+          const orgClassIds = orgClasses.map(cls => cls.id);
+          
+          const allBookings = await storage.getRecentBookings(1000);
+          bookings = allBookings.filter(booking => orgClassIds.includes(booking.classId));
+        } else {
+          bookings = [];
+        }
+      } else if (currentUser.role === 'member') {
+        // Members can ONLY see their own bookings - enforce email filter
+        bookings = await storage.getBookingsByEmail(currentUser.email);
+      } else if (currentUser.role === 'global_admin') {
+        // Global admin can use filters
+        if (email) {
+          bookings = await storage.getBookingsByEmail(email as string);
+        } else if (classId) {
+          bookings = await storage.getBookingsByClass(parseInt(classId as string));
+        } else if (recent) {
+          const orgId = organizationId ? parseInt(organizationId as string) : undefined;
+          bookings = await storage.getRecentBookings(parseInt(recent as string), orgId);
+        } else {
+          bookings = await storage.getRecentBookings(50);
+        }
       } else {
-        bookings = await storage.getRecentBookings(50);
+        // Unknown role - deny access
+        return res.status(403).json({ message: "Access denied" });
       }
 
       // Add class and sport info to bookings
