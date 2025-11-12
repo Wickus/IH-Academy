@@ -315,20 +315,21 @@ export default function OrganizationClasses() {
             }
           }}
         >
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative z-[51]">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-slate-800">Book Your Class</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowBookingForm(false)}
-                  className="text-slate-400 hover:text-slate-600"
-                >
-                  ✕
-                </Button>
-              </div>
-              
+          <div className="bg-white rounded-2xl max-w-4xl w-full flex flex-col relative z-[51]" style={{ maxHeight: '90vh' }}>
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 flex-shrink-0">
+              <h3 className="text-xl font-bold text-slate-800">Book Your Class</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowBookingForm(false)}
+                className="text-slate-400 hover:text-slate-600"
+                data-testid="button-close-booking-modal"
+              >
+                ✕
+              </Button>
+            </div>
+            
+            <div className="overflow-y-auto flex-1 p-6">
               <BookingForm
                 classData={selectedClass}
                 onSuccess={() => {
