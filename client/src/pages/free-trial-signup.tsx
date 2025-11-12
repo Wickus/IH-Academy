@@ -121,10 +121,10 @@ export default function FreeTrialSignup() {
         description: `${organization.name} is ready for action. Start with your 21-day free trial!`
       });
 
-      // Navigate to the organization setup flow for branding and configuration
+      // Navigate directly to the organization dashboard
       setTimeout(() => {
-        console.log("Redirecting to organization setup flow");
-        setLocation("/organization-setup");
+        console.log("Redirecting to organization dashboard");
+        setLocation("/dashboard");
       }, 1200);
     },
     onError: (error: any) => {
