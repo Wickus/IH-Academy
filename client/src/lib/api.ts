@@ -1,5 +1,5 @@
 import { apiRequest } from "./queryClient";
-import type { Child, InsertChild } from "@shared/schema";
+import type { Child, InsertChild, InsertOrganization } from "@shared/schema";
 
 export interface GlobalDashboardStats {
   totalOrganizations: number;
@@ -152,7 +152,7 @@ export const api = {
     return response.json();
   },
 
-  createOrganization: async (orgData: Omit<Organization, 'id' | 'isActive'>): Promise<Organization> => {
+  createOrganization: async (orgData: Partial<InsertOrganization>): Promise<Organization> => {
     const response = await apiRequest('POST', '/api/organizations', orgData);
     return response.json();
   },
