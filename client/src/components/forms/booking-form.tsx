@@ -47,7 +47,7 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
 
   const { data: children = [] } = useQuery({
     queryKey: ["/api/children", currentUser?.id],
-    queryFn: () => currentUser ? api.getUserChildren(currentUser.id) : Promise.resolve([]),
+    queryFn: () => currentUser ? api.getUserChildren() : Promise.resolve([]),
     enabled: !!currentUser,
   });
 
