@@ -24,9 +24,10 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   }
 
   try {
+    const fromEmail = params.from || process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa';
     await mailService.send({
       to: params.to,
-      from: params.from || process.env.FROM_EMAIL || 'no-reply@academy.itshappening.africa',
+      from: fromEmail,
       subject: params.subject,
       text: params.text,
       html: params.html,
