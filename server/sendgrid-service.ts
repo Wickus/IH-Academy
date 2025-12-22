@@ -1,4 +1,9 @@
 import { MailService } from '@sendgrid/mail';
+import {config} from "dotenv";
+
+if(process.env.NODE_ENV === "development") {
+  config();
+}
 
 if (!process.env.SENDGRID_API_KEY) {
   console.warn("SENDGRID_API_KEY environment variable not set - email notifications will be disabled");

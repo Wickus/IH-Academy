@@ -1,3 +1,9 @@
+import {config} from "dotenv";
+
+if(process.env.NODE_ENV === "development") {
+  config();
+}
+
 /**
  * Comprehensive Email System Testing Script
  * Tests SendGrid configuration, credentials, and email delivery

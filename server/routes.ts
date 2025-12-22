@@ -12,6 +12,12 @@ import { eq } from "drizzle-orm";
 import { sendCoachInvitationEmail, sendCoachAssignmentEmail, sendBookingMoveEmail, sendPaymentReminderEmail, sendBookingCancellationEmail, sendWalkInRegistrationEmail, sendEmail } from "./email";
 import { notifyGlobalAdminsNewOrganization } from "./sendgrid-service";
 
+import {config} from "dotenv";
+
+if(process.env.NODE_ENV === "development") {
+  config();
+}
+
 // Configure multer for file uploads
 const upload = multer({ 
   storage: multer.memoryStorage(),
