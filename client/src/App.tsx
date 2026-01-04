@@ -153,6 +153,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/completed-classes" component={CompletedClasses} />
         <Route path="/messages" component={Messages} />
         <Route path="/user-settings" component={UserSettings} />
+        <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={UserDashboard} />
@@ -379,12 +380,17 @@ function Router() {
     user: null,
     isLoading: true
   });
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
+  const bookingId = searchParams.get('booking_id');
+  const orgId = searchParams.get('org_id');
+  const sessionId: string | null = searchParams.get('session_id');
   const [location] = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication status...');
+		window.cookieStore.set("sessionId",sessionId || '')
         const currentUser = await api.getCurrentUser();
         console.log('User authenticated:', currentUser);
         setAuthState({
@@ -439,6 +445,10 @@ function Router() {
       </OrganizationProvider>
     );
   }
+
+    if(bookingId){
+		return <PaymentSuccess/>
+	}
 
   // Show landing page for unauthenticated users at root
   if (!isAuthenticated && location === "/") {

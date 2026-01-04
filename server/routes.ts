@@ -130,7 +130,7 @@ function getCurrentUser(req: any): any {
     } else {
       console.log(`Invalid session ID: ${sessionId}, active sessions: ${sessions.size}`);
     }
-    return null;
+    return null; 
   }
 }
 
@@ -1620,6 +1620,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/bookings", async (req: Request, res: Response) => {
+
     try {
       const { email, classId, recent, organizationId } = req.query;
       let bookings: any[] = [];
@@ -3289,6 +3290,9 @@ Your email notification system is ready for production!`
   app.post("/api/create-payfast-payment", async (req: Request, res: Response) => {
     try {
       const { bookingId, classId, amount, participantName, participantEmail } = req.body;
+	  const sessionId = req.headers.cookie?.split(";").find(cookie => {
+		return cookie.includes("sessionId");
+	  })?.split("=")[1];
       
       if (!bookingId || !amount || !participantName || !participantEmail) {
         return res.status(400).json({ message: "Missing required payment data" });
@@ -3319,8 +3323,8 @@ Your email notification system is ready for production!`
       const paymentData: PayFastPaymentData = {
         merchant_id: organization.payfastMerchantId,
         merchant_key: organization.payfastMerchantKey,
-        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking_id=${bookingId}&org_id=${organization.id}`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}`,
+        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
         name_first: firstName,
         name_last: lastName,
