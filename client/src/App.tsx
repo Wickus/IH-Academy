@@ -154,6 +154,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/messages" component={Messages} />
         <Route path="/user-settings" component={UserSettings} />
         <Route path="/payment-success" component={PaymentSuccess} />
+        <Route path="/payment-canceled" component={PaymentCancelled} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={UserDashboard} />
@@ -447,13 +448,13 @@ function Router() {
     );
   }
 
-    if(bookingId && status === 'success'){
-		return <PaymentSuccess/>
-	}
+  if(bookingId && status === 'success'){
+	return <PaymentSuccess/>
+  }
 
-	if(bookingId && status === 'canceled'){
-		return <PaymentCancelled/>
-	}
+  if(bookingId && status === 'canceled'){
+	return <PaymentCancelled/>
+  }
 
   // Show landing page for unauthenticated users at root
   if (!isAuthenticated && location === "/") {
