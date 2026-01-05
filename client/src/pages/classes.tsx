@@ -149,7 +149,7 @@ export default function Classes() {
               <div className="flex-1 overflow-y-auto pr-2">
                 <ClassForm 
                   sports={sports}
-                  organizationId={user?.organizationId}
+                  organizationId={organization?.id}
                   onSuccess={() => setShowCreateDialog(false)}
                 />
               </div>
