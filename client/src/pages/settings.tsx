@@ -176,15 +176,19 @@ export default function Settings() {
   });
 
   const updatePayfastCredentialsMutation = useMutation({
-    mutationFn: async (data: PayfastCredentialsData) => {
-      if (!organization?.id) throw new Error("No organization found");
+    mutationFn: async (data: PayfastCredentialsData & { organizationId: number }) => {
+      const { organizationId, ...credentials } = data;
+      
+      if (!organizationId) throw new Error("No organization found");
+      
+      console.log("Saving PayFast credentials for organization ID:", organizationId);
       
       // First test the connection
       const connectionTest = await api.testPayfastConnection({
-        merchantId: data.payfastMerchantId,
-        merchantKey: data.payfastMerchantKey,
-        passphrase: data.payfastPassphrase,
-        sandbox: data.payfastSandbox,
+        merchantId: credentials.payfastMerchantId,
+        merchantKey: credentials.payfastMerchantKey,
+        passphrase: credentials.payfastPassphrase,
+        sandbox: credentials.payfastSandbox,
       });
       
       if (!connectionTest.connected) {
@@ -192,16 +196,18 @@ export default function Settings() {
       }
       
       // If connection test passes, save the credentials
-      return api.updateOrganization(organization.id, {
-        payfastMerchantId: data.payfastMerchantId,
-        payfastMerchantKey: data.payfastMerchantKey,
-        payfastPassphrase: data.payfastPassphrase,
-        payfastSandbox: data.payfastSandbox,
+      console.log("Connection test passed, saving to organization:", organizationId);
+      return api.updateOrganization(organizationId, {
+        payfastMerchantId: credentials.payfastMerchantId,
+        payfastMerchantKey: credentials.payfastMerchantKey,
+        payfastPassphrase: credentials.payfastPassphrase,
+        payfastSandbox: credentials.payfastSandbox,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/test-payfast-connection", organization?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/organizations/my"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/test-payfast-connection", variables.organizationId] });
       toast({
         title: "Success",
         description: "PayFast credentials saved and connection verified",
@@ -306,20 +312,27 @@ export default function Settings() {
   });
 
   const onPayfastCredentialsSubmit = (data: PayfastCredentialsData) => {
-    console.log("PayFast credentials submitted:", data);
-    console.log("Organization:", organization);
-    console.log("Organization ID:", organization?.id);
+    // Get the current organization ID at the time of submission (not from closure)
+    const currentOrgId = effectiveSelectedOrgId;
     
-    if (!organization?.id) {
+    console.log("PayFast credentials submitted:", data);
+    console.log("Current effective organization ID:", currentOrgId);
+    console.log("Organization name:", organization?.name);
+    
+    if (!currentOrgId) {
       toast({
         title: "Error",
-        description: "No organization found. Please refresh and try again.",
+        description: "No organization found. Please select an organization and try again.",
         variant: "destructive",
       });
       return;
     }
     
-    updatePayfastCredentialsMutation.mutate(data);
+    // Pass organization ID explicitly to avoid closure issues
+    updatePayfastCredentialsMutation.mutate({
+      ...data,
+      organizationId: currentOrgId,
+    });
   };
 
   const handleDeleteSport = (sportId: number) => {
