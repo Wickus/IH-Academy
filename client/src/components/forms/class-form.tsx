@@ -262,7 +262,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   const getCoachName = (coachId: number) => {
     const coach = coachesArray.find((c: any) => c.id === coachId || c.userId === coachId);
-    return coach?.name || coach?.displayName || coach?.username || 'Unknown Coach';
+    return coach?.user?.name || coach?.displayName || coach?.name || coach?.username || 'Unknown Coach';
   };
 
   return (
@@ -444,7 +444,7 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
                         e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
                       }}
                     >
-                      {coach.name || coach.displayName || coach.username}
+                      {coach.user?.name || coach.displayName || coach.name || coach.username || 'Unknown Coach'}
                     </SelectItem>
                   ))}
                   {coachesArray.filter((coach: any) => !selectedCoaches.includes(coach.id)).length === 0 && (

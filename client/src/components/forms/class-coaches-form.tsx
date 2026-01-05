@@ -149,7 +149,7 @@ export default function ClassCoachesForm({ classId, organization }: ClassCoaches
           ) : (
             classCoachesArray.map((assignment: any) => {
               const coach = coachesArray.find((c: any) => c.id === assignment.coachId);
-              const coachName = coach?.name || coach?.displayName || coach?.username || 'Unknown Coach';
+              const coachName = coach?.user?.name || coach?.displayName || coach?.name || coach?.username || 'Unknown Coach';
               return (
                 <div
                   key={assignment.id}
