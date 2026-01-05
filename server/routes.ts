@@ -3323,8 +3323,8 @@ Your email notification system is ready for production!`
       const paymentData: PayFastPaymentData = {
         merchant_id: organization.payfastMerchantId,
         merchant_key: organization.payfastMerchantKey,
-        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}`,
+        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}&status=success`,
+        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}&status=canceled`,
         notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
         name_first: firstName,
         name_last: lastName,
@@ -3369,7 +3369,7 @@ Your email notification system is ready for production!`
       const organization = await storage.getOrganization(parseInt(organizationId || "1"));
       if (organization && !payfastService.validateNotification(notification, organization.payfastPassphrase || undefined)) {
         console.error("Invalid PayFast notification signature");
-        return res.status(400).send("Invalid signature");
+        return res.status(200).send("Invalid signature");
       }
 
       if (payment_status === 'COMPLETE') {
@@ -3465,7 +3465,7 @@ Your email notification system is ready for production!`
       res.status(200).send("OK");
     } catch (error) {
       console.error("Error processing PayFast notification:", error);
-      res.status(500).send("Error");
+      res.status(200).send("Error");
     }
   });
 

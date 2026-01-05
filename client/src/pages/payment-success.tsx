@@ -16,17 +16,16 @@ export default function PaymentSuccess() {
 	const [searchParams] = useState(() => new URLSearchParams(window.location.search));
 	const bookingId = searchParams.get('booking_id');
 	const orgId = searchParams.get('org_id');
-	const sessionId: string | null = searchParams.get('session_id');
 
 	const { data: booking, isLoading } = useQuery({
 		queryKey: ['/api/bookings', bookingId],
-		queryFn: () => bookingId ? api.getBooking(parseInt(bookingId), sessionId ?? '') : null,
+		queryFn: () => bookingId ? api.getBooking(parseInt(bookingId)) : null,
 		enabled: !!bookingId,
 	});
 
 	const { data: organization } = useQuery({
 		queryKey: ['/api/organizations', orgId],
-		queryFn: () => orgId ? api.getOrganization(parseInt(orgId), sessionId ?? '') : null,
+		queryFn: () => orgId ? api.getOrganization(parseInt(orgId)) : null,
 		enabled: !!orgId,
 	});
 
@@ -45,12 +44,13 @@ export default function PaymentSuccess() {
 		if (isActivationPayment || orgId) {
 			sessionStorage.setItem('justActivated', 'true');
 		}
-	}, [booking, orgId, sessionId]);
+	}, [booking, orgId]);
 
 	useEffect(() => {
 		if (window.ReactNativeWebView) {
 			window.ReactNativeWebView.postMessage(JSON.stringify({
-				bookingId
+				bookingId,
+				status:'success'
 			}));
 		}
 	}, [])

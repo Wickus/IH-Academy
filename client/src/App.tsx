@@ -384,6 +384,7 @@ function Router() {
   const bookingId = searchParams.get('booking_id');
   const orgId = searchParams.get('org_id');
   const sessionId: string | null = searchParams.get('session_id');
+  const status: string | null = searchParams.get('status');
   const [location] = useLocation();
 
   useEffect(() => {
@@ -446,8 +447,12 @@ function Router() {
     );
   }
 
-    if(bookingId){
+    if(bookingId && status === 'success'){
 		return <PaymentSuccess/>
+	}
+
+	if(bookingId && status === 'canceled'){
+		return <PaymentCancelled/>
 	}
 
   // Show landing page for unauthenticated users at root

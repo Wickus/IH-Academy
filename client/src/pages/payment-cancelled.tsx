@@ -26,6 +26,15 @@ export default function PaymentCancelled() {
   });
 
   useEffect(() => {
+		if (window.ReactNativeWebView) {
+			window.ReactNativeWebView.postMessage(JSON.stringify({
+				bookingId,
+				status:'canceled'
+			}));
+		}
+	}, [])
+
+  useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
   }, []);
