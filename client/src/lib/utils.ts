@@ -126,3 +126,19 @@ export function generateICalEvent(classData: any, booking: any): string {
 
   return icalContent;
 }
+
+export function setCookie(name:string, value:string, days:number = 1) {
+  const date = new Date();
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // calculate expiration time
+  const expires = "; expires=" + date.toUTCString();
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+export function deleteCookie(name:string, path:string = "/", ) {
+    // Set a date in the past to expire the cookie immediately
+	const domain = location.hostname
+	console.log(domain);
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT;" +
+                      (domain ? "; domain=" + domain : "") +
+                      (path ? "; path=" + path : "");
+}

@@ -61,6 +61,7 @@ import ResetPassword from "@/pages/reset-password";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNav from "@/components/layout/mobile-nav";
 import Header from "@/components/layout/header";
+import { deleteCookie, setCookie } from "./lib/utils";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -154,7 +155,7 @@ function RoleBasedRouter({ user, setUser, setIsAuthenticated }: {
         <Route path="/messages" component={Messages} />
         <Route path="/user-settings" component={UserSettings} />
         <Route path="/payment-success" component={PaymentSuccess} />
-        <Route path="/payment-canceled" component={PaymentCancelled} />
+        <Route path="/payment-cancelled" component={PaymentCancelled} />
         <Route path="/payment/success" component={PaymentRedirect} />
         <Route path="/payment/cancelled" component={PaymentRedirect} />
         <Route component={UserDashboard} />
@@ -391,8 +392,8 @@ function Router() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log('Checking authentication status...');
-		window.cookieStore.set("sessionId",sessionId || '')
+        console.log('Checking authentication status...', sessionId);
+		setCookie("sessionId",sessionId || '');
         const currentUser = await api.getCurrentUser();
         console.log('User authenticated:', currentUser);
         setAuthState({
