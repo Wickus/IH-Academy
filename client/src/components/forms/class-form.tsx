@@ -45,7 +45,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
 
   const { data: organizations } = useQuery({
     queryKey: ["/api/organizations/my"],
-    queryFn: () => apiRequest('GET', '/api/organizations/my'),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/organizations/my');
+      return response.json();
+    },
   });
 
   const organizationsArray = Array.isArray(organizations) ? organizations : [];
@@ -115,6 +118,23 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
     }
   }, [classCoaches, classCoachesArray, initialData, coaches, coachesArray, coachesLoading, classCoachesLoading]);
 
+  // Helper to convert ISO date string to datetime-local format
+  const formatDateTimeLocal = (dateStr: string | undefined): string => {
+    if (!dateStr) return "";
+    try {
+      const date = new Date(dateStr);
+      // Format as YYYY-MM-DDTHH:MM in local time
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch {
+      return dateStr;
+    }
+  };
+
   const form = useForm<ClassFormData>({
     resolver: zodResolver(classFormSchema),
     defaultValues: {
@@ -122,10 +142,10 @@ export default function ClassForm({ sports, onSuccess, initialData, organization
       description: initialData?.description || "",
       sportId: initialData?.sportId?.toString() || "",
       coachId: initialData?.coachId?.toString() || "",
-      startTime: initialData?.startTime || "",
-      endTime: initialData?.endTime || "",
+      startTime: formatDateTimeLocal(initialData?.startTime),
+      endTime: formatDateTimeLocal(initialData?.endTime),
       capacity: initialData?.capacity?.toString() || "",
-      price: initialData?.price || "",
+      price: initialData?.price?.toString() || "",
       location: initialData?.location || "",
       requirements: initialData?.requirements || "",
       isRecurring: initialData?.isRecurring || false,
