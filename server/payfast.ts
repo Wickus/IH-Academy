@@ -63,70 +63,35 @@ export class PayFastService {
     // Remove signature from data if it exists
     const { signature: _, ...cleanData } = data;
     
-    // PayFast payment forms require SPECIFIC field order (not alphabetical)
-    // Reference: https://developers.payfast.co.za/docs#step_1_form_fields
-    // Note: This is different from API signature generation which uses alphabetical order
+    // PayFast requires SPECIFIC field order for signature
     const fieldOrder = [
-      'merchant_id',
-      'merchant_key', 
-      'return_url',
-      'cancel_url',
-      'notify_url',
-      'name_first',
-      'name_last',
-      'email_address',
-      'cell_number',
-      'm_payment_id',
-      'amount',
-      'item_name',
-      'item_description',
-      'custom_int1',
-      'custom_int2',
-      'custom_int3',
-      'custom_int4',
-      'custom_int5',
-      'custom_str1',
-      'custom_str2',
-      'custom_str3',
-      'custom_str4',
-      'custom_str5',
-      'email_confirmation',
-      'confirmation_address',
-      'payment_method',
-      'subscription_type',
-      'billing_date',
-      'recurring_amount',
-      'frequency',
-      'cycles'
+      'merchant_id', 'merchant_key', 'return_url', 'cancel_url', 'notify_url',
+      'name_first', 'name_last', 'email_address', 'cell_number', 'm_payment_id',
+      'amount', 'item_name', 'item_description',
+      'custom_int1', 'custom_int2', 'custom_int3', 'custom_int4', 'custom_int5',
+      'custom_str1', 'custom_str2', 'custom_str3', 'custom_str4', 'custom_str5',
+      'email_confirmation', 'confirmation_address', 'payment_method',
+      'subscription_type', 'billing_date', 'recurring_amount', 'frequency', 'cycles'
     ];
     
     // Build parameter string in PayFast documented field order
-    // Only include non-empty values as per PayFast documentation
+    // PayFast signature uses raw values (not URL encoded) joined by &
     const params: string[] = [];
     for (const field of fieldOrder) {
-      if (cleanData[field] && cleanData[field].trim() !== '') {
+      if (cleanData[field] !== undefined && cleanData[field] !== null && cleanData[field].trim() !== '') {
         const value = cleanData[field].trim();
-        // PayFast requires URL encoding with spaces as + and uppercase encoding
-        // Also replace problematic characters that cause signature mismatches
-        const encodedValue = encodeURIComponent(value)
-          .replace(/%20/g, '+')
-          .replace(/'/g, '%27')
-          .replace(/~/g, '%7E')
-          .replace(/%28/g, '(')    // Convert encoded ( back to literal (
-          .replace(/%29/g, ')')    // Convert encoded ) back to literal )
-          .replace(/%2B/g, '+');   // Ensure + stays as +
-        params.push(`${field}=${encodedValue}`);
+        params.push(`${field}=${value}`);
       }
     }
     
-    const queryString = params.join('&');
+    let stringToSign = params.join('&');
     
-    // Add passphrase if provided (must be at the end)
-    const stringToSign = passphrase && passphrase.trim() !== ''
-      ? `${queryString}&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, '+')}`
-      : queryString;
+    // Add passphrase if provided (must be at the end, also not URL encoded)
+    if (passphrase && passphrase.trim() !== '') {
+      stringToSign += `&passphrase=${passphrase.trim()}`;
+    }
     
-    console.log('PayFast signature string (payment form field order):', stringToSign);
+    console.log('PayFast signature string:', stringToSign);
     
     // Generate MD5 hash
     const generatedSignature = crypto.createHash('md5').update(stringToSign).digest('hex');
@@ -175,30 +140,44 @@ export class PayFastService {
       ? 'https://sandbox.payfast.co.za/eng/process'
       : 'https://www.payfast.co.za/eng/process';
 
+    // PayFast field order for signature generation
+    const fieldOrder = [
+      'merchant_id', 'merchant_key', 'return_url', 'cancel_url', 'notify_url',
+      'name_first', 'name_last', 'email_address', 'cell_number', 'm_payment_id',
+      'amount', 'item_name', 'item_description',
+      'custom_int1', 'custom_int2', 'custom_int3', 'custom_int4', 'custom_int5',
+      'custom_str1', 'custom_str2', 'custom_str3', 'custom_str4', 'custom_str5',
+      'email_confirmation', 'confirmation_address', 'payment_method',
+      'subscription_type', 'billing_date', 'recurring_amount', 'frequency', 'cycles'
+    ];
+
     // Convert to record for signature generation (exclude undefined and null values)
     const dataRecord: Record<string, string> = {};
     Object.entries(paymentData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        dataRecord[key] = value.toString();
+      if (value !== undefined && value !== null && value !== '' && key !== 'passphrase') {
+        dataRecord[key] = value.toString().trim();
       }
     });
 
     console.log('PayFast data for signature:', dataRecord);
 
-    // Generate signature
+    // Build params in correct order with consistent encoding
+    const urlParams: string[] = [];
+    for (const field of fieldOrder) {
+      if (dataRecord[field] && dataRecord[field].trim() !== '') {
+        const value = dataRecord[field].trim();
+        // Use standard URL encoding for the actual URL
+        urlParams.push(`${field}=${encodeURIComponent(value)}`);
+      }
+    }
+
+    // Generate signature using PayFast's specific encoding rules
     const signature = this.generateSignature(dataRecord, paymentData.passphrase);
     console.log('Generated signature:', signature);
 
-    // Create query parameters (ensure only non-empty values)
-    const params = new URLSearchParams();
-    Object.entries(paymentData).forEach(([key, value]) => {
-      if (key !== 'passphrase' && value !== undefined && value !== null && value !== '') {
-        params.append(key, value.toString());
-      }
-    });
-    params.append('signature', signature);
+    urlParams.push(`signature=${signature}`);
 
-    const finalUrl = `${baseUrl}?${params.toString()}`;
+    const finalUrl = `${baseUrl}?${urlParams.join('&')}`;
     console.log('Final PayFast URL:', finalUrl);
     
     return finalUrl;
