@@ -18,6 +18,7 @@ export function formatDate(date: Date | string): string {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZone: 'Africa/Johannesburg',
   }).format(new Date(date));
 }
 
@@ -26,6 +27,7 @@ export function formatTime(date: Date | string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZone: 'Africa/Johannesburg',
   }).format(new Date(date));
 }
 
@@ -37,6 +39,7 @@ export function formatDateTime(date: Date | string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZone: 'Africa/Johannesburg',
   }).format(new Date(date));
 }
 
@@ -136,8 +139,8 @@ export function setCookie(name:string, value:string, days:number = 1) {
 
 export function deleteCookie(name:string, path:string = "/", ) {
     // Set a date in the past to expire the cookie immediately
-	const domain = location.hostname
-	console.log(domain);
+        const domain = location.hostname
+        console.log(domain);
     document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT;" +
                       (domain ? "; domain=" + domain : "") +
                       (path ? "; path=" + path : "");
