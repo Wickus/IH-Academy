@@ -167,7 +167,8 @@ export default function OrganizationClasses() {
                   </div>
                   <Button
                     onClick={() => setLocation(`/membership-payment/${organization.id}`)}
-                    className="bg-gradient-to-r from-[#24D367] to-[#24D3BF] hover:from-[#24D367]/90 hover:to-[#24D3BF]/90 text-white font-semibold"
+                    className="text-white font-semibold"
+                    style={{ backgroundColor: organization?.accentColor || '#24D367' }}
                   >
                     Become a Member - R{organization.membershipPrice}
                   </Button>
@@ -178,12 +179,18 @@ export default function OrganizationClasses() {
 
           {/* Active Membership Status */}
           {isMembershipOrg && userMembership && (
-            <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-[#24D367]/10 to-[#24D3BF]/10 border-l-4 border-l-[#24D367]">
+            <Card 
+              className="mb-8 border-0 shadow-lg border-l-4"
+              style={{ 
+                background: `linear-gradient(to right, ${organization?.accentColor || '#24D367'}15, ${organization?.secondaryColor || '#24D3BF'}15)`,
+                borderLeftColor: organization?.accentColor || '#24D367'
+              }}
+            >
               <CardContent className="pt-6">
-                <div className="flex items-center gap-2 text-[#20366B] mb-2">
-                  <UserPlus className="h-5 w-5 text-[#24D367]" />
+                <div className="flex items-center gap-2 mb-2" style={{ color: organization?.primaryColor || '#20366B' }}>
+                  <UserPlus className="h-5 w-5" style={{ color: organization?.accentColor || '#24D367' }} />
                   <span className="font-semibold">Active Member</span>
-                  <Badge className="bg-[#24D367] text-white">Premium Access</Badge>
+                  <Badge className="text-white" style={{ backgroundColor: organization?.accentColor || '#24D367' }}>Premium Access</Badge>
                 </div>
                 <p className="text-slate-600 text-sm">
                   You have full access to daily schedules and all membership benefits.
@@ -212,13 +219,18 @@ export default function OrganizationClasses() {
               
               return (
                 <Card key={classItem.id} className="hover:shadow-xl transition-all border-0 shadow-lg rounded-2xl overflow-hidden bg-white">
-                  <div className="h-2 bg-gradient-to-r from-[#20366B] via-[#278DD4] to-[#24D367]"></div>
+                  <div 
+                    className="h-2"
+                    style={{ 
+                      background: `linear-gradient(to right, ${organization?.primaryColor || '#20366B'}, ${organization?.secondaryColor || '#278DD4'}, ${organization?.accentColor || '#24D367'})` 
+                    }}
+                  ></div>
                   
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between mb-3">
                       <Badge 
                         className="text-white font-medium px-3 py-1"
-                        style={{ backgroundColor: sport?.color || '#278DD4' }}
+                        style={{ backgroundColor: organization?.primaryColor || sport?.color || '#278DD4' }}
                       >
                         {sport?.name}
                       </Badge>
@@ -239,14 +251,14 @@ export default function OrganizationClasses() {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 text-slate-600">
-                        <Calendar className="w-4 h-4 text-[#20366B]" />
+                        <Calendar className="w-4 h-4" style={{ color: organization?.primaryColor || '#20366B' }} />
                         <span className="text-sm font-medium">
                           {formatDate(classItem.startTime)}
                         </span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-slate-600">
-                        <Clock className="w-4 h-4 text-[#20366B]" />
+                        <Clock className="w-4 h-4" style={{ color: organization?.primaryColor || '#20366B' }} />
                         <span className="text-sm font-medium">
                           {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
                         </span>
@@ -254,13 +266,13 @@ export default function OrganizationClasses() {
 
                       {classItem.location && (
                         <div className="flex items-center gap-3 text-slate-600">
-                          <MapPin className="w-4 h-4 text-[#20366B]" />
+                          <MapPin className="w-4 h-4" style={{ color: organization?.primaryColor || '#20366B' }} />
                           <span className="text-sm font-medium">{classItem.location}</span>
                         </div>
                       )}
 
                       <div className="flex items-center gap-3 text-slate-600">
-                        <Users className="w-4 h-4 text-[#20366B]" />
+                        <Users className="w-4 h-4" style={{ color: organization?.primaryColor || '#20366B' }} />
                         <span className="text-sm font-medium">
                           {classItem.capacity} max capacity
                         </span>
@@ -269,7 +281,7 @@ export default function OrganizationClasses() {
 
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                       <div>
-                        <span className="text-2xl font-bold text-[#20366B]">
+                        <span className="text-2xl font-bold" style={{ color: organization?.primaryColor || '#20366B' }}>
                           {formatCurrency(parseFloat(classItem.price.toString()))}
                         </span>
                         <span className="text-slate-500 text-sm ml-1">per class</span>
@@ -281,7 +293,8 @@ export default function OrganizationClasses() {
                           setShowBookingForm(true);
                         }}
                         disabled={availableSpots === 0}
-                        className="bg-[#24D367] hover:bg-[#24D367]/90 text-white font-medium px-6 py-2 rounded-xl transition-all shadow-md hover:shadow-lg"
+                        className="text-white font-medium px-6 py-2 rounded-xl transition-all shadow-md hover:shadow-lg"
+                        style={{ backgroundColor: organization?.accentColor || '#24D367' }}
                       >
                         {availableSpots === 0 ? 'Sold Out' : 'Book Now'}
                       </Button>
