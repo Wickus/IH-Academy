@@ -15,7 +15,7 @@ import { api, type Class } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { formatCurrency, formatDateTime, getSportColor } from "@/lib/utils";
-import { initiatePayfastPayment, generatePaymentId } from "@/lib/payfast";
+// PayFast payment is now handled server-side for proper signature generation
 
 const bookingFormSchema = z.object({
   participantName: z.string().min(1, "Participant name is required"),
@@ -78,42 +78,39 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
       });
 
       try {
-        // Get organization details to access Payfast credentials
-        const organization = await api.getOrganization(classData.organizationId);
-        
-        if (!organization.payfastMerchantId || !organization.payfastMerchantKey) {
-          toast({
-            title: "Payment Configuration Error",
-            description: "This organization hasn't configured payment processing yet. Please contact them directly.",
-            variant: "destructive",
-          });
-          return;
+        // Use server-side payment endpoint which generates proper signature
+        const response = await fetch('/api/create-payfast-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            bookingId: booking.id,
+            classId: classData.id,
+            amount: Number(booking.amount),
+            participantName: booking.participantName,
+            participantEmail: booking.participantEmail,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Payment initialization failed');
         }
 
-        // Initiate Payfast payment with organization's credentials
-        const paymentData = {
-          merchant_id: organization.payfastMerchantId,
-          merchant_key: organization.payfastMerchantKey,
-          name_first: booking.participantName.split(' ')[0] || '',
-          name_last: booking.participantName.split(' ').slice(1).join(' ') || '',
-          email_address: booking.participantEmail,
-          m_payment_id: generatePaymentId(),
-          amount: Number(booking.amount),
-          item_name: classData.name,
-          item_description: `Sports class booking for ${classData.name}`,
-          custom_str1: booking.id.toString(),
-          custom_str2: classData.id.toString(),
-          custom_str3: 'class_booking',
-          sandbox: organization.payfastSandbox,
-        };
-
-        // Initiate payment
-        initiatePayfastPayment(paymentData);
-        setPaymentStep('payment');
-      } catch (error) {
+        const { paymentUrl } = await response.json();
+        
+        if (paymentUrl) {
+          setPaymentStep('payment');
+          // Redirect to PayFast with properly signed URL
+          window.location.href = paymentUrl;
+        } else {
+          throw new Error('No payment URL received');
+        }
+      } catch (error: any) {
+        console.error('Payment error:', error);
         toast({
           title: "Payment Error",
-          description: "Unable to process payment. Please try again or contact support.",
+          description: error.message || "Unable to process payment. Please try again or contact support.",
           variant: "destructive",
         });
       }
