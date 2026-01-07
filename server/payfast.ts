@@ -59,11 +59,18 @@ export class PayFastService {
     return text.replace(/[&<>"']/g, (m) => map[m]);
   }
 
+  private urlEncode(value: string): string {
+    // PayFast requires URL encoding with uppercase hex and spaces as +
+    return encodeURIComponent(value.trim())
+      .replace(/%20/g, '+')
+      .replace(/%([0-9a-f]{2})/gi, (_, hex) => '%' + hex.toUpperCase());
+  }
+
   private generateSignature(data: Record<string, string>, passphrase?: string): string {
     // Remove signature from data if it exists
     const { signature: _, ...cleanData } = data;
     
-    // PayFast requires SPECIFIC field order for signature
+    // PayFast requires SPECIFIC field order for signature (order as they appear in docs)
     const fieldOrder = [
       'merchant_id', 'merchant_key', 'return_url', 'cancel_url', 'notify_url',
       'name_first', 'name_last', 'email_address', 'cell_number', 'm_payment_id',
@@ -74,26 +81,27 @@ export class PayFastService {
       'subscription_type', 'billing_date', 'recurring_amount', 'frequency', 'cycles'
     ];
     
-    // Build parameter string in PayFast documented field order
-    // PayFast signature uses raw values (not URL encoded) joined by &
+    // Build parameter string - PayFast requires URL-encoded values
     const params: string[] = [];
     for (const field of fieldOrder) {
-      if (cleanData[field] !== undefined && cleanData[field] !== null && cleanData[field].trim() !== '') {
+      if (cleanData[field] !== undefined && cleanData[field] !== null && cleanData[field] !== '') {
         const value = cleanData[field].trim();
-        params.push(`${field}=${value}`);
+        if (value !== '') {
+          params.push(`${field}=${this.urlEncode(value)}`);
+        }
       }
     }
     
     let stringToSign = params.join('&');
     
-    // Add passphrase if provided (must be at the end, also not URL encoded)
+    // Add passphrase if provided (must be at the end, also URL encoded)
     if (passphrase && passphrase.trim() !== '') {
-      stringToSign += `&passphrase=${passphrase.trim()}`;
+      stringToSign += `&passphrase=${this.urlEncode(passphrase)}`;
     }
     
     console.log('PayFast signature string:', stringToSign);
     
-    // Generate MD5 hash
+    // Generate MD5 hash (lowercase)
     const generatedSignature = crypto.createHash('md5').update(stringToSign).digest('hex');
     console.log('Generated signature:', generatedSignature);
     
