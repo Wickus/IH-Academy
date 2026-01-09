@@ -339,7 +339,11 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
                     <FormItem>
                       <FormLabel>Full Name *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter participant's full name" {...field} />
+                        <Input 
+                          placeholder="Enter participant's full name" 
+                          className="bg-white text-gray-900"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -353,7 +357,12 @@ export default function BookingForm({ classData, onSuccess, onCancel }: BookingF
                     <FormItem>
                       <FormLabel>Email Address *</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="participant@example.com" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="participant@example.com" 
+                          className="bg-white text-gray-900"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -56,10 +56,10 @@ export default function FreeTrialSignup() {
       console.log("Starting signup process...");
 
       try {
-        // Step 1: Register user
+        // Step 1: Register user - use email as username since it's guaranteed unique
         console.log("Step 1: Registering user");
         const user = await api.register({
-          username: signupData.email.split('@')[0],
+          username: signupData.email.toLowerCase(),
           email: signupData.email,
           password: signupData.password,
           firstName: signupData.firstName,
@@ -69,11 +69,11 @@ export default function FreeTrialSignup() {
         });
         console.log("User registered successfully:", user);
 
-        // Step 2: Login to get proper session
+        // Step 2: Login to get proper session (use email since username has random suffix)
         console.log("Step 2: Logging in user");
         await new Promise(resolve => setTimeout(resolve, 300));
         const loginResult = await api.login({
-          username: signupData.email.split('@')[0],
+          username: signupData.email,
           password: signupData.password
         });
         console.log("Login successful:", loginResult);
