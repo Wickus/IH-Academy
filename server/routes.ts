@@ -111,11 +111,7 @@ function generateSessionId(): string {
 
 // Middleware to get current user from session
 function getCurrentUser(req: any): any {
-  let sessionId:string = "";
-  // Temp fix for cross-platform authentication
-  if(req?.headers?.cookie){
-	sessionId = req?.headers?.cookie?.split(";").find((cookie:string)=> cookie.includes("sessionId")).split("=")[1] || "";
-  } 
+  const sessionId = req.cookies?.sessionId;
   
   if (!sessionId) {
     console.log('No sessionId cookie found in request');
