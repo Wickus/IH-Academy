@@ -487,6 +487,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update organization subscription status (global admin only)
+  app.put("/api/organizations/:id/subscription", async (req: Request, res: Response) => {
+    try {
+      const currentUser = getCurrentUser(req);
+      if (!currentUser || currentUser.role !== 'global_admin') {
+        return res.status(403).json({ message: "Access denied. Global admin only." });
+      }
+      
+      const orgId = parseInt(req.params.id);
+      const { subscriptionStatus, planType } = req.body;
+      
+      // Validate subscription status
+      const validStatuses = ['trial', 'active', 'expired', 'cancelled'];
+      if (subscriptionStatus && !validStatuses.includes(subscriptionStatus)) {
+        return res.status(400).json({ message: "Invalid subscription status" });
+      }
+      
+      const updateData: any = {};
+      if (subscriptionStatus) updateData.subscriptionStatus = subscriptionStatus;
+      if (planType) updateData.planType = planType;
+      
+      const updatedOrg = await storage.updateOrganization(orgId, updateData);
+      if (!updatedOrg) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      
+      console.log(`Organization ${orgId} subscription updated to ${subscriptionStatus} by global admin`);
+      res.json(updatedOrg);
+    } catch (error) {
+      console.error("Error updating organization subscription:", error);
+      res.status(500).json({ message: "Failed to update organization subscription" });
+    }
+  });
+
   app.delete("/api/organizations/:id", async (req: Request, res: Response) => {
     try {
       const currentUser = getCurrentUser(req);

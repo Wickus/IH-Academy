@@ -12,6 +12,7 @@ import { Building2, Users, CreditCard, TrendingUp, Plus, Settings, Eye, ChevronD
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -116,6 +117,33 @@ export default function GlobalAdminDashboard() {
       toast({
         title: "Error",
         description: error.message || "Failed to update organisation status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateSubscriptionMutation = useMutation({
+    mutationFn: async ({ orgId, subscriptionStatus, planType }: { orgId: number; subscriptionStatus: string; planType?: string }) => {
+      const response = await fetch(`/api/organizations/${orgId}/subscription`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ subscriptionStatus, planType })
+      });
+      if (!response.ok) throw new Error('Failed to update subscription');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
+      toast({
+        title: "Success",
+        description: "Subscription status updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update subscription status",
         variant: "destructive",
       });
     },
@@ -593,6 +621,17 @@ export default function GlobalAdminDashboard() {
                             <Badge variant={org.isActive ? 'default' : 'destructive'} className={org.isActive ? 'bg-[#24D3BF] text-white' : ''}>
                               {org.isActive ? 'Active' : 'Inactive'}
                             </Badge>
+                            <Badge 
+                              variant="outline" 
+                              className={
+                                org.subscriptionStatus === 'active' ? 'border-green-500 text-green-600' :
+                                org.subscriptionStatus === 'trial' ? 'border-yellow-500 text-yellow-600' :
+                                org.subscriptionStatus === 'expired' ? 'border-red-500 text-red-600' :
+                                'border-gray-500 text-gray-600'
+                              }
+                            >
+                              {org.subscriptionStatus || 'trial'}
+                            </Badge>
                           </div>
                         </div>
                       </div>
@@ -654,6 +693,53 @@ export default function GlobalAdminDashboard() {
                                     <Building2 className="h-4 w-4 text-slate-500" />
                                     <span className="text-sm text-slate-600 capitalize">{org.planType} Plan</span>
                                   </div>
+                                </div>
+                              </div>
+
+                              <div className="space-y-3 pt-4 border-t">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-sm font-medium">Subscription Status</Label>
+                                  <Select
+                                    value={org.subscriptionStatus || 'trial'}
+                                    onValueChange={(value) => {
+                                      updateSubscriptionMutation.mutate({ 
+                                        orgId: org.id, 
+                                        subscriptionStatus: value 
+                                      });
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-40">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="trial">Trial</SelectItem>
+                                      <SelectItem value="active">Active (Paid)</SelectItem>
+                                      <SelectItem value="expired">Expired</SelectItem>
+                                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-sm font-medium">Plan Type</Label>
+                                  <Select
+                                    value={org.planType || 'free'}
+                                    onValueChange={(value) => {
+                                      updateSubscriptionMutation.mutate({ 
+                                        orgId: org.id, 
+                                        subscriptionStatus: org.subscriptionStatus || 'active',
+                                        planType: value 
+                                      });
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-40">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="free">Free</SelectItem>
+                                      <SelectItem value="basic">Basic</SelectItem>
+                                      <SelectItem value="premium">Premium</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                               </div>
 
