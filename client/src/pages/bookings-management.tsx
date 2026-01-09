@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Search, Calendar, User, Clock, MapPin, CreditCard, Move, Filter } from 'lucide-react';
+import { ArrowLeft, Search, Calendar, User, Clock, MapPin, CreditCard, Move, Filter, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Booking, Class, Organization } from '@shared/schema';
 
@@ -46,7 +46,6 @@ export default function BookingsManagement() {
   // Move booking mutation
   const moveBookingMutation = useMutation({
     mutationFn: async ({ bookingId, newClassId }: { bookingId: number; newClassId: number }) => {
-      // This would need to be implemented in the API
       const response = await fetch(`/api/bookings/${bookingId}/move`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -64,6 +63,30 @@ export default function BookingsManagement() {
       toast({
         title: 'Error',
         description: 'Failed to move booking',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Confirm payment mutation
+  const confirmPaymentMutation = useMutation({
+    mutationFn: async (bookingId: number) => {
+      const response = await fetch(`/api/bookings/${bookingId}/payment`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus: 'confirmed' }),
+      });
+      if (!response.ok) throw new Error('Failed to confirm payment');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings'] });
+      toast({ title: 'Payment confirmed successfully' });
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to confirm payment',
         variant: 'destructive',
       });
     },
@@ -250,21 +273,41 @@ export default function BookingsManagement() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Dialog>
-                            <DialogTrigger asChild>
+                          <div className="flex gap-2">
+                            {booking.paymentStatus === 'pending' && (
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setSelectedBooking(booking)}
+                                onClick={() => {
+                                  if (confirm('Confirm this payment as received?')) {
+                                    confirmPaymentMutation.mutate(booking.id);
+                                  }
+                                }}
+                                disabled={confirmPaymentMutation.isPending}
                                 style={{ 
-                                  borderColor: organization.primaryColor,
-                                  color: organization.primaryColor 
+                                  borderColor: '#10b981',
+                                  color: '#10b981'
                                 }}
                               >
-                                <Move className="h-4 w-4 mr-1" />
-                                Move
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Confirm
                               </Button>
-                            </DialogTrigger>
+                            )}
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSelectedBooking(booking)}
+                                  style={{ 
+                                    borderColor: organization.primaryColor,
+                                    color: organization.primaryColor 
+                                  }}
+                                >
+                                  <Move className="h-4 w-4 mr-1" />
+                                  Move
+                                </Button>
+                              </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
                                 <DialogTitle>Move Booking</DialogTitle>
@@ -304,7 +347,8 @@ export default function BookingsManagement() {
                                 </div>
                               </div>
                             </DialogContent>
-                          </Dialog>
+                            </Dialog>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

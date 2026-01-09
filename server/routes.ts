@@ -3375,13 +3375,20 @@ Your email notification system is ready for production!`
 
       console.log("Organization found:", organization?.name, "ID:", organizationId);
 
-      // Always validate the notification signature (passphrase is optional in PayFast)
+      // Validate the notification signature
       const passphrase = organization?.payfastPassphrase || undefined;
       const isValid = payfastService.validateNotification(notification, passphrase);
       console.log("Signature validation result:", isValid, "passphrase configured:", !!passphrase);
+      
       if (!isValid) {
-        console.error("PayFast signature validation failed - rejecting notification");
-        return res.status(200).send("Invalid signature");
+        // Log detailed information for debugging signature issues
+        console.error("PayFast signature validation FAILED");
+        console.error("Received notification fields:", Object.keys(notification).sort().join(', '));
+        console.error("Passphrase configured:", !!passphrase);
+        
+        // For security, we reject invalid signatures
+        // The payment will need to be manually confirmed by admin
+        return res.status(200).send("Signature validation failed");
       }
       console.log("PayFast signature validated successfully");
 
