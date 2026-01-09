@@ -947,11 +947,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         classes = await storage.getPublicClasses(); // Default to public classes
       }
 
-      // Calculate booking count and available spots
+      // Calculate booking count and available spots (exclude cancelled bookings)
       const classesWithBookingInfo = await Promise.all(
         classes.map(async (cls: any) => {
           const bookings = await storage.getBookingsByClass(cls.id);
-          const bookingCount = bookings.length;
+          const activeBookings = bookings.filter((b: any) => b.paymentStatus !== 'cancelled');
+          const bookingCount = activeBookings.length;
           const availableSpots = cls.capacity - bookingCount;
 
           // Get sport and organization info
@@ -986,9 +987,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Class not found" });
       }
 
-      // Get additional info
+      // Get additional info (exclude cancelled bookings from count)
       const bookings = await storage.getBookingsByClass(id);
-      const bookingCount = bookings.length;
+      const activeBookings = bookings.filter((b: any) => b.paymentStatus !== 'cancelled');
+      const bookingCount = activeBookings.length;
       const availableSpots = classData.capacity - bookingCount;
 
       const [sport, organization] = await Promise.all([
@@ -1673,14 +1675,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bookingDate: new Date()
       };
 
-      // Check class capacity before booking
+      // Check class capacity before booking (exclude cancelled bookings)
       const classData = await storage.getClass(bookingData.classId);
       if (!classData) {
         return res.status(404).json({ message: "Class not found" });
       }
 
       const existingBookings = await storage.getBookingsByClass(bookingData.classId);
-      const availableSpots = classData.capacity - existingBookings.length;
+      const activeBookings = existingBookings.filter((b: any) => b.paymentStatus !== 'cancelled');
+      const availableSpots = classData.capacity - activeBookings.length;
 
       if (availableSpots <= 0) {
         return res.status(400).json({ message: "Class is full" });
@@ -3408,10 +3411,10 @@ Your email notification system is ready for production!`
               // Get class data for real-time updates
               const classData = await storage.getClass(updatedBooking.classId);
               if (classData) {
-                // Calculate availability
+                // Calculate availability (exclude cancelled bookings - includes pending and confirmed)
                 const existingBookings = await storage.getBookingsByClass(updatedBooking.classId);
-                const confirmedBookings = existingBookings.filter(b => b.paymentStatus === 'confirmed');
-                const availableSpots = classData.capacity - confirmedBookings.length;
+                const activeBookings = existingBookings.filter((b: any) => b.paymentStatus !== 'cancelled');
+                const availableSpots = classData.capacity - activeBookings.length;
 
                 // Broadcast real-time updates
                 broadcastAvailabilityUpdate(updatedBooking.classId, availableSpots, classData.capacity);
@@ -4173,9 +4176,10 @@ ${content}
         organizationName: organization.name
       });
 
-      // Broadcast availability update
+      // Broadcast availability update (exclude cancelled bookings)
       const bookingsForClass = await storage.getBookingsByClass(booking.classId);
-      const availableSpots = classData.capacity - bookingsForClass.length;
+      const activeBookings = bookingsForClass.filter((b: any) => b.paymentStatus !== 'cancelled');
+      const availableSpots = classData.capacity - activeBookings.length;
       broadcastAvailabilityUpdate(booking.classId, availableSpots, classData.capacity);
 
       res.json({ 
