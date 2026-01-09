@@ -3287,13 +3287,18 @@ Your email notification system is ready for production!`
       const firstName = nameParts[0] || 'Guest';
       const lastName = nameParts.slice(1).join(' ') || 'User';
 
+      // Get the base URL for callbacks - prefer forwarded protocol for proxied environments
+      const protocol = req.get('x-forwarded-proto') || req.protocol;
+      const host = req.get('host') || 'academy.itshappening.africa';
+      const baseUrl = `${protocol}://${host}`;
+      
       // Create PayFast payment data
       const paymentData: PayFastPaymentData = {
         merchant_id: organization.payfastMerchantId,
         merchant_key: organization.payfastMerchantKey,
-        return_url: `${req.protocol}://${req.get('host')}/payment-success?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}&status=success`,
-        cancel_url: `${req.protocol}://${req.get('host')}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}&status=canceled`,
-        notify_url: `${req.protocol}://${req.get('host')}/api/payfast-notify`,
+        return_url: `${baseUrl}/payment-success?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}&status=success`,
+        cancel_url: `${baseUrl}/payment-cancelled?booking_id=${bookingId}&org_id=${organization.id}&session_id=${sessionId}&status=canceled`,
+        notify_url: `${baseUrl}/api/payfast-notify`,
         name_first: firstName,
         name_last: lastName,
         email_address: participantEmail,
@@ -3306,6 +3311,10 @@ Your email notification system is ready for production!`
         passphrase: organization.payfastPassphrase || undefined,
       };
 
+      console.log('PayFast payment created - notify_url:', paymentData.notify_url);
+      console.log('PayFast payment created - m_payment_id:', paymentData.m_payment_id);
+      console.log('PayFast payment created - sandbox mode:', organization.payfastSandbox || false);
+      
       // Generate payment URL
       const paymentUrl = payfastService.generatePaymentUrl(paymentData, organization.payfastSandbox || false);
 
