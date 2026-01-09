@@ -1,5 +1,26 @@
 import crypto from 'crypto';
 
+function phpUrlencode(str: string): string {
+  const bytes = Buffer.from(str, 'utf8');
+  let result = '';
+  for (let i = 0; i < bytes.length; i++) {
+    const byte = bytes[i];
+    if (
+      (byte >= 48 && byte <= 57) ||
+      (byte >= 65 && byte <= 90) ||
+      (byte >= 97 && byte <= 122) ||
+      byte === 45 || byte === 95 || byte === 46
+    ) {
+      result += String.fromCharCode(byte);
+    } else if (byte === 32) {
+      result += '+';
+    } else {
+      result += '%' + byte.toString(16).toUpperCase().padStart(2, '0');
+    }
+  }
+  return result;
+}
+
 export interface PayFastPaymentData {
   merchant_id: string;
   merchant_key: string;
@@ -192,16 +213,40 @@ export class PayFastService {
   }
 
   validateNotification(notification: PayFastNotification, passphrase?: string): boolean {
-    // Convert to record for signature generation
-    const dataRecord: Record<string, string> = {};
-    Object.entries(notification).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        dataRecord[key] = value.toString();
-      }
-    });
+    // For IPN validation, we need to build the signature string from all fields except 'signature'
+    // PayFast requires alphabetical order for IPN validation
+    const { signature, ...dataWithoutSig } = notification;
     
-    const expectedSignature = this.generateSignature(dataRecord, passphrase);
-    return expectedSignature === notification.signature;
+    // Sort fields alphabetically and build param string
+    // Remove empty values as per PayFast documentation
+    const sortedKeys = Object.keys(dataWithoutSig).sort();
+    const params: string[] = [];
+    
+    for (const key of sortedKeys) {
+      const value = (dataWithoutSig as any)[key];
+      // Skip empty, undefined, or null values
+      if (value === undefined || value === null || value === '') {
+        continue;
+      }
+      // Use proper PHP urlencode semantics
+      const encodedValue = phpUrlencode(value.toString().trim());
+      params.push(`${key}=${encodedValue}`);
+    }
+    
+    let stringToSign = params.join('&');
+    
+    // Add passphrase if provided (at the end) with same encoding
+    if (passphrase && passphrase.trim() !== '') {
+      stringToSign += `&passphrase=${phpUrlencode(passphrase.trim())}`;
+    }
+    
+    console.log('IPN validation string:', stringToSign);
+    
+    const expectedSignature = crypto.createHash('md5').update(stringToSign).digest('hex');
+    console.log('Expected signature:', expectedSignature);
+    console.log('Received signature:', signature);
+    
+    return expectedSignature === signature;
   }
 
   async verifyPayment(pfPaymentId: string, sandbox: boolean = true): Promise<boolean> {

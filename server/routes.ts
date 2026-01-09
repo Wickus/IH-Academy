@@ -3301,6 +3301,8 @@ Your email notification system is ready for production!`
         amount: parseFloat(amount).toFixed(2),
         item_name: `Class Booking: ${classData.name}`,
         item_description: `Booking for ${classData.name} on ${new Date(classData.startTime).toLocaleDateString()}`,
+        custom_str1: organization.id.toString(),
+        custom_str3: 'booking',
         passphrase: organization.payfastPassphrase || undefined,
       };
 
@@ -3326,19 +3328,49 @@ Your email notification system is ready for production!`
         m_payment_id,
         pf_payment_id,
         amount_gross,
-        custom_str1: organizationId,
+        custom_str1: organizationIdStr,
         custom_str2: userId,
         custom_str3: paymentType
       } = notification;
 
-      console.log("PayFast notification received:", notification);
+      console.log("PayFast notification received:", JSON.stringify(notification, null, 2));
+      console.log("m_payment_id:", m_payment_id);
+      console.log("payment_status:", payment_status);
+      console.log("organizationIdStr:", organizationIdStr);
 
-      // Validate the notification signature
-      const organization = await storage.getOrganization(parseInt(organizationId || "1"));
-      if (organization && !payfastService.validateNotification(notification, organization.payfastPassphrase || undefined)) {
-        console.error("Invalid PayFast notification signature");
+      // Get organization - try from custom_str1 first, then from booking if it's a booking payment
+      let organization = null;
+      let organizationId = organizationIdStr ? parseInt(organizationIdStr) : null;
+      
+      if (organizationId) {
+        organization = await storage.getOrganization(organizationId);
+      } else {
+        // Try to get organization from booking
+        const bookingIdMatch = m_payment_id?.match(/booking_(\d+)_/);
+        if (bookingIdMatch) {
+          const bookingId = parseInt(bookingIdMatch[1]);
+          const booking = await storage.getBooking(bookingId);
+          if (booking) {
+            const classData = await storage.getClass(booking.classId);
+            if (classData) {
+              organization = await storage.getOrganization(classData.organizationId);
+              organizationId = classData.organizationId;
+            }
+          }
+        }
+      }
+
+      console.log("Organization found:", organization?.name, "ID:", organizationId);
+
+      // Always validate the notification signature (passphrase is optional in PayFast)
+      const passphrase = organization?.payfastPassphrase || undefined;
+      const isValid = payfastService.validateNotification(notification, passphrase);
+      console.log("Signature validation result:", isValid, "passphrase configured:", !!passphrase);
+      if (!isValid) {
+        console.error("PayFast signature validation failed - rejecting notification");
         return res.status(200).send("Invalid signature");
       }
+      console.log("PayFast signature validated successfully");
 
       if (payment_status === 'COMPLETE') {
         // Handle activation fee payment
@@ -3374,7 +3406,7 @@ Your email notification system is ready for production!`
             // Create active membership
             await storage.createMembership({
               userId: parseInt(userId),
-              organizationId: parseInt(organizationId),
+              organizationId: organizationId!,
               status: "active",
               startDate,
               endDate,
@@ -3386,15 +3418,17 @@ Your email notification system is ready for production!`
           }
         } else {
           // Handle booking payment
-          const bookingIdMatch = m_payment_id.match(/booking_(\d+)_/);
+          const bookingIdMatch = m_payment_id?.match(/booking_(\d+)_/);
           if (bookingIdMatch) {
             const bookingId = parseInt(bookingIdMatch[1]);
+            console.log(`Processing booking payment for booking ${bookingId}`);
             
             // Update booking payment status
             const updatedBooking = await storage.updateBooking(bookingId, {
               paymentStatus: 'confirmed',
               payfastPaymentId: pf_payment_id
             });
+            console.log(`Booking ${bookingId} updated:`, updatedBooking ? 'success' : 'failed');
 
             // Create payment record
             if (updatedBooking) {
