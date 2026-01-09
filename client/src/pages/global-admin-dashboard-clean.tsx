@@ -2269,8 +2269,8 @@ function UsersTab({ users }: { users: any[] }) {
                               {booking.organizationName} • {new Date(booking.bookingDate).toLocaleDateString()}
                             </p>
                           </div>
-                          <Badge className="text-xs ml-2" style={{ backgroundColor: '#24D367', color: 'white' }}>
-                            {booking.status}
+                          <Badge className="text-xs ml-2" style={{ backgroundColor: booking.paymentStatus === 'confirmed' ? '#24D367' : '#f59e0b', color: 'white' }}>
+                            {booking.paymentStatus || 'pending'}
                           </Badge>
                         </div>
                       ))}

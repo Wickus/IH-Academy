@@ -73,7 +73,7 @@ export default function BookingsManagement() {
   const filteredBookings = bookings.filter(booking => {
     const matchesSearch = booking.participantName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          booking.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || booking.paymentStatus === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -203,8 +203,7 @@ export default function BookingsManagement() {
                       <TableHead>Participant</TableHead>
                       <TableHead>Class</TableHead>
                       <TableHead>Date & Time</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Payment</TableHead>
+                      <TableHead>Payment Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -242,21 +241,13 @@ export default function BookingsManagement() {
                           <Badge 
                             variant="secondary"
                             style={{ 
-                              backgroundColor: `${getStatusColor(booking.status || 'pending')}20`,
-                              color: getStatusColor(booking.status || 'pending'),
-                              borderColor: getStatusColor(booking.status || 'pending'),
+                              backgroundColor: `${getStatusColor(booking.paymentStatus || 'pending')}20`,
+                              color: getStatusColor(booking.paymentStatus || 'pending'),
+                              borderColor: getStatusColor(booking.paymentStatus || 'pending'),
                             }}
                           >
-                            {booking.status || 'pending'}
+                            {booking.paymentStatus || 'pending'}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <CreditCard className="h-4 w-4" />
-                            <span className="text-sm">
-                              {booking.paymentStatus || 'pending'}
-                            </span>
-                          </div>
                         </TableCell>
                         <TableCell>
                           <Dialog>

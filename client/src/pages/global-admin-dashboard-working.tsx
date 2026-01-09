@@ -2090,9 +2090,9 @@ export default function GlobalAdminDashboard() {
                     <div className="text-right">
                       <Badge 
                         variant="secondary" 
-                        className={booking.status === 'confirmed' ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#278DD4]/20 text-[#20366B] border-[#278DD4]/30'}
+                        className={booking.paymentStatus === 'confirmed' ? 'bg-[#24D367]/20 text-[#20366B] border-[#24D367]/30' : 'bg-[#278DD4]/20 text-[#20366B] border-[#278DD4]/30'}
                       >
-                        {booking.status || 'confirmed'}
+                        {booking.paymentStatus || 'pending'}
                       </Badge>
                       {booking.amount && (
                         <p className="text-sm font-semibold text-[#20366B] mt-1">

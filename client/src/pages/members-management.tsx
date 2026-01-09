@@ -676,12 +676,12 @@ export default function MembersManagement() {
                                           <Badge 
                                             variant="outline"
                                             style={{
-                                              borderColor: organization.secondaryColor,
-                                              color: organization.secondaryColor,
-                                              backgroundColor: `${organization.secondaryColor}10`
+                                              borderColor: booking.paymentStatus === 'confirmed' ? '#10b981' : organization.secondaryColor,
+                                              color: booking.paymentStatus === 'confirmed' ? '#10b981' : organization.secondaryColor,
+                                              backgroundColor: booking.paymentStatus === 'confirmed' ? '#10b98110' : `${organization.secondaryColor}10`
                                             }}
                                           >
-                                            {booking.status}
+                                            {booking.paymentStatus || 'pending'}
                                           </Badge>
                                         </div>
                                       ))
