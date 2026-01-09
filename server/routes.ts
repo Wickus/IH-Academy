@@ -227,11 +227,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle unique constraint violations
       if (error.code === '23505') {
         if (error.constraint === 'users_username_unique') {
-          return res.status(400).json({ message: "Username already exists. Please choose a different username." });
+          return res.status(400).json({ message: "An account with this username already exists. Please log in instead, or use a different username." });
         }
         if (error.constraint === 'users_email_unique') {
-          return res.status(400).json({ message: "Email already exists. Please use a different email address." });
+          return res.status(400).json({ message: "An account with this email already exists. Please log in instead, or use a different email address." });
         }
+        // Generic duplicate error
+        return res.status(400).json({ message: "An account with this information already exists. Please log in instead." });
       }
       
       res.status(500).json({ message: "Failed to register user" });
